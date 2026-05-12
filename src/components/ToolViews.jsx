@@ -240,7 +240,7 @@ export const AlertsView = () => (
 );
 
 // ==================== SETTINGS VIEW ====================
-export const SettingsView = ({ userUID }) => (
+export const SettingsView = ({ userUID, user, logout }) => (
   <div className="space-y-6">
     <h2 className="text-xl font-bold">System Settings</h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -273,11 +273,11 @@ export const SettingsView = ({ userUID }) => (
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-white/30 block mb-1">Full Name</label>
-              <input className="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50" defaultValue="Admin User" />
+              <input className="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50" defaultValue={user?.displayName || ''} />
             </div>
             <div>
               <label className="text-xs text-white/30 block mb-1">Email</label>
-              <input className="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50" defaultValue="admin@iot-mazraa.com" />
+              <input className="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-white/50" defaultValue={user?.email || ''} readOnly />
             </div>
           </div>
         </Card>
@@ -301,6 +301,14 @@ export const SettingsView = ({ userUID }) => (
             </div>
           </div>
         </Card>
+
+        {/* Logout */}
+        <button 
+          onClick={logout}
+          className="w-full bg-red-500/10 border border-red-500/20 text-red-400 font-bold py-3 rounded-xl hover:bg-red-500/20 transition-colors"
+        >
+          Sign Out
+        </button>
       </div>
     </div>
   </div>
