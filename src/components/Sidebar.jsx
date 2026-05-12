@@ -1,9 +1,9 @@
 import React from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2 } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen } from 'lucide-react';
 import { WORKSPACES, TOOLS } from '../data/mockData';
 
 const iconMap = {
-  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2
+  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen
 };
 
 export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeTool, setActiveTool, user, logout }) {
@@ -59,14 +59,10 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
       
       <div className="mt-auto space-y-3">
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-primary/20 to-transparent border border-primary/20">
-           <div className="w-8 h-8 rounded-full bg-primary/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-primary font-bold text-sm">
-                  {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
-                </span>
-              )}
+           <div className="w-8 h-8 rounded-full bg-primary/30 flex items-center justify-center flex-shrink-0">
+              <span className="text-primary font-bold text-sm">
+                {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
            </div>
            <div className="flex flex-col text-left min-w-0">
               <span className="text-sm font-medium text-white truncate">{user?.displayName || 'User'}</span>

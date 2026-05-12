@@ -240,9 +240,18 @@ export const AlertsView = () => (
 );
 
 // ==================== SETTINGS VIEW ====================
-export const SettingsView = ({ userUID, user, logout }) => (
+export const SettingsView = ({ userUID, user, logout }) => {
+  const [uidCopied, setUidCopied] = useState(false);
+
+  const copyUID = () => {
+    navigator.clipboard.writeText(userUID);
+    setUidCopied(true);
+    setTimeout(() => setUidCopied(false), 2500);
+  };
+
+  return (
   <div className="space-y-6">
-    <h2 className="text-xl font-bold">System Settings</h2>
+    <h2 className="text-xl font-bold">Profile &amp; Settings</h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-1 space-y-2">
         {['General', 'Notifications', 'Security', 'Connected Accounts', 'Billing'].map(item => (
@@ -252,20 +261,50 @@ export const SettingsView = ({ userUID, user, logout }) => (
         ))}
       </div>
       <div className="md:col-span-2 space-y-6">
-        {/* UID Card */}
-        <Card>
-          <h3 className="font-bold mb-4 flex items-center gap-2"><Cpu size={18} className="text-primary" /> Your Device UID</h3>
-          <p className="text-xs text-white/40 mb-3">Use this UID as a prefix for all your MQTT topics in your Arduino code.</p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-sm font-mono text-primary">{userUID}</code>
-            <button 
-              onClick={() => navigator.clipboard.writeText(userUID)}
-              className="bg-primary/10 text-primary px-3 py-2.5 rounded-lg hover:bg-primary/20 transition-colors"
+
+        {/* ── Device UID — PROMINENT ───────────────────────────────── */}
+        <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-emerald-900/5 to-transparent p-6 shadow-[0_0_40px_rgba(16,185,129,0.08)]">
+          {/* glow blob */}
+          <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="flex items-center gap-2 mb-1">
+            <Cpu size={16} className="text-primary" />
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">Your Device UID</span>
+          </div>
+          <p className="text-xs text-white/40 mb-4 leading-relaxed">
+            استخدم هذا الـ UID في كود Arduino الخاص بك لربط جهازك بالموقع.
+          </p>
+
+          {/* UID box */}
+          <div className="flex items-stretch gap-2 mb-4">
+            <code className="flex-1 bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-mono text-primary break-all leading-relaxed">
+              {userUID}
+            </code>
+            <button
+              id="btn-copy-uid"
+              onClick={copyUID}
+              className={`flex-shrink-0 flex flex-col items-center justify-center gap-1 px-4 rounded-xl border text-xs font-bold transition-all duration-300 ${
+                uidCopied
+                  ? 'bg-primary/20 border-primary/50 text-primary shadow-[0_0_16px_rgba(16,185,129,0.3)]'
+                  : 'bg-white/5 border-white/10 text-white/50 hover:bg-primary/10 hover:border-primary/30 hover:text-primary'
+              }`}
             >
-              <Copy size={16} />
+              {uidCopied ? <Check size={18} /> : <Copy size={18} />}
+              {uidCopied ? 'Copied!' : 'Copy'}
             </button>
           </div>
-        </Card>
+
+          {/* Firebase path note */}
+          <div className="bg-black/30 border border-white/5 rounded-xl p-3">
+            <p className="text-[10px] text-white/30 mb-1 uppercase tracking-wider font-semibold">Firebase Data Path</p>
+            <code className="text-[11px] font-mono text-amber-300/70 break-all">
+              users/<span className="text-amber-300">{userUID}</span>/widgets/<span className="text-white/40">[Data_Key]</span>
+            </code>
+            <p className="text-[10px] text-white/30 mt-2 leading-relaxed">
+              كل أداة تُضيفها لها <strong className="text-white/50">Data Key</strong> خاص بها يُحدد مسار بياناتها في Firebase.
+            </p>
+          </div>
+        </div>
 
         {/* Profile */}
         <Card>
@@ -303,7 +342,7 @@ export const SettingsView = ({ userUID, user, logout }) => (
         </Card>
 
         {/* Logout */}
-        <button 
+        <button
           onClick={logout}
           className="w-full bg-red-500/10 border border-red-500/20 text-red-400 font-bold py-3 rounded-xl hover:bg-red-500/20 transition-colors"
         >
@@ -312,7 +351,8 @@ export const SettingsView = ({ userUID, user, logout }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 // ==================== LIVE TERMINAL ====================
 export const LiveTerminal = ({ messages, isConnected }) => {

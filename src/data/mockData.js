@@ -9,7 +9,8 @@ export const TOOLS = [
   { id: 'devices', name: 'Devices', icon: 'Cpu' },
   { id: 'automations', name: 'Automations', icon: 'Zap' },
   { id: 'alerts', name: 'Alerts', icon: 'Bell' },
-  { id: 'settings', name: 'Settings', icon: 'Settings' }
+  { id: 'settings', name: 'Settings', icon: 'Settings' },
+  { id: 'developer', name: 'Developer Guide', icon: 'BookOpen' },
 ];
 
 export const SOIL_MOISTURE_DATA = [

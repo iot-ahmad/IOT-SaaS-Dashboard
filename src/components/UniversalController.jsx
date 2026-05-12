@@ -127,23 +127,27 @@ const DEFAULT_TOPICS = {
 };
 
 // ─── Add Tool Modal ───────────────────────────────────────────────────────────
-function AddToolModal({ onClose, onAdd }) {
+function AddToolModal({ onClose, onAdd, userUID }) {
   const [step, setStep] = useState('category'); // category | config
   const [selectedItem, setSelectedItem] = useState(null);
-  const [form, setForm] = useState({ name: '', topic: '', unit: '°C', maxVal: 100 });
+  const [form, setForm] = useState({ name: '', topic: '', dataKey: '', unit: '°C', maxVal: 100 });
 
   const handleSelectItem = (item) => {
     setSelectedItem(item);
-    setForm({ name: item.label, topic: DEFAULT_TOPICS[item.type], unit: '°C', maxVal: 100 });
+    const defaultKey = DEFAULT_TOPICS[item.type].replace('/', '_');
+    setForm({ name: item.label, topic: DEFAULT_TOPICS[item.type], dataKey: defaultKey, unit: '°C', maxVal: 100 });
     setStep('config');
   };
 
   const handleAdd = () => {
+    if (!form.dataKey.trim()) return; // dataKey is required
     onAdd({
       id: uid(),
       type: selectedItem.type,
       name: form.name || selectedItem.label,
       topic: form.topic || DEFAULT_TOPICS[selectedItem.type],
+      dataKey: form.dataKey.trim(),
+      firebasePath: `users/${userUID}/widgets/${form.dataKey.trim()}`,
       unit: form.unit,
       maxVal: Number(form.maxVal) || 100,
       w: selectedItem.w,
@@ -217,6 +221,33 @@ function AddToolModal({ onClose, onAdd }) {
                   placeholder="e.g. Front Temperature"
                 />
               </div>
+
+              {/* ── Data Key (required) ───────────────────────────────── */}
+              <div>
+                <label className="text-xs font-semibold text-amber-400 block mb-1 flex items-center gap-1">
+                  <span>Data Key</span>
+                  <span className="text-[9px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Required</span>
+                </label>
+                <input
+                  className={`w-full bg-white/5 border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
+                    form.dataKey.trim() ? 'border-amber-500/40 focus:border-amber-400' : 'border-red-500/40 focus:border-red-400'
+                  }`}
+                  value={form.dataKey}
+                  onChange={e => setForm(f => ({ ...f, dataKey: e.target.value.replace(/\s/g, '_') }))}
+                  placeholder="e.g. temperature_1"
+                />
+                {/* Live Firebase path preview */}
+                <div className="mt-2 bg-black/40 border border-white/5 rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-white/30 mb-0.5">Firebase path:</p>
+                  <code className="text-[11px] font-mono text-amber-300/80 break-all">
+                    users/{userUID ? userUID.slice(0, 8) + '…' : '[UID]'}/widgets/<span className="text-amber-300">{form.dataKey || '[data_key]'}</span>
+                  </code>
+                </div>
+                <p className="text-[10px] text-white/30 mt-1.5 leading-relaxed">
+                  استخدم هذا الـ Key في كود Arduino الخاص بك لربط جهازك بهذه الأداة.
+                </p>
+              </div>
+
               <div>
                 <label className="text-xs text-white/40 block mb-1">MQTT Topic</label>
                 <input
@@ -250,7 +281,8 @@ function AddToolModal({ onClose, onAdd }) {
               )}
               <button
                 onClick={handleAdd}
-                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
+                disabled={!form.dataKey.trim()}
+                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
               >
                 Add to dashboard
               </button>
@@ -757,7 +789,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
       )}
 
       {showModal && (
-        <AddToolModal onClose={() => setShowModal(false)} onAdd={addWidget} />
+        <AddToolModal onClose={() => setShowModal(false)} onAdd={addWidget} userUID={storageScopeId} />
       )}
     </div>
   );

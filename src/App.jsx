@@ -5,6 +5,7 @@ import AuthPage from './components/AuthPage';
 import { FarmView, HomeView, OfficeView } from './components/Views';
 import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, SettingsView, LiveTerminal } from './components/ToolViews';
+import DeveloperGuide from './components/DeveloperGuide';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
 import { Loader2 } from 'lucide-react';
@@ -75,6 +76,7 @@ function Dashboard({ user, logout }) {
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
         case 'alerts': return <AlertsView />;
         case 'settings': return <SettingsView userUID={userUID} user={user} logout={logout} />;
+        case 'developer': return <DeveloperGuide userUID={user.uid} />;
         default: return <DevicesView userUID={userUID} lastSeen={lastSeen} />;
       }
     }
