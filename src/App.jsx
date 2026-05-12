@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import { 
-  SoilMoistureCard, 
-  IrrigationValveCard, 
-  WaterTankCard, 
-  GreenhouseTempCard, 
-  AutomationsCard 
-} from './components/Cards';
+import { FarmView, HomeView, OfficeView } from './components/Views';
 
 function App() {
   const [activeWorkspace, setActiveWorkspace] = useState('farm');
   const [activeTool, setActiveTool] = useState('devices');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const renderContent = () => {
+    switch (activeWorkspace) {
+      case 'home':
+        return <HomeView />;
+      case 'farm':
+        return <FarmView />;
+      case 'office':
+        return <OfficeView />;
+      default:
+        return <FarmView />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0F1115] text-white flex selection:bg-primary/30">
@@ -42,20 +49,7 @@ function App() {
         
         <div className="flex-1 p-6 md:p-8 overflow-y-auto">
           <div className="max-w-7xl mx-auto space-y-6">
-            
-            {/* Main Device Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              <SoilMoistureCard />
-              <IrrigationValveCard />
-              <WaterTankCard />
-              <GreenhouseTempCard />
-            </div>
-
-            {/* Automations Section */}
-            <div className="grid grid-cols-1 gap-6">
-              <AutomationsCard />
-            </div>
-            
+            {renderContent()}
           </div>
         </div>
       </main>
