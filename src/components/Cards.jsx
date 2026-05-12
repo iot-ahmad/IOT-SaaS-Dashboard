@@ -3,14 +3,16 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Droplets, Thermometer, Waves, Power, Settings2 } from 'lucide-react';
 import { SOIL_MOISTURE_DATA, AUTOMATIONS } from '../data/mockData';
 
-// Glassmorphism card wrapper
 const Card = ({ children, className = '' }) => (
   <div className={`bg-white/[0.02] border border-white/10 rounded-2xl p-6 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-white/20 group ${className}`}>
     {children}
   </div>
 );
 
-export const SoilMoistureCard = () => {
+export const SoilMoistureCard = ({ deviceStates, publish }) => {
+  const liveValue = deviceStates?.['farm/soil_moisture'];
+  const displayValue = liveValue || '44';
+
   return (
     <Card className="col-span-1 md:col-span-2 lg:col-span-2">
       <div className="flex justify-between items-start mb-6">
@@ -20,7 +22,7 @@ export const SoilMoistureCard = () => {
             <h3 className="text-white/80 font-medium">Soil Moisture</h3>
           </div>
           <div className="flex items-end gap-2">
-            <span className="text-4xl font-bold text-white">44%</span>
+            <span className="text-4xl font-bold text-white">{displayValue}%</span>
             <span className="text-emerald-400 text-sm font-medium mb-1">+2% from yesterday</span>
           </div>
         </div>
@@ -45,26 +47,34 @@ export const SoilMoistureCard = () => {
   );
 };
 
-export const IrrigationValveCard = () => {
+export const IrrigationValveCard = ({ deviceStates, publish }) => {
+  const liveState = deviceStates?.['farm/irrigation'];
   const [isOn, setIsOn] = useState(false);
+  const currentState = liveState !== undefined ? liveState === '1' : isOn;
+
+  const handleToggle = () => {
+    const newState = !currentState;
+    setIsOn(newState);
+    if (publish) publish('farm/irrigation', newState ? '1' : '0');
+  };
 
   return (
     <Card className="flex flex-col justify-between">
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Power className={isOn ? "text-primary" : "text-white/40"} size={20} />
+            <Power className={currentState ? "text-primary" : "text-white/40"} size={20} />
             <h3 className="text-white/80 font-medium">Main Valve</h3>
           </div>
-          <span className={`text-2xl font-bold ${isOn ? 'text-primary' : 'text-white/40'}`}>
-            {isOn ? 'OPEN' : 'CLOSED'}
+          <span className={`text-2xl font-bold ${currentState ? 'text-primary' : 'text-white/40'}`}>
+            {currentState ? 'OPEN' : 'CLOSED'}
           </span>
         </div>
         <button 
-          onClick={() => setIsOn(!isOn)}
-          className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 ${isOn ? 'bg-primary' : 'bg-white/20'}`}
+          onClick={handleToggle}
+          className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 ${currentState ? 'bg-primary' : 'bg-white/20'}`}
         >
-          <div className={`w-6 h-6 rounded-full bg-white transition-transform duration-300 ${isOn ? 'translate-x-6' : 'translate-x-0'}`} />
+          <div className={`w-6 h-6 rounded-full bg-white transition-transform duration-300 ${currentState ? 'translate-x-6' : 'translate-x-0'}`} />
         </button>
       </div>
       <div className="mt-4 p-3 rounded-xl bg-white/5 border border-white/5">
@@ -75,8 +85,9 @@ export const IrrigationValveCard = () => {
   );
 };
 
-export const WaterTankCard = () => {
-  const level = 75; // percentage
+export const WaterTankCard = ({ deviceStates }) => {
+  const liveLevel = deviceStates?.['farm/water_tank'];
+  const level = liveLevel ? parseInt(liveLevel) : 75;
   
   return (
     <Card className="flex flex-col items-center justify-center relative overflow-hidden">
@@ -108,7 +119,10 @@ export const WaterTankCard = () => {
   );
 };
 
-export const GreenhouseTempCard = () => {
+export const GreenhouseTempCard = ({ deviceStates }) => {
+  const liveTemp = deviceStates?.['farm/greenhouse_temp'];
+  const temp = liveTemp || '28.5';
+
   return (
     <Card className="flex flex-col justify-between">
       <div className="flex justify-between items-start mb-4">
@@ -117,7 +131,7 @@ export const GreenhouseTempCard = () => {
             <Thermometer className="text-rose-400" size={20} />
             <h3 className="text-white/80 font-medium">Greenhouse Temp</h3>
           </div>
-          <span className="text-5xl font-bold text-white">28.5°</span>
+          <span className="text-5xl font-bold text-white">{temp}°</span>
         </div>
       </div>
       
@@ -140,7 +154,7 @@ export const GreenhouseTempCard = () => {
   );
 };
 
-export const AutomationsCard = () => {
+export const AutomationsCard = ({ publish }) => {
   const [autos, setAutos] = useState(AUTOMATIONS);
 
   const toggleAuto = (id) => {

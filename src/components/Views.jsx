@@ -14,22 +14,22 @@ const Card = ({ children, className = '' }) => (
   </div>
 );
 
-export const FarmView = () => (
-  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+export const FarmView = ({ deviceStates, publish }) => (
+  <div className="space-y-6">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <SoilMoistureCard />
-      <IrrigationValveCard />
-      <WaterTankCard />
-      <GreenhouseTempCard />
+      <SoilMoistureCard deviceStates={deviceStates} publish={publish} />
+      <IrrigationValveCard deviceStates={deviceStates} publish={publish} />
+      <WaterTankCard deviceStates={deviceStates} />
+      <GreenhouseTempCard deviceStates={deviceStates} />
     </div>
     <div className="grid grid-cols-1 gap-6">
-      <AutomationsCard />
+      <AutomationsCard publish={publish} />
     </div>
   </div>
 );
 
 export const HomeView = () => (
-  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <div className="space-y-6">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <Card>
         <div className="flex justify-between items-start mb-4">
@@ -90,7 +90,7 @@ export const HomeView = () => (
 );
 
 export const OfficeView = () => (
-  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <div className="space-y-6">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <Card>
         <div className="flex justify-between items-start mb-4">
