@@ -74,6 +74,10 @@ export function useMqtt(userUID = 'demo_user_001') {
       const fullTopic = topic.startsWith('/') ? topic.slice(1) : `${userUID}/${topic}`;
       clientRef.current.publish(fullTopic, str, { qos: 0 });
       addLog('outgoing', `${topic}: ${str}`);
+      
+      // Update UI state immediately (optimistic update)
+      setDeviceStates(prev => ({ ...prev, [topic]: str }));
+      setLastSeen(prev => ({ ...prev, [topic]: Date.now() }));
     } else {
       addLog('outgoing', `[offline] ${topic}: ${str}`);
     }
