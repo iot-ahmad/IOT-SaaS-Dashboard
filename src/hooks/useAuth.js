@@ -88,10 +88,7 @@ export function useAuth() {
 
   const signup = async (email, password, displayName) => {
     setError(null);
-    setVerificationNotice(null);
-    setVerificationIsResend(false);
     setRegistrationSuccessMessage(null);
-    setUnverifiedLoginEmail(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName });
@@ -101,18 +98,13 @@ export function useAuth() {
         plan: 'Free',
         createdAt: new Date().toISOString(),
       });
-      // Send verification in background to speed up UI
-      void sendEmailVerification(userCredential.user).catch(e => console.error("Verification error:", e));
+      // Send verification
+      await sendEmailVerification(userCredential.user);
       
       setRegistrationSuccessMessage(
-        'Registration successful! Please check your email inbox to verify your account.',
+        'Verification link sent! Please check your email and click the link to activate your account.',
       );
     } catch (err) {
-      try {
-        if (auth.currentUser) await signOut(auth);
-      } catch {
-        /* ignore */
-      }
       setError(err.message.replace('Firebase: ', ''));
       throw err;
     }

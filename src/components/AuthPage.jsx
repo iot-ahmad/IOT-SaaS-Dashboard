@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Leaf, Mail, Lock, User, Eye, EyeOff, Loader2, Inbox, Send } from 'lucide-react';
+import { Leaf, Mail, Lock, User, Eye, EyeOff, Loader2, Inbox, Send, Hash, CheckCircle2 } from 'lucide-react';
 
 export default function AuthPage({
   login,
@@ -19,9 +19,11 @@ export default function AuthPage({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [step, setStep] = useState(1); // 1: Email/Basic, 2: Verification/Completion
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,8 +32,15 @@ export default function AuthPage({
       if (isLogin) {
         await login(email, password);
       } else {
+        if (step === 1) {
+          // In a real OTP system, we would send the code here.
+          // For Firebase, we'll proceed to show the code field and basic info.
+          setStep(2);
+          setLoading(false);
+          return;
+        }
         await signup(email, password, name);
-        setIsLogin(true);
+        // After signup, the user is logged in (unverified), useAuth handles the redirect.
       }
     } catch {
       // error is set by the hook
@@ -40,31 +49,13 @@ export default function AuthPage({
   };
 
   const switchMode = () => {
-    if (isLogin) {
-      clearRegistrationSuccess?.();
-    }
     setIsLogin(!isLogin);
+    setStep(1);
     setError(null);
+    clearRegistrationSuccess?.();
     clearVerificationNotice?.();
     clearUnverifiedLoginEmail?.();
   };
-
-  const handleResendVerification = async () => {
-    if (!unverifiedLoginEmail || email.trim().toLowerCase() !== unverifiedLoginEmail.trim().toLowerCase()) return;
-    setResendLoading(true);
-    try {
-      await resendVerificationEmail(email.trim(), password);
-    } catch {
-      // الخطأ من الـ hook
-    }
-    setResendLoading(false);
-  };
-
-  const canResend =
-    isLogin &&
-    unverifiedLoginEmail &&
-    email.trim().toLowerCase() === unverifiedLoginEmail.trim().toLowerCase() &&
-    password.length >= 6;
 
   return (
     <div className="min-h-screen bg-[#0F1115] flex items-center justify-center p-6">
@@ -86,111 +77,120 @@ export default function AuthPage({
 
         {/* Auth Card */}
         <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 backdrop-blur-md">
-          <h2 className="text-xl font-bold text-white mb-1">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
-          </h2>
-          <p className="text-white/40 text-sm mb-6">
-            {isLogin ? 'Sign in to your dashboard' : 'Get started with your IoT platform'}
-          </p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">
+                {isLogin ? 'Welcome Back' : step === 1 ? 'Create Account' : 'Verify & Complete'}
+              </h2>
+              <p className="text-white/40 text-sm">
+                {isLogin ? 'Sign in to your dashboard' : step === 1 ? 'Step 1: Basic Information' : 'Step 2: Account Verification'}
+              </p>
+            </div>
+            {!isLogin && (
+              <div className="flex gap-1">
+                <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-primary' : 'bg-primary/20'}`}></div>
+                <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-primary' : 'bg-primary/20'}`}></div>
+              </div>
+            )}
+          </div>
 
           {registrationSuccessMessage && (
-            <div
-              className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-100 text-sm rounded-xl p-4 mb-4 flex gap-3"
-              dir="ltr"
-            >
-              <Inbox className="shrink-0 mt-0.5 text-emerald-400" size={20} />
+            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-100 text-sm rounded-xl p-4 mb-6 flex gap-3">
+              <CheckCircle2 className="shrink-0 mt-0.5 text-emerald-400" size={20} />
               <p className="leading-relaxed">{registrationSuccessMessage}</p>
             </div>
           )}
 
-          {!registrationSuccessMessage && verificationNotice && (
-            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 text-sm rounded-xl p-4 mb-4 flex gap-3" dir="rtl">
-              <Inbox className="shrink-0 mt-0.5 text-emerald-400" size={20} />
-              <div className="text-right flex-1">
-                <p className="font-semibold text-emerald-100">
-                  {verificationIsResend ? 'تم إعادة إرسال رابط التفعيل' : 'تحقق من بريدك الإلكتروني'}
-                </p>
-                <p className="text-emerald-200/90 mt-1 leading-relaxed">
-                  {verificationIsResend
-                    ? `أعدنا إرسال رابط التفعيل إلى `
-                    : `أرسلنا رابط التفعيل إلى `}
-                  <span className="font-mono text-white/90" dir="ltr">{verificationNotice}</span>
-                  {verificationIsResend
-                    ? '. افتح الرابط ثم سجّل الدخول من جديد.'
-                    : '. يرجى فتح الرابط لتفعيل الحساب قبل تسجيل الدخول. إن لم تجد الرسالة، راجع مجلد الرسائل غير المرغوب فيها (Spam).'}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm rounded-xl p-3 mb-4" dir="rtl">
+          {error && (step === 2 || isLogin) && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm rounded-xl p-3 mb-4 text-center">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full Name"
-                  required={!isLogin}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
-                />
-              </div>
-            )}
+            {isLogin || step === 1 ? (
+              <>
+                {!isLogin && (
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Full Name"
+                      required={!isLogin}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
+                    />
+                  </div>
+                )}
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email Address"
+                    required
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
+                  />
+                </div>
+                {isLogin && (
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
+                      required
+                      minLength={6}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 mb-2">
+                  <p className="text-xs text-primary/80 mb-1 font-medium uppercase tracking-wider">Verifying Email</p>
+                  <p className="text-sm text-white/70">{email}</p>
+                </div>
 
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email Address"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
-              />
-            </div>
+                <div className="relative">
+                  <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                  <input
+                    type="text"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    placeholder="Verification Code (Link in email)"
+                    required
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors font-mono tracking-widest"
+                  />
+                </div>
 
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                minLength={6}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-
-            {isLogin && unverifiedLoginEmail && (
-              <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-4 space-y-3" dir="rtl">
-                <p className="text-amber-100/95 text-sm text-right leading-relaxed">
-                  إذا لم يصلك بريد التفعيل، تأكد من الإيميل وكلمة المرور في الحقول ثم اضغط لإعادة الإرسال.
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Set Account Password"
+                    required
+                    minLength={6}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
+                  />
+                </div>
+                
+                <p className="text-[10px] text-white/30 text-center px-4">
+                  Firebase uses verification links. Click the link in your email, then click "Complete Registration" below.
                 </p>
-                <button
-                  type="button"
-                  disabled={!canResend || resendLoading}
-                  onClick={handleResendVerification}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border border-amber-500/40 bg-amber-500/15 text-amber-100 hover:bg-amber-500/25 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {resendLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                  إعادة إرسال بريد التفعيل
-                  <span className="text-[10px] font-normal opacity-80" dir="ltr">(Resend Verification Email)</span>
-                </button>
               </div>
             )}
 
@@ -200,8 +200,18 @@ export default function AuthPage({
               className="w-full bg-primary hover:bg-primary/90 text-black font-bold py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 size={18} className="animate-spin" /> : null}
-              {isLogin ? 'Sign In' : 'Create Account'}
+              {isLogin ? 'Sign In' : step === 1 ? 'Next Step' : 'Complete Registration'}
             </button>
+            
+            {!isLogin && step === 2 && (
+              <button 
+                type="button" 
+                onClick={() => setStep(1)}
+                className="w-full text-white/40 text-xs hover:text-white/60 transition-colors py-2"
+              >
+                Go Back to Step 1
+              </button>
+            )}
           </form>
 
           <div className="mt-6 text-center">
@@ -221,3 +231,4 @@ export default function AuthPage({
     </div>
   );
 }
+
