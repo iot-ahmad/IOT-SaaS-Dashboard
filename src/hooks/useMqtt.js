@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import mqtt from 'mqtt';
 
+// NOTE: ESP32 uses port 1883 (TCP), but browsers MUST use port 8884 (WSS)
 const BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt';
 
 export function useMqtt(userUID = 'demo_user_001') {
@@ -30,26 +31,28 @@ export function useMqtt(userUID = 'demo_user_001') {
 
     client.on('connect', () => {
       setIsConnected(true);
-      // Subscribe to all topics under user's UID
+      // Subscribe to user-specific topics AND global absolute topics if needed
       client.subscribe(`${userUID}/#`, { qos: 0 });
-      addLog('system', `Connected to MQTT broker`);
+      addLog('system', `Connected to HiveMQ (WSS)`);
     });
 
     client.on('message', (topic, payload) => {
       const message = payload.toString();
-      const shortTopic = topic.replace(`${userUID}/`, '');
+      
+      // If topic starts with UID, strip it for the UI state
+      const shortTopic = topic.startsWith(`${userUID}/`) 
+        ? topic.replace(`${userUID}/`, '') 
+        : topic;
       
       addLog('incoming', `${shortTopic}: ${message}`);
 
       // Update device state
       setDeviceStates(prev => ({ ...prev, [shortTopic]: message }));
-      
-      // Update last seen
       setLastSeen(prev => ({ ...prev, [shortTopic]: Date.now() }));
     });
 
     client.on('error', (err) => {
-      addLog('error', `Connection error: ${err.message}`);
+      addLog('error', `MQTT Error: ${err.message}`);
     });
 
     client.on('close', () => {
@@ -67,7 +70,8 @@ export function useMqtt(userUID = 'demo_user_001') {
   const publish = useCallback((topic, payload) => {
     const str = String(payload);
     if (clientRef.current?.connected) {
-      const fullTopic = `${userUID}/${topic}`;
+      // If topic starts with '/', use it as is. Otherwise, prefix with UID.
+      const fullTopic = topic.startsWith('/') ? topic.slice(1) : `${userUID}/${topic}`;
       clientRef.current.publish(fullTopic, str, { qos: 0 });
       addLog('outgoing', `${topic}: ${str}`);
     } else {

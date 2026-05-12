@@ -244,14 +244,82 @@ void loop() {
   delay(100);
 }`;
 
+const MQTT_CODE = `#include <WiFi.h>
+#include <PubSubClient.h>
+
+// ═══════════════════════════════════════════════════
+//  1. غيّر هذه المتغيرات ✏️
+// ═══════════════════════════════════════════════════
+const char* WIFI_SSID     = "اسم_الشبكة";
+const char* WIFI_PASSWORD = "كلمة_المرور";
+const char* mqtt_server   = "broker.hivemq.com";
+const int   mqtt_port     = 1883;
+
+String userUID = "ضع_رقم_الـ_UID_هنا"; // انسخه من الموقع
+String ledTopic = "actuator/led";      // الـ Topic الخاص بالزر
+
+// ═══════════════════════════════════════════════════
+//  2. الإعدادات البرمجية
+// ═══════════════════════════════════════════════════
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  String message = "";
+  for (int i = 0; i < length; i++) { message += (char)payload[i]; }
+  
+  Serial.println("Message arrived [" + String(topic) + "]: " + message);
+
+  // التحكم في الـ LED بناءً على Payload 'ON' أو 'OFF'
+  if (message == "ON") {
+    digitalWrite(2, HIGH);
+  } else if (message == "OFF") {
+    digitalWrite(2, LOW);
+  }
+}
+
+void reconnect() {
+  while (!client.connected()) {
+    String clientId = "ESP32Client-" + String(random(0xffff), HEX);
+    if (client.connect(clientId.c_str())) {
+      // اشترك في الـ Topic (مع إضافة الـ UID كبادئة)
+      String fullTopic = userUID + "/" + ledTopic;
+      client.subscribe(fullTopic.c_str());
+      Serial.println("Connected to MQTT & Subscribed to: " + fullTopic);
+    } else {
+      delay(5000);
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(2, OUTPUT);
+  setup_wifi();
+  client.setServer(mqtt_server, mqtt_port);
+  client.setCallback(callback);
+}
+
+void loop() {
+  if (!client.connected()) reconnect();
+  client.loop();
+}
+
+void setup_wifi() {
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
+  Serial.println("\nWiFi Connected!");
+}`;
+
 const TABS = [
-  { id: 'basic',  label: 'LED Control',    icon: Zap,      code: BASIC_CODE   },
+  { id: 'mqtt',   label: 'MQTT (HiveMQ)',  icon: Wifi,     code: MQTT_CODE    },
+  { id: 'basic',  label: 'LED (Firebase)', icon: Zap,      code: BASIC_CODE   },
   { id: 'sensor', label: 'DHT22 Sensor',   icon: Cpu,      code: SENSOR_CODE  },
   { id: 'rccar',  label: 'RC Car',         icon: Wifi,     code: RCCAR_CODE   },
 ];
 
 export default function DeveloperGuide({ userUID }) {
-  const [activeTab, setActiveTab] = useState('basic');
+  const [activeTab, setActiveTab] = useState('mqtt');
   const activeCode = TABS.find(t => t.id === activeTab)?.code || '';
 
   return (
@@ -361,6 +429,7 @@ export default function DeveloperGuide({ userUID }) {
         {/* Active tab description */}
         <div className="px-5 py-3 border-b border-white/5 bg-black/10">
           {{
+            mqtt:   <p className="text-xs text-white/40">يستخدم <code className="text-primary">MQTT (Port 1883)</code> للتحكم اللحظي عبر <code className="text-amber-300">ON/OFF</code>. الخيار الأفضل للأداء العالي.</p>,
             basic:  <p className="text-xs text-white/40">يقرأ قيمة <code className="text-amber-300">ON/OFF</code> من Firebase ويتحكم في LED. مثالي لاختبار الاتصال أول مرة.</p>,
             sensor: <p className="text-xs text-white/40">يقرأ من حساس DHT22 ويرفع درجة الحرارة والرطوبة إلى Firebase كل 5 ثواني.</p>,
             rccar:  <p className="text-xs text-white/40">يقرأ الأوامر من D-Pad والسرعة من Slider ويتحكم في 4 محركات عبر L298N.</p>,
@@ -377,9 +446,9 @@ export default function DeveloperGuide({ userUID }) {
         <h3 className="font-bold text-white mb-4 text-sm">المكتبات المطلوبة</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           {[
+            { name: 'PubSubClient', author: 'Nick O\'Leary', note: 'مكتبة MQTT الأساسية' },
             { name: 'Firebase ESP32 Client', author: 'mobizt', note: 'الاتصال بـ Firebase' },
             { name: 'DHT sensor library', author: 'Adafruit', note: 'لحساسات DHT11 / DHT22' },
-            { name: 'WiFi (built-in)', author: 'Espressif', note: 'مدمجة مع ESP32 board' },
           ].map(lib => (
             <div key={lib.name} className="bg-black/30 border border-white/5 rounded-xl p-3">
               <p className="font-mono text-white/70 font-semibold mb-0.5">{lib.name}</p>
