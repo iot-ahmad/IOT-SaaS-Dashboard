@@ -1,9 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0F1115;
+  --color-primary: #10B981;
+}
 
 @layer base {
   body {
-    @apply bg-[#0F1115] text-white antialiased;
+    @apply bg-background text-white antialiased;
   }
 }
