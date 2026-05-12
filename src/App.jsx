@@ -2,24 +2,37 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import { FarmView, HomeView, OfficeView } from './components/Views';
+import { DevicesView, AutomationsToolView, AlertsView, SettingsView } from './components/ToolViews';
 
 function App() {
   const [activeWorkspace, setActiveWorkspace] = useState('farm');
-  const [activeTool, setActiveTool] = useState('devices');
+  const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const renderContent = () => {
+    // Priority to Tool View if selected
+    if (activeTool) {
+      switch (activeTool) {
+        case 'devices': return <DevicesView />;
+        case 'automations': return <AutomationsToolView />;
+        case 'alerts': return <AlertsView />;
+        case 'settings': return <SettingsView />;
+        default: return <DevicesView />;
+      }
+    }
+
+    // Otherwise Workspace View
     switch (activeWorkspace) {
-      case 'home':
-        return <HomeView />;
-      case 'farm':
-        return <FarmView />;
-      case 'office':
-        return <OfficeView />;
-      default:
-        return <FarmView />;
+      case 'home': return <HomeView />;
+      case 'farm': return <FarmView />;
+      case 'office': return <OfficeView />;
+      default: return <FarmView />;
     }
   };
+
+  const currentTitle = activeTool 
+    ? activeTool.charAt(0).toUpperCase() + activeTool.slice(1)
+    : activeWorkspace === 'farm' ? "Al-Mazra'a Smart Farm" : activeWorkspace?.charAt(0).toUpperCase() + activeWorkspace?.slice(1);
 
   return (
     <div className="min-h-screen bg-[#0F1115] text-white flex selection:bg-primary/30">
@@ -43,7 +56,7 @@ function App() {
 
       <main className="flex-1 flex flex-col min-w-0 md:pl-64">
         <Header 
-          activeWorkspace={activeWorkspace} 
+          activeWorkspace={activeWorkspace || activeTool} 
           toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
         />
         

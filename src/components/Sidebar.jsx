@@ -24,7 +24,10 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
             return (
               <button
                 key={ws.id}
-                onClick={() => setActiveWorkspace(ws.id)}
+                onClick={() => {
+                  setActiveWorkspace(ws.id);
+                  setActiveTool(null);
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                   isActive 
                   ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-primary/30' 
@@ -48,7 +51,10 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
             return (
               <button
                 key={tool.id}
-                onClick={() => setActiveTool(tool.id)}
+                onClick={() => {
+                  setActiveTool(tool.id);
+                  setActiveWorkspace(null);
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                   isActive 
                   ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-primary/30' 
