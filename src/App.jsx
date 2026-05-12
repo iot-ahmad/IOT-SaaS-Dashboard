@@ -18,12 +18,14 @@ function App() {
     signup,
     logout,
     setError,
+    registrationSuccessMessage,
     verificationNotice,
     verificationIsResend,
     unverifiedLoginEmail,
     clearUnverifiedLoginEmail,
     resendVerificationEmail,
     clearVerificationNotice,
+    clearRegistrationSuccess,
   } = useAuth();
 
   if (authLoading) {
@@ -35,7 +37,39 @@ function App() {
   }
 
   if (!user) {
-    return <AuthPage login={login} signup={signup} error={authError} setError={setError} verificationNotice={verificationNotice} verificationIsResend={verificationIsResend} unverifiedLoginEmail={unverifiedLoginEmail} clearUnverifiedLoginEmail={clearUnverifiedLoginEmail} resendVerificationEmail={resendVerificationEmail} clearVerificationNotice={clearVerificationNotice} />;
+    return (
+      <AuthPage
+        login={login}
+        signup={signup}
+        error={authError}
+        setError={setError}
+        registrationSuccessMessage={registrationSuccessMessage}
+        verificationNotice={verificationNotice}
+        verificationIsResend={verificationIsResend}
+        unverifiedLoginEmail={unverifiedLoginEmail}
+        clearUnverifiedLoginEmail={clearUnverifiedLoginEmail}
+        resendVerificationEmail={resendVerificationEmail}
+        clearVerificationNotice={clearVerificationNotice}
+        clearRegistrationSuccess={clearRegistrationSuccess}
+      />
+    );
+  }
+
+  if (!user.emailVerified) {
+    return (
+      <div className="min-h-screen bg-[#0F1115] flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <p className="text-white font-medium max-w-md">
+          Please verify your email to access the dashboard. Check your inbox for the verification link.
+        </p>
+        <button
+          type="button"
+          onClick={() => void logout()}
+          className="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition-colors"
+        >
+          Sign out
+        </button>
+      </div>
+    );
   }
 
   return <Dashboard user={user} logout={logout} />;

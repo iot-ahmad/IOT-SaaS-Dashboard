@@ -6,12 +6,14 @@ export default function AuthPage({
   signup,
   error,
   setError,
+  registrationSuccessMessage,
   verificationNotice,
   verificationIsResend,
   unverifiedLoginEmail,
   clearUnverifiedLoginEmail,
   resendVerificationEmail,
   clearVerificationNotice,
+  clearRegistrationSuccess,
 }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -38,6 +40,9 @@ export default function AuthPage({
   };
 
   const switchMode = () => {
+    if (isLogin) {
+      clearRegistrationSuccess?.();
+    }
     setIsLogin(!isLogin);
     setError(null);
     clearVerificationNotice?.();
@@ -88,7 +93,17 @@ export default function AuthPage({
             {isLogin ? 'Sign in to your dashboard' : 'Get started with your IoT platform'}
           </p>
 
-          {verificationNotice && (
+          {registrationSuccessMessage && (
+            <div
+              className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-100 text-sm rounded-xl p-4 mb-4 flex gap-3"
+              dir="ltr"
+            >
+              <Inbox className="shrink-0 mt-0.5 text-emerald-400" size={20} />
+              <p className="leading-relaxed">{registrationSuccessMessage}</p>
+            </div>
+          )}
+
+          {!registrationSuccessMessage && verificationNotice && (
             <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 text-sm rounded-xl p-4 mb-4 flex gap-3" dir="rtl">
               <Inbox className="shrink-0 mt-0.5 text-emerald-400" size={20} />
               <div className="text-right flex-1">

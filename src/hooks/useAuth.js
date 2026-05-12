@@ -27,6 +27,8 @@ export function useAuth() {
   const [verificationNotice, setVerificationNotice] = useState(null);
   /** بعد إعادة الإرسال نعرض نصاً مختلفاً في صندوق النجاح */
   const [verificationIsResend, setVerificationIsResend] = useState(false);
+  /** رسالة نجاح التسجيل (بريد التحقق) — نص إنجليزي ثابت كما طُلب */
+  const [registrationSuccessMessage, setRegistrationSuccessMessage] = useState(null);
   /** إيميل محاولة دخول فاشلة لأن الحساب غير مفعّل — لإظهار زر إعادة الإرسال */
   const [unverifiedLoginEmail, setUnverifiedLoginEmail] = useState(null);
   const authListenerFired = useRef(false);
@@ -45,13 +47,17 @@ export function useAuth() {
       void (async () => {
         try {
           if (firebaseUser) {
+            if (!firebaseUser.emailVerified) {
+              setUser(null);
+              return;
+            }
             const userData = await fetchUserProfile(firebaseUser.uid);
             setUser({
+              ...userData,
               uid: firebaseUser.uid,
               email: firebaseUser.email,
               emailVerified: firebaseUser.emailVerified,
               displayName: firebaseUser.displayName || userData.displayName || 'User',
-              ...userData,
             });
           } else {
             setUser(null);
@@ -72,13 +78,16 @@ export function useAuth() {
     setError(null);
     setVerificationNotice(null);
     setVerificationIsResend(false);
+    setRegistrationSuccessMessage(null);
     setUnverifiedLoginEmail(null);
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      if (!cred.user.emailVerified) {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (!userCredential.user.emailVerified) {
         await signOut(auth);
         setUnverifiedLoginEmail(email);
-        setError('يرجى تفعيل حسابك من الإيميل أولاً');
+        setError(
+          'Please verify your email before signing in. Check your inbox for the verification link.',
+        );
         throw new Error('Email not verified');
       }
     } catch (err) {
@@ -93,20 +102,24 @@ export function useAuth() {
     setError(null);
     setVerificationNotice(null);
     setVerificationIsResend(false);
+    setRegistrationSuccessMessage(null);
     setUnverifiedLoginEmail(null);
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(cred.user, { displayName });
-      await setDoc(doc(db, 'users', cred.user.uid), {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName });
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
         displayName,
         email,
         plan: 'Free',
         createdAt: new Date().toISOString(),
       });
-      await sendEmailVerification(cred.user);
+      await sendEmailVerification(userCredential.user);
       await signOut(auth);
       setVerificationIsResend(false);
-      setVerificationNotice(email);
+      setVerificationNotice(null);
+      setRegistrationSuccessMessage(
+        'Registration successful! Please check your email inbox to verify your account before logging in.',
+      );
     } catch (err) {
       try {
         if (auth.currentUser) await signOut(auth);
@@ -127,18 +140,20 @@ export function useAuth() {
     setVerificationIsResend(false);
   };
 
+  const clearRegistrationSuccess = () => setRegistrationSuccessMessage(null);
+
   /** إعادة إرسال رابط التفعيل (يتطلب نفس الإيميل وكلمة المرور المدخلة في النموذج) */
   const resendVerificationEmail = async (email, password) => {
     setError(null);
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      if (cred.user.emailVerified) {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (userCredential.user.emailVerified) {
         await signOut(auth);
         setUnverifiedLoginEmail(null);
         setError('تم تفعيل البريد مسبقاً. يمكنك تسجيل الدخول الآن.');
         return;
       }
-      await sendEmailVerification(cred.user);
+      await sendEmailVerification(userCredential.user);
       await signOut(auth);
       setUnverifiedLoginEmail(null);
       setError(null);
@@ -163,11 +178,13 @@ export function useAuth() {
     signup,
     logout,
     setError,
+    registrationSuccessMessage,
     verificationNotice,
     verificationIsResend,
     unverifiedLoginEmail,
     clearUnverifiedLoginEmail: () => setUnverifiedLoginEmail(null),
     resendVerificationEmail,
     clearVerificationNotice,
+    clearRegistrationSuccess,
   };
 }
