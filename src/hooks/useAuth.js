@@ -47,10 +47,6 @@ export function useAuth() {
       void (async () => {
         try {
           if (firebaseUser) {
-            if (!firebaseUser.emailVerified) {
-              setUser(null);
-              return;
-            }
             const userData = await fetchUserProfile(firebaseUser.uid);
             setUser({
               ...userData,
@@ -81,15 +77,7 @@ export function useAuth() {
     setRegistrationSuccessMessage(null);
     setUnverifiedLoginEmail(null);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      if (!userCredential.user.emailVerified) {
-        await signOut(auth);
-        setUnverifiedLoginEmail(email);
-        setError(
-          'Please verify your email before signing in. Check your inbox for the verification link.',
-        );
-        throw new Error('Email not verified');
-      }
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       if (err.message !== 'Email not verified') {
         setError(err.message.replace('Firebase: ', ''));
@@ -113,12 +101,11 @@ export function useAuth() {
         plan: 'Free',
         createdAt: new Date().toISOString(),
       });
-      await sendEmailVerification(userCredential.user);
-      await signOut(auth);
-      setVerificationIsResend(false);
-      setVerificationNotice(null);
+      // Send verification in background to speed up UI
+      void sendEmailVerification(userCredential.user).catch(e => console.error("Verification error:", e));
+      
       setRegistrationSuccessMessage(
-        'Registration successful! Please check your email inbox to verify your account before logging in.',
+        'Registration successful! Please check your email inbox to verify your account.',
       );
     } catch (err) {
       try {
