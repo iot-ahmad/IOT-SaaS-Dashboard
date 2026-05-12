@@ -16,6 +16,7 @@ function App() {
     error: authError,
     login,
     signup,
+    loginWithGoogle,
     logout,
     setError,
     registrationSuccessMessage,
@@ -41,6 +42,7 @@ function App() {
       <AuthPage
         login={login}
         signup={signup}
+        loginWithGoogle={loginWithGoogle}
         error={authError}
         setError={setError}
         registrationSuccessMessage={registrationSuccessMessage}

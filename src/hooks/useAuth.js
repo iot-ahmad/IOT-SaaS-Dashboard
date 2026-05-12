@@ -6,6 +6,8 @@ import {
   signOut,
   updateProfile,
   sendEmailVerification,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -54,6 +56,7 @@ export function useAuth() {
               email: firebaseUser.email,
               emailVerified: firebaseUser.emailVerified,
               displayName: firebaseUser.displayName || userData.displayName || 'User',
+              photoURL: firebaseUser.photoURL || userData.photoURL,
             });
           } else {
             setUser(null);
@@ -110,6 +113,31 @@ export function useAuth() {
     }
   };
 
+  const loginWithGoogle = async () => {
+    setError(null);
+    setRegistrationSuccessMessage(null);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Check if user exists in Firestore, if not create them
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, 'users', user.uid), {
+          displayName: user.displayName,
+          email: user.email,
+          plan: 'Free',
+          createdAt: new Date().toISOString(),
+          photoURL: user.photoURL
+        });
+      }
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', ''));
+      throw err;
+    }
+  };
+
   const logout = async () => {
     await signOut(auth);
   };
@@ -155,6 +183,7 @@ export function useAuth() {
     error,
     login,
     signup,
+    loginWithGoogle,
     logout,
     setError,
     registrationSuccessMessage,
