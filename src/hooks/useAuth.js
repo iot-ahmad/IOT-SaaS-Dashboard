@@ -1,37 +1,64 @@
-import { useState, useEffect } from 'react';
-import { 
-  onAuthStateChanged, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
+import { useState, useEffect, useRef } from 'react';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
-  updateProfile
+  updateProfile,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+
+async function fetchUserProfile(uid) {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    return userDoc.exists() ? userDoc.data() : {};
+  } catch {
+    // Rules, offline, or blocked third-party storage — do not block the whole app
+    return {};
+  }
+}
 
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const authListenerFired = useRef(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Fetch extra user data from Firestore
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        const userData = userDoc.exists() ? userDoc.data() : {};
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName || userData.displayName || 'User',
-          ...userData,
-        });
-      } else {
-        setUser(null);
+    const watchdog = setTimeout(() => {
+      if (!authListenerFired.current) {
+        setLoading(false);
       }
-      setLoading(false);
+    }, 15000);
+
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      authListenerFired.current = true;
+      clearTimeout(watchdog);
+
+      void (async () => {
+        try {
+          if (firebaseUser) {
+            const userData = await fetchUserProfile(firebaseUser.uid);
+            setUser({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName || userData.displayName || 'User',
+              ...userData,
+            });
+          } else {
+            setUser(null);
+          }
+        } finally {
+          setLoading(false);
+        }
+      })();
     });
-    return () => unsubscribe();
+
+    return () => {
+      clearTimeout(watchdog);
+      unsubscribe();
+    };
   }, []);
 
   const login = async (email, password) => {
