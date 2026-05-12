@@ -54,272 +54,127 @@ function Step({ n, label, desc }) {
   );
 }
 
-/* ── main codes ───────────────────────────────────────────────────────────── */
-const BASIC_CODE = `#include <WiFi.h>
-#include <FirebaseESP32.h>
+/* ── MQTT Examples ────────────────────────────────────────────────────────── */
 
-// ═══════════════════════════════════════════════════
-//  1. غيّر هذه المتغيرات فقط ✏️
-// ═══════════════════════════════════════════════════
-const char* WIFI_SSID     = "اسم_الشبكة";
-const char* WIFI_PASSWORD = "كلمة_المرور";
-
-String userUID  = "ضع_رقم_الـ_UID_هنا";   // انسخه من صفحة Settings
-String myKey    = "led_control";           // نفس الـ Data Key الذي سميته في الموقع
-
-// ═══════════════════════════════════════════════════
-//  2. إعدادات Firebase (لا تغيّرها)
-// ═══════════════════════════════════════════════════
-#define FIREBASE_HOST "iot-0-1c24c-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH "YOUR_DATABASE_SECRET"   // من Firebase Console → Project Settings
-
-FirebaseData   firebaseData;
-FirebaseConfig config;
-FirebaseAuth   auth;
-
-// ═══════════════════════════════════════════════════
-//  3. بناء المسار الديناميكي
-// ═══════════════════════════════════════════════════
-String buildPath(String key) {
-  return "/users/" + userUID + "/widgets/" + key;
-}
-
-void setup() {
-  Serial.begin(115200);
-  pinMode(2, OUTPUT);   // LED built-in
-
-  // الاتصال بالواي فاي
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
-  Serial.println("\\nWiFi Connected!");
-
-  // الاتصال بـ Firebase
-  config.host           = FIREBASE_HOST;
-  config.signer.tokens.legacy_token = FIREBASE_AUTH;
-  Firebase.begin(&config, &auth);
-  Firebase.reconnectWiFi(true);
-}
-
-void loop() {
-  String path = buildPath(myKey);   // /users/[UID]/widgets/led_control
-
-  // ══ قراءة البيانات من Firebase ══
-  if (Firebase.getString(firebaseData, path)) {
-    String value = firebaseData.stringData();
-    Serial.println("Value: " + value);
-
-    if      (value == "ON")  { digitalWrite(2, HIGH); }
-    else if (value == "OFF") { digitalWrite(2, LOW);  }
-  } else {
-    Serial.println("Firebase error: " + firebaseData.errorReason());
-  }
-
-  delay(1000);
-}`;
-
-const SENSOR_CODE = `#include <WiFi.h>
-#include <FirebaseESP32.h>
-#include <DHT.h>
-
-const char* WIFI_SSID     = "اسم_الشبكة";
-const char* WIFI_PASSWORD = "كلمة_المرور";
-
-String userUID    = "ضع_رقم_الـ_UID_هنا";
-String tempKey    = "temperature_1";    // Data Key للـ Gauge الخاص بالحرارة
-String humidKey   = "humidity_1";       // Data Key للـ Gauge الخاص بالرطوبة
-
-#define FIREBASE_HOST "iot-0-1c24c-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH "YOUR_DATABASE_SECRET"
-#define DHT_PIN 4
-#define DHT_TYPE DHT22
-
-FirebaseData   firebaseData;
-FirebaseConfig config;
-FirebaseAuth   auth;
-DHT dht(DHT_PIN, DHT_TYPE);
-
-String buildPath(String key) {
-  return "/users/" + userUID + "/widgets/" + key;
-}
-
-void setup() {
-  Serial.begin(115200);
-  dht.begin();
-
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
-
-  config.host = FIREBASE_HOST;
-  config.signer.tokens.legacy_token = FIREBASE_AUTH;
-  Firebase.begin(&config, &auth);
-  Firebase.reconnectWiFi(true);
-}
-
-void loop() {
-  float temp  = dht.readTemperature();
-  float humid = dht.readHumidity();
-
-  if (!isnan(temp) && !isnan(humid)) {
-    // ══ كتابة قراءة الحرارة إلى Firebase ══
-    Firebase.setFloat(firebaseData, buildPath(tempKey),  temp);
-    Firebase.setFloat(firebaseData, buildPath(humidKey), humid);
-
-    Serial.printf("Temp: %.1f°C | Humidity: %.1f%%\\n", temp, humid);
-  }
-
-  delay(5000);  // أرسل كل 5 ثواني
-}`;
-
-const RCCAR_CODE = `#include <WiFi.h>
-#include <FirebaseESP32.h>
-
-const char* WIFI_SSID     = "اسم_الشبكة";
-const char* WIFI_PASSWORD = "كلمة_المرور";
-
-String userUID    = "ضع_رقم_الـ_UID_هنا";
-String moveKey    = "car_direction";   // Data Key للـ D-Pad
-String speedKey   = "car_speed";      // Data Key للـ Speed Slider
-
-// أرقام pins المحرك (L298N أو L293D)
-#define IN1 25
-#define IN2 26
-#define IN3 27
-#define IN4 14
-#define ENA 32   // PWM للسرعة اليسار
-#define ENB 33   // PWM للسرعة اليمين
-
-#define FIREBASE_HOST "iot-0-1c24c-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH "YOUR_DATABASE_SECRET"
-
-FirebaseData   firebaseData;
-FirebaseConfig config;
-FirebaseAuth   auth;
-
-String buildPath(String key) {
-  return "/users/" + userUID + "/widgets/" + key;
-}
-
-void setMotors(int speed, bool fwdL, bool fwdR) {
-  analogWrite(ENA, speed);
-  analogWrite(ENB, speed);
-  digitalWrite(IN1, fwdL);
-  digitalWrite(IN2, !fwdL);
-  digitalWrite(IN3, fwdR);
-  digitalWrite(IN4, !fwdR);
-}
-
-void setup() {
-  Serial.begin(115200);
-  pinMode(IN1, OUTPUT); pinMode(IN2, OUTPUT);
-  pinMode(IN3, OUTPUT); pinMode(IN4, OUTPUT);
-
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) { delay(500); }
-
-  config.host = FIREBASE_HOST;
-  config.signer.tokens.legacy_token = FIREBASE_AUTH;
-  Firebase.begin(&config, &auth);
-  Firebase.reconnectWiFi(true);
-}
-
-int currentSpeed = 150;
-
-void loop() {
-  // اقرأ السرعة
-  if (Firebase.getInt(firebaseData, buildPath(speedKey))) {
-    currentSpeed = constrain(firebaseData.intData(), 0, 255);
-  }
-
-  // اقرأ الاتجاه
-  if (Firebase.getString(firebaseData, buildPath(moveKey))) {
-    String cmd = firebaseData.stringData();
-
-    if      (cmd == "FORWARD") setMotors(currentSpeed, true,  true);
-    else if (cmd == "BACK")    setMotors(currentSpeed, false, false);
-    else if (cmd == "LEFT")    setMotors(currentSpeed, false, true);
-    else if (cmd == "RIGHT")   setMotors(currentSpeed, true,  false);
-    else                       setMotors(0, false, false);  // STOP
-  }
-
-  delay(100);
-}`;
-
-const MQTT_CODE = `#include <WiFi.h>
+const MQTT_BASIC = `#include <WiFi.h>
 #include <PubSubClient.h>
 
-// ═══════════════════════════════════════════════════
-//  1. غيّر هذه المتغيرات ✏️
-// ═══════════════════════════════════════════════════
-const char* WIFI_SSID     = "اسم_الشبكة";
-const char* WIFI_PASSWORD = "كلمة_المرور";
-const char* mqtt_server   = "broker.hivemq.com";
-const int   mqtt_port     = 1883;
+// 1. إعدادات الشبكة ✏️
+const char* ssid     = "اسم_الشبكة";
+const char* password = "كلمة_المرور";
 
-String userUID = "ضع_رقم_الـ_UID_هنا"; // انسخه من الموقع
-String ledTopic = "actuator/led";      // الـ Topic الخاص بالزر
+// 2. إعدادات الموقع
+const char* mqtt_server = "broker.hivemq.com";
+String userUID = "انسخ_الـ_UID_هنا"; 
+String topic   = "actuator/led"; // نفس الـ Topic في الموقع
 
-// ═══════════════════════════════════════════════════
-//  2. الإعدادات البرمجية
-// ═══════════════════════════════════════════════════
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  String message = "";
-  for (int i = 0; i < length; i++) { message += (char)payload[i]; }
+  String msg = "";
+  for (int i = 0; i < length; i++) msg += (char)payload[i];
   
-  Serial.println("Message arrived [" + String(topic) + "]: " + message);
-
-  // التحكم في الـ LED بناءً على Payload 'ON' أو 'OFF'
-  if (message == "ON") {
-    digitalWrite(2, HIGH);
-  } else if (message == "OFF") {
-    digitalWrite(2, LOW);
-  }
+  if (msg == "ON")  digitalWrite(2, HIGH);
+  if (msg == "OFF") digitalWrite(2, LOW);
 }
 
 void reconnect() {
   while (!client.connected()) {
-    String clientId = "ESP32Client-" + String(random(0xffff), HEX);
-    if (client.connect(clientId.c_str())) {
-      // اشترك في الـ Topic (مع إضافة الـ UID كبادئة)
-      String fullTopic = userUID + "/" + ledTopic;
-      client.subscribe(fullTopic.c_str());
-      Serial.println("Connected to MQTT & Subscribed to: " + fullTopic);
-    } else {
-      delay(5000);
-    }
+    if (client.connect("ESP32_Device")) {
+      client.subscribe((userUID + "/" + topic).c_str());
+    } else { delay(5000); }
   }
 }
 
 void setup() {
-  Serial.begin(115200);
   pinMode(2, OUTPUT);
-  setup_wifi();
-  client.setServer(mqtt_server, mqtt_port);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) delay(500);
+  client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 }
 
 void loop() {
   if (!client.connected()) reconnect();
   client.loop();
+}`;
+
+const MQTT_SENSOR = `#include <WiFi.h>
+#include <PubSubClient.h>
+#include <DHT.h>
+
+const char* ssid = "اسم_الشبكة";
+const char* password = "كلمة_المرور";
+const char* mqtt_server = "broker.hivemq.com";
+String userUID = "انسخ_الـ_UID_هنا";
+
+DHT dht(4, DHT22);
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+void setup() {
+  dht.begin();
+  WiFi.begin(ssid, password);
+  client.setServer(mqtt_server, 1883);
 }
 
-void setup_wifi() {
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
-  Serial.println("\nWiFi Connected!");
+void loop() {
+  if (!client.connected()) {
+    client.connect("ESP32_Sensor");
+  }
+  
+  float t = dht.readTemperature();
+  if (!isnan(t)) {
+    String fullTopic = userUID + "/sensor/temperature";
+    client.publish(fullTopic.c_str(), String(t).c_str());
+  }
+  client.loop();
+  delay(5000); // إرسال كل 5 ثواني
+}`;
+
+const MQTT_CAR = `#include <WiFi.h>
+#include <PubSubClient.h>
+
+const char* ssid = "اسم_الشبكة";
+const char* password = "كلمة_المرور";
+String userUID = "انسخ_الـ_UID_هنا";
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  String cmd = "";
+  for (int i = 0; i < length; i++) cmd += (char)payload[i];
+
+  if (cmd == "FORWARD") { /* كود المحركات للأمام */ }
+  else if (cmd == "BACK") { /* كود المحركات للخلف */ }
+  else if (cmd == "STOP") { /* إيقاف */ }
+}
+
+void setup() {
+  WiFi.begin(ssid, password);
+  client.setServer("broker.hivemq.com", 1883);
+  client.setCallback(callback);
+}
+
+void loop() {
+  if (!client.connected()) {
+    if (client.connect("ESP32_Car")) {
+      client.subscribe((userUID + "/car/move").c_str());
+    }
+  }
+  client.loop();
 }`;
 
 const TABS = [
-  { id: 'mqtt',   label: 'MQTT (HiveMQ)',  icon: Wifi,     code: MQTT_CODE    },
-  { id: 'basic',  label: 'LED (Firebase)', icon: Zap,      code: BASIC_CODE   },
-  { id: 'sensor', label: 'DHT22 Sensor',   icon: Cpu,      code: SENSOR_CODE  },
-  { id: 'rccar',  label: 'RC Car',         icon: Wifi,     code: RCCAR_CODE   },
+  { id: 'basic',  label: 'LED Control',  icon: Zap,   code: MQTT_BASIC  },
+  { id: 'sensor', label: 'Temperature',  icon: Cpu,   code: MQTT_SENSOR },
+  { id: 'car',    label: 'RC Car / D-Pad', icon: Wifi,  code: MQTT_CAR    },
 ];
 
 export default function DeveloperGuide({ userUID }) {
-  const [activeTab, setActiveTab] = useState('mqtt');
+  const [activeTab, setActiveTab] = useState('basic');
   const activeCode = TABS.find(t => t.id === activeTab)?.code || '';
 
   return (
@@ -331,49 +186,43 @@ export default function DeveloperGuide({ userUID }) {
           <BookOpen size={22} className="text-violet-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">Developer Guide</h2>
+          <h2 className="text-xl font-bold text-white">MQTT Developer Guide</h2>
           <p className="text-sm text-white/40 mt-0.5">
-            كيفية ربط جهاز ESP32 بالموقع عبر Firebase Realtime Database
+            أسهل طريقة لربط أجهزتك بالموقع عبر بروتوكول MQTT السريع (بدون Firebase)
           </p>
         </div>
       </div>
 
-      {/* ── Path Structure Card ────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20 rounded-2xl p-6">
+      {/* ── MQTT Topic Structure ──────────────────────────────────── */}
+      <div className="bg-gradient-to-br from-primary/10 to-violet-500/5 border border-primary/20 rounded-2xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Database size={16} className="text-amber-400" />
-          <h3 className="font-bold text-amber-300 text-sm uppercase tracking-wider">
-            بنية مسار البيانات في Firebase
+          <Wifi size={16} className="text-primary" />
+          <h3 className="font-bold text-primary text-sm uppercase tracking-wider">
+            بنية الـ MQTT Topics
           </h3>
         </div>
 
-        {/* Path visual */}
         <div className="flex items-center flex-wrap gap-1 font-mono text-sm mb-4">
           {[
-            { seg: '/users/', color: 'text-white/40' },
-            { seg: userUID ? `${userUID.slice(0,10)}…` : '[UID]', color: 'text-primary', bg: 'bg-primary/10 px-2 py-0.5 rounded-md' },
-            { seg: '/widgets/', color: 'text-white/40' },
-            { seg: '[Data_Key]', color: 'text-amber-300', bg: 'bg-amber-400/10 px-2 py-0.5 rounded-md' },
+            { seg: userUID || '[UID]', color: 'text-primary', bg: 'bg-primary/10 px-2 py-0.5 rounded-md' },
+            { seg: '/', color: 'text-white/40' },
+            { seg: '[MQTT_Topic]', color: 'text-amber-300', bg: 'bg-amber-400/10 px-2 py-0.5 rounded-md' },
           ].map((p, i) => (
             <span key={i} className={`${p.color} ${p.bg || ''}`}>{p.seg}</span>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="bg-black/30 rounded-xl p-3 border border-white/5">
-            <p className="text-white/30 mb-1 font-semibold uppercase tracking-wider text-[10px]">UID الخاص بك</p>
-            <code className="text-primary break-all text-[11px]">{userUID || '—'}</code>
-            <p className="text-white/20 mt-1.5 leading-relaxed">يُولَّد تلقائياً عند تسجيل الدخول بـ Google</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div className="bg-black/30 rounded-xl p-4 border border-white/5">
+            <p className="text-white/30 mb-2 font-semibold text-[10px] uppercase">Broker Info</p>
+            <div className="space-y-1 font-mono">
+              <p><span className="text-white/40">Host:</span> <span className="text-white">broker.hivemq.com</span></p>
+              <p><span className="text-white/40">Port:</span> <span className="text-white">1883</span></p>
+            </div>
           </div>
-          <div className="bg-black/30 rounded-xl p-3 border border-white/5">
-            <p className="text-white/30 mb-1 font-semibold uppercase tracking-wider text-[10px]">Data Key مثال</p>
-            <code className="text-amber-300 text-[11px]">led_control</code>
-            <p className="text-white/20 mt-1.5 leading-relaxed">أنت تختاره عند إضافة أداة جديدة في الموقع</p>
-          </div>
-          <div className="bg-black/30 rounded-xl p-3 border border-white/5">
-            <p className="text-white/30 mb-1 font-semibold uppercase tracking-wider text-[10px]">المسار الكامل</p>
-            <code className="text-white/60 text-[11px] break-all">users/[UID]/widgets/led_control</code>
-            <p className="text-white/20 mt-1.5 leading-relaxed">هذا هو المسار الذي يقرأ منه الـ ESP32</p>
+          <div className="bg-black/30 rounded-xl p-4 border border-white/5">
+            <p className="text-white/30 mb-2 font-semibold text-[10px] uppercase">Example Topic</p>
+            <code className="text-amber-300 break-all">{userUID || 'UID'}/actuator/led</code>
           </div>
         </div>
       </div>
@@ -382,30 +231,23 @@ export default function DeveloperGuide({ userUID }) {
       <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6">
         <h3 className="font-bold text-white mb-5 flex items-center gap-2">
           <ChevronRight size={18} className="text-primary" />
-          خطوات الإعداد
+          خطوات الربط البسيطة
         </h3>
         <div className="space-y-5">
-          <Step n={1} label="انسخ الـ UID من صفحة Settings"
-            desc="اذهب إلى Tools → Settings وانسخ الـ Device UID الخاص بك." />
-          <Step n={2} label="أضف أداة في الموقع وحدد Data Key"
-            desc='اضغط "Add Tool" في Universal Controller، وفي حقل Data Key اكتب اسماً مثل: led_control' />
-          <Step n={3} label="افتح كود C++ واستبدل المتغيرات"
-            desc="انسخ الكود أدناه وضع فيه الـ UID والـ Data Key بنفس الأسماء التي اخترتها." />
-          <Step n={4} label="ثبّت مكتبة FirebaseESP32"
-            desc="من Arduino IDE: Tools → Manage Libraries → ابحث عن Firebase ESP32 Client واثبّتها." />
-          <Step n={5} label="ارفع الكود وراقب Serial Monitor"
-            desc="يجب أن ترى القيم تتغير في الـ Serial Monitor عند تشغيل وإيقاف الأداة من الموقع." />
+          <Step n={1} label="انسخ الـ UID الخاص بك"
+            desc="هذا المعرف يضمن أن جهازك يتصل بحسابك الخاص فقط." />
+          <Step n={2} label="أضف أداة في الـ Controller"
+            desc="تأكد من كتابة الـ MQTT Topic بشكل صحيح (مثل actuator/led)." />
+          <Step n={3} label="استخدم مكتبة PubSubClient"
+            desc="هي المكتبة الأخف والأسرع للـ ESP32 للتعامل مع MQTT." />
+          <Step n={4} label="ارفع الكود وتحكم لحظياً"
+            desc="لا حاجة لـ Firebase، البيانات تنتقل مباشرة بين الموقع والجهاز." />
         </div>
       </div>
 
       {/* ── Code Tabs ─────────────────────────────────────────────── */}
       <div className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden">
-        {/* Tab bar */}
-        <div className="flex border-b border-white/10 bg-black/20">
-          <div className="flex items-center gap-2 px-5 py-3 border-r border-white/5">
-            <Code2 size={14} className="text-white/30" />
-            <span className="text-xs text-white/30 font-semibold">C++ Examples</span>
-          </div>
+        <div className="flex border-b border-white/10 bg-black/20 overflow-x-auto">
           {TABS.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -429,10 +271,9 @@ export default function DeveloperGuide({ userUID }) {
         {/* Active tab description */}
         <div className="px-5 py-3 border-b border-white/5 bg-black/10">
           {{
-            mqtt:   <p className="text-xs text-white/40">يستخدم <code className="text-primary">MQTT (Port 1883)</code> للتحكم اللحظي عبر <code className="text-amber-300">ON/OFF</code>. الخيار الأفضل للأداء العالي.</p>,
-            basic:  <p className="text-xs text-white/40">يقرأ قيمة <code className="text-amber-300">ON/OFF</code> من Firebase ويتحكم في LED. مثالي لاختبار الاتصال أول مرة.</p>,
-            sensor: <p className="text-xs text-white/40">يقرأ من حساس DHT22 ويرفع درجة الحرارة والرطوبة إلى Firebase كل 5 ثواني.</p>,
-            rccar:  <p className="text-xs text-white/40">يقرأ الأوامر من D-Pad والسرعة من Slider ويتحكم في 4 محركات عبر L298N.</p>,
+            basic:  <p className="text-xs text-white/40">يقرأ أوامر <code className="text-amber-300">ON/OFF</code> عبر MQTT للتحكم في LED مباشرة. (سريع جداً)</p>,
+            sensor: <p className="text-xs text-white/40">يقرأ من حساس DHT22 ويرسل الحرارة والرطوبة لحظياً عبر MQTT.</p>,
+            car:    <p className="text-xs text-white/40">يستقبل أوامر الحركة للـ D-Pad والسرعة للتحكم الفوري بـ 4 محركات عبر L298N.</p>,
           }[activeTab]}
         </div>
 
@@ -446,9 +287,8 @@ export default function DeveloperGuide({ userUID }) {
         <h3 className="font-bold text-white mb-4 text-sm">المكتبات المطلوبة</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           {[
-            { name: 'PubSubClient', author: 'Nick O\'Leary', note: 'مكتبة MQTT الأساسية' },
-            { name: 'Firebase ESP32 Client', author: 'mobizt', note: 'الاتصال بـ Firebase' },
-            { name: 'DHT sensor library', author: 'Adafruit', note: 'لحساسات DHT11 / DHT22' },
+            { name: 'PubSubClient', author: 'Nick O\'Leary', note: 'المكتبة الأساسية للـ MQTT (خفيفة جداً)' },
+            { name: 'DHT sensor library', author: 'Adafruit', note: 'فقط إذا كنت تستخدم حساس حرارة' },
           ].map(lib => (
             <div key={lib.name} className="bg-black/30 border border-white/5 rounded-xl p-3">
               <p className="font-mono text-white/70 font-semibold mb-0.5">{lib.name}</p>
