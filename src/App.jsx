@@ -19,6 +19,10 @@ function App() {
     logout,
     setError,
     verificationNotice,
+    verificationIsResend,
+    unverifiedLoginEmail,
+    clearUnverifiedLoginEmail,
+    resendVerificationEmail,
     clearVerificationNotice,
   } = useAuth();
 
@@ -31,7 +35,7 @@ function App() {
   }
 
   if (!user) {
-    return <AuthPage login={login} signup={signup} error={authError} setError={setError} verificationNotice={verificationNotice} clearVerificationNotice={clearVerificationNotice} />;
+    return <AuthPage login={login} signup={signup} error={authError} setError={setError} verificationNotice={verificationNotice} verificationIsResend={verificationIsResend} unverifiedLoginEmail={unverifiedLoginEmail} clearUnverifiedLoginEmail={clearUnverifiedLoginEmail} resendVerificationEmail={resendVerificationEmail} clearVerificationNotice={clearVerificationNotice} />;
   }
 
   return <Dashboard user={user} logout={logout} />;

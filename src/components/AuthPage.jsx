@@ -1,13 +1,25 @@
 import { useState } from 'react';
-import { Leaf, Mail, Lock, User, Eye, EyeOff, Loader2, Inbox } from 'lucide-react';
+import { Leaf, Mail, Lock, User, Eye, EyeOff, Loader2, Inbox, Send } from 'lucide-react';
 
-export default function AuthPage({ login, signup, error, setError, verificationNotice, clearVerificationNotice }) {
+export default function AuthPage({
+  login,
+  signup,
+  error,
+  setError,
+  verificationNotice,
+  verificationIsResend,
+  unverifiedLoginEmail,
+  clearUnverifiedLoginEmail,
+  resendVerificationEmail,
+  clearVerificationNotice,
+}) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +41,25 @@ export default function AuthPage({ login, signup, error, setError, verificationN
     setIsLogin(!isLogin);
     setError(null);
     clearVerificationNotice?.();
+    clearUnverifiedLoginEmail?.();
   };
+
+  const handleResendVerification = async () => {
+    if (!unverifiedLoginEmail || email.trim().toLowerCase() !== unverifiedLoginEmail.trim().toLowerCase()) return;
+    setResendLoading(true);
+    try {
+      await resendVerificationEmail(email.trim(), password);
+    } catch {
+      // الخطأ من الـ hook
+    }
+    setResendLoading(false);
+  };
+
+  const canResend =
+    isLogin &&
+    unverifiedLoginEmail &&
+    email.trim().toLowerCase() === unverifiedLoginEmail.trim().toLowerCase() &&
+    password.length >= 6;
 
   return (
     <div className="min-h-screen bg-[#0F1115] flex items-center justify-center p-6">
@@ -59,20 +89,27 @@ export default function AuthPage({ login, signup, error, setError, verificationN
           </p>
 
           {verificationNotice && (
-            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 text-sm rounded-xl p-4 mb-4 flex gap-3">
+            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 text-sm rounded-xl p-4 mb-4 flex gap-3" dir="rtl">
               <Inbox className="shrink-0 mt-0.5 text-emerald-400" size={20} />
-              <div>
-                <p className="font-semibold text-emerald-100">Check your inbox</p>
+              <div className="text-right flex-1">
+                <p className="font-semibold text-emerald-100">
+                  {verificationIsResend ? 'تم إعادة إرسال رابط التفعيل' : 'تحقق من بريدك الإلكتروني'}
+                </p>
                 <p className="text-emerald-200/90 mt-1 leading-relaxed">
-                  We sent a verification link to <span className="font-mono text-white/90">{verificationNotice}</span>.
-                  Please verify your email before you sign in. If you do not see the message, check spam or junk.
+                  {verificationIsResend
+                    ? `أعدنا إرسال رابط التفعيل إلى `
+                    : `أرسلنا رابط التفعيل إلى `}
+                  <span className="font-mono text-white/90" dir="ltr">{verificationNotice}</span>
+                  {verificationIsResend
+                    ? '. افتح الرابط ثم سجّل الدخول من جديد.'
+                    : '. يرجى فتح الرابط لتفعيل الحساب قبل تسجيل الدخول. إن لم تجد الرسالة، راجع مجلد الرسائل غير المرغوب فيها (Spam).'}
                 </p>
               </div>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl p-3 mb-4">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm rounded-xl p-3 mb-4" dir="rtl">
               {error}
             </div>
           )}
@@ -123,6 +160,24 @@ export default function AuthPage({ login, signup, error, setError, verificationN
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+
+            {isLogin && unverifiedLoginEmail && (
+              <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-4 space-y-3" dir="rtl">
+                <p className="text-amber-100/95 text-sm text-right leading-relaxed">
+                  إذا لم يصلك بريد التفعيل، تأكد من الإيميل وكلمة المرور في الحقول ثم اضغط لإعادة الإرسال.
+                </p>
+                <button
+                  type="button"
+                  disabled={!canResend || resendLoading}
+                  onClick={handleResendVerification}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border border-amber-500/40 bg-amber-500/15 text-amber-100 hover:bg-amber-500/25 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {resendLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                  إعادة إرسال بريد التفعيل
+                  <span className="text-[10px] font-normal opacity-80" dir="ltr">(Resend Verification Email)</span>
+                </button>
+              </div>
+            )}
 
             <button
               type="submit"
