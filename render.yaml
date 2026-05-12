@@ -2,7 +2,7 @@ services:
   - type: static
     name: iot-saas-dashboard
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: npm config set fetch-retry-maxtimeout 60000 && npm config set fetch-retries 5 && npm ci && npm run build
     publishPath: ./dist
     routes:
       - type: rewrite
