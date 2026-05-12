@@ -12,6 +12,8 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
+const googleProvider = new GoogleAuthProvider();
+
 async function fetchUserProfile(uid) {
   try {
     const userDoc = await getDoc(doc(db, 'users', uid));
@@ -50,13 +52,15 @@ export function useAuth() {
         try {
           if (firebaseUser) {
             const userData = await fetchUserProfile(firebaseUser.uid);
+            const isGoogleUser = firebaseUser.providerData?.some(p => p.providerId === 'google.com');
             setUser({
               ...userData,
               uid: firebaseUser.uid,
               email: firebaseUser.email,
-              emailVerified: firebaseUser.emailVerified,
+              // Google accounts are always verified; treat them as verified
+              emailVerified: firebaseUser.emailVerified || isGoogleUser,
               displayName: firebaseUser.displayName || userData.displayName || 'User',
-              photoURL: firebaseUser.photoURL || userData.photoURL,
+              photoURL: firebaseUser.photoURL || userData.photoURL || null,
             });
           } else {
             setUser(null);
@@ -115,25 +119,25 @@ export function useAuth() {
 
   const loginWithGoogle = async () => {
     setError(null);
-    setRegistrationSuccessMessage(null);
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      
-      // Check if user exists in Firestore, if not create them
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (!userDoc.exists()) {
-        await setDoc(doc(db, 'users', user.uid), {
-          displayName: user.displayName,
-          email: user.email,
+      const result = await signInWithPopup(auth, googleProvider);
+      const { user: gUser } = result;
+      // Upsert Firestore profile so the user doc always exists
+      await setDoc(
+        doc(db, 'users', gUser.uid),
+        {
+          displayName: gUser.displayName || 'User',
+          email: gUser.email,
+          photoURL: gUser.photoURL || null,
           plan: 'Free',
           createdAt: new Date().toISOString(),
-          photoURL: user.photoURL
-        });
-      }
+        },
+        { merge: true },
+      );
     } catch (err) {
-      setError(err.message.replace('Firebase: ', ''));
+      if (err.code !== 'auth/popup-closed-by-user') {
+        setError(err.message.replace('Firebase: ', ''));
+      }
       throw err;
     }
   };
