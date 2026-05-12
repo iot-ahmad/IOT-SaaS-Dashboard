@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Leaf, Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { Leaf, Mail, Lock, User, Eye, EyeOff, Loader2, Inbox } from 'lucide-react';
 
-export default function AuthPage({ login, signup, error, setError }) {
+export default function AuthPage({ login, signup, error, setError, verificationNotice, clearVerificationNotice }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,8 +17,9 @@ export default function AuthPage({ login, signup, error, setError }) {
         await login(email, password);
       } else {
         await signup(email, password, name);
+        setIsLogin(true);
       }
-    } catch (err) {
+    } catch {
       // error is set by the hook
     }
     setLoading(false);
@@ -27,6 +28,7 @@ export default function AuthPage({ login, signup, error, setError }) {
   const switchMode = () => {
     setIsLogin(!isLogin);
     setError(null);
+    clearVerificationNotice?.();
   };
 
   return (
@@ -55,6 +57,19 @@ export default function AuthPage({ login, signup, error, setError }) {
           <p className="text-white/40 text-sm mb-6">
             {isLogin ? 'Sign in to your dashboard' : 'Get started with your IoT platform'}
           </p>
+
+          {verificationNotice && (
+            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 text-sm rounded-xl p-4 mb-4 flex gap-3">
+              <Inbox className="shrink-0 mt-0.5 text-emerald-400" size={20} />
+              <div>
+                <p className="font-semibold text-emerald-100">Check your inbox</p>
+                <p className="text-emerald-200/90 mt-1 leading-relaxed">
+                  We sent a verification link to <span className="font-mono text-white/90">{verificationNotice}</span>.
+                  Please verify your email before you sign in. If you do not see the message, check spam or junk.
+                </p>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl p-3 mb-4">

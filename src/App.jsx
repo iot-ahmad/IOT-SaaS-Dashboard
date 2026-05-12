@@ -10,7 +10,17 @@ import { useAuth } from './hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
 function App() {
-  const { user, loading: authLoading, error: authError, login, signup, logout, setError } = useAuth();
+  const {
+    user,
+    loading: authLoading,
+    error: authError,
+    login,
+    signup,
+    logout,
+    setError,
+    verificationNotice,
+    clearVerificationNotice,
+  } = useAuth();
 
   if (authLoading) {
     return (
@@ -21,7 +31,7 @@ function App() {
   }
 
   if (!user) {
-    return <AuthPage login={login} signup={signup} error={authError} setError={setError} />;
+    return <AuthPage login={login} signup={signup} error={authError} setError={setError} verificationNotice={verificationNotice} clearVerificationNotice={clearVerificationNotice} />;
   }
 
   return <Dashboard user={user} logout={logout} />;

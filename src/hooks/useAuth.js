@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -23,6 +24,7 @@ export function useAuth() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [verificationNotice, setVerificationNotice] = useState(null);
   const authListenerFired = useRef(false);
 
   useEffect(() => {
@@ -43,6 +45,7 @@ export function useAuth() {
             setUser({
               uid: firebaseUser.uid,
               email: firebaseUser.email,
+              emailVerified: firebaseUser.emailVerified,
               displayName: firebaseUser.displayName || userData.displayName || 'User',
               ...userData,
             });
@@ -63,27 +66,45 @@ export function useAuth() {
 
   const login = async (email, password) => {
     setError(null);
+    setVerificationNotice(null);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      if (!cred.user.emailVerified) {
+        await signOut(auth);
+        setError(
+          'Please verify your email before signing in. Check your inbox for the verification link.',
+        );
+        throw new Error('Email not verified');
+      }
     } catch (err) {
-      setError(err.message.replace('Firebase: ', ''));
+      if (err.message !== 'Email not verified') {
+        setError(err.message.replace('Firebase: ', ''));
+      }
       throw err;
     }
   };
 
   const signup = async (email, password, displayName) => {
     setError(null);
+    setVerificationNotice(null);
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName });
-      // Store extra user info in Firestore
       await setDoc(doc(db, 'users', cred.user.uid), {
         displayName,
         email,
         plan: 'Free',
         createdAt: new Date().toISOString(),
       });
+      await sendEmailVerification(cred.user);
+      await signOut(auth);
+      setVerificationNotice(email);
     } catch (err) {
+      try {
+        if (auth.currentUser) await signOut(auth);
+      } catch {
+        /* ignore */
+      }
       setError(err.message.replace('Firebase: ', ''));
       throw err;
     }
@@ -93,5 +114,17 @@ export function useAuth() {
     await signOut(auth);
   };
 
-  return { user, loading, error, login, signup, logout, setError };
+  const clearVerificationNotice = () => setVerificationNotice(null);
+
+  return {
+    user,
+    loading,
+    error,
+    login,
+    signup,
+    logout,
+    setError,
+    verificationNotice,
+    clearVerificationNotice,
+  };
 }
