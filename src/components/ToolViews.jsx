@@ -338,8 +338,11 @@ export const LiveTerminal = ({ messages, isConnected }) => {
           <Terminal size={14} className="text-primary" />
           <span className="text-xs font-bold text-white/60">Live Terminal</span>
           <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></span>
+          <span className="text-[10px] text-white/25 hidden sm:inline">▶ MQTT publishes</span>
         </div>
-        <span className="text-[10px] text-white/30">{messages.length} messages</span>
+        <span className="text-[10px] text-white/30">
+          {messages.filter(m => m.type === 'outgoing').length} out · {messages.length} total
+        </span>
       </div>
       <div ref={scrollRef} className="h-28 overflow-y-auto px-4 py-2 font-mono text-[11px] space-y-0.5">
         {messages.length === 0 && (

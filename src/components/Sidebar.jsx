@@ -1,9 +1,9 @@
 import React from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2 } from 'lucide-react';
 import { WORKSPACES, TOOLS } from '../data/mockData';
 
 const iconMap = {
-  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings
+  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2
 };
 
 export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeTool, setActiveTool, user, logout }) {

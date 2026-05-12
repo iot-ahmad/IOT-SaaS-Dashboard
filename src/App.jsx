@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AuthPage from './components/AuthPage';
 import { FarmView, HomeView, OfficeView } from './components/Views';
+import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, SettingsView, LiveTerminal } from './components/ToolViews';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
@@ -27,7 +28,7 @@ function App() {
 }
 
 function Dashboard({ user, logout }) {
-  const [activeWorkspace, setActiveWorkspace] = useState('farm');
+  const [activeWorkspace, setActiveWorkspace] = useState('controller');
   const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -59,7 +60,8 @@ function Dashboard({ user, logout }) {
       case 'home': return <HomeView />;
       case 'farm': return <FarmView deviceStates={deviceStates} publish={publish} />;
       case 'office': return <OfficeView />;
-      default: return <FarmView deviceStates={deviceStates} publish={publish} />;
+      case 'controller': return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} />;
+      default: return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} />;
     }
   };
 

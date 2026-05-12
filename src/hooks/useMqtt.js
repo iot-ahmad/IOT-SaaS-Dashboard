@@ -10,6 +10,16 @@ export function useMqtt(userUID = 'demo_user_001') {
   const [lastSeen, setLastSeen] = useState({});
   const clientRef = useRef(null);
 
+  const addLog = useCallback((type, text) => {
+    const entry = {
+      id: Date.now() + Math.random(),
+      type,
+      text,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    setMessages(prev => [...prev.slice(-99), entry]);
+  }, []);
+
   useEffect(() => {
     const client = mqtt.connect(BROKER_URL, {
       clientId: `iot_dashboard_${Math.random().toString(16).slice(2, 10)}`,
@@ -52,25 +62,18 @@ export function useMqtt(userUID = 'demo_user_001') {
     return () => {
       client.end();
     };
-  }, [userUID]);
-
-  const addLog = (type, text) => {
-    const entry = {
-      id: Date.now() + Math.random(),
-      type,
-      text,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-    setMessages(prev => [...prev.slice(-99), entry]);
-  };
+  }, [userUID, addLog]);
 
   const publish = useCallback((topic, payload) => {
-    if (clientRef.current && clientRef.current.connected) {
+    const str = String(payload);
+    if (clientRef.current?.connected) {
       const fullTopic = `${userUID}/${topic}`;
-      clientRef.current.publish(fullTopic, String(payload), { qos: 0 });
-      addLog('outgoing', `${topic}: ${payload}`);
+      clientRef.current.publish(fullTopic, str, { qos: 0 });
+      addLog('outgoing', `${topic}: ${str}`);
+    } else {
+      addLog('outgoing', `[offline] ${topic}: ${str}`);
     }
-  }, [userUID]);
+  }, [userUID, addLog]);
 
   return { isConnected, messages, deviceStates, lastSeen, publish, userUID };
 }

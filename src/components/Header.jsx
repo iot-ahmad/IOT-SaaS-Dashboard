@@ -20,6 +20,7 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
   } else if (activeWorkspace) {
     const ws = WORKSPACES.find(w => w.id === activeWorkspace);
     title = ws ? ws.name : 'Dashboard';
+    if (activeWorkspace === 'controller') subtitle = 'Add sensors, actuators, and RC car controls to your dashboard';
   }
 
   return (
