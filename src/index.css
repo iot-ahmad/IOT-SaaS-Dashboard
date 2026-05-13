@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@custom-variant dark (&:is(.dark *));
 @theme {
   --color-background: #000000;
   --color-primary: #10B981;
@@ -7,7 +7,7 @@
 
 @layer base {
   body {
-    @apply bg-background text-white antialiased;
+    @apply bg-slate-50 dark:bg-black text-slate-900 dark:text-white antialiased;
   }
 }
 

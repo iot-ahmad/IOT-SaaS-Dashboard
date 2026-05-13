@@ -32,7 +32,7 @@ function App() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center">
         <Loader2 className="text-primary animate-spin" size={40} />
       </div>
     );
@@ -91,10 +91,10 @@ function Dashboard({ user, logout }) {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex selection:bg-primary/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex selection:bg-primary/30">
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 md:hidden"
+          className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-20 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

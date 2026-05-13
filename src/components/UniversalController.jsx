@@ -158,18 +158,18 @@ function AddToolModal({ onClose, onAdd, userUID }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-[#13151a] border border-white/10 rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
+      <div className="bg-[#13151a] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/5">
           <div>
             <h2 className="font-bold text-lg">Add Tool</h2>
             {step === 'config' && (
-              <button onClick={() => setStep('category')} className="text-xs text-white/40 hover:text-white mt-0.5 transition-colors">
+              <button onClick={() => setStep('category')} className="text-xs text-slate-600 dark:text-white/40 hover:text-slate-900 dark:text-white mt-0.5 transition-colors">
                 ← Back to categories
               </button>
             )}
           </div>
-          <button onClick={onClose} className="text-white/30 hover:text-white transition-colors p-1">
+          <button onClick={onClose} className="text-slate-500 dark:text-white/30 hover:text-slate-900 dark:text-white transition-colors p-1">
             <X size={20} />
           </button>
         </div>
@@ -195,12 +195,12 @@ function AddToolModal({ onClose, onAdd, userUID }) {
                             onClick={() => handleSelectItem(item)}
                             className={`flex items-start gap-3 p-3 rounded-xl border bg-gradient-to-br ${cat.color} hover:brightness-125 transition-all text-left`}
                           >
-                            <div className={`mt-0.5 p-1.5 rounded-lg bg-white/5 ${cat.accent}`}>
+                            <div className={`mt-0.5 p-1.5 rounded-lg bg-slate-100 dark:bg-white/5 ${cat.accent}`}>
                               <ItemIcon size={16} />
                             </div>
                             <div>
-                              <p className="font-semibold text-sm text-white">{item.label}</p>
-                              <p className="text-[11px] text-white/40 mt-0.5 leading-relaxed">{item.desc}</p>
+                              <p className="font-semibold text-sm text-slate-900 dark:text-white">{item.label}</p>
+                              <p className="text-[11px] text-slate-600 dark:text-white/40 mt-0.5 leading-relaxed">{item.desc}</p>
                             </div>
                           </button>
                         );
@@ -213,9 +213,9 @@ function AddToolModal({ onClose, onAdd, userUID }) {
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-white/40 block mb-1">Widget Name</label>
+                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Widget Name</label>
                 <input
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Front Temperature"
@@ -229,7 +229,7 @@ function AddToolModal({ onClose, onAdd, userUID }) {
                   <span className="text-[9px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Required</span>
                 </label>
                 <input
-                  className={`w-full bg-white/5 border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
+                  className={`w-full bg-slate-100 dark:bg-white/5 border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
                     form.dataKey.trim() ? 'border-amber-500/40 focus:border-amber-400' : 'border-red-500/40 focus:border-red-400'
                   }`}
                   value={form.dataKey}
@@ -237,21 +237,21 @@ function AddToolModal({ onClose, onAdd, userUID }) {
                   placeholder="e.g. temperature_1"
                 />
                 {/* Live Firebase path preview */}
-                <div className="mt-2 bg-black/40 border border-white/5 rounded-lg px-3 py-2">
-                  <p className="text-[10px] text-white/30 mb-0.5">Firebase path:</p>
+                <div className="mt-2 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-slate-500 dark:text-white/30 mb-0.5">Firebase path:</p>
                   <code className="text-[11px] font-mono text-amber-300/80 break-all">
                     users/{userUID ? userUID.slice(0, 8) + '…' : '[UID]'}/widgets/<span className="text-amber-300">{form.dataKey || '[data_key]'}</span>
                   </code>
                 </div>
-                <p className="text-[10px] text-white/30 mt-1.5 leading-relaxed">
+                <p className="text-[10px] text-slate-500 dark:text-white/30 mt-1.5 leading-relaxed">
                   استخدم هذا الـ Key في كود Arduino الخاص بك لربط جهازك بهذه الأداة.
                 </p>
               </div>
 
               <div>
-                <label className="text-xs text-white/40 block mb-1">MQTT Topic</label>
+                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">MQTT Topic</label>
                 <input
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
                   value={form.topic}
                   onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
                   placeholder="e.g. car/move"
@@ -260,19 +260,19 @@ function AddToolModal({ onClose, onAdd, userUID }) {
               {selectedItem.type === 'gauge' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-white/40 block mb-1">Unit</label>
+                    <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Unit</label>
                     <input
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                       value={form.unit}
                       onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
                       placeholder="°C"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-white/40 block mb-1">Max Value</label>
+                    <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Max Value</label>
                     <input
                       type="number"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                       value={form.maxVal}
                       onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))}
                     />
@@ -282,7 +282,7 @@ function AddToolModal({ onClose, onAdd, userUID }) {
               <button
                 onClick={handleAdd}
                 disabled={!form.dataKey.trim()}
-                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
+                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 dark:text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
               >
                 Add to dashboard
               </button>
@@ -311,21 +311,21 @@ function GaugeWidget({ widget, value, history = [] }) {
           <Thermometer size={16} />
           <span className="text-sm font-semibold truncate">{widget.name}</span>
         </div>
-        <span className="text-[10px] text-white/30 font-mono bg-white/5 px-2 py-0.5 rounded-md truncate max-w-[40%]">{widget.topic}</span>
+        <span className="text-[10px] text-slate-500 dark:text-white/30 font-mono bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded-md truncate max-w-[40%]">{widget.topic}</span>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center gap-2 min-h-0">
         <div className="text-3xl sm:text-4xl font-black tracking-tight flex-shrink-0" style={{ color }}>
           {Number.isFinite(num) ? num.toFixed(1) : '—'}
-          <span className="text-base sm:text-lg font-medium text-white/40 ml-1">{widget.unit}</span>
+          <span className="text-base sm:text-lg font-medium text-slate-600 dark:text-white/40 ml-1">{widget.unit}</span>
         </div>
         <div className="w-full flex-shrink-0">
-          <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{ width: `${pct}%`, backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-white/20 mt-0.5">
+          <div className="flex justify-between text-[10px] text-slate-400 dark:text-white/20 mt-0.5">
             <span>0 {widget.unit}</span>
             <span>{widget.maxVal} {widget.unit}</span>
           </div>
@@ -362,17 +362,17 @@ function SwitchWidget({ widget, value, publish }) {
           className={`w-16 h-16 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
             isOn
               ? 'bg-amber-500/20 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)]'
-              : 'bg-white/5 border-white/10 hover:border-white/30'
+              : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:border-white/30'
           }`}
           onClick={toggle}
           title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
         >
-          <Zap size={28} className={isOn ? 'text-amber-400' : 'text-white/20'} />
+          <Zap size={28} className={isOn ? 'text-amber-400' : 'text-slate-400 dark:text-white/20'} />
         </div>
-        <div className={`text-xs font-bold px-3 py-1 rounded-full ${isOn ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-white/30'}`}>
+        <div className={`text-xs font-bold px-3 py-1 rounded-full ${isOn ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/30'}`}>
           {isOn ? 'ON' : 'OFF'}
         </div>
-        <span className="text-[10px] text-white/20 font-mono">{widget.topic}</span>
+        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
       </div>
     </div>
   );
@@ -403,7 +403,7 @@ function SliderWidget({ widget, publish }) {
       <div className="flex-1 flex flex-col justify-center gap-3 px-1">
         <div className="flex justify-between items-baseline">
           <span className="text-3xl font-black" style={{ color }}>{val}</span>
-          <span className="text-xs text-white/30">{label} / {max}</span>
+          <span className="text-xs text-slate-500 dark:text-white/30">{label} / {max}</span>
         </div>
         <input
           type="range"
@@ -414,7 +414,7 @@ function SliderWidget({ widget, publish }) {
           className="w-full accent-violet-500 cursor-pointer"
           style={{ accentColor: color }}
         />
-        <span className="text-[10px] text-white/20 font-mono">{widget.topic}</span>
+        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
       </div>
     </div>
   );
@@ -422,9 +422,9 @@ function SliderWidget({ widget, publish }) {
 
 const DP_BTN_BASE =
   'flex items-center justify-center w-14 h-14 rounded-xl border-2 transition-all duration-150 cursor-pointer select-none active:scale-95';
-const DP_BTN_IDLE = 'bg-white/5 border-white/10 text-white/30 hover:bg-violet-500/10 hover:border-violet-400/40 hover:text-violet-300';
+const DP_BTN_IDLE = 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/30 hover:bg-violet-500/10 hover:border-violet-400/40 hover:text-violet-300';
 const DP_BTN_GLOW =
-  'bg-violet-500/40 border-violet-300 text-white shadow-[0_0_24px_rgba(167,139,250,0.95),0_0_48px_rgba(139,92,246,0.65),0_0_80px_rgba(139,92,246,0.35)] scale-[0.98] dpad-glow ring-2 ring-violet-400/80';
+  'bg-violet-500/40 border-violet-300 text-slate-900 dark:text-white shadow-[0_0_24px_rgba(167,139,250,0.95),0_0_48px_rgba(139,92,246,0.65),0_0_80px_rgba(139,92,246,0.35)] scale-[0.98] dpad-glow ring-2 ring-violet-400/80';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
@@ -480,7 +480,7 @@ function DPadWidget({ widget, publish }) {
           <button
             type="button"
             onClick={sendStop}
-            className={`${DP_BTN_BASE} ${active === 'STOP' ? DP_BTN_GLOW : 'bg-white/[0.06] border-white/15 text-white/40 hover:text-violet-200 hover:border-violet-500/40'}`}
+            className={`${DP_BTN_BASE} ${active === 'STOP' ? DP_BTN_GLOW : 'bg-white/[0.06] border-white/15 text-slate-600 dark:text-white/40 hover:text-violet-200 hover:border-violet-500/40'}`}
             title="Send STOP"
           >
             <span className="text-[9px] font-bold">STOP</span>
@@ -489,11 +489,11 @@ function DPadWidget({ widget, publish }) {
         </div>
         <DPadDirButton cmd="BACK" icon={ChevronDown} activeCmd={active} onPress={press} onRelease={release} />
         <div className="mt-1">
-          <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${active ? 'bg-violet-500/20 text-violet-300' : 'bg-white/5 text-white/20'}`}>
+          <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${active ? 'bg-violet-500/20 text-violet-300' : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/20'}`}>
             {active || 'IDLE'}
           </span>
         </div>
-        <span className="text-[10px] text-white/20 font-mono">{widget.topic}</span>
+        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
       </div>
     </div>
   );
@@ -588,12 +588,12 @@ function JoystickWidget({ widget, publish }) {
           }}
           onPointerCancel={endPointer}
         >
-          <div className="absolute inset-[18%] rounded-full border border-dashed border-white/10 pointer-events-none" />
+          <div className="absolute inset-[18%] rounded-full border border-dashed border-slate-200 dark:border-white/10 pointer-events-none" />
           <div
             className={`absolute w-14 h-14 rounded-full border-2 transition-all duration-75 ${
               knobLit
                 ? 'bg-violet-500/50 border-violet-200 shadow-[0_0_32px_rgba(167,139,250,0.95),0_0_64px_rgba(139,92,246,0.45)] dpad-glow'
-                : 'bg-white/15 border-white/20'
+                : 'bg-white/15 border-slate-300 dark:border-white/20'
             }`}
             style={{
               left: `calc(50% + ${knob.x}px)`,
@@ -601,15 +601,15 @@ function JoystickWidget({ widget, publish }) {
               transform: 'translate(-50%, -50%)',
             }}
           />
-          <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] text-white/20 font-bold pointer-events-none">FWD</span>
-          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] text-white/20 font-bold pointer-events-none">BACK</span>
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-white/20 font-bold pointer-events-none">L</span>
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-white/20 font-bold pointer-events-none">R</span>
+          <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">FWD</span>
+          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">BACK</span>
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">L</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">R</span>
         </div>
-        <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${active ? 'bg-violet-500/25 text-violet-200' : 'bg-white/5 text-white/25'}`}>
+        <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${active ? 'bg-violet-500/25 text-violet-200' : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/25'}`}>
           {active || 'IDLE'}
         </span>
-        <span className="text-[10px] text-white/20 font-mono">{widget.topic}</span>
+        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
       </div>
     </div>
   );
@@ -630,15 +630,15 @@ function WidgetCard({ widget, value, publish, onRemove, gaugeHistory }) {
   };
 
   return (
-    <div className="h-full bg-white/[0.02] border border-white/10 rounded-2xl p-4 backdrop-blur-md hover:bg-white/[0.035] hover:border-white/20 transition-all duration-300 group flex flex-col relative overflow-hidden">
+    <div className="h-full bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-4 backdrop-blur-md hover:bg-white/[0.035] hover:border-slate-300 dark:border-white/20 transition-all duration-300 group flex flex-col relative overflow-hidden">
       {/* Drag handle */}
-      <div className="drag-handle absolute top-2 right-8 opacity-0 group-hover:opacity-40 hover:!opacity-80 transition-opacity cursor-grab active:cursor-grabbing text-white/50 p-1">
+      <div className="drag-handle absolute top-2 right-8 opacity-0 group-hover:opacity-40 hover:!opacity-80 transition-opacity cursor-grab active:cursor-grabbing text-slate-600 dark:text-white/50 p-1">
         <GripVertical size={14} />
       </div>
       {/* Remove button */}
       <button
         onClick={() => onRemove(widget.id)}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-white/30 p-1"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-slate-500 dark:text-white/30 p-1"
       >
         <Trash2 size={14} />
       </button>
@@ -737,16 +737,16 @@ export default function UniversalController({ deviceStates, publish, storageScop
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-white">Universal Controller</h2>
-          <p className="text-sm text-white/40 mt-0.5">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Universal Controller</h2>
+          <p className="text-sm text-slate-600 dark:text-white/40 mt-0.5">
             Drag, resize, and control sensors, actuators, or an RC car. Layout saved per workspace session
-            <span className="font-mono text-white/25"> · {workspaceTag}</span>
+            <span className="font-mono text-slate-500 dark:text-white/25"> · {workspaceTag}</span>
           </p>
         </div>
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white transition-all shadow-lg shadow-violet-500/20 active:scale-95"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-slate-900 dark:text-white transition-all shadow-lg shadow-violet-500/20 active:scale-95"
         >
           <Plus size={18} />
           Add Tool
@@ -755,9 +755,9 @@ export default function UniversalController({ deviceStates, publish, storageScop
 
       {widgets.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Gamepad2 size={48} className="text-white/10 mb-4" />
-          <p className="text-white/30 text-lg font-medium">No tools yet</p>
-          <p className="text-white/20 text-sm mt-1">Use Add Tool to place sensors, actuators, or RC controls</p>
+          <Gamepad2 size={48} className="text-slate-300 dark:text-white/10 mb-4" />
+          <p className="text-slate-500 dark:text-white/30 text-lg font-medium">No tools yet</p>
+          <p className="text-slate-400 dark:text-white/20 text-sm mt-1">Use Add Tool to place sensors, actuators, or RC controls</p>
         </div>
       ) : (
         <ResponsiveGridLayout

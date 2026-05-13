@@ -29,7 +29,7 @@ const Feature = ({ icon: Icon, label }) => (
     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
       <Icon size={14} className="text-primary" />
     </div>
-    <span className="text-white/60 text-xs font-medium">{label}</span>
+    <span className="text-slate-700 dark:text-white/60 text-xs font-medium">{label}</span>
   </div>
 );
 
@@ -49,7 +49,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center p-6 relative overflow-hidden">
 
       {/* ── Ambient glow blobs ─────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -75,7 +75,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           <div className="inline-flex items-center justify-center w-[72px] h-[72px] rounded-[22px] bg-primary/10 border border-primary/20 mb-5 shadow-[0_0_40px_rgba(74,222,128,0.12)]">
             <Leaf className="text-primary" size={34} />
           </div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">IoT Dashboard</h1>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">IoT Dashboard</h1>
           <p className="text-white/35 text-sm mt-2 tracking-wide">Smart Farm Management Platform</p>
         </div>
 
@@ -83,8 +83,8 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
         <div className="bg-white/[0.03] border border-white/[0.08] rounded-3xl p-8 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.5)]">
 
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Welcome</h2>
-            <p className="text-white/40 text-sm leading-relaxed">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Welcome</h2>
+            <p className="text-slate-600 dark:text-white/40 text-sm leading-relaxed">
               Sign in with your Google account to access<br />your IoT control dashboard.
             </p>
           </div>
@@ -129,11 +129,11 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           {/* ── Divider ───────────────────────────────────────────────── */}
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-white/[0.06]" />
-            <span className="text-white/20 text-xs">secure · encrypted</span>
+            <span className="text-slate-400 dark:text-white/20 text-xs">secure · encrypted</span>
             <div className="flex-1 h-px bg-white/[0.06]" />
           </div>
 
-          <p className="text-white/25 text-xs text-center leading-relaxed">
+          <p className="text-slate-500 dark:text-white/25 text-xs text-center leading-relaxed">
             By continuing you agree to our Terms of Service.<br />
             We never post to Google on your behalf.
           </p>

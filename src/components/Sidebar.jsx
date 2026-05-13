@@ -8,9 +8,9 @@ const iconMap = {
 
 export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeTool, setActiveTool, user, logout }) {
   return (
-    <aside className="w-64 h-screen fixed left-0 top-0 bg-black/80 backdrop-blur-md border-r border-white/5 p-6 flex flex-col gap-8 z-10 hidden md:flex">
+    <aside className="w-64 h-screen fixed left-0 top-0 bg-white/80 dark:bg-black/80 backdrop-blur-md border-r border-slate-200 dark:border-white/5 p-6 flex flex-col gap-8 z-10 hidden md:flex">
       <div>
-        <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-4">Workspaces</h2>
+        <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider mb-4">Workspaces</h2>
         <div className="space-y-1.5">
           {WORKSPACES.map(ws => {
             const Icon = iconMap[ws.icon];
@@ -22,7 +22,7 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                   isActive 
                   ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-primary/30' 
-                  : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
+                  : 'text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:bg-white/5 hover:text-slate-900 dark:text-white border border-transparent'
                 }`}
               >
                 <Icon size={18} className={isActive ? 'text-primary' : ''} />
@@ -34,7 +34,7 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
       </div>
 
       <div>
-        <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-4">Tools</h2>
+        <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider mb-4">Tools</h2>
         <div className="space-y-1.5">
           {TOOLS.map(tool => {
             const Icon = iconMap[tool.icon];
@@ -46,7 +46,7 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                   isActive 
                   ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-primary/30' 
-                  : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
+                  : 'text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:bg-white/5 hover:text-slate-900 dark:text-white border border-transparent'
                 }`}
               >
                 <Icon size={18} className={isActive ? 'text-primary' : ''} />
@@ -65,13 +65,13 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
               </span>
            </div>
            <div className="flex flex-col text-left min-w-0">
-              <span className="text-sm font-medium text-white truncate">{user?.displayName || 'User'}</span>
-              <span className="text-xs text-white/50 truncate">{user?.email}</span>
+              <span className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.displayName || 'User'}</span>
+              <span className="text-xs text-slate-600 dark:text-white/50 truncate">{user?.email}</span>
            </div>
         </div>
         <button 
           onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-400/5 transition-all text-sm border border-transparent"
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-slate-600 dark:text-white/40 hover:text-red-400 hover:bg-red-400/5 transition-all text-sm border border-transparent"
         >
           <LogOut size={16} />
           <span>Sign Out</span>

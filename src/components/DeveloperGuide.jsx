@@ -13,7 +13,7 @@ function CopyBtn({ text }) {
     <button
       onClick={handle}
       className={`flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-lg font-semibold transition-all ${
-        copied ? 'bg-primary/20 text-primary' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'
+        copied ? 'bg-primary/20 text-primary' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/40 hover:bg-slate-200 dark:bg-white/10 hover:text-slate-900 dark:text-white'
       }`}
     >
       {copied ? <Check size={12} /> : <Copy size={12} />}
@@ -29,10 +29,10 @@ function CodeBlock({ code, language = 'cpp' }) {
       <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
         <CopyBtn text={code} />
       </div>
-      <pre className="bg-[#0a0c10] border border-white/[0.07] rounded-xl p-5 overflow-x-auto text-[12px] leading-relaxed font-mono text-white/70 scrollbar-thin">
+      <pre className="bg-[#0a0c10] border border-white/[0.07] rounded-xl p-5 overflow-x-auto text-[12px] leading-relaxed font-mono text-slate-700 dark:text-white/70 scrollbar-thin">
         <code>{code}</code>
       </pre>
-      <div className="absolute top-3 left-3 text-[10px] text-white/20 font-mono uppercase tracking-widest">
+      <div className="absolute top-3 left-3 text-[10px] text-slate-400 dark:text-white/20 font-mono uppercase tracking-widest">
         {language}
       </div>
     </div>
@@ -47,8 +47,8 @@ function Step({ n, label, desc }) {
         {n}
       </div>
       <div className="pt-1">
-        <p className="font-semibold text-white text-sm">{label}</p>
-        {desc && <p className="text-xs text-white/40 mt-0.5 leading-relaxed">{desc}</p>}
+        <p className="font-semibold text-slate-900 dark:text-white text-sm">{label}</p>
+        {desc && <p className="text-xs text-slate-600 dark:text-white/40 mt-0.5 leading-relaxed">{desc}</p>}
       </div>
     </div>
   );
@@ -186,8 +186,8 @@ export default function DeveloperGuide({ userUID }) {
           <BookOpen size={22} className="text-violet-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">MQTT Developer Guide</h2>
-          <p className="text-sm text-white/40 mt-0.5">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">MQTT Developer Guide</h2>
+          <p className="text-sm text-slate-600 dark:text-white/40 mt-0.5">
             أسهل طريقة لربط أجهزتك بالموقع عبر بروتوكول MQTT السريع (بدون Firebase)
           </p>
         </div>
@@ -205,7 +205,7 @@ export default function DeveloperGuide({ userUID }) {
         <div className="flex items-center flex-wrap gap-1 font-mono text-sm mb-4">
           {[
             { seg: userUID || '[UID]', color: 'text-primary', bg: 'bg-primary/10 px-2 py-0.5 rounded-md' },
-            { seg: '/', color: 'text-white/40' },
+            { seg: '/', color: 'text-slate-600 dark:text-white/40' },
             { seg: '[MQTT_Topic]', color: 'text-amber-300', bg: 'bg-amber-400/10 px-2 py-0.5 rounded-md' },
           ].map((p, i) => (
             <span key={i} className={`${p.color} ${p.bg || ''}`}>{p.seg}</span>
@@ -213,23 +213,23 @@ export default function DeveloperGuide({ userUID }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div className="bg-black/30 rounded-xl p-4 border border-white/5">
-            <p className="text-white/30 mb-2 font-semibold text-[10px] uppercase">Broker Info</p>
+          <div className="bg-slate-50 dark:bg-black/30 rounded-xl p-4 border border-slate-200 dark:border-white/5">
+            <p className="text-slate-500 dark:text-white/30 mb-2 font-semibold text-[10px] uppercase">Broker Info</p>
             <div className="space-y-1 font-mono">
-              <p><span className="text-white/40">Host:</span> <span className="text-white">broker.hivemq.com</span></p>
-              <p><span className="text-white/40">Port:</span> <span className="text-white">1883</span></p>
+              <p><span className="text-slate-600 dark:text-white/40">Host:</span> <span className="text-slate-900 dark:text-white">broker.hivemq.com</span></p>
+              <p><span className="text-slate-600 dark:text-white/40">Port:</span> <span className="text-slate-900 dark:text-white">1883</span></p>
             </div>
           </div>
-          <div className="bg-black/30 rounded-xl p-4 border border-white/5">
-            <p className="text-white/30 mb-2 font-semibold text-[10px] uppercase">Example Topic</p>
+          <div className="bg-slate-50 dark:bg-black/30 rounded-xl p-4 border border-slate-200 dark:border-white/5">
+            <p className="text-slate-500 dark:text-white/30 mb-2 font-semibold text-[10px] uppercase">Example Topic</p>
             <code className="text-amber-300 break-all">{userUID || 'UID'}/actuator/led</code>
           </div>
         </div>
       </div>
 
       {/* ── Steps ─────────────────────────────────────────────────── */}
-      <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6">
-        <h3 className="font-bold text-white mb-5 flex items-center gap-2">
+      <div className="bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-6">
+        <h3 className="font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
           <ChevronRight size={18} className="text-primary" />
           خطوات الربط البسيطة
         </h3>
@@ -246,8 +246,8 @@ export default function DeveloperGuide({ userUID }) {
       </div>
 
       {/* ── Code Tabs ─────────────────────────────────────────────── */}
-      <div className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden">
-        <div className="flex border-b border-white/10 bg-black/20 overflow-x-auto">
+      <div className="bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden">
+        <div className="flex border-b border-slate-200 dark:border-white/10 bg-black/20 overflow-x-auto">
           {TABS.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -258,7 +258,7 @@ export default function DeveloperGuide({ userUID }) {
                 className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold transition-all border-b-2 ${
                   isActive
                     ? 'text-violet-300 border-violet-400 bg-violet-500/5'
-                    : 'text-white/30 border-transparent hover:text-white/60 hover:bg-white/5'
+                    : 'text-slate-500 dark:text-white/30 border-transparent hover:text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:bg-white/5'
                 }`}
               >
                 <Icon size={13} />
@@ -269,11 +269,11 @@ export default function DeveloperGuide({ userUID }) {
         </div>
 
         {/* Active tab description */}
-        <div className="px-5 py-3 border-b border-white/5 bg-black/10">
+        <div className="px-5 py-3 border-b border-slate-200 dark:border-white/5 bg-black/10">
           {{
-            basic:  <p className="text-xs text-white/40">يقرأ أوامر <code className="text-amber-300">ON/OFF</code> عبر MQTT للتحكم في LED مباشرة. (سريع جداً)</p>,
-            sensor: <p className="text-xs text-white/40">يقرأ من حساس DHT22 ويرسل الحرارة والرطوبة لحظياً عبر MQTT.</p>,
-            car:    <p className="text-xs text-white/40">يستقبل أوامر الحركة للـ D-Pad والسرعة للتحكم الفوري بـ 4 محركات عبر L298N.</p>,
+            basic:  <p className="text-xs text-slate-600 dark:text-white/40">يقرأ أوامر <code className="text-amber-300">ON/OFF</code> عبر MQTT للتحكم في LED مباشرة. (سريع جداً)</p>,
+            sensor: <p className="text-xs text-slate-600 dark:text-white/40">يقرأ من حساس DHT22 ويرسل الحرارة والرطوبة لحظياً عبر MQTT.</p>,
+            car:    <p className="text-xs text-slate-600 dark:text-white/40">يستقبل أوامر الحركة للـ D-Pad والسرعة للتحكم الفوري بـ 4 محركات عبر L298N.</p>,
           }[activeTab]}
         </div>
 
@@ -283,16 +283,16 @@ export default function DeveloperGuide({ userUID }) {
       </div>
 
       {/* ── Libraries ─────────────────────────────────────────────── */}
-      <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6">
-        <h3 className="font-bold text-white mb-4 text-sm">المكتبات المطلوبة</h3>
+      <div className="bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-6">
+        <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-sm">المكتبات المطلوبة</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           {[
             { name: 'PubSubClient', author: 'Nick O\'Leary', note: 'المكتبة الأساسية للـ MQTT (خفيفة جداً)' },
             { name: 'DHT sensor library', author: 'Adafruit', note: 'فقط إذا كنت تستخدم حساس حرارة' },
           ].map(lib => (
-            <div key={lib.name} className="bg-black/30 border border-white/5 rounded-xl p-3">
-              <p className="font-mono text-white/70 font-semibold mb-0.5">{lib.name}</p>
-              <p className="text-white/30">by {lib.author}</p>
+            <div key={lib.name} className="bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/5 rounded-xl p-3">
+              <p className="font-mono text-slate-700 dark:text-white/70 font-semibold mb-0.5">{lib.name}</p>
+              <p className="text-slate-500 dark:text-white/30">by {lib.author}</p>
               <p className="text-primary/60 mt-1.5">{lib.note}</p>
             </div>
           ))}
