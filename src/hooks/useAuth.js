@@ -48,27 +48,35 @@ export function useAuth() {
       authListenerFired.current = true;
       clearTimeout(watchdog);
 
-      void (async () => {
-        try {
-          if (firebaseUser) {
-            const userData = await fetchUserProfile(firebaseUser.uid);
-            const isGoogleUser = firebaseUser.providerData?.some(p => p.providerId === 'google.com');
-            setUser({
+      if (firebaseUser) {
+        const isGoogleUser = firebaseUser.providerData?.some(p => p.providerId === 'google.com');
+        
+        // 1. Set preliminary user data immediately to unblock the UI (Fast Load)
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          emailVerified: firebaseUser.emailVerified || isGoogleUser,
+          displayName: firebaseUser.displayName || 'User',
+          photoURL: firebaseUser.photoURL || null,
+        });
+        setLoading(false);
+
+        // 2. Fetch extra profile details in the background
+        fetchUserProfile(firebaseUser.uid).then((userData) => {
+          if (Object.keys(userData).length > 0) {
+            setUser(prev => prev ? {
+              ...prev,
               ...userData,
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-              // Google accounts are always verified; treat them as verified
-              emailVerified: firebaseUser.emailVerified || isGoogleUser,
-              displayName: firebaseUser.displayName || userData.displayName || 'User',
-              photoURL: firebaseUser.photoURL || userData.photoURL || null,
-            });
-          } else {
-            setUser(null);
+              displayName: firebaseUser.displayName || userData.displayName || prev.displayName,
+              photoURL: firebaseUser.photoURL || userData.photoURL || prev.photoURL,
+            } : null);
           }
-        } finally {
-          setLoading(false);
-        }
-      })();
+        }).catch(() => {});
+
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
     });
 
     return () => {
