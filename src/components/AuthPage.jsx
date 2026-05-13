@@ -49,7 +49,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1115] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
 
       {/* ── Ambient glow blobs ─────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">

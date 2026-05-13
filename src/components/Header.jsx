@@ -24,7 +24,7 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
   }
 
   return (
-    <header className="flex items-center justify-between py-4 px-6 md:px-8 border-b border-white/5 bg-[#0F1115]/50 backdrop-blur-sm sticky top-0 z-10">
+    <header className="flex items-center justify-between py-4 px-6 md:px-8 border-b border-white/5 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
       <div className="flex items-center gap-4">
         <button onClick={toggleMobileMenu} className="md:hidden text-white/70 hover:text-white">
           <Menu size={24} />

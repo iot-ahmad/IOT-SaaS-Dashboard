@@ -8,7 +8,7 @@ const iconMap = {
 
 export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeTool, setActiveTool, user, logout }) {
   return (
-    <aside className="w-64 h-screen fixed left-0 top-0 bg-[#0F1115]/80 backdrop-blur-md border-r border-white/5 p-6 flex flex-col gap-8 z-10 hidden md:flex">
+    <aside className="w-64 h-screen fixed left-0 top-0 bg-black/80 backdrop-blur-md border-r border-white/5 p-6 flex flex-col gap-8 z-10 hidden md:flex">
       <div>
         <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-4">Workspaces</h2>
         <div className="space-y-1.5">
