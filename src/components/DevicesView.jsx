@@ -1,16 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Cpu, Search, Filter, MoreVertical, Plus, Copy, Check,
-  X, Download, BarChart2, Trash2, Wifi, WifiOff, Activity,
-  Thermometer, Droplets, Zap, Sun, CircuitBoard
+  Search, Plus, Copy, Check, X, Download, BarChart2,
+  Trash2, Wifi, WifiOff, Activity, Thermometer, Zap, CircuitBoard
 } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, LineChart, Line, ReferenceLine
+  ResponsiveContainer, LineChart, Line, BarChart, Bar,
+  ScatterChart, Scatter, RadarChart, Radar, PolarGrid,
+  PolarAngleAxis, ReferenceLine
 } from 'recharts';
 import * as XLSX from 'xlsx';
+
+// ── Chart Types ────────────────────────────────────────────────────────────────
+const CHART_TYPES = [
+  { id: 'area',    label: '📈 Area',    desc: 'Continuous data over time (temp, humidity)' },
+  { id: 'line',    label: '📉 Line',    desc: 'Precise value tracking, minimal visual noise' },
+  { id: 'bar',     label: '📊 Bar',     desc: 'Comparing discrete readings or events' },
+  { id: 'scatter', label: '🔵 Scatter', desc: 'Detect patterns and outliers' },
+  { id: 'radar',   label: '🕸 Radar',   desc: 'Multi-variable comparison (max 8 points)' },
+];
 
 // ── ESP32 GPIO options ──────────────────────────────────────────────────────
 const GPIO_OPTIONS = [
@@ -99,9 +109,10 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 // ── Sensor Chart Panel ───────────────────────────────────────────────────────
-function SensorChartPanel({ device, readings }) {
+function SensorChartPanel({ device, readings, onChartTypeChange }) {
   const data = readings[device.topic] || [];
   const hasData = data.length > 0;
+  const chartType = device.chartType || 'area';
 
   const avg = hasData ? (data.reduce((s, r) => s + r.value, 0) / data.length).toFixed(1) : '—';
   const max = hasData ? Math.max(...data.map(r => r.value)).toFixed(1) : '—';
@@ -114,9 +125,92 @@ function SensorChartPanel({ device, readings }) {
     XLSX.writeFile(wb, `${slugify(device.name)}_readings.xlsx`);
   };
 
+  const gridProps = { strokeDasharray: '3 3', stroke: 'rgba(255,255,255,0.05)' };
+  const xProps = { dataKey: 'time', tick: { fontSize: 10, fill: 'rgba(255,255,255,0.3)' } };
+  const yProps = { tick: { fontSize: 10, fill: 'rgba(255,255,255,0.3)' } };
+  const radarData = data.slice(-8).map((r, i) => ({ subject: r.time, value: r.value }));
+
+  const renderChart = () => {
+    if (!hasData) return (
+      <div className="h-[220px] flex items-center justify-center text-white/20 text-sm">
+        Waiting for MQTT data from ESP32...
+      </div>
+    );
+    switch (chartType) {
+      case 'line':
+        return (
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid {...gridProps} />
+              <XAxis {...xProps} />
+              <YAxis {...yProps} />
+              <Tooltip content={<CustomTooltip />} />
+              <ReferenceLine y={Number(avg)} stroke="#f59e0b" strokeDasharray="4 4" />
+              <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} dot={false} activeDot={{ r: 5 }} name="Reading" />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+      case 'bar':
+        return (
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid {...gridProps} />
+              <XAxis {...xProps} />
+              <YAxis {...yProps} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Reading" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+      case 'scatter':
+        return (
+          <ResponsiveContainer width="100%" height={220}>
+            <ScatterChart margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid {...gridProps} />
+              <XAxis dataKey="time" name="Time" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} />
+              <YAxis dataKey="value" name="Value" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3' }} />
+              <Scatter data={data} fill="#ec4899" name="Reading" />
+            </ScatterChart>
+          </ResponsiveContainer>
+        );
+      case 'radar':
+        return (
+          <ResponsiveContainer width="100%" height={220}>
+            <RadarChart data={radarData}>
+              <PolarGrid stroke="rgba(255,255,255,0.08)" />
+              <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.3)' }} />
+              <Radar name="Reading" dataKey="value" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.25} />
+              <Tooltip content={<CustomTooltip />} />
+            </RadarChart>
+          </ResponsiveContainer>
+        );
+      default: // area
+        return (
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id={`grad_${device.id}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid {...gridProps} />
+              <XAxis {...xProps} />
+              <YAxis {...yProps} />
+              <Tooltip content={<CustomTooltip />} />
+              <ReferenceLine y={Number(avg)} stroke="#f59e0b" strokeDasharray="4 4" />
+              <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2}
+                fill={`url(#grad_${device.id})`} name="Reading" dot={false} activeDot={{ r: 5 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        );
+    }
+  };
+
   return (
     <div className="mt-4 space-y-3">
-      {/* Stats row */}
+      {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[['Avg', avg], ['Max', max], ['Min', min]].map(([label, val]) => (
           <div key={label} className="bg-white/[0.03] border border-white/10 rounded-xl p-3 text-center">
@@ -126,47 +220,42 @@ function SensorChartPanel({ device, readings }) {
         ))}
       </div>
 
+      {/* Chart Type Selector */}
+      <div className="flex gap-2 flex-wrap">
+        {CHART_TYPES.map(ct => (
+          <button
+            key={ct.id}
+            onClick={() => onChartTypeChange(device.id, ct.id)}
+            title={ct.desc}
+            className={`text-xs px-3 py-1.5 rounded-lg transition-all border ${
+              chartType === ct.id
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-white/10 bg-white/5 text-white/40 hover:border-white/20 hover:text-white/70'
+            }`}
+          >
+            {ct.label}
+          </button>
+        ))}
+      </div>
+
       {/* Chart */}
       <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Activity size={14} className="text-primary" />
             <span className="text-xs font-semibold text-white/60">Live Readings</span>
+            <span className="text-[10px] text-white/30">· {data.length} points</span>
           </div>
-          <button
-            onClick={exportXLSX}
-            className="flex items-center gap-1.5 text-xs text-white/50 hover:text-primary transition-colors bg-white/5 px-3 py-1.5 rounded-lg"
-          >
+          <button onClick={exportXLSX} className="flex items-center gap-1.5 text-xs text-white/50 hover:text-primary transition-colors bg-white/5 px-3 py-1.5 rounded-lg">
             <Download size={12} /> Export Excel
           </button>
         </div>
-        {hasData ? (
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id={`grad_${device.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="time" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} />
-              <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} />
-              <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine y={Number(avg)} stroke="#f59e0b" strokeDasharray="4 4" />
-              <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2}
-                fill={`url(#grad_${device.id})`} name="Reading" dot={false} activeDot={{ r: 5 }} />
-            </AreaChart>
-          </ResponsiveContainer>
-        ) : (
-          <div className="h-[200px] flex items-center justify-center text-white/20 text-sm">
-            Waiting for MQTT data from ESP32...
-          </div>
-        )}
+        {renderChart()}
       </div>
     </div>
   );
 }
+
 
 // ── Add Device Modal ─────────────────────────────────────────────────────────
 function AddDeviceModal({ onClose, onAdd, userUID }) {
@@ -376,6 +465,10 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
 
   const handleAdd = (device) => saveDevices([...devices, device]);
   const handleDelete = (id) => saveDevices(devices.filter(d => d.id !== id));
+  const handleChartTypeChange = (id, chartType) => {
+    const updated = devices.map(d => d.id === id ? { ...d, chartType } : d);
+    saveDevices(updated);
+  };
 
   const filtered = devices.filter(d =>
     d.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -506,7 +599,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
               {/* Expanded chart panel */}
               {expanded && isSensor && (
                 <div className="px-5 pb-5 border-t border-white/5 pt-4">
-                  <SensorChartPanel device={device} readings={readings} />
+                  <SensorChartPanel device={device} readings={readings} onChartTypeChange={handleChartTypeChange} />
                 </div>
               )}
             </div>
