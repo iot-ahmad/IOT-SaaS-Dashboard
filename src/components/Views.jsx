@@ -6,6 +6,7 @@ import {
   GreenhouseTempCard, 
   AutomationsCard 
 } from './Cards';
+import ESP32Model from './ESP32Model';
 import { Lightbulb, Wind, ShieldCheck, Zap, Users, Thermometer, Briefcase } from 'lucide-react';
 
 const Card = ({ children, className = '' }) => (
@@ -29,9 +30,11 @@ export const FarmView = ({ deviceStates, publish }) => (
 );
 
 export const HomeView = () => (
-  <div className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <Card>
+  <div className="relative min-h-[600px] w-full">
+    <ESP32Model />
+    <div className="relative z-10 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <Card>
         <div className="flex justify-between items-start mb-4">
           <div>
             <div className="flex items-center gap-2 mb-2 text-yellow-400">
@@ -85,6 +88,7 @@ export const HomeView = () => (
         </div>
         <p className="text-xs text-emerald-400 mt-4">↓ 15% lower than average</p>
       </Card>
+    </div>
     </div>
   </div>
 );
