@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Leaf, Loader2, Wifi, ShieldCheck, Zap } from 'lucide-react';
+import { CanvasRevealEffect } from './CanvasRevealBackground';
 
-/* ── Google "G" colour-ring SVG ───────────────────────────────────────── */
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -23,13 +24,12 @@ const GoogleIcon = () => (
   </svg>
 );
 
-/* ── Feature pill ─────────────────────────────────────────────────────── */
 const Feature = ({ icon: Icon, label }) => (
-  <div className="flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3">
-    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+  <div className="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 rounded-full px-3 py-2.5 sm:rounded-xl sm:px-4 sm:py-3">
+    <div className="w-7 h-7 rounded-full sm:rounded-lg bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
       <Icon size={14} className="text-primary" />
     </div>
-    <span className="text-slate-700 dark:text-white/60 text-xs font-medium">{label}</span>
+    <span className="text-white/55 text-[11px] sm:text-xs font-medium leading-tight">{label}</span>
   </div>
 );
 
@@ -49,99 +49,111 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center p-6 relative overflow-hidden">
-
-      {/* ── Ambient glow blobs ─────────────────────────────────────────── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-primary/[0.06] rounded-full blur-[120px]" />
-        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-blue-500/[0.06] rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-indigo-500/[0.03] rounded-full blur-[100px]" />
+    <div className="relative flex min-h-screen w-full flex-col bg-black text-white overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0">
+          <CanvasRevealEffect
+            animationSpeed={3}
+            containerClassName="bg-black"
+            colors={[
+              [255, 255, 255],
+              [16, 185, 129],
+            ]}
+            dotSize={5}
+            reverse={false}
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.92)_0%,_transparent_72%)]" />
+        <div className="pointer-events-none absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
       </div>
 
-      {/* ── Grid texture overlay ───────────────────────────────────────── */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-[0.025]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px)',
-          backgroundSize: '40px 40px',
-        }}
-      />
-
-      <div className="w-full max-w-md relative z-10">
-
-        {/* ── Logo ──────────────────────────────────────────────────────── */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-[72px] h-[72px] rounded-[22px] bg-primary/10 border border-primary/20 mb-5 shadow-[0_0_40px_rgba(74,222,128,0.12)]">
-            <Leaf className="text-primary" size={34} />
-          </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">IoT Dashboard</h1>
-          <p className="text-white/35 text-sm mt-2 tracking-wide">Smart Farm Management Platform</p>
+      <header
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 pl-4 pr-4 py-2
+                   rounded-full border border-[#333] bg-[#1f1f1f57] backdrop-blur-sm pointer-events-none"
+        aria-hidden
+      >
+        <div className="relative w-5 h-5 flex items-center justify-center opacity-90">
+          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 -translate-x-1/2" />
+          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 -translate-y-1/2" />
+          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 -translate-y-1/2" />
+          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 -translate-x-1/2" />
         </div>
+        <Leaf className="text-primary w-4 h-4" aria-hidden />
+      </header>
 
-        {/* ── Card ──────────────────────────────────────────────────────── */}
-        <div className="bg-white/[0.03] border border-white/[0.08] rounded-3xl p-8 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.5)]">
-
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pt-24 pb-12">
+        <motion.div
+          className="w-full max-w-md"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+        >
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Welcome</h2>
-            <p className="text-slate-600 dark:text-white/40 text-sm leading-relaxed">
-              Sign in with your Google account to access<br />your IoT control dashboard.
+            <div className="inline-flex items-center justify-center w-[72px] h-[72px] rounded-[22px] bg-white/5 border border-white/10 mb-5 shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+              <Leaf className="text-primary" size={34} />
+            </div>
+            <h1 className="text-[2.25rem] sm:text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">
+              IoT Dashboard
+            </h1>
+            <p className="text-base sm:text-lg text-white/55 font-light mt-2">Smart Farm Management Platform</p>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-7 sm:p-8 backdrop-blur-[12px] shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
+            <div className="text-center mb-7">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Welcome</h2>
+              <p className="text-white/45 text-sm leading-relaxed">
+                Sign in with your Google account to access
+                <br />
+                your IoT control dashboard.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-7">
+              <Feature icon={Wifi} label="Real-time MQTT" />
+              <Feature icon={ShieldCheck} label="Secure Auth" />
+              <Feature icon={Zap} label="Instant Access" />
+            </div>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/25 text-red-200 text-sm rounded-2xl p-4 mb-5 text-center leading-relaxed">
+                {error}
+              </div>
+            )}
+
+            <button
+              id="btn-google-signin"
+              type="button"
+              onClick={handleGoogle}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 backdrop-blur-[2px] bg-white/5 hover:bg-white/10
+                         text-white border border-white/10 rounded-full py-3.5 px-4 font-medium text-sm
+                         transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <Loader2 size={20} className="animate-spin text-white/70" />
+              ) : (
+                <GoogleIcon />
+              )}
+              {loading ? 'Connecting…' : 'Continue with Google'}
+            </button>
+
+            <div className="flex items-center gap-4 my-6">
+              <div className="h-px bg-white/10 flex-1" />
+              <span className="text-white/35 text-xs whitespace-nowrap">secure · encrypted</span>
+              <div className="h-px bg-white/10 flex-1" />
+            </div>
+
+            <p className="text-white/30 text-xs text-center leading-relaxed">
+              By continuing you agree to our Terms of Service.
+              <br />
+              We never post to Google on your behalf.
             </p>
           </div>
 
-          {/* ── Feature pills ─────────────────────────────────────────── */}
-          <div className="grid grid-cols-3 gap-2 mb-8">
-            <Feature icon={Wifi}        label="Real-time MQTT"   />
-            <Feature icon={ShieldCheck} label="Secure Auth"      />
-            <Feature icon={Zap}         label="Instant Access"   />
-          </div>
-
-          {/* ── Error banner ──────────────────────────────────────────── */}
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm rounded-2xl p-4 mb-5 text-center leading-relaxed">
-              {error}
-            </div>
-          )}
-
-          {/* ── Google button ─────────────────────────────────────────── */}
-          <button
-            id="btn-google-signin"
-            onClick={handleGoogle}
-            disabled={loading}
-            className="
-              w-full flex items-center justify-center gap-3
-              bg-white hover:bg-white/90 active:scale-[0.98]
-              text-gray-800 font-semibold text-sm
-              py-3.5 rounded-2xl
-              transition-all duration-200
-              disabled:opacity-60 disabled:cursor-not-allowed
-              shadow-[0_4px_24px_rgba(255,255,255,0.12)]
-            "
-          >
-            {loading ? (
-              <Loader2 size={20} className="animate-spin text-gray-500" />
-            ) : (
-              <GoogleIcon />
-            )}
-            {loading ? 'Connecting…' : 'Continue with Google'}
-          </button>
-
-          {/* ── Divider ───────────────────────────────────────────────── */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-white/[0.06]" />
-            <span className="text-slate-400 dark:text-white/20 text-xs">secure · encrypted</span>
-            <div className="flex-1 h-px bg-white/[0.06]" />
-          </div>
-
-          <p className="text-slate-500 dark:text-white/25 text-xs text-center leading-relaxed">
-            By continuing you agree to our Terms of Service.<br />
-            We never post to Google on your behalf.
+          <p className="text-center text-white/25 text-xs mt-8">
+            IoT SaaS Dashboard © 2026. Built for ESP32 Integration.
           </p>
-        </div>
-
-        <p className="text-center text-white/15 text-xs mt-6">
-          IoT SaaS Dashboard © 2026. Built for ESP32 Integration.
-        </p>
+        </motion.div>
       </div>
     </div>
   );
