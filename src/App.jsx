@@ -10,6 +10,8 @@ import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 function App() {
   const {
@@ -58,12 +60,32 @@ function Dashboard({ user, logout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Dynamic Workspaces State
-  const [customWorkspaces, setCustomWorkspaces] = useState(() => {
-    const saved = localStorage.getItem(`workspaces_${user.uid}`);
-    return saved ? JSON.parse(saved) : WORKSPACES;
-  });
+  const [customWorkspaces, setCustomWorkspaces] = useState(WORKSPACES);
 
-  const handleAddWorkspace = (name, esp32Prefix) => {
+  useEffect(() => {
+    const fetchWorkspaces = async () => {
+      try {
+        const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          setCustomWorkspaces(snap.data().list || WORKSPACES);
+        } else {
+          // If no workspaces in firestore, try loading from legacy local storage
+          const saved = localStorage.getItem(`workspaces_${user.uid}`);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            setCustomWorkspaces(parsed);
+            await setDoc(docRef, { list: parsed });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load workspaces from Firestore", err);
+      }
+    };
+    fetchWorkspaces();
+  }, [user.uid]);
+
+  const handleAddWorkspace = async (name, esp32Prefix) => {
     const newWs = {
       id: `custom_${Date.now()}`,
       name,
@@ -73,8 +95,14 @@ function Dashboard({ user, logout }) {
     };
     const updated = [...customWorkspaces, newWs];
     setCustomWorkspaces(updated);
-    localStorage.setItem(`workspaces_${user.uid}`, JSON.stringify(updated));
     setActiveWorkspace(newWs.id);
+    
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
+      await setDoc(docRef, { list: updated });
+    } catch (err) {
+      console.error("Failed to save workspace to Firestore", err);
+    }
   };
 
   // Use Firebase UID as the MQTT topic prefix - unique per user
@@ -104,7 +132,15 @@ function Dashboard({ user, logout }) {
 
     const currentWorkspace = customWorkspaces.find(ws => ws.id === activeWorkspace);
 
-    if (currentWorkspace && currentWorkspace.id === 'home') return <HomeView />;
+    if (currentWorkspace && currentWorkspace.id === 'home') {
+      return (
+        <HomeView 
+          workspaces={customWorkspaces} 
+          onAddWorkspace={handleAddWorkspace} 
+          setActiveWorkspace={setActiveWorkspace} 
+        />
+      );
+    }
     if (currentWorkspace && currentWorkspace.id === 'controller') return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} />;
     
     // For custom added dashboards
@@ -120,7 +156,13 @@ function Dashboard({ user, logout }) {
       );
     }
 
-    return <HomeView />;
+    return (
+      <HomeView 
+        workspaces={customWorkspaces} 
+        onAddWorkspace={handleAddWorkspace} 
+        setActiveWorkspace={setActiveWorkspace} 
+      />
+    );
   };
 
   return (

@@ -7,6 +7,9 @@ export default function ESP32Model() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.8, rotateX: 25, rotateY: -20, rotateZ: 5 }}
         animate={{ opacity: 1, scale: 1.1, rotateX: 25, rotateY: -20, rotateZ: 5 }}
+        whileHover={{ rotateY: -10, rotateX: 15 }}
+        drag
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         transition={{ duration: 1.5, bounce: 0.4, type: "spring" }}
         className="relative pointer-events-auto cursor-grab active:cursor-grabbing"
         style={{ transformStyle: 'preserve-3d' }}
