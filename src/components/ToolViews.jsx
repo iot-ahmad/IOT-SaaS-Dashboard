@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link, CreditCard, Lock, Smartphone, Mail, Activity } from 'lucide-react';
+import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity } from 'lucide-react';
 import { DEVICES, PIN_MAP } from '../data/mockData';
+import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const Card = ({ children, className = '' }) => (
   <div className={`bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-6 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-slate-300 dark:border-white/20 ${className}`}>
@@ -243,6 +246,60 @@ export const AlertsView = () => (
 export const SettingsView = ({ userUID, user, logout }) => {
   const [activeTab, setActiveTab] = useState('General');
   const [uidCopied, setUidCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null); // { msg, type }
+
+  // General tab state
+  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [language, setLanguage] = useState('English');
+  const [timezone, setTimezone] = useState('(GMT+03:00) Amman');
+
+  // Notifications state
+  const [notifications, setNotifications] = useState({
+    push: true,
+    email: true,
+    sms: false,
+    marketing: false,
+  });
+
+  // Security state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Connected Accounts
+  const [providers, setProviders] = useState([]);
+
+  // Load Settings from Firestore
+  useEffect(() => {
+    if (!userUID) return;
+    const fetchSettings = async () => {
+      try {
+        const docRef = doc(db, 'users', userUID, 'settings', 'prefs');
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.language) setLanguage(data.language);
+          if (data.timezone) setTimezone(data.timezone);
+          if (data.notifications) setNotifications(data.notifications);
+        }
+      } catch (err) {
+        console.error('Failed to load settings', err);
+      }
+    };
+    fetchSettings();
+  }, [userUID]);
+
+  useEffect(() => {
+    if (user) {
+      setProviders(user.providerData.map(p => p.providerId));
+    }
+  }, [user]);
+
+  const showToast = (msg, type = 'success') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const copyUID = () => {
     navigator.clipboard.writeText(userUID);
@@ -250,8 +307,90 @@ export const SettingsView = ({ userUID, user, logout }) => {
     setTimeout(() => setUidCopied(false), 2500);
   };
 
+  const saveGeneral = async () => {
+    setLoading(true);
+    try {
+      if (user && displayName !== user.displayName) {
+        await updateProfile(user, { displayName });
+      }
+      const docRef = doc(db, 'users', userUID, 'settings', 'prefs');
+      await setDoc(docRef, { language, timezone }, { merge: true });
+      showToast('Profile updated successfully!');
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+    setLoading(false);
+  };
+
+  const saveNotifications = async (newNotifs) => {
+    setNotifications(newNotifs);
+    try {
+      const docRef = doc(db, 'users', userUID, 'settings', 'prefs');
+      await setDoc(docRef, { notifications: newNotifs }, { merge: true });
+      showToast('Notifications updated!');
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to update notifications', 'error');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      return showToast('New passwords do not match', 'error');
+    }
+    if (!currentPassword) {
+      return showToast('Current password is required', 'error');
+    }
+    setLoading(true);
+    try {
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+      showToast('Password updated successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+    setLoading(false);
+  };
+
+  const linkAccount = async (provider) => {
+    setLoading(true);
+    try {
+      let authProvider;
+      if (provider === 'google.com') authProvider = new GoogleAuthProvider();
+      if (provider === 'github.com') authProvider = new GithubAuthProvider();
+      await linkWithPopup(user, authProvider);
+      setProviders([...providers, provider]);
+      showToast(`Linked ${provider} successfully`);
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+    setLoading(false);
+  };
+
+  const unlinkAccount = async (provider) => {
+    setLoading(true);
+    try {
+      await unlink(user, provider);
+      setProviders(providers.filter(p => p !== provider));
+      showToast(`Unlinked ${provider}`);
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+    setLoading(false);
+  };
+
   return (
-  <div className="space-y-6">
+  <div className="space-y-6 relative">
+    {toast && (
+      <div className={`absolute top-0 right-0 z-50 px-4 py-2 rounded-lg shadow-lg font-medium text-sm transition-all animate-fadeIn ${toast.type === 'error' ? 'bg-red-500/90 text-white' : 'bg-emerald-500/90 text-white'}`}>
+        {toast.msg}
+      </div>
+    )}
+
     <h2 className="text-xl font-bold">Profile &amp; Settings</h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-1 space-y-2">
@@ -318,11 +457,11 @@ export const SettingsView = ({ userUID, user, logout }) => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-slate-500 dark:text-white/30 block mb-1">Full Name</label>
-                  <input className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50" defaultValue={user?.displayName || ''} />
+                  <input className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={displayName} onChange={e => setDisplayName(e.target.value)} />
                 </div>
                 <div>
                   <label className="text-xs text-slate-500 dark:text-white/30 block mb-1">Email</label>
-                  <input className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-slate-600 dark:text-white/50" defaultValue={user?.email || ''} readOnly />
+                  <input className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-slate-600 dark:text-white/50" value={user?.email || ''} readOnly />
                 </div>
               </div>
             </Card>
@@ -333,19 +472,28 @@ export const SettingsView = ({ userUID, user, logout }) => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <label className="text-xs text-slate-500 dark:text-white/30 block mb-1">Language</label>
-                  <select className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 focus:outline-none focus:border-primary/50">
+                  <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 focus:outline-none focus:border-primary/50">
                     <option>English</option>
                     <option>Arabic</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-xs text-slate-500 dark:text-white/30 block mb-1">Timezone</label>
-                  <select className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 focus:outline-none focus:border-primary/50">
+                  <select value={timezone} onChange={e => setTimezone(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 focus:outline-none focus:border-primary/50">
                     <option>(GMT+03:00) Amman</option>
+                    <option>(GMT+00:00) UTC</option>
                   </select>
                 </div>
               </div>
             </Card>
+
+            <button
+              onClick={saveGeneral}
+              disabled={loading}
+              className="w-full bg-primary/20 border border-primary/30 text-primary font-bold py-3 rounded-xl hover:bg-primary/30 transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Saving...' : 'Save General Settings'}
+            </button>
 
             {/* Logout */}
             <button
@@ -363,21 +511,23 @@ export const SettingsView = ({ userUID, user, logout }) => {
               <h3 className="font-bold mb-4 flex items-center gap-2"><Bell size={18} className="text-yellow-400" /> Notifications</h3>
               <div className="space-y-4">
                 {[
-                  { label: 'Push Notifications', desc: 'Receive alerts directly on your device', active: true },
-                  { label: 'Email Alerts', desc: 'Get daily summaries and critical alerts via email', active: true },
-                  { label: 'SMS Notifications', desc: 'Critical system failures sent to your phone', active: false },
-                  { label: 'Marketing Communications', desc: 'Updates about new features and offers', active: false },
-                ].map((item, i) => (
+                  { id: 'push', label: 'Push Notifications', desc: 'Receive alerts directly on your device' },
+                  { id: 'email', label: 'Email Alerts', desc: 'Get daily summaries and critical alerts via email' },
+                  { id: 'sms', label: 'SMS Notifications', desc: 'Critical system failures sent to your phone' },
+                  { id: 'marketing', label: 'Marketing Communications', desc: 'Updates about new features and offers' },
+                ].map((item, i) => {
+                  const active = notifications[item.id];
+                  return (
                   <div key={i} className="flex items-center justify-between py-2">
                     <div>
                       <p className="text-sm font-medium">{item.label}</p>
                       <p className="text-xs text-slate-600 dark:text-white/40">{item.desc}</p>
                     </div>
-                    <button className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${item.active ? 'bg-primary' : 'bg-slate-300 dark:bg-white/20'}`}>
-                      <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-300 ${item.active ? 'translate-x-4' : 'translate-x-0'}`} />
+                    <button onClick={() => saveNotifications({...notifications, [item.id]: !active})} className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${active ? 'bg-primary' : 'bg-slate-300 dark:bg-white/20'}`}>
+                      <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-300 ${active ? 'translate-x-4' : 'translate-x-0'}`} />
                     </button>
                   </div>
-                ))}
+                )})}
               </div>
             </Card>
           </div>
@@ -392,10 +542,12 @@ export const SettingsView = ({ userUID, user, logout }) => {
                 <div>
                   <h4 className="text-sm font-bold mb-3 flex items-center gap-2"><Lock size={14} className="text-slate-600 dark:text-white/50" /> Change Password</h4>
                   <div className="space-y-3">
-                    <input type="password" placeholder="Current Password" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 placeholder:text-slate-500 dark:text-white/30" />
-                    <input type="password" placeholder="New Password" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 placeholder:text-slate-500 dark:text-white/30" />
-                    <input type="password" placeholder="Confirm New Password" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 placeholder:text-slate-500 dark:text-white/30" />
-                    <button className="bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:bg-white/20 text-slate-900 dark:text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">Update Password</button>
+                    <input type="password" placeholder="Current Password" value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 placeholder:text-slate-500 dark:text-white/30" />
+                    <input type="password" placeholder="New Password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 placeholder:text-slate-500 dark:text-white/30" />
+                    <input type="password" placeholder="Confirm New Password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 placeholder:text-slate-500 dark:text-white/30" />
+                    <button onClick={handleChangePassword} disabled={loading} className="bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:bg-white/20 text-slate-900 dark:text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50">
+                      {loading ? 'Updating...' : 'Update Password'}
+                    </button>
                   </div>
                 </div>
 
@@ -414,16 +566,9 @@ export const SettingsView = ({ userUID, user, logout }) => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center bg-slate-100 dark:bg-white/5 p-3 rounded-lg border border-primary/20">
                       <div>
-                        <p className="text-xs font-bold text-primary">Windows • Chrome (Current)</p>
-                        <p className="text-[10px] text-slate-600 dark:text-white/40">Amman, JO • IP: 192.168.1.1</p>
+                        <p className="text-xs font-bold text-primary">{navigator.platform} • Current Session</p>
+                        <p className="text-[10px] text-slate-600 dark:text-white/40">{navigator.userAgent.slice(0, 60)}...</p>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center bg-slate-100 dark:bg-white/5 p-3 rounded-lg">
-                      <div>
-                        <p className="text-xs font-bold">iPhone 13 • Safari</p>
-                        <p className="text-[10px] text-slate-600 dark:text-white/40">Amman, JO • 2 days ago</p>
-                      </div>
-                      <button className="text-xs text-red-400 hover:text-red-300">Revoke</button>
                     </div>
                   </div>
                 </div>
@@ -435,7 +580,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
         {activeTab === 'Connected Accounts' && (
           <div className="space-y-6">
             <Card>
-              <h3 className="font-bold mb-4 flex items-center gap-2"><Link size={18} className="text-purple-400" /> Connected Accounts</h3>
+              <h3 className="font-bold mb-4 flex items-center gap-2"><LinkIcon size={18} className="text-purple-400" /> Connected Accounts</h3>
               <p className="text-sm text-slate-600 dark:text-white/40 mb-6">Link external services to log in faster and sync your data.</p>
               
               <div className="space-y-4">
@@ -446,23 +591,27 @@ export const SettingsView = ({ userUID, user, logout }) => {
                     </div>
                     <div>
                       <p className="text-sm font-bold">Google</p>
-                      <p className="text-xs text-primary">Connected</p>
+                      <p className={`text-xs ${providers.includes('google.com') ? 'text-primary' : 'text-slate-500'}`}>{providers.includes('google.com') ? 'Connected' : 'Not connected'}</p>
                     </div>
                   </div>
-                  <button className="text-xs text-red-400 hover:text-red-300 font-medium">Disconnect</button>
+                  <button onClick={() => providers.includes('google.com') ? unlinkAccount('google.com') : linkAccount('google.com')} className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${providers.includes('google.com') ? 'text-red-400 hover:bg-red-500/10' : 'bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:bg-white/20 text-slate-700 dark:text-white/70'}`}>
+                    {providers.includes('google.com') ? 'Disconnect' : 'Connect'}
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-slate-200 dark:border-white/10 transition-colors">
+                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-white/5 hover:border-slate-200 dark:border-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-[#333] text-white rounded-full flex items-center justify-center p-2.5">
                       <svg viewBox="0 0 24 24" className="w-full h-full" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
                     </div>
                     <div>
                       <p className="text-sm font-bold">GitHub</p>
-                      <p className="text-xs text-slate-600 dark:text-white/40">Not connected</p>
+                      <p className={`text-xs ${providers.includes('github.com') ? 'text-primary' : 'text-slate-500'}`}>{providers.includes('github.com') ? 'Connected' : 'Not connected'}</p>
                     </div>
                   </div>
-                  <button className="text-xs text-slate-700 dark:text-white/70 hover:text-slate-900 dark:text-white font-medium bg-slate-200 dark:bg-white/10 px-3 py-1.5 rounded-lg">Connect</button>
+                  <button onClick={() => providers.includes('github.com') ? unlinkAccount('github.com') : linkAccount('github.com')} className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${providers.includes('github.com') ? 'text-red-400 hover:bg-red-500/10' : 'bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:bg-white/20 text-slate-700 dark:text-white/70'}`}>
+                    {providers.includes('github.com') ? 'Disconnect' : 'Connect'}
+                  </button>
                 </div>
               </div>
             </Card>

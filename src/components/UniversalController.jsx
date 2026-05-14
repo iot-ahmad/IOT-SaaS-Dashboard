@@ -127,7 +127,7 @@ const DEFAULT_TOPICS = {
 };
 
 // ─── Add Tool Modal ───────────────────────────────────────────────────────────
-function AddToolModal({ onClose, onAdd, userUID }) {
+function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
   const [step, setStep] = useState('category'); // category | config
   const [selectedItem, setSelectedItem] = useState(null);
   const [form, setForm] = useState({ name: '', topic: '', dataKey: '', unit: '°C', maxVal: 100 });
@@ -135,7 +135,8 @@ function AddToolModal({ onClose, onAdd, userUID }) {
   const handleSelectItem = (item) => {
     setSelectedItem(item);
     const defaultKey = DEFAULT_TOPICS[item.type].replace('/', '_');
-    setForm({ name: item.label, topic: DEFAULT_TOPICS[item.type], dataKey: defaultKey, unit: '°C', maxVal: 100 });
+    const topic = esp32Prefix ? `${esp32Prefix}/${DEFAULT_TOPICS[item.type]}` : DEFAULT_TOPICS[item.type];
+    setForm({ name: item.label, topic, dataKey: defaultKey, unit: '°C', maxVal: 100 });
     setStep('config');
   };
 
@@ -648,7 +649,7 @@ function WidgetCard({ widget, value, publish, onRemove, gaugeHistory }) {
 }
 
 // ─── Main Controller View ─────────────────────────────────────────────────────
-export default function UniversalController({ deviceStates, publish, storageScopeId }) {
+export default function UniversalController({ deviceStates, publish, storageScopeId, customTitle, esp32Prefix }) {
   const storageKey = useMemo(() => controllerStorageKey(storageScopeId), [storageScopeId]);
   const workspaceTag = useMemo(() => getOrCreateWorkspaceId(storageScopeId).slice(-8), [storageScopeId]);
 
@@ -737,8 +738,9 @@ export default function UniversalController({ deviceStates, publish, storageScop
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Universal Controller</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">{customTitle || 'Universal Controller'}</h2>
           <p className="text-sm text-slate-600 dark:text-white/40 mt-0.5">
+            {esp32Prefix ? <span className="text-primary font-bold mr-1">Target ESP32: {esp32Prefix} ·</span> : ''}
             Drag, resize, and control sensors, actuators, or an RC car. Layout saved per workspace session
             <span className="font-mono text-slate-500 dark:text-white/25"> · {workspaceTag}</span>
           </p>
@@ -789,7 +791,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
       )}
 
       {showModal && (
-        <AddToolModal onClose={() => setShowModal(false)} onAdd={addWidget} userUID={storageScopeId} />
+        <AddToolModal onClose={() => setShowModal(false)} onAdd={addWidget} userUID={storageScopeId} esp32Prefix={esp32Prefix} />
       )}
     </div>
   );

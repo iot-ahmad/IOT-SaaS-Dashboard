@@ -9,6 +9,7 @@ import DeveloperGuide from './components/DeveloperGuide';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { WORKSPACES } from './data/mockData';
 
 function App() {
   const {
@@ -52,9 +53,29 @@ function App() {
 }
 
 function Dashboard({ user, logout }) {
-  const [activeWorkspace, setActiveWorkspace] = useState('controller');
+  const [activeWorkspace, setActiveWorkspace] = useState('home');
   const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Dynamic Workspaces State
+  const [customWorkspaces, setCustomWorkspaces] = useState(() => {
+    const saved = localStorage.getItem(`workspaces_${user.uid}`);
+    return saved ? JSON.parse(saved) : WORKSPACES;
+  });
+
+  const handleAddWorkspace = (name, esp32Prefix) => {
+    const newWs = {
+      id: `custom_${Date.now()}`,
+      name,
+      icon: 'Gamepad2',
+      isCustom: true,
+      esp32Prefix: esp32Prefix || ''
+    };
+    const updated = [...customWorkspaces, newWs];
+    setCustomWorkspaces(updated);
+    localStorage.setItem(`workspaces_${user.uid}`, JSON.stringify(updated));
+    setActiveWorkspace(newWs.id);
+  };
 
   // Use Firebase UID as the MQTT topic prefix - unique per user
   const { isConnected, messages, deviceStates, lastSeen, publish, userUID } = useMqtt(user.uid);
@@ -81,13 +102,25 @@ function Dashboard({ user, logout }) {
       }
     }
 
-    switch (activeWorkspace) {
-      case 'home': return <HomeView />;
-      case 'farm': return <FarmView deviceStates={deviceStates} publish={publish} />;
-      case 'office': return <OfficeView />;
-      case 'controller': return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} />;
-      default: return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} />;
+    const currentWorkspace = customWorkspaces.find(ws => ws.id === activeWorkspace);
+
+    if (currentWorkspace && currentWorkspace.id === 'home') return <HomeView />;
+    if (currentWorkspace && currentWorkspace.id === 'controller') return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} />;
+    
+    // For custom added dashboards
+    if (currentWorkspace && currentWorkspace.isCustom) {
+      return (
+        <UniversalController 
+          deviceStates={deviceStates} 
+          publish={publish} 
+          storageScopeId={`${user.uid}_${currentWorkspace.id}`} 
+          customTitle={currentWorkspace.name}
+          esp32Prefix={currentWorkspace.esp32Prefix}
+        />
+      );
     }
+
+    return <HomeView />;
   };
 
   return (
@@ -101,12 +134,14 @@ function Dashboard({ user, logout }) {
       
       <div className={`fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:block ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <Sidebar 
+          workspaces={customWorkspaces}
           activeWorkspace={activeWorkspace} 
           setActiveWorkspace={handleSetWorkspace}
           activeTool={activeTool}
           setActiveTool={handleSetTool}
           user={user}
           logout={logout}
+          onAddWorkspace={handleAddWorkspace}
         />
       </div>
 

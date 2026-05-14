@@ -72,27 +72,6 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
           <span className="hidden xl:inline">{isConnected ? 'MQTT Connected' : 'Disconnected'}</span>
         </div>
 
-        {/* Weather */}
-        <div className="hidden md:flex items-center gap-3 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-4 py-2 rounded-xl">
-          <CloudRain size={18} className="text-blue-400" />
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-slate-900 dark:text-white">24°C</span>
-            <span className="text-xs text-slate-600 dark:text-white/50">Humidity 45%</span>
-          </div>
-        </div>
-        
-        {/* Clock */}
-        <div className="hidden sm:flex items-center gap-3 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-4 py-2 rounded-xl">
-          <Sun size={18} className="text-yellow-400" />
-          <div className="flex flex-col">
-             <span className="text-sm font-medium text-slate-900 dark:text-white">
-               {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-             </span>
-             <span className="text-xs text-slate-600 dark:text-white/50">
-               {time.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
-             </span>
-          </div>
-        </div>
       </div>
     </header>
   );

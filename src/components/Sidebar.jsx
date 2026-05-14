@@ -1,18 +1,36 @@
-import React from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen } from 'lucide-react';
-import { WORKSPACES, TOOLS } from '../data/mockData';
+import React, { useState } from 'react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X } from 'lucide-react';
+import { TOOLS } from '../data/mockData';
 
 const iconMap = {
   Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen
 };
 
-export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeTool, setActiveTool, user, logout }) {
+export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspace, activeTool, setActiveTool, user, logout, onAddWorkspace }) {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newEsp32, setNewEsp32] = useState('');
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    if (newName.trim()) {
+      onAddWorkspace(newName.trim(), newEsp32.trim());
+      setNewName('');
+      setNewEsp32('');
+      setShowAddModal(false);
+    }
+  };
   return (
     <aside className="w-64 h-screen fixed left-0 top-0 bg-white/80 dark:bg-black/80 backdrop-blur-md border-r border-slate-200 dark:border-white/5 p-6 flex flex-col gap-8 z-10 hidden md:flex">
       <div>
-        <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider mb-4">Workspaces</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider">Workspaces</h2>
+          <button onClick={() => setShowAddModal(true)} className="text-slate-500 hover:text-primary transition-colors">
+            <Plus size={16} />
+          </button>
+        </div>
         <div className="space-y-1.5">
-          {WORKSPACES.map(ws => {
+          {workspaces?.map(ws => {
             const Icon = iconMap[ws.icon];
             const isActive = activeWorkspace === ws.id;
             return (
@@ -77,6 +95,44 @@ export default function Sidebar({ activeWorkspace, setActiveWorkspace, activeToo
           <span>Sign Out</span>
         </button>
       </div>
+      </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0b0d] border border-white/10 p-6 rounded-2xl w-full max-w-sm relative">
+            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-white/40 hover:text-white">
+              <X size={20} />
+            </button>
+            <h3 className="text-xl font-bold mb-4">New Dashboard</h3>
+            <form onSubmit={handleAdd} className="space-y-4">
+              <div>
+                <label className="block text-xs text-white/50 mb-1">Dashboard Name</label>
+                <input 
+                  autoFocus
+                  required
+                  value={newName} 
+                  onChange={e => setNewName(e.target.value)}
+                  placeholder="e.g. Living Room, Garage..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-white/50 mb-1">ESP32 Target UID (Optional)</label>
+                <input 
+                  value={newEsp32} 
+                  onChange={e => setNewEsp32(e.target.value)}
+                  placeholder="e.g. ESP_A1B2C3"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm"
+                />
+                <p className="text-[10px] text-white/30 mt-1">If provided, widgets in this dashboard will automatically target this specific ESP32.</p>
+              </div>
+              <button type="submit" className="w-full bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors">
+                Create Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

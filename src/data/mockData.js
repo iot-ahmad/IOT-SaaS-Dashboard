@@ -1,8 +1,6 @@
 export const WORKSPACES = [
-  { id: 'controller', name: 'Universal Controller', icon: 'Gamepad2' },
   { id: 'home', name: 'Home', icon: 'Home' },
-  { id: 'farm', name: "Al-Mazra'a Smart Farm", icon: 'Tractor' },
-  { id: 'office', name: 'Office', icon: 'Briefcase' }
+  { id: 'controller', name: 'Universal Controller', icon: 'Gamepad2' }
 ];
 
 export const TOOLS = [
