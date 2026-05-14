@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard } from 'lucide-react';
 import { TOOLS } from '../data/mockData';
 
 const iconMap = {
-  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen
+  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard
 };
 
 export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspace, activeTool, setActiveTool, user, logout, onAddWorkspace }) {
@@ -43,7 +43,7 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
                   : 'text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:bg-white/5 hover:text-slate-900 dark:text-white border border-transparent'
                 }`}
               >
-                <Icon size={18} className={isActive ? 'text-primary' : ''} />
+                {Icon ? <Icon size={18} className={isActive ? 'text-primary' : ''} /> : <Gamepad2 size={18} className={isActive ? 'text-primary' : ''} />}
                 <span className="font-medium text-sm truncate">{ws.name}</span>
               </button>
             )
