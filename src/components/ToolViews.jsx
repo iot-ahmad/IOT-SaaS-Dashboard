@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity } from 'lucide-react';
+import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown } from 'lucide-react';
 import { DEVICES, PIN_MAP } from '../data/mockData';
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -668,12 +668,13 @@ export const SettingsView = ({ userUID, user, logout }) => {
 // ==================== LIVE TERMINAL ====================
 export const LiveTerminal = ({ messages, isConnected }) => {
   const scrollRef = useRef(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (scrollRef.current) {
+    if (isExpanded && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isExpanded]);
 
   const colorMap = {
     incoming: 'text-emerald-400',
@@ -683,32 +684,43 @@ export const LiveTerminal = ({ messages, isConnected }) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 md:left-64 right-0 z-40 bg-[#0a0b0d]/95 backdrop-blur-md border-t border-slate-200 dark:border-white/10">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-white/5">
+    <div className={`fixed bottom-0 left-0 md:left-64 right-0 z-40 bg-[#0a0b0d]/95 backdrop-blur-md border-t border-slate-200 dark:border-white/10 transition-all duration-300 ${isExpanded ? 'h-36' : 'h-10'}`}>
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5 transition-colors"
+      >
         <div className="flex items-center gap-2">
           <Terminal size={14} className="text-primary" />
           <span className="text-xs font-bold text-slate-700 dark:text-white/60">Live Terminal</span>
           <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></span>
           <span className="text-[10px] text-slate-500 dark:text-white/25 hidden sm:inline">▶ MQTT publishes</span>
         </div>
-        <span className="text-[10px] text-slate-500 dark:text-white/30">
-          {messages.filter(m => m.type === 'outgoing').length} out · {messages.length} total
-        </span>
-      </div>
-      <div ref={scrollRef} className="h-28 overflow-y-auto px-4 py-2 font-mono text-[11px] space-y-0.5">
-        {messages.length === 0 && (
-          <p className="text-slate-400 dark:text-white/20 italic">Waiting for MQTT messages from ESP32...</p>
-        )}
-        {messages.map(msg => (
-          <div key={msg.id} className="flex gap-2">
-            <span className="text-slate-400 dark:text-white/20 flex-shrink-0">{msg.timestamp}</span>
-            <span className={`${colorMap[msg.type] || 'text-slate-600 dark:text-white/50'}`}>
-              {msg.type === 'incoming' ? '◀' : msg.type === 'outgoing' ? '▶' : '●'}
-            </span>
-            <span className="text-slate-700 dark:text-white/70">{msg.text}</span>
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] text-slate-500 dark:text-white/30">
+            {messages.filter(m => m.type === 'outgoing').length} out · {messages.length} total
+          </span>
+          <div className="text-slate-500 hover:text-white">
+            {isExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
           </div>
-        ))}
-      </div>
+        </div>
+      </button>
+
+      {isExpanded && (
+        <div ref={scrollRef} className="h-24 overflow-y-auto px-4 py-2 font-mono text-[11px] space-y-0.5 border-t border-white/5">
+          {messages.length === 0 && (
+            <p className="text-slate-400 dark:text-white/20 italic">Waiting for MQTT messages from ESP32...</p>
+          )}
+          {messages.map(msg => (
+            <div key={msg.id} className="flex gap-2">
+              <span className="text-slate-400 dark:text-white/20 flex-shrink-0">{msg.timestamp}</span>
+              <span className={`${colorMap[msg.type] || 'text-slate-600 dark:text-white/50'}`}>
+                {msg.type === 'incoming' ? '◀' : msg.type === 'outgoing' ? '▶' : '●'}
+              </span>
+              <span className="text-slate-700 dark:text-white/70">{msg.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
