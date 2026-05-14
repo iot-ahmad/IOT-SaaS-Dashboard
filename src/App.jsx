@@ -5,6 +5,7 @@ import AuthPage from './components/AuthPage';
 import { FarmView, HomeView, OfficeView } from './components/Views';
 import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, SettingsView, LiveTerminal } from './components/ToolViews';
+import NewDevicesView from './components/DevicesView';
 import DeveloperGuide from './components/DeveloperGuide';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
@@ -121,7 +122,7 @@ function Dashboard({ user, logout }) {
   const renderContent = () => {
     if (activeTool) {
       switch (activeTool) {
-        case 'devices': return <DevicesView userUID={userUID} lastSeen={lastSeen} />;
+        case 'devices': return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
         case 'alerts': return <AlertsView />;
         case 'settings': return <SettingsView userUID={userUID} user={user} logout={logout} />;
