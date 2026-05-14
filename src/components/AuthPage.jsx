@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Leaf, Loader2, Wifi, ShieldCheck, Zap } from 'lucide-react';
-import { CanvasRevealEffect } from './CanvasRevealBackground';
+import { IoTDotFieldBackdrop } from './CanvasRevealBackground';
 
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
@@ -50,22 +50,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-black text-white overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0">
-          <CanvasRevealEffect
-            animationSpeed={3}
-            containerClassName="bg-black"
-            colors={[
-              [255, 255, 255],
-              [16, 185, 129],
-            ]}
-            dotSize={5}
-            reverse={false}
-          />
-        </div>
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.92)_0%,_transparent_72%)]" />
-        <div className="pointer-events-none absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
-      </div>
+      <IoTDotFieldBackdrop wrapperClassName="absolute inset-0 z-0" />
 
       <header
         className="fixed top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 pl-4 pr-4 py-2

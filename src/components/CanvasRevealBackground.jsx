@@ -17,7 +17,7 @@ export function CanvasRevealEffect({
   reverse = false,
 }) {
   return (
-    <div className={cn('h-full relative w-full', containerClassName)}>
+    <div className={cn('h-full relative w-full pointer-events-none', containerClassName)}>
       <div className="h-full w-full">
         <DotMatrix
           colors={colors ?? [[0, 255, 255]]}
@@ -278,5 +278,27 @@ function Shader({ source, uniforms }) {
     <Canvas className="absolute inset-0 h-full w-full" gl={{ alpha: true, antialias: false }}>
       <ShaderMaterial source={source} uniforms={uniforms} />
     </Canvas>
+  );
+}
+
+/** Dot shader + vignette layers (auth + in-app dashboard, dark theme). */
+export function IoTDotFieldBackdrop({ wrapperClassName = '' }) {
+  return (
+    <div className={cn('pointer-events-none overflow-hidden', wrapperClassName)} aria-hidden>
+      <div className="absolute inset-0 min-h-full">
+        <CanvasRevealEffect
+          animationSpeed={3}
+          containerClassName="bg-black h-full min-h-[100dvh]"
+          colors={[
+            [255, 255, 255],
+            [16, 185, 129],
+          ]}
+          dotSize={5}
+          reverse={false}
+        />
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.92)_0%,_transparent_72%)]" />
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
+    </div>
   );
 }

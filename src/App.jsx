@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AuthPage from './components/AuthPage';
+import { IoTDotFieldBackdrop } from './components/CanvasRevealBackground';
 import { FarmView, HomeView, OfficeView } from './components/Views';
 import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, SettingsView, LiveTerminal } from './components/ToolViews';
@@ -167,7 +168,9 @@ function Dashboard({ user, logout }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex selection:bg-primary/30">
+     <div className="relative min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex selection:bg-primary/30">
+      <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
+
       {isMobileMenuOpen && (
         <div 
           className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-20 md:hidden"
@@ -188,7 +191,7 @@ function Dashboard({ user, logout }) {
         />
       </div>
 
-      <main className="flex-1 flex flex-col min-w-0 md:pl-64">
+      <main className="relative z-10 flex-1 flex flex-col min-w-0 md:pl-64">
         <Header 
           activeWorkspace={activeWorkspace}
           activeTool={activeTool}
