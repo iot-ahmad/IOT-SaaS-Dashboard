@@ -3,7 +3,7 @@ import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriang
 import { DEVICES, PIN_MAP } from '../data/mockData';
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 
 const Card = ({ children, className = '' }) => (
   <div className={`bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-6 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-slate-300 dark:border-white/20 ${className}`}>
@@ -291,10 +291,10 @@ export const SettingsView = ({ userUID, user, logout }) => {
   }, [userUID]);
 
   useEffect(() => {
-    if (user) {
-      setProviders(user.providerData.map(p => p.providerId));
+    if (auth.currentUser) {
+      setProviders(auth.currentUser.providerData.map(p => p.providerId));
     }
-  }, [user]);
+  }, []);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -310,8 +310,8 @@ export const SettingsView = ({ userUID, user, logout }) => {
   const saveGeneral = async () => {
     setLoading(true);
     try {
-      if (user && displayName !== user.displayName) {
-        await updateProfile(user, { displayName });
+      if (auth.currentUser && displayName !== user.displayName) {
+        await updateProfile(auth.currentUser, { displayName });
       }
       const docRef = doc(db, 'users', userUID, 'settings', 'prefs');
       await setDoc(docRef, { language, timezone }, { merge: true });
@@ -344,8 +344,8 @@ export const SettingsView = ({ userUID, user, logout }) => {
     setLoading(true);
     try {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
-      await reauthenticateWithCredential(user, credential);
-      await updatePassword(user, newPassword);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      await updatePassword(auth.currentUser, newPassword);
       showToast('Password updated successfully!');
       setCurrentPassword('');
       setNewPassword('');
@@ -362,7 +362,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
       let authProvider;
       if (provider === 'google.com') authProvider = new GoogleAuthProvider();
       if (provider === 'github.com') authProvider = new GithubAuthProvider();
-      await linkWithPopup(user, authProvider);
+      await linkWithPopup(auth.currentUser, authProvider);
       setProviders([...providers, provider]);
       showToast(`Linked ${provider} successfully`);
     } catch (err) {
@@ -374,7 +374,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
   const unlinkAccount = async (provider) => {
     setLoading(true);
     try {
-      await unlink(user, provider);
+      await unlink(auth.currentUser, provider);
       setProviders(providers.filter(p => p !== provider));
       showToast(`Unlinked ${provider}`);
     } catch (err) {
