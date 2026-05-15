@@ -12,6 +12,7 @@ import {
   PolarAngleAxis, ReferenceLine
 } from 'recharts';
 import * as XLSX from 'xlsx';
+import { Button } from '@/components/ui/neon-button';
 
 // ── Chart Types ────────────────────────────────────────────────────────────────
 const CHART_TYPES = [
@@ -401,13 +402,15 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
                 <button onClick={() => setStep(1)} className="flex-1 bg-white/5 border border-white/10 text-white/70 font-bold py-2.5 rounded-xl hover:bg-white/10 transition-colors">
                   ← Back
                 </button>
-                <button
+                <Button
+                  type="button"
                   onClick={handleConfirm}
                   disabled={!pin || !topicSuffix}
-                  className="flex-1 bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-40"
+                  variant="primary"
+                  className="flex-1 mx-0 rounded-xl py-2.5 disabled:opacity-40"
                 >
                   Add Device ✓
-                </button>
+                </Button>
               </div>
             </>
           )}
@@ -503,12 +506,22 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
           <p className="text-sm text-white/40 mt-0.5">{devices.length} device{devices.length !== 1 ? 's' : ''} registered</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={exportAllXLSX} className="flex items-center gap-2 bg-white/5 border border-white/10 text-white/60 px-4 py-2 rounded-xl text-sm hover:bg-white/10 transition-colors">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={exportAllXLSX}
+            className="mx-0 flex items-center gap-2 rounded-xl text-sm text-white/60 px-4 py-2"
+          >
             <Download size={16} /> Export All
-          </button>
-          <button onClick={() => setShowAdd(true)} className="bg-primary text-black px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors text-sm">
+          </Button>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => setShowAdd(true)}
+            className="mx-0 flex items-center gap-2 rounded-xl text-sm px-4 py-2"
+          >
             <Plus size={18} /> Add Device
-          </button>
+          </Button>
         </div>
       </div>
 

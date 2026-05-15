@@ -10,6 +10,8 @@ const buttonVariants = cva(
         default: "bg-blue-500/5 hover:bg-blue-500/0 border-blue-500/20",
         solid:
           "bg-blue-500 hover:bg-blue-600 text-white border-transparent hover:border-foreground/50 transition-all duration-200",
+        primary:
+          "bg-primary hover:bg-primary/90 text-black border-primary/40 hover:border-primary transition-all duration-200 font-bold",
         ghost:
           "border-transparent bg-transparent hover:border-zinc-600 hover:bg-white/10",
       },
@@ -42,14 +44,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <span
           className={cn(
-            "absolute h-px opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out inset-x-0 inset-y-0 bg-gradient-to-r w-3/4 mx-auto from-transparent dark:via-blue-500 via-blue-600 to-transparent hidden",
+            "absolute h-px opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out inset-x-0 inset-y-0 bg-gradient-to-r w-3/4 mx-auto from-transparent via-primary to-transparent hidden",
             neon && "block"
           )}
         />
         {children}
         <span
           className={cn(
-            "absolute group-hover:opacity-30 transition-all duration-500 ease-in-out inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent dark:via-blue-500 via-blue-600 to-transparent hidden",
+            "absolute group-hover:opacity-50 transition-all duration-500 ease-in-out inset-x-0 h-px -bottom-px bg-gradient-to-r w-3/4 mx-auto from-transparent via-primary to-transparent hidden",
             neon && "block"
           )}
         />
