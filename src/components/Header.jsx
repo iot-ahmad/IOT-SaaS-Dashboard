@@ -67,7 +67,7 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
         </button>
 
         {/* MQTT Status */}
-        <div className={`hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium ${isConnected ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+        <div className={`hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium ${isConnected ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
           {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
           <span className="hidden xl:inline">{isConnected ? 'MQTT Connected' : 'Disconnected'}</span>
         </div>

@@ -27,7 +27,7 @@ const CopyTopicButton = ({ topic, userUID }) => {
     <button 
       onClick={handleCopy}
       title={`Copy: ${fullTopic}`}
-      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/40 hover:bg-slate-200 dark:bg-white/10 hover:text-slate-700 dark:text-white/70'}`}
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/40 hover:bg-slate-200 dark:bg-white/10 hover:text-slate-700 dark:text-white/70'}`}
     >
       {copied ? <Check size={10} /> : <Copy size={10} />}
       {copied ? 'Copied!' : fullTopic}
@@ -54,8 +54,8 @@ const LastSeenBadge = ({ lastSeenTimestamp }) => {
   else label = `${Math.floor(diffSec / 3600)}h ago`;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${isOffline ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${isOffline ? 'bg-red-400' : 'bg-emerald-400 animate-pulse'}`}></span>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${isOffline ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${isOffline ? 'bg-red-400' : 'bg-blue-400 animate-pulse'}`}></span>
       {isOffline ? 'Offline' : label}
     </span>
   );
@@ -223,7 +223,7 @@ export const AlertsView = () => (
       {[
         { type: 'critical', msg: 'Water Pump A failure detected!', time: '1h ago', icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-400/10' },
         { type: 'warning', msg: 'Soil Sensor #02 battery low (15%)', time: '4h ago', icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
-        { type: 'success', msg: 'Irrigation schedule completed successfully', time: 'Today, 06:00', icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+        { type: 'success', msg: 'Irrigation schedule completed successfully', time: 'Today, 06:00', icon: CheckCircle2, color: 'text-blue-400', bg: 'bg-blue-400/10' },
         { type: 'info', msg: 'System update available (v2.4.0)', time: 'Yesterday', icon: Info, color: 'text-blue-400', bg: 'bg-blue-400/10' },
       ].map((alert, i) => (
         <div key={i} className="p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-between bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
@@ -387,7 +387,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
   return (
   <div className="space-y-6 relative">
     {toast && (
-      <div className={`absolute top-0 right-0 z-50 px-4 py-2 rounded-lg shadow-lg font-medium text-sm transition-all animate-fadeIn ${toast.type === 'error' ? 'bg-red-500/90 text-white' : 'bg-emerald-500/90 text-white'}`}>
+      <div className={`absolute top-0 right-0 z-50 px-4 py-2 rounded-lg shadow-lg font-medium text-sm transition-all animate-fadeIn ${toast.type === 'error' ? 'bg-red-500/90 text-white' : 'bg-blue-500/90 text-white'}`}>
         {toast.msg}
       </div>
     )}
@@ -416,7 +416,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
         {activeTab === 'General' && (
           <>
             {/* ── Device UID — PROMINENT ───────────────────────────────── */}
-            <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-emerald-900/5 to-transparent p-6 shadow-[0_0_40px_rgba(16,185,129,0.08)]">
+            <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-blue-950/20 to-transparent p-6 shadow-[0_0_40px_rgba(59,130,246,0.12)]">
               {/* glow blob */}
               <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -438,7 +438,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
                   onClick={copyUID}
                   className={`flex-shrink-0 flex flex-col items-center justify-center gap-1 px-4 rounded-xl border text-xs font-bold transition-all duration-300 ${
                     uidCopied
-                      ? 'bg-primary/20 border-primary/50 text-primary shadow-[0_0_16px_rgba(16,185,129,0.3)]'
+                      ? 'bg-primary/20 border-primary/50 text-primary shadow-[0_0_16px_rgba(59,130,246,0.3)]'
                       : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/50 hover:bg-primary/10 hover:border-primary/30 hover:text-primary'
                   }`}
                 >
@@ -637,17 +637,17 @@ export const SettingsView = ({ userUID, user, logout }) => {
         {activeTab === 'Billing' && (
           <div className="space-y-6">
             <Card>
-              <h3 className="font-bold mb-4 flex items-center gap-2"><CreditCard size={18} className="text-emerald-400" /> Billing & Plan</h3>
+              <h3 className="font-bold mb-4 flex items-center gap-2"><CreditCard size={18} className="text-blue-400" /> Billing & Plan</h3>
               
-              <div className="bg-gradient-to-br from-emerald-900/40 to-black/40 border border-emerald-500/20 rounded-xl p-5 mb-6 relative overflow-hidden">
-                <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
+              <div className="bg-gradient-to-br from-blue-900/40 to-black/40 border border-blue-500/20 rounded-xl p-5 mb-6 relative overflow-hidden">
+                <div className="absolute right-0 top-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
                 <div className="flex justify-between items-start relative z-10">
                   <div>
-                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-emerald-500/30">Current Plan</span>
+                    <span className="bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-blue-500/30">Current Plan</span>
                     <h4 className="text-2xl font-bold mt-2">Pro <span className="text-sm text-slate-600 dark:text-white/50 font-normal">/ $15.00 mo</span></h4>
                     <p className="text-xs text-slate-600 dark:text-white/40 mt-1">Next billing date: June 1, 2026</p>
                   </div>
-                  <button className="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold py-2 px-4 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
+                  <button className="bg-blue-500 hover:bg-blue-400 text-black text-xs font-bold py-2 px-4 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all">
                     Upgrade Plan
                   </button>
                 </div>
@@ -693,7 +693,7 @@ export const LiveTerminal = ({ messages, isConnected }) => {
   }, [messages, isExpanded]);
 
   const colorMap = {
-    incoming: 'text-emerald-400',
+    incoming: 'text-blue-400',
     outgoing: 'text-blue-400',
     system: 'text-yellow-400',
     error: 'text-red-400',
@@ -708,7 +708,7 @@ export const LiveTerminal = ({ messages, isConnected }) => {
         <div className="flex items-center gap-2">
           <Terminal size={14} className="text-primary" />
           <span className="text-xs font-bold text-slate-700 dark:text-white/60">Live Terminal</span>
-          <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></span>
+          <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-blue-400 animate-pulse' : 'bg-red-400'}`}></span>
           <span className="text-[10px] text-slate-500 dark:text-white/25 hidden sm:inline">▶ MQTT publishes</span>
         </div>
         <div className="flex items-center gap-4">

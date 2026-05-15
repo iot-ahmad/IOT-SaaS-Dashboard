@@ -75,7 +75,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-[72px] h-[72px] rounded-[22px] bg-white/5 border border-white/10 mb-5 shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+            <div className="inline-flex items-center justify-center w-[72px] h-[72px] rounded-[22px] bg-white/5 border border-white/10 mb-5 shadow-[0_0_40px_rgba(59,130,246,0.2)]">
               <Leaf className="text-primary" size={34} />
             </div>
             <h1 className="text-[2.25rem] sm:text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">

@@ -40,7 +40,7 @@ export const DEVICES = [
 
 export const PIN_MAP = [
   { pin: 'GPIO 4', label: 'DHT22 (Temp/Humidity)', color: 'text-rose-400' },
-  { pin: 'GPIO 25', label: 'Irrigation Relay', color: 'text-emerald-400' },
+  { pin: 'GPIO 25', label: 'Irrigation Relay', color: 'text-blue-400' },
   { pin: 'GPIO 26', label: 'Water Pump Relay', color: 'text-blue-400' },
   { pin: 'GPIO 27', label: 'Vent Servo', color: 'text-orange-400' },
   { pin: 'GPIO 32', label: 'Rain Sensor (Digital)', color: 'text-cyan-400' },

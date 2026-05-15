@@ -11,16 +11,16 @@ const buttonVariants = cva(
         solid:
           "bg-blue-500 hover:bg-blue-600 text-white border-transparent hover:border-foreground/50",
         primary:
-          "bg-primary hover:bg-primary/90 text-black border-primary/40 hover:border-primary font-bold shadow-[0_0_24px_rgba(16,185,129,0.2)]",
+          "bg-primary hover:bg-primary/90 text-white border-primary/40 hover:border-primary font-bold shadow-[0_0_24px_rgba(59,130,246,0.25)]",
         ghost:
           "border-transparent bg-transparent hover:border-zinc-600 hover:bg-white/10",
         nav: "mx-0 w-full justify-start gap-3 px-4 py-3 rounded-xl border-transparent bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white font-medium text-sm",
         navActive:
-          "mx-0 w-full justify-start gap-3 px-4 py-3 rounded-xl bg-primary/15 border-primary/40 text-primary font-medium text-sm shadow-[0_0_20px_rgba(16,185,129,0.25)]",
+          "mx-0 w-full justify-start gap-3 px-4 py-3 rounded-xl bg-primary/15 border-primary/40 text-primary font-medium text-sm shadow-[0_0_20px_rgba(59,130,246,0.25)]",
         navTab:
           "mx-0 w-full text-left px-4 py-3 rounded-xl border-transparent text-white/50 hover:bg-white/5 hover:text-white text-sm font-normal",
         navTabActive:
-          "mx-0 w-full text-left px-4 py-3 rounded-xl bg-primary/20 border-primary/40 text-primary text-sm font-bold shadow-[0_0_16px_rgba(16,185,129,0.2)]",
+          "mx-0 w-full text-left px-4 py-3 rounded-xl bg-primary/20 border-primary/40 text-primary text-sm font-bold shadow-[0_0_16px_rgba(59,130,246,0.2)]",
         success:
           "mx-0 w-full bg-primary/15 border-primary/40 text-primary font-bold hover:bg-primary/25 hover:border-primary/60",
         destructive:

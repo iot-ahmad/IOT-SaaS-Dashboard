@@ -23,7 +23,7 @@ export const SoilMoistureCard = ({ deviceStates, publish }) => {
           </div>
           <div className="flex items-end gap-2">
             <span className="text-4xl font-bold text-slate-900 dark:text-white">{displayValue}%</span>
-            <span className="text-emerald-400 text-sm font-medium mb-1">+2% from yesterday</span>
+            <span className="text-blue-400 text-sm font-medium mb-1">+2% from yesterday</span>
           </div>
         </div>
         <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">

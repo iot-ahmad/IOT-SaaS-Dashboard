@@ -2,7 +2,7 @@
 @custom-variant dark (&:is(.dark *));
 @theme {
   --color-background: #000000;
-  --color-primary: #10B981;
+  --color-primary: #3b82f6;
   --color-foreground: #ffffff;
 }
 

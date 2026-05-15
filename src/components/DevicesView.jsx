@@ -57,7 +57,7 @@ const DEVICE_TYPES = [
   { value: 'Motor',    label: '🔧 Motor / Servo', desc: 'Controls movement (servo, stepper, DC motor…)' },
 ];
 
-const CHART_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6'];
+const CHART_COLORS = ['#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4'];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function slugify(name) {
@@ -70,7 +70,7 @@ function CopyBtn({ text }) {
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
       className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all max-w-[260px] truncate
-        ${copied ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/70'}`}
+        ${copied ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/70'}`}
     >
       {copied ? <Check size={10} /> : <Copy size={10} />}
       <span className="truncate">{text}</span>
@@ -89,7 +89,7 @@ function StatusBadge({ ts }) {
   const label = diff < 5 ? 'Just now' : diff < 60 ? `${diff}s ago` : diff < 3600 ? `${Math.floor(diff/60)}m ago` : `${Math.floor(diff/3600)}h ago`;
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
-      ${offline ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+      ${offline ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
       {offline ? <WifiOff size={10} /> : <Wifi size={10} className="animate-pulse" />}
       {offline ? 'Offline' : label}
     </span>
@@ -192,8 +192,8 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
             <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id={`grad_${device.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid {...gridProps} />
@@ -201,7 +201,7 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
               <YAxis {...yProps} />
               <Tooltip content={<CustomTooltip />} />
               <ReferenceLine y={Number(avg)} stroke="#f59e0b" strokeDasharray="4 4" />
-              <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2}
+              <Area type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2}
                 fill={`url(#grad_${device.id})`} name="Reading" dot={false} activeDot={{ r: 5 }} />
             </AreaChart>
           </ResponsiveContainer>
@@ -364,7 +364,7 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
                   ))}
                 </select>
                 {pin && (
-                  <p className={`text-[11px] mt-1.5 ${GPIO_OPTIONS.find(g => g.value === pin)?.type === 'adc' ? 'text-amber-400' : 'text-emerald-400'}`}>
+                  <p className={`text-[11px] mt-1.5 ${GPIO_OPTIONS.find(g => g.value === pin)?.type === 'adc' ? 'text-amber-400' : 'text-blue-400'}`}>
                     {GPIO_OPTIONS.find(g => g.value === pin)?.type === 'adc'
                       ? '⚠ ADC pin — suitable for analog sensors (0–4095 range)'
                       : '✓ Digital pin — suitable for relays, DHT, digital sensors'}
