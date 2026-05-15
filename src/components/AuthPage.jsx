@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Leaf, Loader2, Wifi, ShieldCheck, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/neon-button';
 import { IoTDotFieldBackdrop } from './CanvasRevealBackground';
 
 const GoogleIcon = () => (
@@ -105,14 +106,13 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               </div>
             )}
 
-            <button
+            <Button
               id="btn-google-signin"
               type="button"
               onClick={handleGoogle}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 backdrop-blur-[2px] bg-white/5 hover:bg-white/10
-                         text-white border border-white/10 rounded-full py-3.5 px-4 font-medium text-sm
-                         transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="ghost"
+              className="w-full mx-0 flex items-center justify-center gap-3 py-3.5 px-4 font-medium text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 size={20} className="animate-spin text-white/70" />
@@ -120,7 +120,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 <GoogleIcon />
               )}
               {loading ? 'Connecting…' : 'Continue with Google'}
-            </button>
+            </Button>
 
             <div className="flex items-center gap-4 my-6">
               <div className="h-px bg-white/10 flex-1" />
@@ -136,7 +136,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           </div>
 
           <p className="text-center text-white/25 text-xs mt-8">
-            IoT SaaS Dashboard © 2026. Built for ESP32 Integration.
+            IoT Dashboard © 2026. Built for ESP32 Integration.
           </p>
         </motion.div>
       </div>

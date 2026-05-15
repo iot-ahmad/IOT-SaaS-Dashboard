@@ -37,9 +37,9 @@ export const SoilMoistureCard = ({ deviceStates, publish }) => {
             <YAxis stroke="#ffffff40" fontSize={12} tickLine={false} axisLine={false} />
             <Tooltip 
               contentStyle={{ backgroundColor: '#000000', borderColor: '#ffffff20', borderRadius: '8px' }}
-              itemStyle={{ color: '#10B981' }}
+              itemStyle={{ color: '#424242' }}
             />
-            <Line type="monotone" dataKey="value" stroke="#10B981" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: '#10B981', stroke: '#000000', strokeWidth: 2 }} />
+            <Line type="monotone" dataKey="value" stroke="#3f3f3f" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: '#535353', stroke: '#000000', strokeWidth: 2 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>

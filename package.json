@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@react-three/fiber": "^9.6.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "firebase": "^12.13.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
@@ -20,7 +22,9 @@
     "react-dom": "^19.2.6",
     "react-grid-layout": "^2.2.3",
     "recharts": "^3.8.1",
+    "tailwind-merge": "^3.6.0",
     "three": "^0.184.0",
+    "typescript": "^6.0.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
