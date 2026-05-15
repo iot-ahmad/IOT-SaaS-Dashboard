@@ -111,9 +111,9 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               type="button"
               onClick={handleGoogle}
               disabled={loading}
-              variant="primary"
+              variant="solid"
               size="lg"
-              active
+              neon={false}
               className="w-full mx-0 flex items-center justify-center gap-3 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (

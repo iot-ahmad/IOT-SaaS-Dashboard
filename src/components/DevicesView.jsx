@@ -406,7 +406,8 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
                   type="button"
                   onClick={handleConfirm}
                   disabled={!pin || !topicSuffix}
-                  variant="primary"
+                  variant="solid"
+                  neon={false}
                   className="flex-1 mx-0 rounded-xl py-2.5 disabled:opacity-40"
                 >
                   Add Device ✓
@@ -509,14 +510,16 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
           <Button
             type="button"
             variant="ghost"
+            neon={false}
             onClick={exportAllXLSX}
-            className="mx-0 flex items-center gap-2 rounded-xl text-sm text-white/60 px-4 py-2"
+            className="mx-0 flex items-center gap-2 rounded-xl text-sm px-4 py-2"
           >
             <Download size={16} /> Export All
           </Button>
           <Button
             type="button"
-            variant="primary"
+            variant="solid"
+            neon={false}
             onClick={() => setShowAdd(true)}
             className="mx-0 flex items-center gap-2 rounded-xl text-sm px-4 py-2"
           >

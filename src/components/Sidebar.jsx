@@ -41,10 +41,10 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
                 onClick={() => setActiveWorkspace(ws.id)}
                 variant={isActive ? 'navActive' : 'nav'}
                 size="nav"
-                active={isActive}
+                neon={isActive}
                 className="flex items-center"
               >
-                {Icon ? <Icon size={18} className={isActive ? 'text-primary shrink-0' : 'shrink-0'} /> : <Gamepad2 size={18} className={isActive ? 'text-primary shrink-0' : 'shrink-0'} />}
+                {Icon ? <Icon size={18} className={isActive ? 'text-blue-400 shrink-0' : 'shrink-0'} /> : <Gamepad2 size={18} className={isActive ? 'text-blue-400 shrink-0' : 'shrink-0'} />}
                 <span className="truncate">{ws.name}</span>
               </Button>
             )
@@ -65,10 +65,10 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
                 onClick={() => setActiveTool(tool.id)}
                 variant={isActive ? 'navActive' : 'nav'}
                 size="nav"
-                active={isActive}
+                neon={isActive}
                 className="flex items-center"
               >
-                <Icon size={18} className={isActive ? 'text-primary shrink-0' : 'shrink-0'} />
+                <Icon size={18} className={isActive ? 'text-blue-400 shrink-0' : 'shrink-0'} />
                 <span>{tool.name}</span>
               </Button>
             )
@@ -93,7 +93,7 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
           onClick={logout}
           variant="destructive"
           size="sm"
-          neonColor="destructive"
+          neon={false}
           className="flex items-center justify-start gap-3 rounded-xl py-2.5 text-sm font-normal"
         >
           <LogOut size={16} />
@@ -130,7 +130,7 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
                 />
                 <p className="text-[10px] text-white/30 mt-1">If provided, widgets in this dashboard will automatically target this specific ESP32.</p>
               </div>
-              <Button type="submit" variant="primary" size="block" className="w-full rounded-xl">
+              <Button type="submit" variant="solid" neon={false} size="block" className="w-full rounded-xl">
                 Create Dashboard
               </Button>
             </form>

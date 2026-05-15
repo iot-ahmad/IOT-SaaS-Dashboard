@@ -2,34 +2,37 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 
+const NEON_LINE_TOP =
+  "absolute inset-x-0 top-0 h-px w-3/4 mx-auto bg-gradient-to-r from-transparent via-blue-500 to-transparent";
+const NEON_LINE_BOTTOM =
+  "absolute inset-x-0 -bottom-px h-px w-3/4 mx-auto bg-gradient-to-r from-transparent via-blue-600 to-transparent";
+
 const buttonVariants = cva(
-  "relative group border text-foreground mx-auto text-center rounded-full transition-all duration-300",
+  "relative group border text-foreground mx-auto text-center rounded-full transition-all duration-200",
   {
     variants: {
       variant: {
-        default: "bg-blue-500/5 hover:bg-blue-500/0 border-blue-500/20",
+        default: "bg-blue-500/5 border-blue-500/20 text-zinc-200",
         solid:
-          "bg-blue-500 hover:bg-blue-600 text-white border-transparent hover:border-foreground/50",
-        primary:
-          "bg-primary hover:bg-primary/90 text-white border-primary/40 hover:border-primary font-bold shadow-[0_0_24px_rgba(59,130,246,0.25)]",
+          "bg-blue-600 hover:bg-blue-500 text-white border-transparent font-semibold shadow-[0_0_20px_rgba(37,99,235,0.35)]",
         ghost:
-          "border-transparent bg-transparent hover:border-zinc-600 hover:bg-white/10",
-        nav: "mx-0 w-full justify-start gap-3 px-4 py-3 rounded-xl border-transparent bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white font-medium text-sm",
+          "border-transparent bg-transparent text-zinc-300 hover:border-zinc-600 hover:bg-white/10",
+        nav: "mx-0 w-full flex items-center justify-start gap-3 rounded-xl border border-transparent bg-zinc-800/70 text-zinc-400 font-medium text-sm hover:bg-zinc-800",
         navActive:
-          "mx-0 w-full justify-start gap-3 px-4 py-3 rounded-xl bg-primary/15 border-primary/40 text-primary font-medium text-sm shadow-[0_0_20px_rgba(59,130,246,0.25)]",
+          "mx-0 w-full flex items-center justify-start gap-3 rounded-xl border border-blue-500/45 bg-blue-950/50 text-blue-400 font-medium text-sm",
         navTab:
-          "mx-0 w-full text-left px-4 py-3 rounded-xl border-transparent text-white/50 hover:bg-white/5 hover:text-white text-sm font-normal",
+          "mx-0 w-full text-left rounded-xl border border-transparent bg-zinc-800/70 text-zinc-400 text-sm hover:bg-zinc-800",
         navTabActive:
-          "mx-0 w-full text-left px-4 py-3 rounded-xl bg-primary/20 border-primary/40 text-primary text-sm font-bold shadow-[0_0_16px_rgba(59,130,246,0.2)]",
+          "mx-0 w-full text-left rounded-xl border border-blue-500/45 bg-blue-950/50 text-blue-400 text-sm font-semibold",
         success:
-          "mx-0 w-full bg-primary/15 border-primary/40 text-primary font-bold hover:bg-primary/25 hover:border-primary/60",
+          "mx-0 w-full rounded-xl border border-blue-500/40 bg-blue-500/10 text-blue-400 font-bold",
         destructive:
-          "mx-0 w-full bg-red-500/10 border-red-500/30 text-red-400 font-bold hover:bg-red-500/20 hover:border-red-500/50",
+          "mx-0 w-full rounded-xl border border-red-500/35 bg-red-500/10 text-red-400 font-bold",
       },
       size: {
         default: "px-7 py-1.5",
-        sm: "px-4 py-0.5",
-        lg: "px-10 py-2.5",
+        sm: "px-4 py-1",
+        lg: "px-10 py-3",
         nav: "px-4 py-3",
         block: "px-4 py-3",
       },
@@ -44,57 +47,48 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
+  /** Show top/bottom neon lines */
   neon?: boolean;
-  /** Keep neon lines visible (active nav / selected tab) */
+  /** Lines always visible (selected nav tab) — not only on hover */
   active?: boolean;
-  neonColor?: "primary" | "destructive";
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    {
-      className,
-      neon = true,
-      active = false,
-      neonColor = "primary",
-      size,
-      variant,
-      children,
-      ...props
-    },
+    { className, neon = true, active = false, size, variant, children, ...props },
     ref
   ) => {
-    const glowVia =
-      neonColor === "destructive" ? "via-red-500" : "via-primary";
+    const showNeon = neon && (active || variant === "navActive" || variant === "navTabActive");
 
     return (
       <button
         className={cn(buttonVariants({ variant, size }), className)}
         ref={ref}
-        data-active={active || undefined}
         {...props}
       >
-        <span
-          className={cn(
-            "pointer-events-none absolute inset-x-0 top-0 h-px w-3/4 mx-auto bg-gradient-to-r from-transparent to-transparent hidden",
-            glowVia,
-            neon && "block",
-            active
-              ? "opacity-80"
-              : "opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          )}
-        />
+        {showNeon && (
+          <>
+            <span
+              className={cn(
+                NEON_LINE_TOP,
+                "pointer-events-none",
+                active || variant === "navActive" || variant === "navTabActive"
+                  ? "opacity-100"
+                  : "opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              )}
+            />
+            <span
+              className={cn(
+                NEON_LINE_BOTTOM,
+                "pointer-events-none",
+                active || variant === "navActive" || variant === "navTabActive"
+                  ? "opacity-40"
+                  : "opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+              )}
+            />
+          </>
+        )}
         {children}
-        <span
-          className={cn(
-            "pointer-events-none absolute inset-x-0 -bottom-px h-px w-3/4 mx-auto bg-gradient-to-r from-transparent to-transparent hidden",
-            glowVia,
-            neon && "block",
-            active
-              ? "opacity-50"
-              : "opacity-0 group-hover:opacity-50 transition-opacity duration-500"
-          )}
-        />
       </button>
     );
   }

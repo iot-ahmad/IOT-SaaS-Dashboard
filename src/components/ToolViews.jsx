@@ -404,7 +404,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
               onClick={() => setActiveTab(item)}
               variant={isActive ? 'navTabActive' : 'navTab'}
               size="nav"
-              active={isActive}
+              neon={isActive}
             >
               {item}
             </Button>
@@ -501,7 +501,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
               disabled={loading}
               variant="success"
               size="block"
-              active
+              neon={false}
               className="rounded-xl disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save General Settings'}
@@ -512,8 +512,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
               onClick={logout}
               variant="destructive"
               size="block"
-              neonColor="destructive"
-              active
+              neon={false}
               className="rounded-xl"
             >
               Sign Out
