@@ -402,9 +402,9 @@ export const SettingsView = ({ userUID, user, logout }) => {
               key={item}
               type="button"
               onClick={() => setActiveTab(item)}
-              variant={isActive ? 'navTabActive' : 'navTab'}
-              size="nav"
+              variant={isActive ? 'default' : 'ghost'}
               neon={isActive}
+              className="mx-0 w-full text-left rounded-xl"
             >
               {item}
             </Button>
@@ -499,10 +499,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
               type="button"
               onClick={saveGeneral}
               disabled={loading}
-              variant="success"
-              size="block"
-              neon={false}
-              className="rounded-xl disabled:opacity-50"
+              className="mx-0 w-full rounded-xl disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save General Settings'}
             </Button>
@@ -510,10 +507,9 @@ export const SettingsView = ({ userUID, user, logout }) => {
             <Button
               type="button"
               onClick={logout}
-              variant="destructive"
-              size="block"
+              variant="ghost"
               neon={false}
-              className="rounded-xl"
+              className="mx-0 w-full rounded-xl text-red-400 border-red-500/30"
             >
               Sign Out
             </Button>

@@ -407,7 +407,6 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
                   onClick={handleConfirm}
                   disabled={!pin || !topicSuffix}
                   variant="solid"
-                  neon={false}
                   className="flex-1 mx-0 rounded-xl py-2.5 disabled:opacity-40"
                 >
                   Add Device ✓
@@ -519,7 +518,6 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
           <Button
             type="button"
             variant="solid"
-            neon={false}
             onClick={() => setShowAdd(true)}
             className="mx-0 flex items-center gap-2 rounded-xl text-sm px-4 py-2"
           >
