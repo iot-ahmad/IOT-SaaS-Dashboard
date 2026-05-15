@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/neon-button';
 import { DEVICES, PIN_MAP } from '../data/mockData';
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -394,14 +395,21 @@ export const SettingsView = ({ userUID, user, logout }) => {
     <h2 className="text-xl font-bold">Profile &amp; Settings</h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-1 space-y-2">
-        {['General', 'Notifications', 'Security', 'Connected Accounts', 'Billing'].map(item => (
-          <button 
-            key={item} 
-            onClick={() => setActiveTab(item)}
-            className={`w-full text-left px-4 py-3 rounded-xl transition-colors text-sm ${activeTab === item ? 'bg-primary/20 text-primary font-bold' : 'text-slate-600 dark:text-white/50 hover:bg-slate-100 dark:bg-white/5 hover:text-slate-900 dark:text-white'}`}>
-            {item}
-          </button>
-        ))}
+        {['General', 'Notifications', 'Security', 'Connected Accounts', 'Billing'].map(item => {
+          const isActive = activeTab === item;
+          return (
+            <Button
+              key={item}
+              type="button"
+              onClick={() => setActiveTab(item)}
+              variant={isActive ? 'navTabActive' : 'navTab'}
+              size="nav"
+              active={isActive}
+            >
+              {item}
+            </Button>
+          );
+        })}
       </div>
       <div className="md:col-span-2 space-y-6">
 
@@ -487,21 +495,29 @@ export const SettingsView = ({ userUID, user, logout }) => {
               </div>
             </Card>
 
-            <button
+            <Button
+              type="button"
               onClick={saveGeneral}
               disabled={loading}
-              className="w-full bg-primary/20 border border-primary/30 text-primary font-bold py-3 rounded-xl hover:bg-primary/30 transition-colors disabled:opacity-50"
+              variant="success"
+              size="block"
+              active
+              className="rounded-xl disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save General Settings'}
-            </button>
+            </Button>
 
-            {/* Logout */}
-            <button
+            <Button
+              type="button"
               onClick={logout}
-              className="w-full bg-red-500/10 border border-red-500/20 text-red-400 font-bold py-3 rounded-xl hover:bg-red-500/20 transition-colors"
+              variant="destructive"
+              size="block"
+              neonColor="destructive"
+              active
+              className="rounded-xl"
             >
               Sign Out
-            </button>
+            </Button>
           </>
         )}
 

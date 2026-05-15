@@ -112,7 +112,9 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               onClick={handleGoogle}
               disabled={loading}
               variant="primary"
-              className="w-full mx-0 flex items-center justify-center gap-3 py-3.5 px-4 font-medium text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              size="lg"
+              active
+              className="w-full mx-0 flex items-center justify-center gap-3 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 size={20} className="animate-spin text-white/70" />

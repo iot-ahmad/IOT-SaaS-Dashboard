@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard } from 'lucide-react';
+import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
 
 const iconMap = {
@@ -34,18 +35,18 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
             const Icon = iconMap[ws.icon];
             const isActive = activeWorkspace === ws.id;
             return (
-              <button
+              <Button
                 key={ws.id}
+                type="button"
                 onClick={() => setActiveWorkspace(ws.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                  isActive 
-                  ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-primary/30' 
-                  : 'text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:bg-white/5 hover:text-slate-900 dark:text-white border border-transparent'
-                }`}
+                variant={isActive ? 'navActive' : 'nav'}
+                size="nav"
+                active={isActive}
+                className="flex items-center"
               >
-                {Icon ? <Icon size={18} className={isActive ? 'text-primary' : ''} /> : <Gamepad2 size={18} className={isActive ? 'text-primary' : ''} />}
-                <span className="font-medium text-sm truncate">{ws.name}</span>
-              </button>
+                {Icon ? <Icon size={18} className={isActive ? 'text-primary shrink-0' : 'shrink-0'} /> : <Gamepad2 size={18} className={isActive ? 'text-primary shrink-0' : 'shrink-0'} />}
+                <span className="truncate">{ws.name}</span>
+              </Button>
             )
           })}
         </div>
@@ -58,18 +59,18 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
             const Icon = iconMap[tool.icon];
             const isActive = activeTool === tool.id;
             return (
-              <button
+              <Button
                 key={tool.id}
+                type="button"
                 onClick={() => setActiveTool(tool.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                  isActive 
-                  ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-primary/30' 
-                  : 'text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:bg-white/5 hover:text-slate-900 dark:text-white border border-transparent'
-                }`}
+                variant={isActive ? 'navActive' : 'nav'}
+                size="nav"
+                active={isActive}
+                className="flex items-center"
               >
-                <Icon size={18} className={isActive ? 'text-primary' : ''} />
-                <span className="font-medium text-sm">{tool.name}</span>
-              </button>
+                <Icon size={18} className={isActive ? 'text-primary shrink-0' : 'shrink-0'} />
+                <span>{tool.name}</span>
+              </Button>
             )
           })}
         </div>
@@ -87,13 +88,17 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
               <span className="text-xs text-slate-600 dark:text-white/50 truncate">{user?.email}</span>
            </div>
         </div>
-        <button 
+        <Button
+          type="button"
           onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-slate-600 dark:text-white/40 hover:text-red-400 hover:bg-red-400/5 transition-all text-sm border border-transparent"
+          variant="destructive"
+          size="sm"
+          neonColor="destructive"
+          className="flex items-center justify-start gap-3 rounded-xl py-2.5 text-sm font-normal"
         >
           <LogOut size={16} />
           <span>Sign Out</span>
-        </button>
+        </Button>
       </div>
 
       {showAddModal && (
@@ -125,9 +130,9 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
                 />
                 <p className="text-[10px] text-white/30 mt-1">If provided, widgets in this dashboard will automatically target this specific ESP32.</p>
               </div>
-              <button type="submit" className="w-full bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors">
+              <Button type="submit" variant="primary" size="block" className="w-full rounded-xl">
                 Create Dashboard
-              </button>
+              </Button>
             </form>
           </div>
         </div>
