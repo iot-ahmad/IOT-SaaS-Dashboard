@@ -3,15 +3,15 @@ import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 
 const buttonVariants = cva(
-  "relative group border text-foreground mx-auto text-center rounded-full",
+  "relative group border text-slate-900 dark:text-white mx-auto text-center rounded-full",
   {
     variants: {
       variant: {
-        default: "bg-blue-500/5 hover:bg-blue-500/0 border-blue-500/20",
+        default: "bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/20",
         solid:
-          "bg-blue-500 hover:bg-blue-600 text-white border-transparent hover:border-foreground/50 transition-all duration-200",
+          "bg-blue-500 hover:bg-blue-600 text-white border-transparent hover:border-slate-400 dark:hover:border-white/50 transition-all duration-200",
         ghost:
-          "border-transparent bg-transparent hover:border-zinc-600 hover:bg-white/10",
+          "border-transparent bg-transparent hover:border-slate-300 dark:hover:border-zinc-600 hover:bg-slate-100 dark:hover:bg-white/10",
       },
       size: {
         default: "px-7 py-1.5 ",

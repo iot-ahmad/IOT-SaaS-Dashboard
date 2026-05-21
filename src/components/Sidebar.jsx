@@ -30,7 +30,7 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider">Workspaces</h2>
-          <button type="button" onClick={() => setShowAddModal(true)} className="text-slate-500 hover:text-white transition-colors">
+          <button type="button" onClick={() => setShowAddModal(true)} className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
             <Plus size={16} />
           </button>
         </div>
@@ -79,18 +79,18 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
       </div>
 
       <div className="mt-auto space-y-3">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-white font-bold text-sm">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+          <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center flex-shrink-0">
+            <span className="text-slate-700 dark:text-white font-bold text-sm">
               {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
             </span>
           </div>
           <div className="flex flex-col text-left min-w-0">
-            <span className="text-sm font-medium text-white truncate">{user?.displayName || 'User'}</span>
-            <span className="text-xs text-white/50 truncate">{user?.email}</span>
+            <span className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.displayName || 'User'}</span>
+            <span className="text-xs text-slate-500 dark:text-white/50 truncate">{user?.email}</span>
           </div>
         </div>
-        <Button type="button" onClick={logout} variant="ghost" neon={false} className={`${navBtnClass} text-white/50`}>
+        <Button type="button" onClick={logout} variant="ghost" neon={false} className={`${navBtnClass} text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white`}>
           <LogOut size={16} />
           <span>Sign Out</span>
         </Button>
