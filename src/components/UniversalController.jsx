@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -8,60 +8,15 @@ import {
   Trash2, Activity, Zap, Car, GripVertical, Move,
 } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const LEGACY_STORAGE_KEY = 'uc_widgets_v1';
 const COLS_BY_BP = { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 };
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 const uid = () => `w_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-
-function workspaceIdStorageKey(scopeId) {
-  return `uc_workspace_session_${scopeId || 'default'}`;
-}
-
-function getOrCreateWorkspaceId(scopeId) {
-  const k = workspaceIdStorageKey(scopeId);
-  try {
-    let id = localStorage.getItem(k);
-    if (!id) {
-      id = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-      localStorage.setItem(k, id);
-    }
-    return id;
-  } catch {
-    return `mem_${Date.now()}`;
-  }
-}
-
-function controllerStorageKey(scopeId) {
-  const wid = getOrCreateWorkspaceId(scopeId);
-  const scope = scopeId || 'default';
-  return `uc_controller_${scope}_${wid}`;
-}
-
-function loadFromStorage(storageKey) {
-  try {
-    let raw = localStorage.getItem(storageKey);
-    if (!raw) {
-      raw = localStorage.getItem(LEGACY_STORAGE_KEY);
-      if (raw) {
-        localStorage.setItem(storageKey, raw);
-        localStorage.removeItem(LEGACY_STORAGE_KEY);
-      }
-    }
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-
-function saveToStorage(storageKey, data) {
-  try {
-    localStorage.setItem(storageKey, JSON.stringify(data));
-  } catch {
-    /* quota / private mode */
-  }
-}
 
 /** Clone lg layout to other breakpoints with column clamping */
 function layoutsFromLg(lg) {
@@ -78,6 +33,86 @@ function layoutsFromLg(lg) {
     xs: arr.map(l => clampItem(l, COLS_BY_BP.xs)),
     xxs: arr.map(l => clampItem(l, COLS_BY_BP.xxs)),
   };
+}
+
+// ─── Firestore Persistence Hook ───────────────────────────────────────────────
+/**
+ * Loads widgets/layouts from Firestore on mount.
+ * Saves to Firestore with debounce on every change.
+ * Falls back to migrating old localStorage data once.
+ */
+function useControllerFirestore(userUID, storageScopeId) {
+  const scopeKey = storageScopeId || 'default';
+  // Sanitize scope key for Firestore document ID (no slashes)
+  const docId = scopeKey.replace(/[\/\\]/g, '_');
+  const firestoreRef = userUID ? doc(db, 'users', userUID, 'controllers', docId) : null;
+
+  const [loaded, setLoaded] = useState(false);
+  const [savedWidgets, setSavedWidgets] = useState(null);
+  const [savedLayouts, setSavedLayouts] = useState(null);
+
+  // Load from Firestore on mount
+  useEffect(() => {
+    if (!firestoreRef) { setLoaded(true); return; }
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const snap = await getDoc(firestoreRef);
+        if (!cancelled) {
+          if (snap.exists()) {
+            const data = snap.data();
+            setSavedWidgets(data.widgets || null);
+            setSavedLayouts(data.layouts || null);
+          } else {
+            // Try migrating from old localStorage keys
+            try {
+              const legacyKeys = Object.keys(localStorage).filter(
+                k => k.startsWith('uc_controller_') || k === 'uc_widgets_v1'
+              );
+              for (const k of legacyKeys) {
+                const raw = localStorage.getItem(k);
+                if (raw) {
+                  const parsed = JSON.parse(raw);
+                  if (parsed?.widgets) {
+                    setSavedWidgets(parsed.widgets);
+                    setSavedLayouts(parsed.layouts || null);
+                    // Save migrated data to Firestore
+                    await setDoc(firestoreRef, {
+                      widgets: parsed.widgets,
+                      layouts: parsed.layouts || {},
+                    });
+                    break;
+                  }
+                }
+              }
+            } catch { /* ignore migration errors */ }
+          }
+          setLoaded(true);
+        }
+      } catch (err) {
+        console.error('Failed to load controller from Firestore', err);
+        if (!cancelled) setLoaded(true);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [userUID, docId]);
+
+  // Debounced save to Firestore
+  const saveTimerRef = useRef(null);
+  const save = useCallback((widgets, layouts) => {
+    if (!firestoreRef) return;
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      try {
+        await setDoc(firestoreRef, { widgets, layouts });
+      } catch (err) {
+        console.error('Failed to save controller to Firestore', err);
+      }
+    }, 500);
+  }, [userUID, docId]);
+
+  return { loaded, savedWidgets, savedLayouts, save };
 }
 
 // ─── Widget Definitions ───────────────────────────────────────────────────────
@@ -649,37 +684,42 @@ function WidgetCard({ widget, value, publish, onRemove, gaugeHistory }) {
 }
 
 // ─── Main Controller View ─────────────────────────────────────────────────────
-export default function UniversalController({ deviceStates, publish, storageScopeId, customTitle, esp32Prefix }) {
-  const storageKey = useMemo(() => controllerStorageKey(storageScopeId), [storageScopeId]);
-  const workspaceTag = useMemo(() => getOrCreateWorkspaceId(storageScopeId).slice(-8), [storageScopeId]);
+export default function UniversalController({ deviceStates, publish, storageScopeId, customTitle, esp32Prefix, userUID }) {
+  const { loaded, savedWidgets, savedLayouts, save } = useControllerFirestore(userUID, storageScopeId);
 
   const [showModal, setShowModal] = useState(false);
 
-  // Load saved state or start with demo widgets
-  const [widgets, setWidgets] = useState(() => {
-    const saved = loadFromStorage(controllerStorageKey(storageScopeId));
-    if (saved?.widgets) return saved.widgets;
-    return [
-      { id: 'demo1', type: 'gauge', name: 'Temperature', topic: 'sensor/temp', unit: '°C', maxVal: 100, w: 3, h: 3 },
-      { id: 'demo2', type: 'switch', name: 'LED Light', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 },
-      { id: 'demo3', type: 'dpad', name: 'RC Direction', topic: 'car/move', unit: '', maxVal: 1, w: 3, h: 4 },
-      { id: 'demo4', type: 'speed', name: 'RC Speed', topic: 'car/speed', unit: '', maxVal: 255, w: 3, h: 2 },
-    ];
-  });
+  const defaultWidgets = [
+    { id: 'demo1', type: 'gauge', name: 'Temperature', topic: 'sensor/temp', unit: '°C', maxVal: 100, w: 3, h: 3 },
+    { id: 'demo2', type: 'switch', name: 'LED Light', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 },
+    { id: 'demo3', type: 'dpad', name: 'RC Direction', topic: 'car/move', unit: '', maxVal: 1, w: 3, h: 4 },
+    { id: 'demo4', type: 'speed', name: 'RC Speed', topic: 'car/speed', unit: '', maxVal: 255, w: 3, h: 2 },
+  ];
 
-  const [layouts, setLayouts] = useState(() => {
-    const saved = loadFromStorage(controllerStorageKey(storageScopeId));
-    if (saved?.layouts?.lg) {
-      if (!saved.layouts.md || !saved.layouts.sm) return layoutsFromLg(saved.layouts.lg);
-      return saved.layouts;
+  const defaultLayouts = layoutsFromLg([
+    { i: 'demo1', x: 0, y: 0, w: 3, h: 3 },
+    { i: 'demo2', x: 3, y: 0, w: 2, h: 2 },
+    { i: 'demo3', x: 5, y: 0, w: 3, h: 4 },
+    { i: 'demo4', x: 0, y: 3, w: 3, h: 2 },
+  ]);
+
+  // Initialize state from Firestore data once loaded
+  const [widgets, setWidgets] = useState(defaultWidgets);
+  const [layouts, setLayouts] = useState(defaultLayouts);
+  const initializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!loaded || initializedRef.current) return;
+    initializedRef.current = true;
+    if (savedWidgets) setWidgets(savedWidgets);
+    if (savedLayouts?.lg) {
+      if (!savedLayouts.md || !savedLayouts.sm) {
+        setLayouts(layoutsFromLg(savedLayouts.lg));
+      } else {
+        setLayouts(savedLayouts);
+      }
     }
-    return layoutsFromLg([
-      { i: 'demo1', x: 0, y: 0, w: 3, h: 3 },
-      { i: 'demo2', x: 3, y: 0, w: 2, h: 2 },
-      { i: 'demo3', x: 5, y: 0, w: 3, h: 4 },
-      { i: 'demo4', x: 0, y: 3, w: 3, h: 2 },
-    ]);
-  });
+  }, [loaded, savedWidgets, savedLayouts]);
 
   const [gaugeHistory, setGaugeHistory] = useState({});
 
@@ -708,9 +748,11 @@ export default function UniversalController({ deviceStates, publish, storageScop
   }, [deviceStates, widgets]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
+  // Save to Firestore on changes (debounced inside the hook)
   useEffect(() => {
-    saveToStorage(storageKey, { widgets, layouts });
-  }, [widgets, layouts, storageKey]);
+    if (!initializedRef.current) return; // Don't save before initial load
+    save(widgets, layouts);
+  }, [widgets, layouts, save]);
 
   const addWidget = useCallback((widgetDef) => {
     const newLayout = { i: widgetDef.id, x: 0, y: Infinity, w: widgetDef.w, h: widgetDef.h, minW: 2, minH: 2 };
@@ -741,8 +783,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">{customTitle || 'Universal Controller'}</h2>
           <p className="text-sm text-slate-600 dark:text-white/40 mt-0.5">
             {esp32Prefix ? <span className="text-primary font-bold mr-1">Target ESP32: {esp32Prefix} ·</span> : ''}
-            Drag, resize, and control sensors, actuators, or an RC car. Layout saved per workspace session
-            <span className="font-mono text-slate-500 dark:text-white/25"> · {workspaceTag}</span>
+            Drag, resize, and control sensors, actuators, or an RC car. Layout saved to your account automatically.
           </p>
         </div>
         <button

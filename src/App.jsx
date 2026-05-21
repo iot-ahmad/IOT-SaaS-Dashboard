@@ -143,7 +143,7 @@ function Dashboard({ user, logout }) {
         />
       );
     }
-    if (currentWorkspace && currentWorkspace.id === 'controller') return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} />;
+    if (currentWorkspace && currentWorkspace.id === 'controller') return <UniversalController deviceStates={deviceStates} publish={publish} storageScopeId={user.uid} userUID={user.uid} />;
     
     // For custom added dashboards
     if (currentWorkspace && currentWorkspace.isCustom) {
@@ -154,6 +154,7 @@ function Dashboard({ user, logout }) {
           storageScopeId={`${user.uid}_${currentWorkspace.id}`} 
           customTitle={currentWorkspace.name}
           esp32Prefix={currentWorkspace.esp32Prefix}
+          userUID={user.uid}
         />
       );
     }
