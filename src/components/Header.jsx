@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { CloudRain, Sun, Moon, Menu, Wifi, WifiOff } from 'lucide-react';
-import { WORKSPACES, TOOLS } from '../data/mockData';
+import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { TOOLS } from '../data/mockData';
 
-export default function Header({ activeWorkspace, activeTool, isConnected, toggleMobileMenu }) {
-  const [time, setTime] = useState(new Date());
+export default function Header({ activeWorkspace, activeTool, isConnected, toggleMobileMenu, customWorkspaces, isSidebarCollapsed, onToggleSidebar }) {
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    // Check initial theme
     const isDarkTheme = document.documentElement.classList.contains('dark') || 
                         localStorage.theme === 'dark' || 
-                        (!('theme' in localStorage) && true); // default true for dark mode
+                        (!('theme' in localStorage) && true);
     setIsDark(isDarkTheme);
     if (isDarkTheme) document.documentElement.classList.add('dark');
     else document.documentElement.classList.remove('dark');
-
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
   }, []);
 
   const toggleTheme = () => {
@@ -39,24 +34,41 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
     title = tool ? tool.name : 'Tools';
     subtitle = `Manage your ${title.toLowerCase()}`;
   } else if (activeWorkspace) {
-    const ws = WORKSPACES.find(w => w.id === activeWorkspace);
+    // Resolve custom workspace names from the passed list
+    const ws = customWorkspaces?.find(w => w.id === activeWorkspace);
     title = ws ? ws.name : 'Dashboard';
     if (activeWorkspace === 'controller') subtitle = 'Add sensors, actuators, and RC car controls to your dashboard';
+    else if (ws?.isCustom) subtitle = 'Drag, resize, and control sensors, actuators, or an RC car. Layout saved to your account automatically.';
   }
 
   return (
     <header className="flex items-center justify-between py-4 px-6 md:px-8 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-black/50 backdrop-blur-sm sticky top-0 z-10">
-      <div className="flex items-center gap-4">
-        <button onClick={toggleMobileMenu} className="md:hidden text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white">
-          <Menu size={24} />
+      <div className="flex items-center gap-3">
+        {/* Mobile hamburger */}
+        <button
+          onClick={toggleMobileMenu}
+          className="md:hidden text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white p-1"
+          title="Open menu"
+        >
+          <Menu size={22} />
         </button>
+
+        {/* Desktop sidebar toggle */}
+        <button
+          onClick={onToggleSidebar}
+          className="hidden md:flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-primary transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
+          title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+        </button>
+
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{title}</h1>
-          <p className="text-slate-600 dark:text-white/50 text-sm mt-0.5">{subtitle}</p>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">{title}</h1>
+          <p className="text-slate-500 dark:text-white/50 text-xs md:text-sm mt-0.5">{subtitle}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Theme Toggle */}
         <button 
           onClick={toggleTheme}
@@ -71,7 +83,6 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
           {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
           <span className="hidden xl:inline">{isConnected ? 'MQTT Connected' : 'Disconnected'}</span>
         </div>
-
       </div>
     </header>
   );

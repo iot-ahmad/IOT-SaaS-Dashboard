@@ -89,7 +89,7 @@ function StatusBadge({ ts }) {
   const label = diff < 5 ? 'Just now' : diff < 60 ? `${diff}s ago` : diff < 3600 ? `${Math.floor(diff/60)}m ago` : `${Math.floor(diff/3600)}h ago`;
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
-      ${offline ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
+      ${offline ? 'bg-red-500/10 text-red-500 dark:text-red-400' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'}`}>
       {offline ? <WifiOff size={10} /> : <Wifi size={10} className="animate-pulse" />}
       {offline ? 'Offline' : label}
     </span>
@@ -508,8 +508,8 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold">Connected Devices</h2>
-          <p className="text-sm text-white/40 mt-0.5">{devices.length} device{devices.length !== 1 ? 's' : ''} registered</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Connected Devices</h2>
+          <p className="text-sm text-slate-500 dark:text-white/40 mt-0.5">{devices.length} device{devices.length !== 1 ? 's' : ''} registered</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -534,23 +534,23 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30" size={16} />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:border-primary/50 text-sm placeholder:text-white/30"
+          className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:border-primary/50 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30"
           placeholder="Search devices..."
         />
       </div>
 
       {/* Empty state */}
       {filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center bg-white/[0.02] border border-white/10 rounded-2xl">
-          <CircuitBoard size={40} className="text-white/10 mb-4" />
-          <h3 className="text-lg font-bold text-white/40">
+        <div className="flex flex-col items-center justify-center py-20 text-center bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl">
+          <CircuitBoard size={40} className="text-slate-300 dark:text-white/10 mb-4" />
+          <h3 className="text-lg font-bold text-slate-400 dark:text-white/40">
             {search ? 'No devices match your search' : 'No Devices Yet'}
           </h3>
-          <p className="text-sm text-white/25 mt-2 max-w-sm">
+          <p className="text-sm text-slate-400 dark:text-white/25 mt-2 max-w-sm">
             {!search && 'Click "+ Add Device" to register your first ESP32 sensor or actuator.'}
           </p>
         </div>
@@ -565,19 +565,19 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
           const latestReading = readings[device.topic]?.slice(-1)[0]?.value;
 
           return (
-            <div key={device.id} className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/20">
+            <div key={device.id} className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-300 dark:hover:border-white/20 shadow-sm dark:shadow-none">
               {/* Row */}
               <div className="flex items-center gap-4 px-5 py-4">
                 {/* Icon */}
-                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center flex-shrink-0">
                   {typeIcon(device.type)}
                 </div>
 
                 {/* Name + type */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-sm">{device.name}</span>
-                    <span className="text-[10px] bg-white/5 text-white/40 px-2 py-0.5 rounded-full">{device.type}</span>
+                    <span className="font-semibold text-sm text-slate-900 dark:text-white">{device.name}</span>
+                    <span className="text-[10px] bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/40 px-2 py-0.5 rounded-full">{device.type}</span>
                     {isSensor && latestReading !== undefined && (
                       <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-mono">
                         {latestReading}

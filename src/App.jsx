@@ -60,6 +60,7 @@ function Dashboard({ user, logout }) {
   const [activeWorkspace, setActiveWorkspace] = useState('home');
   const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Dynamic Workspaces State
   const [customWorkspaces, setCustomWorkspaces] = useState(WORKSPACES);
@@ -87,6 +88,16 @@ function Dashboard({ user, logout }) {
     fetchWorkspaces();
   }, [user.uid]);
 
+  const saveWorkspaces = async (list) => {
+    setCustomWorkspaces(list);
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
+      await setDoc(docRef, { list });
+    } catch (err) {
+      console.error("Failed to save workspaces to Firestore", err);
+    }
+  };
+
   const handleAddWorkspace = async (name, esp32Prefix) => {
     const newWs = {
       id: `custom_${Date.now()}`,
@@ -96,15 +107,19 @@ function Dashboard({ user, logout }) {
       esp32Prefix: esp32Prefix || ''
     };
     const updated = [...customWorkspaces, newWs];
-    setCustomWorkspaces(updated);
+    saveWorkspaces(updated);
     setActiveWorkspace(newWs.id);
-    
-    try {
-      const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
-      await setDoc(docRef, { list: updated });
-    } catch (err) {
-      console.error("Failed to save workspace to Firestore", err);
-    }
+  };
+
+  const handleRenameWorkspace = (id, newName) => {
+    const updated = customWorkspaces.map(ws => ws.id === id ? { ...ws, name: newName } : ws);
+    saveWorkspaces(updated);
+  };
+
+  const handleDeleteWorkspace = (id) => {
+    const updated = customWorkspaces.filter(ws => ws.id !== id);
+    saveWorkspaces(updated);
+    if (activeWorkspace === id) setActiveWorkspace('home');
   };
 
   // Use Firebase UID as the MQTT topic prefix - unique per user
@@ -113,11 +128,13 @@ function Dashboard({ user, logout }) {
   const handleSetWorkspace = (workspaceId) => {
     setActiveWorkspace(workspaceId);
     setActiveTool(null);
+    setIsMobileMenuOpen(false);
   };
 
   const handleSetTool = (toolId) => {
     setActiveTool(toolId);
     setActiveWorkspace(null);
+    setIsMobileMenuOpen(false);
   };
 
   const renderContent = () => {
@@ -168,6 +185,9 @@ function Dashboard({ user, logout }) {
     );
   };
 
+  const sidebarW = isSidebarCollapsed ? 'w-16' : 'w-64';
+  const mainPl = isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64';
+
   return (
      <div className="relative min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex selection:bg-primary/30">
       <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
@@ -179,7 +199,7 @@ function Dashboard({ user, logout }) {
         />
       )}
       
-      <div className={`fixed inset-y-0 left-0 z-30 w-64 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed inset-y-0 left-0 z-30 ${sidebarW} transform transition-all duration-300 ease-in-out md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <Sidebar 
           workspaces={customWorkspaces}
           activeWorkspace={activeWorkspace} 
@@ -189,15 +209,22 @@ function Dashboard({ user, logout }) {
           user={user}
           logout={logout}
           onAddWorkspace={handleAddWorkspace}
+          onRenameWorkspace={handleRenameWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspace}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(v => !v)}
         />
       </div>
 
-      <main className="relative z-10 flex-1 flex flex-col min-w-0 md:pl-64">
+      <main className={`relative z-10 flex-1 flex flex-col min-w-0 transition-all duration-300 ${mainPl}`}>
         <Header 
           activeWorkspace={activeWorkspace}
           activeTool={activeTool}
           isConnected={isConnected}
-          toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+          toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          customWorkspaces={customWorkspaces}
+          isSidebarCollapsed={isSidebarCollapsed}
+          onToggleSidebar={() => setIsSidebarCollapsed(v => !v)}
         />
         
         <div className="flex-1 p-6 md:p-8 pb-40 overflow-y-auto">
