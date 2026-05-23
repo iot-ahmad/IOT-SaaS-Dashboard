@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
-import { DEVICES, PIN_MAP } from '../data/mockData';
+
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
@@ -717,9 +717,10 @@ export const SettingsView = ({ userUID, user, logout }) => {
               onClick={() => setActiveTab(item)}
               variant={isActive ? 'default' : 'ghost'}
               neon={isActive}
-              className="mx-0 w-full text-left rounded-xl"
+              className="mx-0 w-full text-left rounded-xl flex justify-between items-center"
             >
               {item}
+              {item === 'Billing' && <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full ml-2">قريباً</span>}
             </Button>
           );
         })}
@@ -947,17 +948,14 @@ export const SettingsView = ({ userUID, user, logout }) => {
             <Card>
               <h3 className="font-bold mb-4 flex items-center gap-2"><CreditCard size={18} className="text-blue-400" /> Billing & Plan</h3>
               
-              <div className="bg-gradient-to-br from-blue-900/40 to-black/40 border border-blue-500/20 rounded-xl p-5 mb-6 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-blue-900/40 to-black/40 border border-blue-500/20 rounded-xl p-5 mb-6 relative overflow-hidden text-center">
                 <div className="absolute right-0 top-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
-                <div className="flex justify-between items-start relative z-10">
-                  <div>
-                    <span className="bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-blue-500/30">Current Plan</span>
-                    <h4 className="text-2xl font-bold mt-2">Pro <span className="text-sm text-slate-600 dark:text-white/50 font-normal">/ $15.00 mo</span></h4>
-                    <p className="text-xs text-slate-600 dark:text-white/40 mt-1">Next billing date: June 1, 2026</p>
-                  </div>
-                  <button className="bg-blue-500 hover:bg-blue-400 text-black text-xs font-bold py-2 px-4 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all">
-                    Upgrade Plan
-                  </button>
+                <div className="relative z-10 py-6">
+                  <div className="inline-block bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-primary/30 mb-4">قريباً (Coming Soon)</div>
+                  <h4 className="text-xl font-bold mb-2">مجاني للاستخدام الشخصي</h4>
+                  <p className="text-sm text-slate-600 dark:text-white/60 max-w-md mx-auto leading-relaxed">
+                    المنصة ستكون مجانية بالكامل للمشاريع الشخصية. سيتم لاحقاً إطلاق خطط مدفوعة مخصصة للجامعات والمؤسسات التعليمية بأسعار رمزية.
+                  </p>
                 </div>
               </div>
 
