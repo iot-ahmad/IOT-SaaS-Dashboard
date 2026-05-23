@@ -52,7 +52,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 -translate-y-1/2" />
           <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 -translate-x-1/2" />
         </div>
-        <Cpu className="text-primary w-4 h-4" aria-hidden />
+        <img src="/logo.png" className="w-4 h-4 object-contain" alt="" />
       </header>
 
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pt-24 pb-12">
@@ -63,9 +63,9 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
           {/* Brand */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-[72px] h-[72px] rounded-[22px] bg-primary/10 border border-primary/20 mb-5 shadow-[0_0_40px_rgba(59,130,246,0.25)]">
-              <Cpu className="text-primary" size={34} />
+          <div className="text-center mb-8 flex flex-col items-center">
+            <div className="inline-flex items-center justify-center w-[120px] h-[120px] rounded-[22px] bg-white/5 border border-white/10 mb-5 shadow-[0_0_40px_rgba(59,130,246,0.15)] p-3">
+              <img src="/logo.png" alt="IOT365 Logo" className="w-full h-full object-contain" />
             </div>
             <h1 className="text-[2.5rem] sm:text-[2.75rem] font-extrabold leading-[1.1] tracking-tight text-white">
               IOT<span className="text-primary">365</span>

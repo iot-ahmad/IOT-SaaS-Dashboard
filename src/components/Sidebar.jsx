@@ -62,7 +62,20 @@ export default function Sidebar({
         {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
 
-      <div className="flex flex-col gap-6 flex-1 overflow-y-auto p-4 pt-6">
+      {/* Brand Logo */}
+      <div className={`px-4 pt-5 pb-2 flex items-center gap-3 border-b border-slate-100 dark:border-white/5 ${isCollapsed ? 'justify-center' : ''}`}>
+        <div className="w-8 h-8 rounded-lg bg-white/5 border border-slate-200 dark:border-white/10 p-1 flex items-center justify-center flex-shrink-0">
+          <img src="/logo.png" alt="IOT365 Logo" className="w-full h-full object-contain" />
+        </div>
+        {!isCollapsed && (
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent truncate">IOT365</span>
+            <span className="text-[9px] text-slate-500 dark:text-white/30 uppercase tracking-widest font-semibold truncate">Dashboard</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-6 flex-1 overflow-y-auto p-4 pt-2">
 
         {/* WORKSPACES */}
         <div>
