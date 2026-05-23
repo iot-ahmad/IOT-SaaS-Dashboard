@@ -5,7 +5,7 @@ import 'react-resizable/css/styles.css';
 import {
   Plus, X, Thermometer, ToggleLeft, SlidersHorizontal,
   Gamepad2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight,
-  Trash2, Activity, Zap, Car, GripVertical, Move,
+  Trash2, Activity, Zap, Car, GripVertical, Move, Loader2,
 } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -835,20 +835,25 @@ export default function UniversalController({ deviceStates, publish, storageScop
   ]);
 
   // Initialize state from Firestore data once loaded
-  const [widgets, setWidgets] = useState(defaultWidgets);
-  const [layouts, setLayouts] = useState(defaultLayouts);
-  const initializedRef = useRef(false);
+  const [widgets, setWidgets] = useState(null);
+  const [layouts, setLayouts] = useState(null);
 
   useEffect(() => {
-    if (!loaded || initializedRef.current) return;
-    initializedRef.current = true;
-    if (savedWidgets) setWidgets(savedWidgets);
+    if (!loaded) return;
+    if (savedWidgets) {
+      setWidgets(savedWidgets);
+    } else {
+      setWidgets(defaultWidgets);
+    }
+
     if (savedLayouts?.lg) {
       if (!savedLayouts.md || !savedLayouts.sm) {
         setLayouts(layoutsFromLg(savedLayouts.lg));
       } else {
         setLayouts(savedLayouts);
       }
+    } else {
+      setLayouts(defaultLayouts);
     }
   }, [loaded, savedWidgets, savedLayouts]);
 
@@ -857,6 +862,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
   // Append incoming MQTT samples for sparkline (depends on deviceStates + widget list).
   /* eslint-disable react-hooks/set-state-in-effect -- derived time-series buffer */
   useEffect(() => {
+    if (!widgets) return;
     setGaugeHistory(prev => {
       let next = prev;
       let changed = false;
@@ -881,7 +887,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
 
   // Save to Firestore on changes (debounced inside the hook)
   useEffect(() => {
-    if (!initializedRef.current) return; // Don't save before initial load
+    if (!widgets || !layouts) return; // Don't save before initial load is complete
     save(widgets, layouts);
   }, [widgets, layouts, save]);
 
@@ -906,9 +912,13 @@ export default function UniversalController({ deviceStates, publish, storageScop
     setWidgets(prev => prev.map(w => w.id === updatedWidget.id ? updatedWidget : w));
   }, [setWidgets]);
 
-  const onLayoutChange = useCallback((_, allLayouts) => {
-    setLayouts(allLayouts);
-  }, [setLayouts]);
+  if (!widgets || !layouts) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Loader2 className="text-primary animate-spin" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
