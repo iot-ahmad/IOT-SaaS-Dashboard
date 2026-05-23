@@ -64,9 +64,7 @@ export default function Sidebar({
 
       {/* Brand Logo */}
       <div className={`px-4 pt-5 pb-3 flex items-center gap-3 border-b border-slate-100 dark:border-white/5 ${isCollapsed ? 'justify-center' : ''}`}>
-        <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-1.5 flex items-center justify-center flex-shrink-0">
-          <img src="/logo_icon.png" alt="IOT365 Icon" className="w-full h-full object-contain" />
-        </div>
+        <img src="/logo_icon.png" alt="IOT365 Icon" className="w-8 h-8 object-contain flex-shrink-0" />
         {!isCollapsed && (
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent truncate">IOT365</span>

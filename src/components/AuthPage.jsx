@@ -64,9 +64,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
         >
           {/* Brand */}
           <div className="text-center mb-8 flex flex-col items-center">
-            <div className="inline-flex items-center justify-center w-[120px] h-[120px] rounded-[22px] bg-white/5 border border-white/10 mb-5 shadow-[0_0_40px_rgba(59,130,246,0.15)] p-3.5">
-              <img src="/logo_icon.png" alt="IOT365 Icon" className="w-full h-full object-contain" />
-            </div>
+            <img src="/logo_icon.png" alt="IOT365 Icon" className="w-[100px] h-[100px] object-contain mb-5 drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]" />
             <h1 className="text-[2.5rem] sm:text-[2.75rem] font-extrabold leading-[1.1] tracking-tight text-white">
               IOT<span className="text-primary">365</span>
             </h1>
