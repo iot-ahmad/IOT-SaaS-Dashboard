@@ -330,6 +330,127 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
   );
 }
 
+// ─── Edit Tool Modal ──────────────────────────────────────────────────────────
+function EditToolModal({ widget, onClose, onSave, userUID }) {
+  const [form, setForm] = useState({
+    name: widget.name || '',
+    topic: widget.topic || '',
+    dataKey: widget.dataKey || '',
+    unit: widget.unit || '°C',
+    maxVal: widget.maxVal !== undefined ? widget.maxVal : 100,
+  });
+
+  const handleSave = () => {
+    if (!form.dataKey.trim()) return; // dataKey is required
+    onSave({
+      ...widget,
+      name: form.name.trim() || widget.name,
+      topic: form.topic.trim() || widget.topic,
+      dataKey: form.dataKey.trim(),
+      firebasePath: `users/${userUID}/widgets/${form.dataKey.trim()}`,
+      unit: form.unit,
+      maxVal: Number(form.maxVal) || 100,
+    });
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-[#13151a] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/5">
+          <div>
+            <h2 className="font-bold text-lg">Edit Tool Settings</h2>
+            <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5">
+              Modify name, topic, or parameter config for this tool.
+            </p>
+          </div>
+          <button onClick={onClose} className="text-slate-500 dark:text-white/30 hover:text-slate-900 dark:text-white transition-colors p-1">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Widget Name</label>
+            <input
+              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+              value={form.name}
+              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              placeholder="e.g. Front Temperature"
+            />
+          </div>
+
+          {/* Data Key (required) */}
+          <div>
+            <label className="text-xs font-semibold text-amber-400 block mb-1 flex items-center gap-1">
+              <span>Data Key</span>
+              <span className="text-[9px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Required</span>
+            </label>
+            <input
+              className={`w-full bg-slate-100 dark:bg-white/5 border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
+                form.dataKey.trim() ? 'border-amber-500/40 focus:border-amber-400' : 'border-red-500/40 focus:border-red-400'
+              }`}
+              value={form.dataKey}
+              onChange={e => setForm(f => ({ ...f, dataKey: e.target.value.replace(/\s/g, '_') }))}
+              placeholder="e.g. temperature_1"
+            />
+            {/* Live Firebase path preview */}
+            <div className="mt-2 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg px-3 py-2">
+              <p className="text-[10px] text-slate-500 dark:text-white/30 mb-0.5">Firebase path:</p>
+              <code className="text-[11px] font-mono text-amber-300/80 break-all">
+                users/{userUID ? userUID.slice(0, 8) + '…' : '[UID]'}/widgets/<span className="text-amber-300">{form.dataKey || '[data_key]'}</span>
+              </code>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">MQTT Topic</label>
+            <input
+              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
+              value={form.topic}
+              onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
+              placeholder="e.g. car/move"
+            />
+          </div>
+
+          {widget.type === 'gauge' && (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Unit</label>
+                <input
+                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  value={form.unit}
+                  onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
+                  placeholder="°C"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Max Value</label>
+                <input
+                  type="number"
+                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  value={form.maxVal}
+                  onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))}
+                />
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={handleSave}
+            disabled={!form.dataKey.trim()}
+            className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 dark:text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
+          >
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Gauge Widget ─────────────────────────────────────────────────────────────
 function GaugeWidget({ widget, value, history = [] }) {
   const num = value !== undefined ? parseFloat(value) : NaN;
@@ -652,7 +773,7 @@ function JoystickWidget({ widget, publish }) {
 }
 
 // ─── Widget Card Shell ────────────────────────────────────────────────────────
-function WidgetCard({ widget, value, publish, onRemove, gaugeHistory }) {
+function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) {
   const renderContent = () => {
     switch (widget.type) {
       case 'gauge': return <GaugeWidget widget={widget} value={value} history={gaugeHistory} />;
@@ -667,14 +788,23 @@ function WidgetCard({ widget, value, publish, onRemove, gaugeHistory }) {
 
   return (
     <div className="h-full bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-4 backdrop-blur-md hover:bg-white/[0.035] hover:border-slate-300 dark:border-white/20 transition-all duration-300 group flex flex-col relative overflow-hidden">
+      {/* Edit button */}
+      <button
+        onClick={() => onEdit(widget)}
+        className="absolute top-2 right-8 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-slate-500 dark:text-white/30 p-1"
+        title="Edit Tool"
+      >
+        <SlidersHorizontal size={14} />
+      </button>
       {/* Drag handle */}
-      <div className="drag-handle absolute top-2 right-8 opacity-0 group-hover:opacity-40 hover:!opacity-80 transition-opacity cursor-grab active:cursor-grabbing text-slate-600 dark:text-white/50 p-1">
+      <div className="drag-handle absolute top-2 right-14 opacity-0 group-hover:opacity-40 hover:!opacity-80 transition-opacity cursor-grab active:cursor-grabbing text-slate-600 dark:text-white/50 p-1">
         <GripVertical size={14} />
       </div>
       {/* Remove button */}
       <button
         onClick={() => onRemove(widget.id)}
         className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-slate-500 dark:text-white/30 p-1"
+        title="Remove Tool"
       >
         <Trash2 size={14} />
       </button>
@@ -688,6 +818,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
   const { loaded, savedWidgets, savedLayouts, save } = useControllerFirestore(userUID, storageScopeId);
 
   const [showModal, setShowModal] = useState(false);
+  const [editingWidget, setEditingWidget] = useState(null);
 
   const defaultWidgets = [
     { id: 'demo1', type: 'gauge', name: 'Temperature', topic: 'sensor/temp', unit: '°C', maxVal: 100, w: 3, h: 3 },
@@ -771,6 +902,10 @@ export default function UniversalController({ deviceStates, publish, storageScop
     });
   }, [setWidgets, setLayouts]);
 
+  const editWidget = useCallback((updatedWidget) => {
+    setWidgets(prev => prev.map(w => w.id === updatedWidget.id ? updatedWidget : w));
+  }, [setWidgets]);
+
   const onLayoutChange = useCallback((_, allLayouts) => {
     setLayouts(allLayouts);
   }, [setLayouts]);
@@ -824,6 +959,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
                 value={deviceStates?.[widget.topic]}
                 publish={publish}
                 onRemove={removeWidget}
+                onEdit={setEditingWidget}
                 gaugeHistory={gaugeHistory[widget.topic]}
               />
             </div>
@@ -832,7 +968,16 @@ export default function UniversalController({ deviceStates, publish, storageScop
       )}
 
       {showModal && (
-        <AddToolModal onClose={() => setShowModal(false)} onAdd={addWidget} userUID={storageScopeId} esp32Prefix={esp32Prefix} />
+        <AddToolModal onClose={() => setShowModal(false)} onAdd={addWidget} userUID={userUID || storageScopeId} esp32Prefix={esp32Prefix} />
+      )}
+
+      {editingWidget && (
+        <EditToolModal
+          widget={editingWidget}
+          onClose={() => setEditingWidget(null)}
+          onSave={editWidget}
+          userUID={userUID || storageScopeId}
+        />
       )}
     </div>
   );
