@@ -367,7 +367,7 @@ function GaugeWidget({ widget, value, history = [] }) {
           </div>
         </div>
         {chartData.length > 1 && (
-          <div className="w-full h-16 flex-1 min-h-[48px] mt-1">
+          <div className="h-16 flex-1 min-h-[48px] mt-1 -mx-4 w-[calc(100%+2rem)] sm:w-full sm:mx-0">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
                 <YAxis domain={['auto', 'auto']} hide width={0} />

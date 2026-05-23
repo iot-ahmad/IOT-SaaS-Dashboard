@@ -251,7 +251,9 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
             <Download size={12} /> Export Excel
           </button>
         </div>
-        {renderChart()}
+        <div className="-mx-4 sm:mx-0">
+          {renderChart()}
+        </div>
       </div>
     </div>
   );
@@ -437,7 +439,9 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
         const ref = doc(db, 'users', userUID, 'settings', 'devices');
         const snap = await getDoc(ref);
         if (snap.exists()) setDevices(snap.data().list || []);
-      } catch {}
+      } catch (err) {
+        console.error("Failed to load devices from Firestore", err);
+      }
     };
     load();
   }, [userUID]);
@@ -463,7 +467,9 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
     setDevices(list);
     try {
       await setDoc(doc(db, 'users', userUID, 'settings', 'devices'), { list });
-    } catch {}
+    } catch (err) {
+      console.error("Failed to save devices to Firestore", err);
+    }
   };
 
   const handleAdd = (device) => saveDevices([...devices, device]);

@@ -26,7 +26,7 @@ export default function Sidebar({ workspaces, activeWorkspace, setActiveWorkspac
   };
 
   return (
-    <aside className="w-64 h-screen fixed left-0 top-0 bg-white/80 dark:bg-black/80 backdrop-blur-md border-r border-slate-200 dark:border-white/5 p-6 flex flex-col gap-8 z-10 hidden md:flex">
+    <aside className="w-64 h-screen fixed left-0 top-0 bg-white/80 dark:bg-black/80 backdrop-blur-md border-r border-slate-200 dark:border-white/5 p-6 flex flex-col gap-8 z-10">
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider">Workspaces</h2>

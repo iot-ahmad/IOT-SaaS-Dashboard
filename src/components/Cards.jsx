@@ -30,7 +30,7 @@ export const SoilMoistureCard = ({ deviceStates, publish }) => {
           <Droplets className="text-blue-400" size={20} />
         </div>
       </div>
-      <div className="h-[120px] w-full">
+      <div className="h-[120px] -mx-6 w-[calc(100%+3rem)] sm:w-full sm:mx-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={SOIL_MOISTURE_DATA} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
             <XAxis dataKey="time" stroke="#ffffff40" fontSize={12} tickLine={false} axisLine={false} />
