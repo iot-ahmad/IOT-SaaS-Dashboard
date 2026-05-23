@@ -333,32 +333,228 @@ export const AutomationsToolView = ({ publish, userUID }) => {
 };
 
 // ==================== ALERTS VIEW ====================
-export const AlertsView = () => (
-  <div className="space-y-6">
-    <h2 className="text-xl font-bold">System Alerts</h2>
-    <div className="space-y-3">
-      {[
-        { type: 'critical', msg: 'Water Pump A failure detected!', time: '1h ago', icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-400/10' },
-        { type: 'warning', msg: 'Soil Sensor #02 battery low (15%)', time: '4h ago', icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
-        { type: 'success', msg: 'Irrigation schedule completed successfully', time: 'Today, 06:00', icon: CheckCircle2, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-        { type: 'info', msg: 'System update available (v2.4.0)', time: 'Yesterday', icon: Info, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-      ].map((alert, i) => (
-        <div key={i} className="p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-between bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-          <div className="flex items-center gap-4">
-            <div className={`p-2 rounded-lg ${alert.bg} ${alert.color}`}>
-              <alert.icon size={18} />
-            </div>
-            <div>
-              <p className="text-sm font-medium">{alert.msg}</p>
-              <p className="text-xs text-slate-500 dark:text-white/30">{alert.time}</p>
-            </div>
-          </div>
-          <button className="text-xs text-slate-500 dark:text-white/30 hover:text-slate-900 dark:text-white transition-colors">Dismiss</button>
+export const AlertsView = ({ userUID }) => {
+  const [activeTab, setActiveTab] = useState('history'); // 'history' | 'rules'
+  const [alerts, setAlerts] = useState([]);
+  const [rules, setRules] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {
+    if (!userUID) return;
+    const load = async () => {
+      try {
+        const historyRef = doc(db, 'users', userUID, 'settings', 'alert_history');
+        const rulesRef = doc(db, 'users', userUID, 'settings', 'alert_rules');
+        
+        const [historySnap, rulesSnap] = await Promise.all([
+          getDoc(historyRef),
+          getDoc(rulesRef)
+        ]);
+
+        if (historySnap.exists()) {
+          setAlerts(historySnap.data().list || []);
+        } else {
+          setAlerts([
+            { id: 1, type: 'critical', msg: 'Water Pump A failure detected!', time: '1h ago' },
+            { id: 2, type: 'warning', msg: 'Soil Sensor #02 battery low (15%)', time: '4h ago' },
+            { id: 3, type: 'success', msg: 'Irrigation schedule completed successfully', time: 'Today, 06:00' },
+            { id: 4, type: 'info', msg: 'System update available (v2.4.0)', time: 'Yesterday' }
+          ]);
+        }
+
+        if (rulesSnap.exists()) {
+          setRules(rulesSnap.data().list || []);
+        } else {
+          setRules([
+            { id: 1, name: 'Low Battery', condition: 'Battery < 20%', topic: 'sensor/+/battery', active: true },
+            { id: 2, name: 'Pump Failure', condition: 'Status = Error', topic: 'actuator/pump/status', active: true },
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load alerts", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [userUID]);
+
+  const saveAlerts = async (list) => {
+    setAlerts(list);
+    try { await setDoc(doc(db, 'users', userUID, 'settings', 'alert_history'), { list }); } catch (e) {}
+  };
+
+  const saveRules = async (list) => {
+    setRules(list);
+    try { await setDoc(doc(db, 'users', userUID, 'settings', 'alert_rules'), { list }); } catch (e) {}
+  };
+
+  const dismissAlert = (id) => saveAlerts(alerts.filter(a => a.id !== id));
+  const clearAllAlerts = () => saveAlerts([]);
+  const deleteRule = (id) => saveRules(rules.filter(r => r.id !== id));
+  const toggleRule = (id) => saveRules(rules.map(r => r.id === id ? { ...r, active: !r.active } : r));
+
+  const handleAddRule = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const newRule = {
+      id: Date.now(),
+      name: fd.get('name'),
+      condition: `${fd.get('metric')} ${fd.get('operator')} ${fd.get('value')}`,
+      topic: fd.get('topic'),
+      active: true
+    };
+    saveRules([...rules, newRule]);
+    setShowAddModal(false);
+  };
+
+  const getIcon = (type) => {
+    switch (type) {
+      case 'critical': return { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-400/10' };
+      case 'warning': return { icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-400/10' };
+      case 'success': return { icon: CheckCircle2, color: 'text-blue-400', bg: 'bg-blue-400/10' };
+      default: return { icon: Info, color: 'text-blue-400', bg: 'bg-blue-400/10' };
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-xl font-bold">System Alerts</h2>
+        <div className="flex bg-slate-200 dark:bg-white/5 p-1 rounded-xl">
+          <button 
+            onClick={() => setActiveTab('history')}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'history' ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'}`}
+          >
+            History
+          </button>
+          <button 
+            onClick={() => setActiveTab('rules')}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'rules' ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'}`}
+          >
+            Alert Rules
+          </button>
         </div>
-      ))}
+      </div>
+
+      {loading ? (
+        <div className="text-slate-500 text-sm">Loading alerts...</div>
+      ) : activeTab === 'history' ? (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-slate-500 dark:text-white/40">{alerts.length} alerts</span>
+            {alerts.length > 0 && (
+              <button onClick={clearAllAlerts} className="text-sm text-red-500 hover:text-red-400 transition-colors">Clear All</button>
+            )}
+          </div>
+          {alerts.length === 0 ? (
+            <div className="text-center py-12 text-slate-500 dark:text-white/40">No new alerts.</div>
+          ) : (
+            <div className="space-y-3">
+              {alerts.map(alert => {
+                const { icon: Icon, color, bg } = getIcon(alert.type);
+                return (
+                  <div key={alert.id} className="p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-between bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-2 rounded-lg ${bg} ${color}`}>
+                        <Icon size={18} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{alert.msg}</p>
+                        <p className="text-xs text-slate-500 dark:text-white/30">{alert.time}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => dismissAlert(alert.id)} className="text-xs text-slate-500 dark:text-white/30 hover:text-slate-900 dark:hover:text-white transition-colors">Dismiss</button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button onClick={() => setShowAddModal(true)} className="bg-primary text-black px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors text-sm">
+              <Bell size={16} /> New Alert Rule
+            </button>
+          </div>
+          {rules.length === 0 ? (
+            <div className="text-center py-12 text-slate-500 dark:text-white/40">No alert rules configured.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {rules.map(rule => (
+                <div key={rule.id} className="p-5 rounded-xl border border-slate-200 dark:border-white/5 bg-white/[0.02] relative group">
+                  <button onClick={() => deleteRule(rule.id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-400 opacity-0 md:group-hover:opacity-100 transition-opacity p-1 bg-white/5 rounded-md backdrop-blur-md z-10 md:block hidden">
+                    <Trash2 size={16} />
+                  </button>
+                  <button onClick={() => deleteRule(rule.id)} className="absolute top-4 right-14 text-slate-400 hover:text-red-400 p-1 md:hidden">
+                    <Trash2 size={16} />
+                  </button>
+                  <div className="flex justify-between items-start mb-3 pr-6">
+                    <h3 className="font-bold text-sm">{rule.name}</h3>
+                    <button 
+                      onClick={() => toggleRule(rule.id)}
+                      className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${rule.active ? 'bg-primary' : 'bg-slate-300 dark:bg-white/20'}`}
+                    >
+                      <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-300 ${rule.active ? 'translate-x-4' : 'translate-x-0'}`} />
+                    </button>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-slate-600 dark:text-white/50">Condition: <span className="font-medium text-slate-900 dark:text-white">{rule.condition}</span></p>
+                    <p className="text-xs text-slate-600 dark:text-white/50">Topic: <span className="font-mono text-slate-900 dark:text-white">{rule.topic}</span></p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0a0b0d] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-md relative text-slate-900 dark:text-white">
+            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors">
+              <X size={20} />
+            </button>
+            <h3 className="text-xl font-bold mb-4">New Alert Rule</h3>
+            <form onSubmit={handleAddRule} className="space-y-4">
+              <div>
+                <label className="block text-xs text-slate-500 dark:text-white/50 mb-1">Rule Name</label>
+                <input required name="name" placeholder="e.g. Critical Temp Alert" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 dark:text-white/50 mb-1">Topic to Monitor</label>
+                <input required name="topic" placeholder="e.g. sensor/greenhouse/temp" className="w-full font-mono bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="col-span-1">
+                  <label className="block text-xs text-slate-500 dark:text-white/50 mb-1">Metric</label>
+                  <input required name="metric" placeholder="e.g. Temp" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-xs text-slate-500 dark:text-white/50 mb-1">Condition</label>
+                  <select required name="operator" className="w-full bg-slate-100 dark:bg-[#13151a] border border-slate-200 dark:border-white/10 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50">
+                    <option>&gt;</option>
+                    <option>&lt;</option>
+                    <option>=</option>
+                  </select>
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-xs text-slate-500 dark:text-white/50 mb-1">Value</label>
+                  <input required name="value" placeholder="e.g. 40" className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                </div>
+              </div>
+              <button type="submit" className="w-full bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors mt-2">
+                Save Alert Rule
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 // ==================== SETTINGS VIEW ====================
 export const SettingsView = ({ userUID, user, logout }) => {

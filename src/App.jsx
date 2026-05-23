@@ -125,7 +125,7 @@ function Dashboard({ user, logout }) {
       switch (activeTool) {
         case 'devices': return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
-        case 'alerts': return <AlertsView />;
+        case 'alerts': return <AlertsView userUID={userUID} />;
         case 'settings': return <SettingsView userUID={userUID} user={user} logout={logout} />;
         case 'developer': return <DeveloperGuide userUID={user.uid} />;
         default: return <DevicesView userUID={userUID} lastSeen={lastSeen} />;
