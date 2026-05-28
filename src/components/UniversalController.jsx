@@ -1,17 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
+import { Responsive as ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import {
   Plus, X, Thermometer, ToggleLeft, SlidersHorizontal,
   Gamepad2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight,
-  Trash2, Activity, Zap, Car, GripVertical, Move, Loader2,
+  Trash2, Activity, Zap, Car, GripVertical, Move, Loader2, Radio,
 } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const COLS_BY_BP = { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 };
 
@@ -44,7 +42,7 @@ function layoutsFromLg(lg) {
 function useControllerFirestore(userUID, storageScopeId) {
   const scopeKey = storageScopeId || 'default';
   // Sanitize scope key for Firestore document ID (no slashes)
-  const docId = scopeKey.replace(/[\/\\]/g, '_');
+  const docId = scopeKey.replace(/[/\\]/g, '_');
   const firestoreRef = userUID ? doc(db, 'users', userUID, 'controllers', docId) : null;
 
   const [loaded, setLoaded] = useState(false);
@@ -454,7 +452,8 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
 // ─── Gauge Widget ─────────────────────────────────────────────────────────────
 function GaugeWidget({ widget, value, history = [] }) {
   const num = value !== undefined ? parseFloat(value) : NaN;
-  const pct = Number.isFinite(num)
+  const hasData = Number.isFinite(num);
+  const pct = hasData
     ? Math.min(100, Math.max(0, (num / widget.maxVal) * 100))
     : 0;
   const color = pct > 80 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#06b6d4';
@@ -470,31 +469,45 @@ function GaugeWidget({ widget, value, history = [] }) {
         </div>
         <span className="text-[10px] text-slate-500 dark:text-white/30 font-mono bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded-md truncate max-w-[40%]">{widget.topic}</span>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-2 min-h-0">
-        <div className="text-3xl sm:text-4xl font-black tracking-tight flex-shrink-0" style={{ color }}>
-          {Number.isFinite(num) ? num.toFixed(1) : '—'}
-          <span className="text-base sm:text-lg font-medium text-slate-600 dark:text-white/40 ml-1">{widget.unit}</span>
-        </div>
-        <div className="w-full flex-shrink-0">
-          <div className="w-full bg-slate-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-700"
-              style={{ width: `${pct}%`, backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-slate-400 dark:text-white/20 mt-0.5">
-            <span>0 {widget.unit}</span>
-            <span>{widget.maxVal} {widget.unit}</span>
-          </div>
-        </div>
-        {chartData.length > 1 && (
-          <div className="h-16 flex-1 min-h-[48px] mt-1 -mx-4 w-[calc(100%+2rem)] sm:w-full sm:mx-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
-                <YAxis domain={['auto', 'auto']} hide width={0} />
-                <Line type="monotone" dataKey="v" stroke={color} strokeWidth={2} dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
+      <div className="flex-1 flex flex-col items-center justify-center gap-2 min-h-0 w-full">
+        {hasData ? (
+          <>
+            <div className="text-3xl sm:text-4xl font-black tracking-tight flex-shrink-0" style={{ color }}>
+              {num.toFixed(1)}
+              <span className="text-base sm:text-lg font-medium text-slate-600 dark:text-white/40 ml-1">{widget.unit}</span>
+            </div>
+            <div className="w-full flex-shrink-0">
+              <div className="w-full bg-slate-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${pct}%`, backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-400 dark:text-white/20 mt-0.5">
+                <span>0 {widget.unit}</span>
+                <span>{widget.maxVal} {widget.unit}</span>
+              </div>
+            </div>
+            {chartData.length > 1 && (
+              <div className="h-16 flex-1 min-h-[48px] mt-1 -mx-4 w-[calc(100%+2rem)] sm:w-full sm:mx-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
+                    <YAxis domain={['auto', 'auto']} hide width={0} />
+                    <Line type="monotone" dataKey="v" stroke={color} strokeWidth={2} dot={false} isAnimationActive={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-2.5 py-4 my-auto">
+            <div className="relative flex items-center justify-center">
+              <div className="absolute w-8 h-8 rounded-full bg-cyan-500/10 animate-ping" />
+              <div className="relative w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center">
+                <Radio className="text-cyan-400 animate-pulse" size={14} />
+              </div>
+            </div>
+            <span className="text-[11px] text-slate-400 dark:text-white/30 font-medium tracking-wide animate-pulse">Waiting for data...</span>
           </div>
         )}
       </div>
@@ -579,9 +592,9 @@ function SliderWidget({ widget, publish }) {
 
 const DP_BTN_BASE =
   'flex items-center justify-center w-14 h-14 rounded-xl border-2 transition-all duration-150 cursor-pointer select-none active:scale-95';
-const DP_BTN_IDLE = 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/30 hover:bg-violet-500/10 hover:border-violet-400/40 hover:text-violet-300';
+const DP_BTN_IDLE = 'bg-slate-200 dark:bg-white/10 border-slate-300 dark:border-white/15 text-slate-700 dark:text-white/60 hover:bg-violet-500/20 dark:hover:bg-violet-500/20 hover:border-violet-500/40 dark:hover:border-violet-400/40 hover:text-violet-600 dark:hover:text-violet-300';
 const DP_BTN_GLOW =
-  'bg-violet-500/40 border-violet-300 text-slate-900 dark:text-white shadow-[0_0_24px_rgba(167,139,250,0.95),0_0_48px_rgba(139,92,246,0.65),0_0_80px_rgba(139,92,246,0.35)] scale-[0.98] dpad-glow ring-2 ring-violet-400/80';
+  'bg-violet-600 dark:bg-violet-500 border-violet-400 dark:border-violet-300 text-white shadow-[0_0_30px_rgba(139,92,246,0.8),0_0_60px_rgba(139,92,246,0.4)] scale-[0.95] ring-2 ring-violet-400/80';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
@@ -637,7 +650,7 @@ function DPadWidget({ widget, publish }) {
           <button
             type="button"
             onClick={sendStop}
-            className={`${DP_BTN_BASE} ${active === 'STOP' ? DP_BTN_GLOW : 'bg-white/[0.06] border-white/15 text-slate-600 dark:text-white/40 hover:text-violet-200 hover:border-violet-500/40'}`}
+            className={`${DP_BTN_BASE} ${active === 'STOP' ? DP_BTN_GLOW : DP_BTN_IDLE}`}
             title="Send STOP"
           >
             <span className="text-[9px] font-bold">STOP</span>
@@ -814,7 +827,8 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
 }
 
 // ─── Main Controller View ─────────────────────────────────────────────────────
-export default function UniversalController({ deviceStates, publish, storageScopeId, customTitle, esp32Prefix, userUID }) {
+export default function UniversalController({ deviceStates, publish, storageScopeId, esp32Prefix, userUID }) {
+  const { width, containerRef, mounted } = useContainerWidth();
   const { loaded, savedWidgets, savedLayouts, save } = useControllerFirestore(userUID, storageScopeId);
 
   const [showModal, setShowModal] = useState(false);
@@ -912,6 +926,10 @@ export default function UniversalController({ deviceStates, publish, storageScop
     setWidgets(prev => prev.map(w => w.id === updatedWidget.id ? updatedWidget : w));
   }, [setWidgets]);
 
+  const onLayoutChange = useCallback((_, allLayouts) => {
+    setLayouts(allLayouts);
+  }, [setLayouts]);
+
   if (!widgets || !layouts) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -921,15 +939,16 @@ export default function UniversalController({ deviceStates, publish, storageScop
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       {/* Header bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex justify-between items-center gap-4 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">{customTitle || 'Universal Controller'}</h2>
-          <p className="text-sm text-slate-600 dark:text-white/40 mt-0.5">
-            {esp32Prefix ? <span className="text-primary font-bold mr-1">Target ESP32: {esp32Prefix} ·</span> : ''}
-            Drag, resize, and control sensors, actuators, or an RC car. Layout saved to your account automatically.
-          </p>
+          {esp32Prefix && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              Target ESP32: {esp32Prefix}
+            </div>
+          )}
         </div>
         <button
           type="button"
@@ -948,33 +967,36 @@ export default function UniversalController({ deviceStates, publish, storageScop
           <p className="text-slate-400 dark:text-white/20 text-sm mt-1">Use Add Tool to place sensors, actuators, or RC controls</p>
         </div>
       ) : (
-        <ResponsiveGridLayout
-          className="layout"
-          layouts={layouts}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-          cols={COLS_BY_BP}
-          rowHeight={80}
-          draggableHandle=".drag-handle"
-          isDraggable
-          isResizable
-          compactType="vertical"
-          onLayoutChange={onLayoutChange}
-          margin={[16, 16]}
-          useCSSTransforms
-        >
-          {widgets.map(widget => (
-            <div key={widget.id}>
-              <WidgetCard
-                widget={widget}
-                value={deviceStates?.[widget.topic]}
-                publish={publish}
-                onRemove={removeWidget}
-                onEdit={setEditingWidget}
-                gaugeHistory={gaugeHistory[widget.topic]}
-              />
-            </div>
-          ))}
-        </ResponsiveGridLayout>
+        mounted && (
+          <ResponsiveGridLayout
+            className="layout"
+            layouts={layouts}
+            width={width}
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+            cols={COLS_BY_BP}
+            rowHeight={80}
+            draggableHandle=".drag-handle"
+            isDraggable
+            isResizable
+            compactType="vertical"
+            onLayoutChange={onLayoutChange}
+            margin={[16, 16]}
+            useCSSTransforms
+          >
+            {widgets.map(widget => (
+              <div key={widget.id}>
+                <WidgetCard
+                  widget={widget}
+                  value={deviceStates?.[widget.topic]}
+                  publish={publish}
+                  onRemove={removeWidget}
+                  onEdit={setEditingWidget}
+                  gaugeHistory={gaugeHistory[widget.topic]}
+                />
+              </div>
+            ))}
+          </ResponsiveGridLayout>
+        )
       )}
 
       {showModal && (

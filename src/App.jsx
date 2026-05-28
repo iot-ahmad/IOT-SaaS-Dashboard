@@ -156,7 +156,7 @@ function Dashboard({ user, logout }) {
         <HomeView 
           workspaces={customWorkspaces} 
           onAddWorkspace={handleAddWorkspace} 
-          setActiveWorkspace={setActiveWorkspace} 
+          setActiveWorkspace={handleSetWorkspace} 
         />
       );
     }

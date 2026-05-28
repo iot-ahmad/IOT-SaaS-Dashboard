@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   SoilMoistureCard, 
   IrrigationValveCard, 
@@ -7,7 +7,7 @@ import {
   AutomationsCard 
 } from './Cards';
 import ESP32Model from './ESP32Model';
-import { Lightbulb, Wind, ShieldCheck, Zap, Users, Thermometer, Briefcase, Plus, X, Gamepad2 } from 'lucide-react';
+import { Zap, Users, Thermometer, Briefcase, Plus, X, Gamepad2, Cpu } from 'lucide-react';
 
 const Card = ({ children, className = '' }) => (
   <div className={`bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-6 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-slate-300 dark:border-white/20 group ${className}`}>
@@ -28,6 +28,95 @@ export const FarmView = ({ deviceStates, publish }) => (
     </div>
   </div>
 );
+
+const OnboardingWizard = () => {
+  const steps = [
+    {
+      number: '1',
+      title: 'أنشئ مساحة عمل',
+      subTitle: 'Create Workspace',
+      desc: 'اضغط على زر "Add Project" لإنشاء مساحة عمل مخصصة لمشروعك (مثل: سيارة ذكية أو بيت زراعي).',
+      icon: Plus,
+      color: 'from-blue-500 to-cyan-500 shadow-blue-500/20'
+    },
+    {
+      number: '2',
+      title: 'أضف أداة تحكم',
+      subTitle: 'Add Tool',
+      desc: 'ادخل مساحة العمل واضغط "Add Tool" لإضافة أزرار، عدادات (Gauge)، أو D-Pad للتحكم والتحليل.',
+      icon: Gamepad2,
+      color: 'from-violet-500 to-purple-500 shadow-violet-500/20'
+    },
+    {
+      number: '3',
+      title: 'اربط جهاز ESP32',
+      subTitle: 'Connect ESP32',
+      desc: 'استخدم الـ Data Key المخصص للأداة لربط حساسات أو محركات جهازك ESP32 بالمنصة مباشرة.',
+      icon: Cpu,
+      color: 'from-pink-500 to-rose-500 shadow-pink-500/20'
+    },
+    {
+      number: '4',
+      title: 'انسخ كود التشغيل',
+      subTitle: 'Copy Arduino Code',
+      desc: 'توجه إلى "Developer Guide" وانسخ كود C++ الجاهز والمهيأ للبدء بالبث والتحكم بثوانٍ.',
+      icon: Zap,
+      color: 'from-amber-500 to-orange-500 shadow-amber-500/20'
+    }
+  ];
+
+  return (
+    <div className="bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl relative overflow-hidden mt-6 shadow-xl">
+      <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-violet-600/5 rounded-full blur-3xl -z-10" />
+      
+      <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
+        <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary tracking-wide uppercase">
+          دليل البدء السريع · Quick Start Guide
+        </span>
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mt-3">
+          مرحباً بك في منصة IOT365 الذكية
+        </h3>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-white/40 mt-2 leading-relaxed">
+          اتبع الخطوات الأربع البسيطة التالية لربط جهاز ESP32 الخاص بك وبدء التحكم به خلال دقائق معدودة
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+        {/* Connection line between steps (desktop only) */}
+        <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-blue-500/20 via-violet-500/20 to-amber-500/20 z-0" />
+
+        {steps.map((step, idx) => {
+          const StepIcon = step.icon;
+          return (
+            <div key={idx} className="flex flex-col items-center text-center group z-10 relative">
+              {/* Step circle */}
+              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} border border-white/20 text-slate-900 dark:text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110`}>
+                <StepIcon size={24} />
+              </div>
+              
+              {/* Step number badge */}
+              <span className="mt-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/40 font-mono">
+                STEP 0{step.number}
+              </span>
+
+              <h4 className="text-sm font-bold text-slate-800 dark:text-white mt-3 mb-0.5">
+                {step.title}
+              </h4>
+              <span className="text-[10px] text-primary/80 font-mono uppercase tracking-wider">
+                {step.subTitle}
+              </span>
+              
+              <p className="text-xs text-slate-500 dark:text-white/30 mt-2 leading-relaxed max-w-[200px] md:max-w-none">
+                {step.desc}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -62,13 +151,7 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
         </div>
 
         {customWorkspaces.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-             <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-               <Gamepad2 size={32} className="text-slate-400 dark:text-white/20" />
-             </div>
-             <h3 className="text-xl font-bold text-slate-700 dark:text-white/60">No Projects Yet</h3>
-             <p className="text-slate-500 dark:text-white/40 mt-2 max-w-sm">Create your first project to start monitoring and controlling your ESP32 devices.</p>
-          </div>
+          <OnboardingWizard />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {customWorkspaces.map(ws => (
