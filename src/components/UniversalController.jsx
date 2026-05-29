@@ -456,45 +456,65 @@ function GaugeWidget({ widget, value, history = [] }) {
   const pct = hasData
     ? Math.min(100, Math.max(0, (num / widget.maxVal) * 100))
     : 0;
-  const color = pct > 80 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#06b6d4';
+  // Vibrantly colored neon theme colors
+  const color = pct > 80 ? '#ff4b5c' : pct > 60 ? '#ffb300' : '#00e5ff';
+  const glowColor = pct > 80 ? 'rgba(255, 75, 92, 0.4)' : pct > 60 ? 'rgba(255, 179, 0, 0.4)' : 'rgba(0, 229, 255, 0.4)';
 
   const chartData = history.map((y, i) => ({ i, v: y }));
 
   return (
-    <div className="flex flex-col h-full gap-2 min-h-0">
+    <div className="flex flex-col h-full gap-2 min-h-0 text-left">
+      {/* Header Info */}
       <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-cyan-400">
-          <Thermometer size={16} />
-          <span className="text-sm font-semibold truncate">{widget.name}</span>
+        <div className="flex items-center gap-2" style={{ color }}>
+          <Activity size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
-        <span className="text-[10px] text-slate-500 dark:text-white/30 font-mono bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded-md truncate max-w-[40%]">{widget.topic}</span>
+        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+          {widget.topic}
+        </span>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-2 min-h-0 w-full">
+
+      <div className="flex-1 flex flex-col items-center justify-center gap-2 min-h-0 w-full relative">
         {hasData ? (
           <>
-            <div className="text-3xl sm:text-4xl font-black tracking-tight flex-shrink-0" style={{ color }}>
-              {num.toFixed(1)}
-              <span className="text-base sm:text-lg font-medium text-slate-600 dark:text-white/40 ml-1">{widget.unit}</span>
-            </div>
-            <div className="w-full flex-shrink-0">
-              <div className="w-full bg-slate-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{ width: `${pct}%`, backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
+            {/* Gauge Circular Visual */}
+            <div className="relative w-28 h-28 flex items-center justify-center my-1 flex-shrink-0">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle cx="56" cy="56" r="48" className="stroke-slate-100 dark:stroke-white/5" strokeWidth="6" fill="none" />
+                <circle 
+                  cx="56" cy="56" r="48" 
+                  className="transition-all duration-700 ease-out" 
+                  stroke={color}
+                  strokeWidth="6" fill="none" 
+                  strokeDasharray="301.6" 
+                  strokeDashoffset={301.6 - (301.6 * pct) / 100}
+                  strokeLinecap="round"
+                  style={{ filter: `drop-shadow(0 0 5px ${color})` }}
                 />
-              </div>
-              <div className="flex justify-between text-[10px] text-slate-400 dark:text-white/20 mt-0.5">
-                <span>0 {widget.unit}</span>
-                <span>{widget.maxVal} {widget.unit}</span>
+              </svg>
+              <div className="absolute flex flex-col items-center">
+                <div className="text-2xl font-black tracking-tight" style={{ color, textShadow: `0 0 10px ${glowColor}` }}>
+                  {num.toFixed(1)}
+                </div>
+                <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold uppercase tracking-widest">{widget.unit || ''}</span>
               </div>
             </div>
+
+            {/* Sparkline chart */}
             {chartData.length > 1 && (
-              <div className="h-16 flex-1 min-h-[48px] mt-1 -mx-4 w-[calc(100%+2rem)] sm:w-full sm:mx-0">
+              <div className="h-12 flex-1 min-h-[32px] mt-1 -mx-4 w-[calc(100%+2rem)] sm:w-full sm:mx-0 overflow-hidden opacity-60 hover:opacity-100 transition-opacity">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
+                  <AreaChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id={`grad_${widget.id}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={color} stopOpacity={0.15}/>
+                        <stop offset="100%" stopColor={color} stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <YAxis domain={['auto', 'auto']} hide width={0} />
-                    <Line type="monotone" dataKey="v" stroke={color} strokeWidth={2} dot={false} isAnimationActive={false} />
-                  </LineChart>
+                    <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#grad_${widget.id})`} dot={false} isAnimationActive={false} />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
             )}
@@ -522,27 +542,38 @@ function SwitchWidget({ widget, value, publish }) {
   const toggle = () => publish(widget.topic, isOn ? 'OFF' : 'ON');
 
   return (
-    <div className="flex flex-col h-full gap-2">
-      <div className="flex items-center gap-2 text-amber-400">
-        <ToggleLeft size={16} />
-        <span className="text-sm font-semibold">{widget.name}</span>
+    <div className="flex flex-col h-full gap-2 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 text-amber-500">
+          <Zap size={16} className={isOn ? "animate-pulse" : ""} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+        </div>
+        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+          {widget.topic}
+        </span>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-3">
+
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
+        {/* Pulsing indicator light */}
+        <div className="absolute top-0 right-2 flex items-center gap-1.5">
+          <span className={`h-2 w-2 rounded-full ${isOn ? 'bg-amber-400' : 'bg-slate-400'}`} style={{ boxShadow: isOn ? '0 0 10px #f59e0b, 0 0 20px #f59e0b' : 'none' }} />
+          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-amber-500' : 'text-slate-400 dark:text-white/20'}`}>
+            {isOn ? 'ACTIVE' : 'IDLE'}
+          </span>
+        </div>
+
+        {/* Button body */}
         <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
+          className={`w-18 h-18 rounded-3xl flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
             isOn
-              ? 'bg-amber-500/20 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)]'
-              : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:border-white/30'
+              ? 'bg-amber-500/10 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)] scale-95'
+              : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30'
           }`}
           onClick={toggle}
           title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
         >
-          <Zap size={28} className={isOn ? 'text-amber-400' : 'text-slate-400 dark:text-white/20'} />
+          <Zap size={32} className={isOn ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'text-slate-400 dark:text-white/20'} />
         </div>
-        <div className={`text-xs font-bold px-3 py-1 rounded-full ${isOn ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/30'}`}>
-          {isOn ? 'ON' : 'OFF'}
-        </div>
-        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
       </div>
     </div>
   );
@@ -559,42 +590,54 @@ function SliderWidget({ widget, publish }) {
     publish(widget.topic, String(v));
   };
 
-  const color = widget.type === 'speed' ? '#8b5cf6' : '#f59e0b';
+  const color = widget.type === 'speed' ? '#a78bfa' : '#ffb300';
+  const glowColor = widget.type === 'speed' ? 'rgba(167, 139, 250, 0.4)' : 'rgba(255, 179, 0, 0.4)';
   const label = widget.type === 'speed' ? 'Speed' : 'Angle';
   const Icon = widget.type === 'speed' ? Car : SlidersHorizontal;
-  const accentClass = widget.type === 'speed' ? 'text-violet-400' : 'text-amber-400';
+  const accentClass = widget.type === 'speed' ? 'text-violet-400 animate-pulse' : 'text-amber-500';
 
   return (
-    <div className="flex flex-col h-full gap-2">
-      <div className={`flex items-center gap-2 ${accentClass}`}>
-        <Icon size={16} />
-        <span className="text-sm font-semibold">{widget.name}</span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        <div className="flex justify-between items-baseline">
-          <span className="text-3xl font-black" style={{ color }}>{val}</span>
-          <span className="text-xs text-slate-500 dark:text-white/30">{label} / {max}</span>
+    <div className="flex flex-col h-full gap-2 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className={`flex items-center gap-2 ${accentClass}`}>
+          <Icon size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
-        <input
-          type="range"
-          min="0"
-          max={max}
-          value={val}
-          onChange={handleChange}
-          className="w-full accent-violet-500 cursor-pointer"
-          style={{ accentColor: color }}
-        />
-        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
+        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+          {widget.topic}
+        </span>
+      </div>
+
+      <div className="flex-1 flex flex-col justify-center gap-4 px-1">
+        <div className="flex justify-between items-baseline">
+          <span className="text-3xl font-black font-mono tracking-tight" style={{ color, textShadow: `0 0 10px ${glowColor}` }}>{val}</span>
+          <span className="text-[10px] font-bold text-slate-500 dark:text-white/30 uppercase tracking-widest">{label} / {max}</span>
+        </div>
+        
+        {/* Styled Premium Slider */}
+        <div className="relative w-full flex items-center">
+          <input
+            type="range"
+            min="0"
+            max={max}
+            value={val}
+            onChange={handleChange}
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200 dark:bg-white/10"
+            style={{ 
+              accentColor: color,
+            }}
+          />
+        </div>
       </div>
     </div>
   );
 }
 
 const DP_BTN_BASE =
-  'flex items-center justify-center w-14 h-14 rounded-xl border-2 transition-all duration-150 cursor-pointer select-none active:scale-95';
-const DP_BTN_IDLE = 'bg-slate-200 dark:bg-white/10 border-slate-300 dark:border-white/15 text-slate-700 dark:text-white/60 hover:bg-violet-500/20 dark:hover:bg-violet-500/20 hover:border-violet-500/40 dark:hover:border-violet-400/40 hover:text-violet-600 dark:hover:text-violet-300';
+  'flex items-center justify-center w-12 h-12 rounded-2xl border-2 transition-all duration-150 cursor-pointer select-none active:scale-95';
+const DP_BTN_IDLE = 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/50 hover:bg-violet-500/10 dark:hover:bg-violet-500/10 hover:border-violet-500/30 dark:hover:border-violet-500/30 hover:text-violet-500 dark:hover:text-violet-300';
 const DP_BTN_GLOW =
-  'bg-violet-600 dark:bg-violet-500 border-violet-400 dark:border-violet-300 text-white shadow-[0_0_30px_rgba(139,92,246,0.8),0_0_60px_rgba(139,92,246,0.4)] scale-[0.95] ring-2 ring-violet-400/80';
+  'bg-violet-600 dark:bg-violet-500 border-violet-400 dark:border-violet-300 text-white shadow-[0_0_20px_rgba(139,92,246,0.6)] ring-1 ring-violet-400/50';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
@@ -608,7 +651,7 @@ function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
       onTouchStart={(e) => { e.preventDefault(); onPress(cmd); }}
       onTouchEnd={onRelease}
     >
-      <Icon size={22} />
+      <Icon size={20} />
     </button>
   );
 }
@@ -638,32 +681,37 @@ function DPadWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2">
-      <div className="flex items-center gap-2 text-violet-400">
-        <Gamepad2 size={16} />
-        <span className="text-sm font-semibold">{widget.name}</span>
+    <div className="flex flex-col h-full gap-2 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 text-violet-400">
+          <Gamepad2 size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+        </div>
+        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+          {widget.topic}
+        </span>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-1">
+
+      <div className="flex-1 flex flex-col items-center justify-center gap-1.5 my-1">
         <DPadDirButton cmd="FORWARD" icon={ChevronUp} activeCmd={active} onPress={press} onRelease={release} />
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <DPadDirButton cmd="LEFT" icon={ChevronLeft} activeCmd={active} onPress={press} onRelease={release} />
           <button
             type="button"
             onClick={sendStop}
-            className={`${DP_BTN_BASE} ${active === 'STOP' ? DP_BTN_GLOW : DP_BTN_IDLE}`}
+            className={`${DP_BTN_BASE} ${active === 'STOP' ? 'bg-red-600 border-red-400 text-white shadow-[0_0_20px_rgba(239,68,68,0.6)]' : DP_BTN_IDLE}`}
             title="Send STOP"
           >
-            <span className="text-[9px] font-bold">STOP</span>
+            <span className="text-[9px] font-black tracking-tighter">STOP</span>
           </button>
           <DPadDirButton cmd="RIGHT" icon={ChevronRight} activeCmd={active} onPress={press} onRelease={release} />
         </div>
         <DPadDirButton cmd="BACK" icon={ChevronDown} activeCmd={active} onPress={press} onRelease={release} />
-        <div className="mt-1">
-          <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${active ? 'bg-violet-500/20 text-violet-300' : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/20'}`}>
-            {active || 'IDLE'}
+        <div className="mt-1 flex items-center gap-1.5">
+          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20' : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/20'}`}>
+            CMD: {active || 'IDLE'}
           </span>
         </div>
-        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
       </div>
     </div>
   );
@@ -682,7 +730,7 @@ function JoystickWidget({ widget, publish }) {
   };
 
   const deadPx = 14;
-  const maxStick = 52;
+  const maxStick = 48;
 
   const directionFromDelta = (dx, dy) => {
     const dist = Math.hypot(dx, dy);
@@ -735,15 +783,21 @@ function JoystickWidget({ widget, publish }) {
   const knobLit = active != null;
 
   return (
-    <div className="flex flex-col h-full gap-2 min-h-0">
-      <div className="flex items-center gap-2 text-violet-400 flex-shrink-0">
-        <Move size={16} />
-        <span className="text-sm font-semibold">{widget.name}</span>
+    <div className="flex flex-col h-full gap-2 min-h-0 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 text-violet-400">
+          <Move size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+        </div>
+        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+          {widget.topic}
+        </span>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center min-h-0 gap-2">
+
+      <div className="flex-1 flex flex-col items-center justify-center min-h-0 gap-2 relative">
         <div
           ref={rootRef}
-          className="relative w-[min(100%,220px)] h-[min(100%,220px)] max-h-[200px] rounded-full border-2 border-violet-500/30 bg-gradient-to-b from-violet-950/50 to-black/60 touch-none select-none cursor-grab active:cursor-grabbing shadow-[inset_0_2px_24px_rgba(0,0,0,0.5)]"
+          className="relative w-36 h-36 rounded-full border border-violet-500/20 bg-gradient-to-b from-violet-950/20 to-black/40 touch-none select-none cursor-grab active:cursor-grabbing shadow-[inset_0_2px_12px_rgba(0,0,0,0.6)] flex items-center justify-center"
           onPointerDown={(e) => {
             e.currentTarget.setPointerCapture(e.pointerId);
             applyPointer(e.clientX, e.clientY);
@@ -758,28 +812,34 @@ function JoystickWidget({ widget, publish }) {
           }}
           onPointerCancel={endPointer}
         >
-          <div className="absolute inset-[18%] rounded-full border border-dashed border-slate-200 dark:border-white/10 pointer-events-none" />
+          {/* Dash ring inside */}
+          <div className="absolute inset-[20%] rounded-full border border-dashed border-violet-500/10 pointer-events-none" />
+          
+          {/* Glowing knob */}
           <div
-            className={`absolute w-14 h-14 rounded-full border-2 transition-all duration-75 ${
+            className={`absolute w-12 h-12 rounded-full border-2 transition-all duration-75 flex items-center justify-center shadow-md ${
               knobLit
-                ? 'bg-violet-500/50 border-violet-200 shadow-[0_0_32px_rgba(167,139,250,0.95),0_0_64px_rgba(139,92,246,0.45)] dpad-glow'
-                : 'bg-white/15 border-slate-300 dark:border-white/20'
+                ? 'bg-violet-500/30 border-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.6)] scale-95'
+                : 'bg-white/10 dark:bg-white/5 border-slate-300 dark:border-white/20'
             }`}
             style={{
               left: `calc(50% + ${knob.x}px)`,
               top: `calc(50% + ${knob.y}px)`,
               transform: 'translate(-50%, -50%)',
             }}
-          />
-          <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">FWD</span>
-          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">BACK</span>
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">L</span>
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 dark:text-white/20 font-bold pointer-events-none">R</span>
+          >
+            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-violet-300' : 'bg-slate-400 dark:bg-white/25'}`} />
+          </div>
+
+          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">F</span>
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">B</span>
+          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">L</span>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">R</span>
         </div>
-        <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${active ? 'bg-violet-500/25 text-violet-200' : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/25'}`}>
-          {active || 'IDLE'}
+
+        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20 animate-pulse' : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/20'}`}>
+          DIR: {active || 'IDLE'}
         </span>
-        <span className="text-[10px] text-slate-400 dark:text-white/20 font-mono">{widget.topic}</span>
       </div>
     </div>
   );
@@ -800,7 +860,7 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
   };
 
   return (
-    <div className="h-full bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-4 backdrop-blur-md hover:bg-white/[0.035] hover:border-slate-300 dark:border-white/20 transition-all duration-300 group flex flex-col relative overflow-hidden">
+    <div className="h-full bg-white/[0.01] dark:bg-[#07080b]/75 border border-slate-200 dark:border-white/5 rounded-2xl p-5 backdrop-blur-md hover:bg-white/[0.025] hover:border-slate-300 dark:hover:border-white/10 transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
       {/* Edit button */}
       <button
         onClick={() => onEdit(widget)}
