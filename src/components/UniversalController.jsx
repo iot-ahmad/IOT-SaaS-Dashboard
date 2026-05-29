@@ -33,25 +33,52 @@ function layoutsFromLg(lg) {
   };
 }
 
-// ─── Firestore Persistence Hook ───────────────────────────────────────────────
+// ─── Dual-Persistence Hook (Firestore + localStorage) ─────────────────────────
 /**
  * Loads widgets/layouts from Firestore on mount.
- * Saves to Firestore with debounce on every change.
- * Falls back to migrating old localStorage data once.
+ * Falls back to localStorage if Firestore fails or data doesn't exist.
+ * Saves to BOTH Firestore and localStorage on every change (debounced).
+ * This ensures user customizations persist across sessions.
  */
 function useControllerFirestore(userUID, storageScopeId) {
   const scopeKey = storageScopeId || 'default';
   // Sanitize scope key for Firestore document ID (no slashes)
   const docId = scopeKey.replace(/[/\\]/g, '_');
+  const localKey = `iot_ctrl_${docId}`;
   const firestoreRef = userUID ? doc(db, 'users', userUID, 'controllers', docId) : null;
 
   const [loaded, setLoaded] = useState(false);
   const [savedWidgets, setSavedWidgets] = useState(null);
   const [savedLayouts, setSavedLayouts] = useState(null);
 
-  // Load from Firestore on mount
+  // Helper: read from localStorage
+  const readLocal = () => {
+    try {
+      const raw = localStorage.getItem(localKey);
+      if (raw) return JSON.parse(raw);
+    } catch { /* ignore */ }
+    return null;
+  };
+
+  // Helper: write to localStorage
+  const writeLocal = (widgets, layouts) => {
+    try {
+      localStorage.setItem(localKey, JSON.stringify({ widgets, layouts }));
+    } catch { /* quota exceeded etc. */ }
+  };
+
+  // Load from Firestore on mount, fallback to localStorage
   useEffect(() => {
-    if (!firestoreRef) { setLoaded(true); return; }
+    if (!firestoreRef) {
+      // No user — load from localStorage only
+      const local = readLocal();
+      if (local?.widgets) {
+        setSavedWidgets(local.widgets);
+        setSavedLayouts(local.layouts || null);
+      }
+      setLoaded(true);
+      return;
+    }
     let cancelled = false;
     const load = async () => {
       try {
@@ -61,51 +88,56 @@ function useControllerFirestore(userUID, storageScopeId) {
             const data = snap.data();
             setSavedWidgets(data.widgets || null);
             setSavedLayouts(data.layouts || null);
+            // Sync to localStorage backup
+            writeLocal(data.widgets || [], data.layouts || {});
           } else {
-            // Try migrating from old localStorage keys
-            try {
-              const legacyKeys = Object.keys(localStorage).filter(
-                k => k.startsWith('uc_controller_') || k === 'uc_widgets_v1'
-              );
-              for (const k of legacyKeys) {
-                const raw = localStorage.getItem(k);
-                if (raw) {
-                  const parsed = JSON.parse(raw);
-                  if (parsed?.widgets) {
-                    setSavedWidgets(parsed.widgets);
-                    setSavedLayouts(parsed.layouts || null);
-                    // Save migrated data to Firestore
-                    await setDoc(firestoreRef, {
-                      widgets: parsed.widgets,
-                      layouts: parsed.layouts || {},
-                    });
-                    break;
-                  }
-                }
-              }
-            } catch { /* ignore migration errors */ }
+            // Try loading from localStorage (migration / first time)
+            const local = readLocal();
+            if (local?.widgets) {
+              setSavedWidgets(local.widgets);
+              setSavedLayouts(local.layouts || null);
+              // Push local data to Firestore
+              try {
+                await setDoc(firestoreRef, {
+                  widgets: local.widgets,
+                  layouts: local.layouts || {},
+                });
+              } catch { /* ignore migration write errors */ }
+            }
           }
           setLoaded(true);
         }
       } catch (err) {
-        console.error('Failed to load controller from Firestore', err);
-        if (!cancelled) setLoaded(true);
+        console.error('Failed to load controller from Firestore, using localStorage fallback', err);
+        if (!cancelled) {
+          // Firestore failed — fall back to localStorage
+          const local = readLocal();
+          if (local?.widgets) {
+            setSavedWidgets(local.widgets);
+            setSavedLayouts(local.layouts || null);
+          }
+          setLoaded(true);
+        }
       }
     };
     load();
     return () => { cancelled = true; };
   }, [userUID, docId]);
 
-  // Debounced save to Firestore
+  // Debounced save to BOTH Firestore AND localStorage
   const saveTimerRef = useRef(null);
   const save = useCallback((widgets, layouts) => {
+    // Always save to localStorage immediately (sync)
+    writeLocal(widgets, layouts);
+
+    // Debounced save to Firestore
     if (!firestoreRef) return;
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       try {
         await setDoc(firestoreRef, { widgets, layouts });
       } catch (err) {
-        console.error('Failed to save controller to Firestore', err);
+        console.error('Failed to save controller to Firestore (localStorage backup is intact)', err);
       }
     }, 500);
   }, [userUID, docId]);

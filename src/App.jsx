@@ -62,8 +62,9 @@ function Dashboard({ user, logout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Dynamic Workspaces State
+  // Dynamic Workspaces State (dual-persistence: Firestore + localStorage)
   const [customWorkspaces, setCustomWorkspaces] = useState(WORKSPACES);
+  const wsLocalKey = `iot_workspaces_${user.uid}`;
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -71,18 +72,27 @@ function Dashboard({ user, logout }) {
         const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
         const snap = await getDoc(docRef);
         if (snap.exists()) {
-          setCustomWorkspaces(snap.data().list || WORKSPACES);
+          const list = snap.data().list || WORKSPACES;
+          setCustomWorkspaces(list);
+          // Sync to localStorage backup
+          try { localStorage.setItem(wsLocalKey, JSON.stringify(list)); } catch {}
         } else {
-          // If no workspaces in firestore, try loading from legacy local storage
-          const saved = localStorage.getItem(`workspaces_${user.uid}`);
+          // No Firestore data — try localStorage
+          const saved = localStorage.getItem(wsLocalKey);
           if (saved) {
             const parsed = JSON.parse(saved);
             setCustomWorkspaces(parsed);
-            await setDoc(docRef, { list: parsed });
+            // Push to Firestore
+            try { await setDoc(docRef, { list: parsed }); } catch {}
           }
         }
       } catch (err) {
-        console.error("Failed to load workspaces from Firestore", err);
+        console.error("Failed to load workspaces from Firestore, using localStorage fallback", err);
+        // Firestore failed — fall back to localStorage
+        try {
+          const saved = localStorage.getItem(wsLocalKey);
+          if (saved) setCustomWorkspaces(JSON.parse(saved));
+        } catch {}
       }
     };
     fetchWorkspaces();
@@ -90,11 +100,14 @@ function Dashboard({ user, logout }) {
 
   const saveWorkspaces = async (list) => {
     setCustomWorkspaces(list);
+    // Always save to localStorage immediately
+    try { localStorage.setItem(wsLocalKey, JSON.stringify(list)); } catch {}
+    // Save to Firestore
     try {
       const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
       await setDoc(docRef, { list });
     } catch (err) {
-      console.error("Failed to save workspaces to Firestore", err);
+      console.error("Failed to save workspaces to Firestore (localStorage backup is intact)", err);
     }
   };
 
