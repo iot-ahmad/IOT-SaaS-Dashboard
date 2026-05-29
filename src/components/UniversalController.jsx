@@ -61,9 +61,9 @@ function useControllerFirestore(userUID, storageScopeId) {
   };
 
   // Helper: write to localStorage
-  const writeLocal = (widgets, layouts) => {
+  const writeLocal = (widgets, layouts, updatedAt) => {
     try {
-      localStorage.setItem(localKey, JSON.stringify({ widgets, layouts }));
+      localStorage.setItem(localKey, JSON.stringify({ widgets, layouts, updatedAt }));
     } catch { /* quota exceeded etc. */ }
   };
 
@@ -84,23 +84,45 @@ function useControllerFirestore(userUID, storageScopeId) {
       try {
         const snap = await getDoc(firestoreRef);
         if (!cancelled) {
+          const local = readLocal();
+          const localWidgets = local?.widgets || null;
+          const localLayouts = local?.layouts || null;
+          const localTime = local?.updatedAt || 0;
+
           if (snap.exists()) {
-            const data = snap.data();
-            setSavedWidgets(data.widgets || null);
-            setSavedLayouts(data.layouts || null);
-            // Sync to localStorage backup
-            writeLocal(data.widgets || [], data.layouts || {});
+            const cloudData = snap.data();
+            const cloudWidgets = cloudData.widgets || null;
+            const cloudLayouts = cloudData.layouts || null;
+            const cloudTime = cloudData.updatedAt || 0;
+
+            if (localWidgets && localTime > cloudTime) {
+              // Local is newer! Use local and sync to Firestore
+              setSavedWidgets(localWidgets);
+              setSavedLayouts(localLayouts);
+              try {
+                await setDoc(firestoreRef, {
+                  widgets: localWidgets,
+                  layouts: localLayouts || {},
+                  updatedAt: localTime
+                });
+              } catch { /* ignore sync write errors */ }
+            } else {
+              // Cloud is newer or equal! Use cloud and sync to local
+              setSavedWidgets(cloudWidgets);
+              setSavedLayouts(cloudLayouts);
+              writeLocal(cloudWidgets || [], cloudLayouts || {}, cloudTime);
+            }
           } else {
-            // Try loading from localStorage (migration / first time)
-            const local = readLocal();
-            if (local?.widgets) {
-              setSavedWidgets(local.widgets);
-              setSavedLayouts(local.layouts || null);
+            // No Firestore data — use local if available
+            if (localWidgets) {
+              setSavedWidgets(localWidgets);
+              setSavedLayouts(localLayouts);
               // Push local data to Firestore
               try {
                 await setDoc(firestoreRef, {
-                  widgets: local.widgets,
-                  layouts: local.layouts || {},
+                  widgets: localWidgets,
+                  layouts: localLayouts || {},
+                  updatedAt: localTime || Date.now()
                 });
               } catch { /* ignore migration write errors */ }
             }
@@ -127,15 +149,16 @@ function useControllerFirestore(userUID, storageScopeId) {
   // Debounced save to BOTH Firestore AND localStorage
   const saveTimerRef = useRef(null);
   const save = useCallback((widgets, layouts) => {
+    const now = Date.now();
     // Always save to localStorage immediately (sync)
-    writeLocal(widgets, layouts);
+    writeLocal(widgets, layouts, now);
 
     // Debounced save to Firestore
     if (!firestoreRef) return;
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       try {
-        await setDoc(firestoreRef, { widgets, layouts });
+        await setDoc(firestoreRef, { widgets, layouts, updatedAt: now });
       } catch (err) {
         console.error('Failed to save controller to Firestore (localStorage backup is intact)', err);
       }

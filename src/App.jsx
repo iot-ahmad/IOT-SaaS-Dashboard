@@ -71,27 +71,52 @@ function Dashboard({ user, logout }) {
       try {
         const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
         const snap = await getDoc(docRef);
+        
+        // Read local backup
+        const savedLocal = localStorage.getItem(wsLocalKey);
+        let localData = null;
+        if (savedLocal) {
+          try { localData = JSON.parse(savedLocal); } catch {}
+        }
+
         if (snap.exists()) {
-          const list = snap.data().list || WORKSPACES;
-          setCustomWorkspaces(list);
-          // Sync to localStorage backup
-          try { localStorage.setItem(wsLocalKey, JSON.stringify(list)); } catch {}
+          const cloudData = snap.data();
+          const cloudList = cloudData.list || WORKSPACES;
+          const cloudTime = cloudData.updatedAt || 0;
+
+          const localList = localData?.list || WORKSPACES;
+          const localTime = localData?.updatedAt || 0;
+
+          if (localTime > cloudTime) {
+            // Local data is newer, use it and sync to Firestore
+            setCustomWorkspaces(localList);
+            try {
+              await setDoc(docRef, { list: localList, updatedAt: localTime });
+            } catch {}
+          } else {
+            // Cloud data is newer or equal, use it and sync to local
+            setCustomWorkspaces(cloudList);
+            try {
+              localStorage.setItem(wsLocalKey, JSON.stringify({ list: cloudList, updatedAt: cloudTime }));
+            } catch {}
+          }
         } else {
-          // No Firestore data — try localStorage
-          const saved = localStorage.getItem(wsLocalKey);
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            setCustomWorkspaces(parsed);
-            // Push to Firestore
-            try { await setDoc(docRef, { list: parsed }); } catch {}
+          // No Firestore data — use local if available
+          if (localData) {
+            setCustomWorkspaces(localData.list);
+            try {
+              await setDoc(docRef, { list: localData.list, updatedAt: localData.updatedAt || Date.now() });
+            } catch {}
           }
         }
       } catch (err) {
         console.error("Failed to load workspaces from Firestore, using localStorage fallback", err);
-        // Firestore failed — fall back to localStorage
         try {
           const saved = localStorage.getItem(wsLocalKey);
-          if (saved) setCustomWorkspaces(JSON.parse(saved));
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            setCustomWorkspaces(parsed.list || parsed);
+          }
         } catch {}
       }
     };
@@ -99,13 +124,16 @@ function Dashboard({ user, logout }) {
   }, [user.uid]);
 
   const saveWorkspaces = async (list) => {
+    const now = Date.now();
     setCustomWorkspaces(list);
     // Always save to localStorage immediately
-    try { localStorage.setItem(wsLocalKey, JSON.stringify(list)); } catch {}
+    try {
+      localStorage.setItem(wsLocalKey, JSON.stringify({ list, updatedAt: now }));
+    } catch {}
     // Save to Firestore
     try {
       const docRef = doc(db, 'users', user.uid, 'settings', 'workspaces');
-      await setDoc(docRef, { list });
+      await setDoc(docRef, { list, updatedAt: now });
     } catch (err) {
       console.error("Failed to save workspaces to Firestore (localStorage backup is intact)", err);
     }
