@@ -142,7 +142,7 @@ const CustomControls = ({ onLocate, onToggleLayer, layers, t, toggleFullscreen, 
           gap: 6px;
           white-space: nowrap;
         ">
-          ${isFullscreen ? '🗗 ' + (t.backBtn || 'Exit Full') : '🗖 ' + (t.interactiveMap || 'Fullscreen')}
+          ${isFullscreen ? '🗗 ' + (t.exitFullscreen || 'Exit fullscreen') : '🗖 ' + (t.fullscreen || 'Fullscreen')}
         </button>
       `;
       
@@ -293,13 +293,17 @@ export const AdvancedMap = ({
   className = '',
   style = { height: '100%', width: '100%' },
   t = {}, // Translations dictionary
+  isFullscreen: controlledFullscreen,
+  onFullscreenChange,
   children // To inject custom items like MovingBus
 }) => {
   const [currentLayers, setCurrentLayers] = useState(mapLayers);
   const [userLocation, setUserLocation] = useState(null);
   const [searchResult, setSearchResult] = useState(null);
   const [clickedLocation, setClickedLocation] = useState(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [internalFullscreen, setInternalFullscreen] = useState(false);
+  const isControlled = controlledFullscreen !== undefined && controlledFullscreen !== null;
+  const isFullscreen = isControlled ? controlledFullscreen : internalFullscreen;
 
   // Handle layer toggling
   const handleToggleLayer = useCallback((layerType) => {
@@ -335,21 +339,34 @@ export const AdvancedMap = ({
     setSearchResult(result);
   }, []);
 
-  // Toggle fullscreen state
-  const toggleFullscreen = useCallback(() => {
-    setIsFullscreen(prev => !prev);
-  }, []);
+  const setFullscreen = useCallback((next) => {
+    if (isControlled) {
+      onFullscreenChange?.(next);
+    } else {
+      setInternalFullscreen(next);
+    }
+  }, [isControlled, onFullscreenChange]);
 
-  // Escape key to exit fullscreen
+  const toggleFullscreen = useCallback(() => {
+    setFullscreen(!isFullscreen);
+  }, [isFullscreen, setFullscreen]);
+
+  // Escape key to exit fullscreen + lock page scroll while expanded
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isFullscreen) {
-        setIsFullscreen(false);
+        setFullscreen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen]);
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen, setFullscreen]);
 
   // Styled overlay when map is fullscreen
   const fullscreenStyle = isFullscreen
@@ -389,11 +406,11 @@ export const AdvancedMap = ({
             </div>
           </div>
           <button
-            onClick={() => setIsFullscreen(false)}
+            onClick={() => setFullscreen(false)}
             className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-white/10 hover:border-purple-500/40 bg-white/5 transition-all cursor-pointer"
           >
             <Minimize2 size={13} />
-            <span>{t.backBtn || 'Close'}</span>
+            <span>{t.exitFullscreen || t.backBtn || 'Close'}</span>
           </button>
         </div>
       )}

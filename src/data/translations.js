@@ -76,6 +76,8 @@ export const TRANSLATIONS = {
     availSitesList: 'المواقع المتاحة',
     chooseSitePrompt: 'اختر موقعاً من الخريطة أو القائمة',
     backBtn: 'رجوع',
+    fullscreen: 'ملء الشاشة',
+    exitFullscreen: 'إغلاق ملء الشاشة',
 
     // Site Details
     entryFee: 'سعر الدخول',
@@ -212,6 +214,8 @@ export const TRANSLATIONS = {
     availSitesList: 'Available Sites',
     chooseSitePrompt: 'Choose a site from the map or list',
     backBtn: 'Back',
+    fullscreen: 'Fullscreen',
+    exitFullscreen: 'Exit fullscreen',
 
     // Site Details
     entryFee: 'Entry Fee',
@@ -348,6 +352,8 @@ export const TRANSLATIONS = {
     availSitesList: 'Sites Disponibles',
     chooseSitePrompt: 'Sélectionnez un site sur la carte ou dans la liste',
     backBtn: 'Retour',
+    fullscreen: 'Plein écran',
+    exitFullscreen: 'Quitter le plein écran',
 
     // Site Details
     entryFee: 'Frais d\'Entrée',
@@ -484,6 +490,8 @@ export const TRANSLATIONS = {
     availSitesList: 'Sitios Disponibles',
     chooseSitePrompt: 'Seleccione un sitio en el mapa o en la lista',
     backBtn: 'Atrás',
+    fullscreen: 'Pantalla completa',
+    exitFullscreen: 'Salir de pantalla completa',
 
     // Site Details
     entryFee: 'Tarifa de Entrada',
@@ -620,6 +628,8 @@ export const TRANSLATIONS = {
     availSitesList: 'Siti Disponibili',
     chooseSitePrompt: 'Seleziona un sito dalla mappa o dall\'elenco',
     backBtn: 'Indietro',
+    fullscreen: 'Schermo intero',
+    exitFullscreen: 'Esci da schermo intero',
 
     // Site Details
     entryFee: 'Costo d\'Ingresso',

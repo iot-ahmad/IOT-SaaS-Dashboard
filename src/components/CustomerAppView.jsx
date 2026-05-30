@@ -4,7 +4,8 @@ import {
   MapPin, Compass, Heart, Activity,
   LogOut, Code, User, Navigation, Navigation2,
   CheckCircle2, Thermometer, Droplets, Wind, Clock, Star,
-  ChevronRight, ArrowLeft, Zap, Globe, CloudSun, ShieldAlert
+  ChevronRight, ArrowLeft, Zap, Globe, CloudSun, ShieldAlert,
+  Maximize2, Minimize2
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useMap } from 'react-leaflet';
@@ -399,6 +400,7 @@ function TourismPanel({ t, lang }) {
   );
   const [tourismStreetPath, setTourismStreetPath] = useState([]);
   const [loadingTourismPath, setLoadingTourismPath] = useState(false);
+  const [tourismMapFullscreen, setTourismMapFullscreen] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -477,9 +479,21 @@ function TourismPanel({ t, lang }) {
           <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 backdrop-blur-xl shadow-xl relative overflow-hidden">
             <FloatingPaths position={1} />
             <FloatingPaths position={-1} />
-            <div className="relative z-10 flex items-center justify-between mb-3">
-              <span className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5"><MapPin size={10} className="text-purple-400" /> {t.interactiveMap}</span>
-              <span className="text-[9px] text-slate-500 font-mono">{TOURIST_SITES.length} {t.sitesCountUnit}</span>
+            <div className="relative z-10 flex items-center justify-between mb-3 gap-2">
+              <span className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 truncate"><MapPin size={10} className="text-purple-400 shrink-0" /> {t.interactiveMap}</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[9px] text-slate-500 font-mono hidden sm:inline">{TOURIST_SITES.length} {t.sitesCountUnit}</span>
+                <button
+                  type="button"
+                  onClick={() => setTourismMapFullscreen(v => !v)}
+                  title={tourismMapFullscreen ? t.exitFullscreen : t.fullscreen}
+                  aria-label={tourismMapFullscreen ? t.exitFullscreen : t.fullscreen}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-slate-300 hover:text-white border border-white/10 hover:border-purple-500/40 bg-white/5 transition-all cursor-pointer"
+                >
+                  {tourismMapFullscreen ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                  <span className="hidden sm:inline">{tourismMapFullscreen ? t.exitFullscreen : t.fullscreen}</span>
+                </button>
+              </div>
             </div>
             <div className="relative z-10 h-80 lg:h-[340px] w-full rounded-xl overflow-hidden border border-white/5 shadow-inner" style={{ isolation: 'isolate' }}>
               <AdvancedMap
@@ -487,6 +501,8 @@ function TourismPanel({ t, lang }) {
                 zoom={selectedSite ? 10 : 7.5}
                 enableClustering={true}
                 enableSearch={true}
+                isFullscreen={tourismMapFullscreen}
+                onFullscreenChange={setTourismMapFullscreen}
                 t={t}
                 onMarkerClick={(marker) => setSelectedSite(TOURIST_SITES.find(s => s.id === marker.id))}
                 markers={TOURIST_SITES.map(site => {
@@ -643,6 +659,7 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed, t, lang }) {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [streetPath, setStreetPath] = useState([]);
   const [loadingStreetPath, setLoadingStreetPath] = useState(false);
+  const [busMapFullscreen, setBusMapFullscreen] = useState(false);
 
   const cityData = BUS_ROUTES[selectedCity];
   const cityRoutes = cityData?.routes || [];
@@ -750,11 +767,23 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed, t, lang }) {
           <div className="relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] backdrop-blur-xl">
             <FloatingPaths position={1} />
             <FloatingPaths position={-1} />
-            <div className="relative z-10 flex items-center justify-between px-4 pt-3 pb-2">
-              <span className="text-xs font-bold text-slate-300">{t.liveRoute}</span>
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
-                <span className="text-[10px] text-purple-400 font-mono font-bold">{t.gpsTracking}</span>
+            <div className="relative z-10 flex items-center justify-between px-4 pt-3 pb-2 gap-2">
+              <span className="text-xs font-bold text-slate-300 truncate">{t.liveRoute}</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
+                  <span className="text-[10px] text-purple-400 font-mono font-bold hidden sm:inline">{t.gpsTracking}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setBusMapFullscreen(v => !v)}
+                  title={busMapFullscreen ? t.exitFullscreen : t.fullscreen}
+                  aria-label={busMapFullscreen ? t.exitFullscreen : t.fullscreen}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-slate-300 hover:text-white border border-white/10 hover:border-purple-500/40 bg-white/5 transition-all cursor-pointer"
+                >
+                  {busMapFullscreen ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                  <span className="hidden sm:inline">{busMapFullscreen ? t.exitFullscreen : t.fullscreen}</span>
+                </button>
               </div>
             </div>
             <div className="relative z-10 h-64 sm:h-72 w-full" style={{ isolation: 'isolate' }}>
@@ -763,6 +792,8 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed, t, lang }) {
                 zoom={selectedCity === 'irbid' ? 11 : selectedCity === 'zarqa' ? 11 : 10}
                 enableClustering={false}
                 enableSearch={false}
+                isFullscreen={busMapFullscreen}
+                onFullscreenChange={setBusMapFullscreen}
                 t={t}
                 polylines={[
                   // Draw all background routes as semi-transparent thin dashed lines
