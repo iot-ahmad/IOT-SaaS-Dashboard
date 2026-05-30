@@ -11,6 +11,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { TOURIST_SITES, WMO_ARABIC, WMO_ICON } from '../data/jordanData';
+import { BUS_ROUTES, getAllRoutes, STATS } from '../data/busRoutes';
 
 // Fix Leaflet default icon paths broken by bundlers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -477,10 +478,92 @@ function TourismPanel() {
   );
 }
 
+// ─── Bus Route Card ───────────────────────────
+function BusRouteCard({ route, cityColor, isSelected, onClick }) {
+  const statusColor = route.active ? '#22c55e' : '#94a3b8';
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full text-right p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
+        isSelected
+          ? 'bg-purple-500/10 border-purple-500/40 shadow-[0_0_12px_rgba(168,85,247,0.15)]'
+          : 'bg-white/[0.02] border-white/[0.06] hover:border-white/10 hover:bg-white/[0.04]'
+      }`}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: statusColor, boxShadow: route.active ? `0 0 6px ${statusColor}` : 'none' }} />
+          <span className={`text-[10px] font-mono shrink-0 px-1.5 py-0.5 rounded-md`} style={{ color: cityColor, background: `${cityColor}15`, border: `1px solid ${cityColor}30` }}>{route.id}</span>
+          {route.brt && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">BRT</span>}
+          {route.intercity && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20 shrink-0">بين مدن</span>}
+        </div>
+        <span className="text-[9px] text-slate-500 shrink-0">{route.fare} JOD</span>
+      </div>
+      <div className="mt-1.5">
+        <p className="text-xs font-semibold text-slate-200 truncate">{route.short}</p>
+        <p className="text-[10px] text-slate-500 mt-0.5">{route.frequency} · {route.stops.length} محطة</p>
+      </div>
+    </button>
+  );
+}
+
+// ─── Route Detail Panel ───────────────────────
+function RouteDetailPanel({ route, cityColor, onBack }) {
+  return (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="space-y-4">
+      <div className="flex items-center gap-3">
+        <button onClick={onBack} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-purple-500/40 transition-all cursor-pointer"><ArrowLeft size={14} /></button>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md" style={{ color: cityColor, background: `${cityColor}15`, border: `1px solid ${cityColor}30` }}>{route.id}</span>
+            {route.brt && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">BRT سريع</span>}
+            {route.intercity && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20">بين مدن</span>}
+            {!route.active && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-slate-700 text-slate-400">متوقف</span>}
+          </div>
+          <h3 className="text-sm font-black text-white mt-1">{route.name}</h3>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { label: 'التعرفة', value: `${route.fare} JOD`, color: 'text-yellow-400' },
+          { label: 'التكرار', value: route.frequency, color: 'text-purple-400' },
+          { label: 'المحطات', value: `${route.stops.length} محطة`, color: 'text-slate-300' },
+        ].map((item, i) => (
+          <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-2.5 text-center">
+            <div className="text-[9px] text-slate-500 mb-1">{item.label}</div>
+            <div className={`text-xs font-bold ${item.color}`}>{item.value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3.5 space-y-2">
+        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5"><MapPin size={10} className="text-purple-400" /> المحطات</span>
+        <div className="space-y-1.5 max-h-56 overflow-y-auto">
+          {route.stops.map((stop, i) => (
+            <div key={i} className={`flex items-center gap-2.5 text-xs ${stop.main ? 'text-white' : 'text-slate-400'}`}>
+              <div className="flex flex-col items-center shrink-0">
+                <div className={`w-2 h-2 rounded-full border ${stop.main ? 'border-purple-400 bg-purple-400/30' : 'border-slate-600 bg-slate-700'}`} style={stop.main ? { boxShadow: `0 0 6px ${cityColor}` } : {}} />
+                {i < route.stops.length - 1 && <div className="w-px h-4 bg-slate-700/50" />}
+              </div>
+              <span className={stop.main ? 'font-semibold' : ''}>{stop.name}</span>
+              {stop.main && <span className="text-[9px] text-purple-400/70 mr-auto">رئيسية</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Transport Panel with Real Leaflet Map + FloatingPaths ────
 function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
-  // Amman weather for transport panel
   const { weather: ammanWeather } = useWeather(31.9454, 35.9284);
+  const [selectedCity, setSelectedCity] = useState('irbid');
+  const [selectedRoute, setSelectedRoute] = useState(null);
+
+  const cityData = BUS_ROUTES[selectedCity];
+  const cityRoutes = cityData?.routes || [];
 
   const getPos = (t) => {
     const total = BUS_ROUTE.length - 1;
@@ -490,7 +573,6 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
     const b = BUS_ROUTE[seg + 1] || BUS_ROUTE[total];
     return [a[0] + (b[0] - a[0]) * segT, a[1] + (b[1] - a[1]) * segT];
   };
-  const busPos = getPos(busProgress);
 
   return (
     <div className="space-y-6">
@@ -500,155 +582,177 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.15)]">
             قطاع النقل · Public Transit
           </span>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mt-2">تتبع باص إربد - عمان</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mt-2">شبكة الباصات الأردنية</h2>
         </div>
         <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#2c2d31] to-[#121315] border border-[#3c3e44] flex items-center justify-center shadow-md">
           <Navigation size={20} />
         </div>
       </div>
 
+      {/* Stats Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'إجمالي الخطوط', value: STATS.totalRoutes, color: 'text-purple-400' },
+          { label: 'خطوط BRT', value: STATS.brtRoutes, color: 'text-cyan-400' },
+          { label: 'بين المدن', value: STATS.intercityRoutes, color: 'text-orange-400' },
+          { label: 'متوسط التعرفة', value: `${STATS.avgFare} JOD`, color: 'text-yellow-400' },
+        ].map((s, i) => (
+          <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3 relative overflow-hidden">
+            <FloatingPaths position={i % 2 === 0 ? 0.3 : -0.3} />
+            <div className="relative z-10 text-[9px] text-slate-500 mb-1">{s.label}</div>
+            <div className={`relative z-10 text-xl font-black ${s.color}`}>{s.value}</div>
+          </div>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {/* ── Real Leaflet Map with FloatingPaths ── */}
-        <div className="relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.8),0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
-          {/* Animated paths overlay */}
-          <FloatingPaths position={1} />
-          <FloatingPaths position={-1} />
-
-          {/* Header */}
-          <div className="relative z-10 flex items-center justify-between px-5 pt-4 pb-3">
-            <span className="text-xs font-bold text-slate-300">مسار الحافلة الحي · Live Route</span>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
-              <span className="text-[10px] text-purple-400 font-mono font-bold tracking-wide">GPS · تتبع حي</span>
-            </div>
-          </div>
-
-          {/* Map */}
-          <div className="relative z-10 h-64 sm:h-80 w-full" style={{ isolation: 'isolate' }}>
-            <MapContainer
-              center={[32.25, 35.9]}
-              zoom={9}
-              style={{ height: '100%', width: '100%', background: '#07080a' }}
-              zoomControl={false}
-              scrollWheelZoom={false}
-              attributionControl={false}
-            >
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                attribution="&copy; CartoDB"
-              />
-              {/* Route polyline */}
-              <Polyline
-                positions={BUS_ROUTE}
-                color="#a855f7"
-                weight={4}
-                opacity={0.7}
-                dashArray="8 4"
-              />
-              {/* Irbid marker */}
-              <Marker position={BUS_ROUTE[0]} icon={PURPLE_ICON}>
-                <Popup className="leaflet-dark-popup">
-                  <span style={{ color: '#a855f7', fontWeight: 'bold' }}>🏁 إربد (نقطة الانطلاق)</span>
-                </Popup>
-              </Marker>
-              {/* Jerash stop */}
-              <Marker position={BUS_ROUTE[1]} icon={YELLOW_ICON}>
-                <Popup><span style={{ color: '#eab308', fontWeight: 'bold' }}>🏟️ توقف جرش</span></Popup>
-              </Marker>
-              {/* Amman marker */}
-              <Marker position={BUS_ROUTE[3]} icon={PURPLE_ICON}>
-                <Popup><span style={{ color: '#a855f7', fontWeight: 'bold' }}>🏁 عمان (الوجهة)</span></Popup>
-              </Marker>
-              {/* Live bus */}
-              <MovingBus progress={busProgress} />
-            </MapContainer>
-          </div>
-
-          {/* Footer info */}
-          <div className="relative z-10 flex justify-between items-center px-5 py-3 border-t border-white/5">
-            <div className="flex items-center gap-2 text-[10px] text-slate-500">
-              <MapPin size={10} className="text-slate-600" />
-              <span>
-                {busProgress < 0.33 ? 'قرب إربد' : busProgress < 0.66 ? 'منطقة جرش' : 'قرب عمان'}
-              </span>
-            </div>
-            {ammanWeather && (
-              <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
-                <span>{ammanWeather.icon}</span>
-                <span className="font-bold text-yellow-400">{ammanWeather.temp}°C</span>
-                <span className="text-slate-500">عمان</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── Stats Column ── */}
-        <div className="space-y-4 flex flex-col justify-between">
-          {/* Key stats */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-500/30 transition-all shadow-lg backdrop-blur-xl hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] relative overflow-hidden">
-              <FloatingPaths position={0.5} />
-              <span className="relative z-10 text-xs text-slate-400 font-bold">المقاعد المتاحة</span>
-              <div className="relative z-10 flex items-end gap-2 mt-2">
-                <span className="text-3xl font-extrabold text-purple-400">{busSeats}</span>
-                <span className="text-xs text-slate-400 font-semibold mb-1">مقاعد شاغرة</span>
-              </div>
-              <div className="relative z-10 h-1.5 w-full bg-[#050608] rounded-full mt-3 overflow-hidden shadow-inner">
-                <div className="h-full bg-gradient-to-r from-purple-500 to-yellow-400 transition-all duration-500" style={{ width: `${(busSeats / 8) * 100}%` }} />
-              </div>
-            </div>
-
-            <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-500/30 transition-all shadow-lg backdrop-blur-xl hover:shadow-[0_0_20px_rgba(234,179,8,0.1)] relative overflow-hidden">
-              <FloatingPaths position={-0.5} />
-              <span className="relative z-10 text-xs text-slate-400 font-bold">وقت الوصول المقدر</span>
-              <div className="relative z-10 flex items-end gap-1.5 mt-2">
-                <span className="text-3xl font-extrabold text-yellow-400">{busEta}</span>
-                <span className="text-xs text-slate-400 font-medium mb-1">دقائق</span>
-              </div>
-              <span className="relative z-10 text-[10px] text-slate-500 mt-2 block">المسافة: 82 كم · {busSpeed} كم/س</span>
-            </div>
-          </div>
-
-          {/* Trip details */}
-          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-5 space-y-3.5 shadow-lg backdrop-blur-xl relative overflow-hidden flex-1">
-            <FloatingPaths position={0.3} />
-            <h3 className="relative z-10 text-xs font-semibold text-slate-400 uppercase tracking-wider">تفاصيل الرحلة · Trip Details</h3>
-            {[
-              { label: 'رقم الحافلة', value: 'IRBID-BUS-82X', color: 'text-purple-400 font-mono' },
-              { label: 'سعر التذكرة', value: '1.85 JOD', color: 'text-yellow-400' },
-              { label: 'المحطة القادمة', value: busProgress < 0.35 ? 'جرش (توقف 5 د)' : busProgress < 0.7 ? 'الزرقاء' : 'محطة عبدلي', color: 'text-slate-300' },
-              { label: 'حالة الحافلة', value: '🟢 تسير بشكل طبيعي', color: 'text-green-400 text-xs' },
-            ].map((r, i) => (
-              <div key={i} className={`relative z-10 flex justify-between items-center text-sm ${i < 3 ? 'border-b border-white/5 pb-2' : ''}`}>
-                <span className="text-slate-400">{r.label}</span>
-                <span className={`font-medium ${r.color}`}>{r.value}</span>
-              </div>
+        {/* ── Left: Map + City Selector ── */}
+        <div className="space-y-4">
+          {/* City Tabs */}
+          <div className="flex gap-2">
+            {Object.entries(BUS_ROUTES).map(([key, city]) => (
+              <button
+                key={key}
+                onClick={() => { setSelectedCity(key); setSelectedRoute(null); }}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                  selectedCity === key
+                    ? 'text-white border-transparent'
+                    : 'bg-white/[0.02] border-white/[0.06] text-slate-400 hover:text-slate-200'
+                }`}
+                style={selectedCity === key ? { background: `${city.color}20`, borderColor: `${city.color}50`, color: city.color, boxShadow: `0 0 12px ${city.color}20` } : {}}
+              >
+                {city.city}
+              </button>
             ))}
           </div>
 
-          {/* Progress bar */}
-          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 backdrop-blur-xl shadow-lg relative overflow-hidden">
-            <FloatingPaths position={-0.3} />
-            <div className="relative z-10 flex justify-between text-[10px] text-slate-500 mb-2 font-mono">
-              <span>🏁 إربد</span>
-              <span>🏟️ جرش</span>
-              <span>🏁 عمان</span>
+          {/* Live Map */}
+          <div className="relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+            <FloatingPaths position={1} />
+            <FloatingPaths position={-1} />
+            <div className="relative z-10 flex items-center justify-between px-4 pt-3 pb-2">
+              <span className="text-xs font-bold text-slate-300">مسار الحافلة الحي · Live Route</span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
+                <span className="text-[10px] text-purple-400 font-mono font-bold">GPS · تتبع حي</span>
+              </div>
             </div>
-            <div className="relative z-10 h-3 w-full bg-[#050608] rounded-full overflow-hidden border border-white/5">
-              <motion.div
-                className="h-full bg-gradient-to-r from-purple-600 via-purple-400 to-yellow-400 rounded-full"
-                style={{ boxShadow: '0 0 10px rgba(168,85,247,0.5)' }}
-                animate={{ width: `${busProgress * 100}%` }}
-                transition={{ duration: 1, ease: 'linear' }}
-              />
+            <div className="relative z-10 h-64 sm:h-72 w-full" style={{ isolation: 'isolate' }}>
+              <MapContainer
+                center={cityData?.center || [31.9454, 35.9284]}
+                zoom={selectedCity === 'irbid' ? 11 : selectedCity === 'zarqa' ? 11 : 10}
+                style={{ height: '100%', width: '100%', background: '#07080a' }}
+                zoomControl={false}
+                scrollWheelZoom={false}
+                attributionControl={false}
+                key={selectedCity}
+              >
+                <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="&copy; CartoDB" />
+                {/* Draw all routes for selected city */}
+                {cityRoutes.map(route => (
+                  <Polyline
+                    key={route.id}
+                    positions={route.stops.map(s => [s.lat, s.lng])}
+                    color={selectedRoute?.id === route.id ? cityData.color : `${cityData.color}60`}
+                    weight={selectedRoute?.id === route.id ? 4 : 2}
+                    opacity={selectedRoute?.id === route.id ? 0.9 : 0.5}
+                    dashArray={route.active ? (route.brt ? '12 3' : '8 4') : '4 6'}
+                  />
+                ))}
+                {/* Stop markers for selected route */}
+                {(selectedRoute || cityRoutes[0])?.stops.map((stop, i) => (
+                  <Marker
+                    key={i}
+                    position={[stop.lat, stop.lng]}
+                    icon={stop.main ? makeNeonIcon(cityData.color) : makeNeonIcon('#475569')}
+                  >
+                    <Popup><span style={{ fontWeight: 'bold', color: cityData.color }}>{stop.name}</span></Popup>
+                  </Marker>
+                ))}
+                {/* Moving bus on selected/first route */}
+                <MovingBus progress={busProgress} />
+              </MapContainer>
             </div>
-            <div className="relative z-10 flex justify-between text-[9px] text-slate-600 mt-1">
-              <span>الانطلاق</span>
-              <span className="text-purple-400 font-bold">{Math.round(busProgress * 100)}% مكتمل</span>
-              <span>الوصول</span>
+            <div className="relative z-10 flex justify-between items-center px-4 py-2.5 border-t border-white/5">
+              <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                <MapPin size={10} className="text-slate-600" />
+                <span>{cityData?.city} · {cityRoutes.filter(r => r.active).length} خط نشط</span>
+              </div>
+              {ammanWeather && (
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                  <span>{ammanWeather.icon}</span>
+                  <span className="font-bold text-yellow-400">{ammanWeather.temp}°C</span>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Live Bus Tracker */}
+          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 backdrop-blur-xl shadow-lg relative overflow-hidden">
+            <FloatingPaths position={-0.3} />
+            <div className="relative z-10 grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <span className="text-[9px] text-slate-500">المقاعد المتاحة</span>
+                <div className="flex items-end gap-1 mt-0.5">
+                  <span className="text-2xl font-black text-purple-400">{busSeats}</span>
+                  <span className="text-[10px] text-slate-500 mb-0.5">مقعد</span>
+                </div>
+              </div>
+              <div>
+                <span className="text-[9px] text-slate-500">وقت الوصول</span>
+                <div className="flex items-end gap-1 mt-0.5">
+                  <span className="text-2xl font-black text-yellow-400">{busEta}</span>
+                  <span className="text-[10px] text-slate-500 mb-0.5">دقيقة</span>
+                </div>
+              </div>
+            </div>
+            <div className="relative z-10">
+              <div className="flex justify-between text-[9px] text-slate-500 mb-1 font-mono">
+                <span>🏁 إربد</span><span>🏟️ جرش</span><span>🏁 عمان</span>
+              </div>
+              <div className="h-2.5 w-full bg-[#050608] rounded-full overflow-hidden border border-white/5">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-purple-600 via-purple-400 to-yellow-400 rounded-full"
+                  style={{ boxShadow: '0 0 8px rgba(168,85,247,0.5)' }}
+                  animate={{ width: `${busProgress * 100}%` }}
+                  transition={{ duration: 1, ease: 'linear' }}
+                />
+              </div>
+              <div className="flex justify-between text-[9px] text-slate-600 mt-1">
+                <span>الانطلاق</span>
+                <span className="text-purple-400 font-bold">{Math.round(busProgress * 100)}% مكتمل · {busSpeed} كم/س</span>
+                <span>الوصول</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right: Routes List / Detail ── */}
+        <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 backdrop-blur-xl shadow-xl min-h-[400px] flex flex-col">
+          <AnimatePresence mode="wait">
+            {selectedRoute ? (
+              <RouteDetailPanel key="detail" route={selectedRoute} cityColor={cityData.color} onBack={() => setSelectedRoute(null)} />
+            ) : (
+              <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">خطوط {cityData?.city}</span>
+                  <span className="text-[9px] text-slate-500 font-mono">{cityRoutes.length} خط</span>
+                </div>
+                <div className="space-y-2 overflow-y-auto flex-1 pr-0.5">
+                  {cityRoutes.map(route => (
+                    <BusRouteCard
+                      key={route.id}
+                      route={route}
+                      cityColor={cityData.color}
+                      isSelected={selectedRoute?.id === route.id}
+                      onClick={() => setSelectedRoute(route)}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
@@ -662,12 +766,7 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
   const [busEta, setBusEta] = useState(10);
   const [busProgress, setBusProgress] = useState(0.4);
   const [busSpeed, setBusSpeed] = useState(72);
-  const [queueNo] = useState(7);
-  const [currentServing, setCurrentServing] = useState(5);
-  const [waitTime, setWaitTime] = useState(14);
-  const [glucose, setGlucose] = useState(96);
-  const [bloodPressure, setBloodPressure] = useState({ sys: 121, dia: 81 });
-  const [heartRate, setHeartRate] = useState(74);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -675,25 +774,9 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
       setBusEta(p => { if (p <= 1) return 45; return Math.random() > 0.6 ? p - 1 : p; });
       setBusSeats(p => { const n = p + (Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0); return n < 1 ? 1 : n > 8 ? 8 : n; });
       setBusSpeed(p => { const n = p + Math.floor((Math.random() - 0.5) * 6); return n < 40 ? 40 : n > 100 ? 100 : n; });
-      setCurrentServing(p => { if (p >= 6) return 1; return Math.random() > 0.85 ? p + 1 : p; });
-      setGlucose(p => p + (Math.random() > 0.5 ? 1 : -1));
-      setBloodPressure(p => ({ sys: p.sys + (Math.random() > 0.6 ? (Math.random() > 0.5 ? 1 : -1) : 0), dia: p.dia + (Math.random() > 0.6 ? (Math.random() > 0.5 ? 1 : -1) : 0) }));
-      setHeartRate(p => p + Math.floor((Math.random() - 0.5) * 4));
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    const diff = queueNo - currentServing;
-    setWaitTime(diff > 0 ? diff * 6 + Math.floor(Math.random() * 3) : 0);
-  }, [currentServing, queueNo]);
-
-  const healthHistory = [
-    { name: '08:00', glucose: 92, bp: 118 },
-    { name: '10:00', glucose: 105, bp: 122 },
-    { name: '12:00', glucose: 98, bp: 120 },
-    { name: '14:00', glucose, bp: bloodPressure.sys },
-  ];
 
   return (
     <div className="min-h-screen bg-[#07080a] text-slate-100 flex flex-col items-center justify-start p-0 sm:p-6 md:p-10 font-sans selection:bg-purple-500/30">
@@ -716,7 +799,6 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
           <div className="hidden md:flex bg-gradient-to-b from-[#090a0c] to-[#131417] p-1.5 rounded-2xl border border-[#212328] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] shrink-0">
             {[
               { id: 'transport', label: '🚌 النقل', icon: <Navigation2 size={11} className={activeTab==='transport'?'rotate-45 text-purple-400':''} /> },
-              { id: 'health', label: '🏥 الصحة', icon: <CloudSun size={11} className={activeTab==='health'?'text-purple-400':''} /> },
               { id: 'tourism', label: '🗺️ السياحة', icon: <Compass size={11} className={activeTab==='tourism'?'text-yellow-400':''} /> },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
@@ -746,65 +828,6 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
               </motion.div>
             )}
 
-            {/* ══ HEALTH ══ */}
-            {activeTab === 'health' && (
-              <motion.div key="health" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.25 }} className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.15)]">قطاع الصحة · Healthcare</span>
-                    <h2 className="text-xl sm:text-2xl font-bold text-white mt-2">الرعاية الصحية والمراقبة المنزلية</h2>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#2c2d31] to-[#121315] border border-[#3c3e44] flex items-center justify-center shadow-md"><Heart size={20} /></div>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 relative overflow-hidden shadow-xl backdrop-blur-xl flex flex-col justify-between">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/[0.02] rounded-full blur-3xl pointer-events-none" />
-                    <div className="flex justify-between items-start">
-                      <div><span className="text-xs text-purple-400 font-bold">المركز الصحي الحالي</span><h3 className="text-base font-bold text-white mt-1">عيادات إربد التخصصية</h3></div>
-                      <span className="px-2.5 py-1 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-bold rounded-full">مفتوح</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-8 border-t border-b border-white/5 py-6">
-                      <div className="text-center"><span className="text-[11px] text-slate-400">رقم دورك</span><div className="text-5xl font-black text-white mt-1.5 relative inline-block">{queueNo}<span className="absolute -top-1 -right-2.5 w-1.5 h-1.5 rounded-full bg-purple-500" /></div></div>
-                      <div className="text-center border-l border-white/5"><span className="text-[11px] text-slate-400">الرقم المستدعى</span><div className="text-5xl font-black text-yellow-400 mt-1.5 animate-pulse">{currentServing}</div></div>
-                    </div>
-                    <div className="flex items-center justify-between mt-6">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400"><Clock size={14} className="text-slate-500" /><span>وقت الانتظار:</span></div>
-                      <span className="text-xs font-bold text-yellow-400 bg-[#050608] border border-white/5 px-3 py-1.5 rounded-xl shadow-inner font-mono">{waitTime > 0 ? `${waitTime} دقيقة` : 'دورك الآن!'}</span>
-                    </div>
-                  </div>
-                  <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 space-y-5 shadow-xl backdrop-blur-xl">
-                    <div className="flex justify-between items-center">
-                      <div><h3 className="text-sm font-bold text-slate-200">المراقبة الصحية المنزلية</h3><p className="text-[10px] text-slate-500">البث الحي لحساسات IoT المنزلية</p></div>
-                      <div className="flex items-center gap-1 text-[10px] text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20"><Activity size={10} /><span>بث متصل</span></div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[{label:'مستوى السكر',value:glucose,unit:'mg/dL',status:'طبيعي',color:'text-purple-400'},{label:'ضغط الدم',value:`${bloodPressure.sys}/${bloodPressure.dia}`,unit:'mmHg',status:'طبيعي',color:'text-yellow-400'},{label:'نبضات القلب',value:heartRate,unit:'BPM',status:'مستقر',color:'text-purple-400'}].map((v,i)=>(
-                        <div key={i} className="bg-[#050608]/70 border border-white/5 rounded-2xl p-4 text-center shadow-inner">
-                          <span className="text-[10px] text-slate-400 block mb-1">{v.label}</span>
-                          <span className={`text-xl font-bold ${v.color}`}>{v.value}</span>
-                          <span className="text-[9px] text-slate-500 block font-mono">{v.unit}</span>
-                          <span className="mt-1.5 text-[8px] font-bold text-slate-400 bg-slate-900 py-0.5 rounded block">{v.status}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="space-y-2">
-                      <span className="text-[10px] font-semibold text-slate-400 block">المخطط البياني (السكر والضغط)</span>
-                      <div className="h-32 bg-[#050608]/90 border border-white/5 rounded-2xl p-3 shadow-inner">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={healthHistory} margin={{ top: 2, right: 2, left: -25, bottom: 2 }}>
-                            <XAxis dataKey="name" fontSize={8} stroke="#ffffff20" tickLine={false} />
-                            <YAxis fontSize={8} stroke="#ffffff20" tickLine={false} domain={[60, 150]} />
-                            <Line type="monotone" dataKey="glucose" stroke="#a855f7" strokeWidth={2.5} dot={false} />
-                            <Line type="monotone" dataKey="bp" stroke="#eab308" strokeWidth={2.5} dot={false} />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
             {/* ══ TOURISM ══ */}
             {activeTab === 'tourism' && (
               <motion.div key="tourism" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.25 }}>
@@ -819,7 +842,6 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
         <nav className="md:hidden absolute bottom-0 left-0 right-0 h-20 bg-[#0c0d10] border-t border-[#1b1c1f] flex justify-around items-center px-4 z-20 shadow-inner">
           {[
             { id: 'transport', icon: <Navigation2 size={18} className={activeTab==='transport'?'rotate-45 text-purple-400':''} />, label: 'النقل' },
-            { id: 'health', icon: <Heart size={18} className={activeTab==='health'?'text-purple-400':''} />, label: 'الصحة' },
             { id: 'tourism', icon: <Compass size={18} className={activeTab==='tourism'?'text-yellow-400':''} />, label: 'السياحة' },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
