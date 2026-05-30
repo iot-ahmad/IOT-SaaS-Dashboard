@@ -392,11 +392,14 @@ function SiteDetailCard({ site, crowdLevel, onBack, t }) {
 }
 
 // ─── Tourism Panel ────────────────────────────
-function TourismPanel({ t }) {
+function TourismPanel({ t, lang }) {
   const [selectedSite, setSelectedSite] = useState(TOURIST_SITES[0]);
   const [crowdLevels, setCrowdLevels] = useState(() =>
     Object.fromEntries(TOURIST_SITES.map(s => [s.id, Math.floor(Math.random() * 55) + 15]))
   );
+  const [tourismStreetPath, setTourismStreetPath] = useState([]);
+  const [loadingTourismPath, setLoadingTourismPath] = useState(false);
+
   useEffect(() => {
     const id = setInterval(() => {
       setCrowdLevels(prev => {
@@ -407,6 +410,45 @@ function TourismPanel({ t }) {
     }, 3500);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    if (!selectedSite) {
+      setTourismStreetPath([]);
+      return;
+    }
+    
+    let isMounted = true;
+    setLoadingTourismPath(true);
+    
+    const fetchTourismPath = async () => {
+      try {
+        const startPoint = [31.9454, 35.9284]; // Amman Center
+        const url = `https://router.project-osrm.org/route/v1/driving/${startPoint[1]},${startPoint[0]};${selectedSite.lon},${selectedSite.lat}?overview=full&geometries=geojson`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('OSRM tourism route failed');
+        
+        const data = await response.json();
+        if (isMounted && data.routes && data.routes.length > 0) {
+          const geojsonCoords = data.routes[0].geometry.coordinates;
+          const mappedCoords = geojsonCoords.map(c => [c[1], c[0]]);
+          setTourismStreetPath(mappedCoords);
+        }
+      } catch (error) {
+        console.error('Error fetching tourism OSRM route:', error);
+        if (isMounted) {
+          setTourismStreetPath([[31.9454, 35.9284], [selectedSite.lat, selectedSite.lon]]);
+        }
+      } finally {
+        if (isMounted) setLoadingTourismPath(false);
+      }
+    };
+    
+    fetchTourismPath();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedSite]);
 
   const selectedSiteName = selectedSite ? (t.sites?.[selectedSite.id]?.name || selectedSite.name) : '';
   const selectedSiteNameEn = selectedSite ? selectedSite.nameEn : '';
@@ -462,6 +504,19 @@ function TourismPanel({ t }) {
                     }
                   };
                 })}
+                polylines={selectedSite && tourismStreetPath.length > 0 ? [
+                  {
+                    id: `tourism-route-${selectedSite.id}`,
+                    positions: tourismStreetPath,
+                    style: {
+                      color: '#a855f7',
+                      weight: 4,
+                      opacity: 0.9,
+                      dashArray: '3 5'
+                    },
+                    popup: lang === 'ar' ? `مسار السفر إلى ${t.sites?.[selectedSite.id]?.name || selectedSite.name}` : `Travel route to ${selectedSite.nameEn}`
+                  }
+                ] : []}
               />
             </div>
             <div className="relative z-10 flex items-center justify-center gap-4 mt-3 text-[9px] text-slate-500">
@@ -586,9 +641,54 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed, t, lang }) {
   const { weather: ammanWeather } = useWeather(31.9454, 35.9284);
   const [selectedCity, setSelectedCity] = useState('irbid');
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [streetPath, setStreetPath] = useState([]);
+  const [loadingStreetPath, setLoadingStreetPath] = useState(false);
 
   const cityData = BUS_ROUTES[selectedCity];
   const cityRoutes = cityData?.routes || [];
+
+  useEffect(() => {
+    const activeRoute = selectedRoute || cityRoutes[0];
+    if (!activeRoute || !activeRoute.stops || activeRoute.stops.length < 2) {
+      setStreetPath([]);
+      return;
+    }
+
+    let isMounted = true;
+    setLoadingStreetPath(true);
+
+    const fetchStreetPath = async () => {
+      try {
+        const coordsString = activeRoute.stops
+          .map(s => `${s.lng},${s.lat}`)
+          .join(';');
+        
+        const url = `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('OSRM route fetch failed');
+        
+        const data = await response.json();
+        if (isMounted && data.routes && data.routes.length > 0) {
+          const geojsonCoords = data.routes[0].geometry.coordinates;
+          const mappedCoords = geojsonCoords.map(c => [c[1], c[0]]);
+          setStreetPath(mappedCoords);
+        }
+      } catch (error) {
+        console.error('Error fetching OSRM road path:', error);
+        if (isMounted) {
+          setStreetPath(activeRoute.stops.map(s => [s.lat, s.lng]));
+        }
+      } finally {
+        if (isMounted) setLoadingStreetPath(false);
+      }
+    };
+
+    fetchStreetPath();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedRoute, selectedCity, cityRoutes]);
 
   return (
     <div className="space-y-6">
@@ -665,17 +765,32 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed, t, lang }) {
                 enableSearch={false}
                 t={t}
                 polylines={[
-                  ...cityRoutes.map(route => ({
-                    id: route.id,
-                    positions: route.stops.map(s => [s.lat, s.lng]),
+                  // Draw all background routes as semi-transparent thin dashed lines
+                  ...cityRoutes
+                    .filter(r => !selectedRoute || r.id !== selectedRoute.id)
+                    .map(r => ({
+                      id: r.id,
+                      positions: r.stops.map(s => [s.lat, s.lng]),
+                      style: {
+                        color: `${cityData.color}50`,
+                        weight: 2,
+                        opacity: 0.45,
+                        dashArray: '3 5'
+                      },
+                      popup: r.name
+                    })),
+                  // Draw the active selected route as a thick, glowing, snapped-to-streets polyline!
+                  {
+                    id: selectedRoute?.id || 'active-transit-route',
+                    positions: streetPath.length > 0 ? streetPath : (selectedRoute || cityRoutes[0]).stops.map(s => [s.lat, s.lng]),
                     style: {
-                      color: selectedRoute?.id === route.id ? cityData.color : `${cityData.color}60`,
-                      weight: selectedRoute?.id === route.id ? 4 : 2,
-                      opacity: selectedRoute?.id === route.id ? 0.9 : 0.5,
-                      dashArray: route.active ? (route.brt ? '12 3' : '8 4') : '4 6'
+                      color: cityData.color,
+                      weight: 5,
+                      opacity: 0.95
                     },
-                    popup: route.name
-                  })),
+                    popup: (selectedRoute || cityRoutes[0]).name
+                  },
+                  // Our Amman-Irbid tracker highway route
                   {
                     id: 'live-tracker-highway',
                     positions: BUS_ROUTE,
@@ -875,7 +990,7 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
             {/* ══ TOURISM ══ */}
             {activeTab === 'tourism' && (
               <motion.div key="tourism" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.25 }}>
-                <TourismPanel t={t} />
+                <TourismPanel t={t} lang={lang} />
               </motion.div>
             )}
 
