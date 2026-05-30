@@ -28,7 +28,12 @@ export default function EnterpriseDashboard({ user, logout }) {
     { id: 'GEO-480', time: '13:52:44', location: 'منطقة المذبح المغلقة', tourist: 'سائحان (فرنسا)', severity: 'Low' },
   ]);
 
-  const [activeSection, setActiveSection] = useState('all'); // 'all', 'transport', 'health', 'tourism'
+  const [museumFire, setMuseumFire] = useState(false);
+  const [museumTemp, setMuseumTemp] = useState(23.5);
+  const [oxygenLevel, setOxygenLevel] = useState(20.9);
+  const [oxygenAlertActive, setOxygenAlertActive] = useState(false);
+
+  const [activeSection, setActiveSection] = useState('all'); // 'all', 'transport', 'health', 'tourism', 'safety'
   const [sysTime, setSysTime] = useState(new Date().toLocaleTimeString());
   const [sirenActive, setSirenActive] = useState(false);
   const [logs, setLogs] = useState([
@@ -97,13 +102,57 @@ export default function EnterpriseDashboard({ user, logout }) {
         ]);
       }
 
+      // 4. Museum Fire and Temperature simulation
+      setMuseumTemp(prev => {
+        if (museumFire) {
+          const next = parseFloat((prev + Math.random() * 6 + 3).toFixed(1));
+          return Math.min(115, next);
+        } else {
+          return parseFloat((23.0 + (Math.random() - 0.5) * 0.6).toFixed(1));
+        }
+      });
+
+      // Random fire trigger (low probability)
+      if (!museumFire && Math.random() > 0.95) {
+        setMuseumFire(true);
+        setLogs(prev => [
+          '⚠️ FIRE ALARM: Smoke levels & temperature spike detected at Amman Archaeological Museum!',
+          'MQTT: Publishing fire alarm warning to topic /safety/museum/fire',
+          ...prev.slice(0, 8)
+        ]);
+      }
+
+      // 5. Warehouse Oxygen concentration simulation
+      setOxygenLevel(prev => {
+        if (oxygenAlertActive) {
+          const next = parseFloat((prev + 0.9).toFixed(1));
+          if (next >= 20.9) {
+            setOxygenAlertActive(false);
+            return 20.9;
+          }
+          return next;
+        } else {
+          // Flucuates downwards
+          const delta = (Math.random() - 0.54) * 0.2;
+          const next = parseFloat((prev + delta).toFixed(1));
+          if (next < 19.5 && prev >= 19.5) {
+            setLogs(prevLogs => [
+              `⚠️ HAZARD ALERT: Critical oxygen depletion in Warehouse B: ${next}% O2!`,
+              'MQTT: Triggering alarm on /safety/warehouse/oxygen/depleted',
+              ...prevLogs.slice(0, 8)
+            ]);
+          }
+          return Math.max(16.0, next);
+        }
+      });
+
     }, 5000);
 
     return () => {
       clearInterval(timer);
       clearInterval(dataSim);
     };
-  }, [fridgeAlertActive]);
+  }, [fridgeAlertActive, museumFire, oxygenAlertActive]);
 
   // Recharts vaccine temperature history chart data
   const fridgeHistoryData = [
@@ -130,6 +179,25 @@ export default function EnterpriseDashboard({ user, logout }) {
       ? 'Surveillance: Virtual siren broadcast triggered for all Petra cliff zones.'
       : 'Surveillance: Virtual siren silenced.';
     setLogs(prev => [text, ...prev.slice(0, 9)]);
+  };
+
+  const extinguishFire = () => {
+    setMuseumFire(false);
+    setMuseumTemp(23.5);
+    setLogs(prev => [
+      'Admin: Dispatched Civil Defense. Museum sprinkler system activated. Fire extinguished successfully.',
+      'System: Restored museum sensor state to NORMAL.',
+      ...prev.slice(0, 8)
+    ]);
+  };
+
+  const activateVentilation = () => {
+    setOxygenAlertActive(true);
+    setLogs(prev => [
+      'Admin: Force ventilation activated in Warehouse B. Injecting oxygen.',
+      'System: Oxygen recovery protocol active. Restoring O2 concentrations.',
+      ...prev.slice(0, 8)
+    ]);
   };
 
   return (
@@ -178,7 +246,7 @@ export default function EnterpriseDashboard({ user, logout }) {
         </header>
 
         {/* Stats strip */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="bg-slate-900/30 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-800 transition-colors">
             <div className="flex justify-between items-center text-slate-400 text-xs font-medium">
               <span>أسطول باصات النقل</span>
@@ -212,6 +280,24 @@ export default function EnterpriseDashboard({ user, logout }) {
             <div className="text-[10px] text-amber-400 mt-1.5 flex items-center gap-1">
               <BellRing size={10} />
               <span>آخر رصد: منذ دقائق قليلة</span>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/30 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-800 transition-colors">
+            <div className="flex justify-between items-center text-slate-400 text-xs font-medium">
+              <span>أنظمة السلامة والطوارئ</span>
+              <Flame size={14} className={museumFire || oxygenLevel < 19.5 ? 'text-red-500 animate-pulse' : 'text-slate-400'} />
+            </div>
+            <div className="text-2xl font-bold text-white mt-2">
+              {museumFire || oxygenLevel < 19.5 ? '1 إنذار نشط!' : 'مؤمنة بالكامل'}
+            </div>
+            <div className={`text-[10px] mt-1.5 flex items-center gap-1 font-semibold ${
+              museumFire || oxygenLevel < 19.5 ? 'text-red-400' : 'text-emerald-400'
+            }`}>
+              <Shield size={10} />
+              <span>
+                {museumFire ? 'حرائق نشطة!' : oxygenLevel < 19.5 ? 'انخفاض O2!' : 'حساسات مستقرة'}
+              </span>
             </div>
           </div>
 
@@ -252,6 +338,12 @@ export default function EnterpriseDashboard({ user, logout }) {
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${activeSection === 'tourism' ? 'bg-blue-500 text-black' : 'text-slate-400 hover:text-slate-200 bg-slate-900/40 border border-slate-800'}`}
           >
             🗺️ السياحة والأسوار
+          </button>
+          <button
+            onClick={() => setActiveSection('safety')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${activeSection === 'safety' ? 'bg-red-500 text-black animate-pulse' : 'text-slate-400 hover:text-slate-200 bg-slate-900/40 border border-slate-800'}`}
+          >
+            🚨 السلامة والإنذارات
           </button>
         </div>
 
@@ -517,6 +609,140 @@ export default function EnterpriseDashboard({ user, logout }) {
               <span className="text-emerald-400 font-bold font-mono">active_broker_ssl_secure</span>
             </div>
           </div>
+
+          {/* ================= 5. SAFETY & EMERGENCY SYSTEMS ================= */}
+          {(activeSection === 'all' || activeSection === 'safety') && (
+            <div className="xl:col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 space-y-6">
+              <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                    <ShieldAlert size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">لوحة السلامة العامة وأنظمة الإنذار والحرائق</h3>
+                    <p className="text-[11px] text-slate-500">حساسات الغاز والأكسجين في المستودعات الحرجة، ومجسات الحرارة واللهب في المتاحف</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* A. Museum Fire Alert Module */}
+                <div className={`border rounded-2xl p-5 transition-all duration-300 relative overflow-hidden ${
+                  museumFire 
+                    ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]' 
+                    : 'bg-slate-950/40 border-slate-800'
+                }`}>
+                  {museumFire && (
+                    <div className="absolute -right-6 -bottom-6 opacity-10 text-red-500 transform rotate-12">
+                      <Flame size={120} />
+                    </div>
+                  )}
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2">
+                      <Flame className={museumFire ? 'text-red-500 animate-bounce' : 'text-slate-400'} size={20} />
+                      <h4 className="text-sm font-bold text-white">حساس حريق متاحف الآثار (🏛️ متحف عمان الأثري)</h4>
+                    </div>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold ${
+                      museumFire ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      {museumFire ? '🚨 حريق نشط!' : '🟢 آمن'}
+                    </span>
+                  </div>
+
+                  <p className="text-[10px] text-slate-400 mt-2 text-right">موقع الحساس: قاعة المعروضات الرئيسية - القبة الوسطى</p>
+
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+                    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3">
+                      <span className="text-[9px] text-slate-500 font-mono block">أعلى حرارة مسجلة</span>
+                      <span className={`text-xl font-bold font-mono ${museumFire ? 'text-red-400' : 'text-slate-300'}`}>
+                        {museumTemp}°C
+                      </span>
+                    </div>
+                    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3">
+                      <span className="text-[9px] text-slate-500 font-mono block">مستوى اللهب / الدخان</span>
+                      <span className={`text-sm font-bold ${museumFire ? 'text-red-400' : 'text-slate-300'}`}>
+                        {museumFire ? '⚠️ دخان كثيف' : 'خالٍ من الدخان'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {museumFire && (
+                    <button
+                      onClick={extinguishFire}
+                      className="w-full mt-4 bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-lg"
+                    >
+                      <Volume2 size={14} />
+                      <span>🚒 استدعاء الدفاع المدني وتفعيل الرشاشات</span>
+                    </button>
+                  )}
+
+                  {!museumFire && (
+                    <button
+                      onClick={() => setMuseumFire(true)}
+                      className="w-full mt-4 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white py-2 rounded-xl text-xs transition-colors cursor-pointer"
+                    >
+                      🔥 محاكاة اندلاع حريق للتجربة
+                    </button>
+                  )}
+                </div>
+
+                {/* B. Warehouse Oxygen Alert Module */}
+                <div className={`border rounded-2xl p-5 transition-all duration-300 relative overflow-hidden ${
+                  oxygenLevel < 19.5
+                    ? 'bg-amber-500/10 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)]' 
+                    : 'bg-slate-950/40 border-slate-800'
+                }`}>
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2">
+                      <Activity className={oxygenLevel < 19.5 ? 'text-amber-500 animate-pulse' : 'text-slate-400'} size={20} />
+                      <h4 className="text-sm font-bold text-white">مراقب تركيز الأكسجين بالمستودعات (📦 مستودع الزرقاء)</h4>
+                    </div>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold ${
+                      oxygenLevel < 19.5 ? 'bg-amber-500 text-black animate-pulse' : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      {oxygenLevel < 19.5 ? '⚠️ خطر الاختناق' : '🟢 طبيعي'}
+                    </span>
+                  </div>
+
+                  <p className="text-[10px] text-slate-400 mt-2 text-right">موقع الحساس: مستودع تخزين الأدوية الحيوي رقم 3</p>
+
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+                    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3">
+                      <span className="text-[9px] text-slate-500 font-mono block">نسبة الأكسجين O2</span>
+                      <span className={`text-xl font-bold font-mono ${oxygenLevel < 19.5 ? 'text-amber-400' : 'text-slate-300'}`}>
+                        {oxygenLevel}%
+                      </span>
+                    </div>
+                    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3">
+                      <span className="text-[9px] text-slate-500 font-mono block">حالة التهوئة</span>
+                      <span className={`text-sm font-bold ${oxygenLevel < 19.5 ? 'text-amber-400' : 'text-slate-300'}`}>
+                        {oxygenAlertActive ? '🔄 ضخ طوارئ نشط' : oxygenLevel < 19.5 ? '❌ معطلة' : 'طبيعية'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {oxygenLevel < 19.5 && !oxygenAlertActive && (
+                    <button
+                      onClick={activateVentilation}
+                      className="w-full mt-4 bg-amber-500 hover:bg-amber-400 text-black py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-lg"
+                    >
+                      <RefreshCw size={14} className="animate-spin" />
+                      <span>💨 تشغيل التهوئة القسرية وموازنة الأكسجين</span>
+                    </button>
+                  )}
+
+                  {oxygenLevel >= 19.5 && (
+                    <button
+                      onClick={() => setOxygenLevel(17.8)}
+                      className="w-full mt-4 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white py-2 rounded-xl text-xs transition-colors cursor-pointer"
+                    >
+                      💨 محاكاة انخفاض الأكسجين للتجربة
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
 
