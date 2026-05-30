@@ -50,12 +50,39 @@ const BUS_ICON = L.divIcon({
   popupAnchor: [0, -16],
 });
 
-// Irbid–Amman waypoints (lat/lon)
+// Irbid–Amman waypoints (lat/lon) - Traced Highway 35 road coordinates
 const BUS_ROUTE = [
-  [32.5568, 35.8469], // Irbid
-  [32.3742, 35.8997], // Jerash area
-  [32.1500, 36.0100], // Zarqa junction
-  [31.9454, 35.9284], // Amman
+  [32.5556, 35.8500], // Yarmouk University (Irbid)
+  [32.5450, 35.8520], // Southern Irbid Exit
+  [32.5250, 35.8550], // Near Al-Sareeh
+  [32.5020, 35.8580], // Near Al-Husn
+  [32.4750, 35.8620], // Al-Husn Circle
+  [32.4450, 35.8700], // Near Shatana
+  [32.4150, 35.8820], // Near Kitim
+  [32.3880, 35.8920], // Balila Entrance
+  [32.3650, 35.8980], // Balila Center
+  [32.3420, 35.9020], // Near Thughrat al-Asfour
+  [32.3150, 35.9050], // Jerash Governorate Border
+  [32.2980, 35.9050], // Jerash North Entrance
+  [32.2850, 35.9030], // Near Hadrian's Arch
+  [32.2700, 35.8980], // Jerash South Exit
+  [32.2500, 35.8920], // Near Zarqa River Bridge
+  [32.2320, 35.8880], // King Talal Dam road junction
+  [32.2050, 35.8780], // Mastaba Area
+  [32.1800, 35.8650], // Near Qafqafa Junction
+  [32.1550, 35.8520], // Near Al-Mastaba
+  [32.1320, 35.8450], // Near Al-Alouk Junction
+  [32.1100, 35.8380], // Near Ayn al-Basha (North)
+  [32.0850, 35.8300], // Ayn al-Basha Center
+  [32.0620, 35.8420], // Baq'a Camp Area
+  [32.0450, 35.8650], // Abu Nseir Junction
+  [32.0300, 35.8880], // Jubaiha area
+  [32.0120, 35.9080], // Yajouz Junction (Amman North)
+  [31.9950, 35.9180], // Tabarbour North Bus Station
+  [31.9810, 35.9060], // Sports City Circle
+  [31.9650, 35.9150], // Interior Circle (Gamal Abdel Nasser Square)
+  [31.9520, 35.9230], // Abdali Area (Amman Center)
+  [31.9454, 35.9284], // Amman Downtown (Al-Balad)
 ];
 
 // ─── Moving bus marker ───────────────────────
@@ -637,17 +664,30 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed, t, lang }) {
                 enableClustering={false}
                 enableSearch={false}
                 t={t}
-                polylines={cityRoutes.map(route => ({
-                  id: route.id,
-                  positions: route.stops.map(s => [s.lat, s.lng]),
-                  style: {
-                    color: selectedRoute?.id === route.id ? cityData.color : `${cityData.color}60`,
-                    weight: selectedRoute?.id === route.id ? 4 : 2,
-                    opacity: selectedRoute?.id === route.id ? 0.9 : 0.5,
-                    dashArray: route.active ? (route.brt ? '12 3' : '8 4') : '4 6'
-                  },
-                  popup: route.name
-                }))}
+                polylines={[
+                  ...cityRoutes.map(route => ({
+                    id: route.id,
+                    positions: route.stops.map(s => [s.lat, s.lng]),
+                    style: {
+                      color: selectedRoute?.id === route.id ? cityData.color : `${cityData.color}60`,
+                      weight: selectedRoute?.id === route.id ? 4 : 2,
+                      opacity: selectedRoute?.id === route.id ? 0.9 : 0.5,
+                      dashArray: route.active ? (route.brt ? '12 3' : '8 4') : '4 6'
+                    },
+                    popup: route.name
+                  })),
+                  {
+                    id: 'live-tracker-highway',
+                    positions: BUS_ROUTE,
+                    style: {
+                      color: '#06b6d4',
+                      weight: 3.5,
+                      opacity: 0.8,
+                      dashArray: '6 6'
+                    },
+                    popup: lang === 'ar' ? 'مسار تتبع باص عمان - إربد الحي' : 'Amman - Irbid Live Tracking Route'
+                  }
+                ]}
                 markers={((selectedRoute || cityRoutes[0])?.stops || []).map((stop, i) => ({
                   position: [stop.lat, stop.lng],
                   icon: stop.main ? makeNeonIcon(cityData.color) : makeNeonIcon('#475569'),
