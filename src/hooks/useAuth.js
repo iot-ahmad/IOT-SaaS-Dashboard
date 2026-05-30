@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { DEMO_ACCOUNTS } from '../features/enterprise/config/roles';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -92,14 +93,16 @@ export function useAuth() {
     setRegistrationSuccessMessage(null);
     setUnverifiedLoginEmail(null);
 
-    // Bypass for testing Enterprise Console using mock admin credentials
-    if (email === 'admin@enterprise.com' && password === 'admin123') {
+    // Demo enterprise accounts (sector-specific + super admin)
+    const demo = DEMO_ACCOUNTS.find((a) => a.email === email.toLowerCase() && a.password === password);
+    if (demo) {
       setUser({
-        uid: 'mock-enterprise-admin-uid',
-        email: 'admin@enterprise.com',
+        uid: `mock-enterprise-${demo.role}`,
+        email: demo.email,
         emailVerified: true,
-        displayName: 'Enterprise Admin',
+        displayName: demo.label,
         photoURL: null,
+        enterpriseRole: demo.role,
       });
       setLoading(false);
       return;
@@ -165,7 +168,7 @@ export function useAuth() {
   };
 
   const logout = async () => {
-    if (user?.uid === 'mock-enterprise-admin-uid') {
+    if (user?.uid?.startsWith('mock-enterprise-')) {
       setUser(null);
       return;
     }

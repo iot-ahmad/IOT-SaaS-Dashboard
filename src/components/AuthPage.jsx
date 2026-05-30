@@ -260,6 +260,11 @@ export default function AuthPage({ pathPortal = null, loginWithGoogle, login, er
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
                       />
                     </div>
+                    <p className="text-[9px] text-slate-500 mt-2 text-right leading-relaxed">
+                      حسابات تجريبية (كلمة المرور: admin123):
+                      <br />
+                      admin@enterprise.com · transport@iot365.gov · health@iot365.gov · tourism@iot365.gov · safety@iot365.gov
+                    </p>
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 text-right">
