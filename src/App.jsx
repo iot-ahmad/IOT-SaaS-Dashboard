@@ -16,6 +16,12 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import CustomerAppView from './components/CustomerAppView';
 import EnterpriseDashboard from './components/EnterpriseDashboard';
+import {
+  usePortalPath,
+  resolvePortalMode,
+  persistPortalMode,
+  isGatewayPath,
+} from './config/portals';
 
 function App() {
   const {
@@ -29,26 +35,31 @@ function App() {
     setError,
   } = useAuth();
 
+  const { pathPortal, goToPortal } = usePortalPath();
   const [portalMode, setPortalMode] = useState(null);
 
   useEffect(() => {
-    if (user) {
-      const stored = localStorage.getItem('auth_portal_mode');
-      if (stored === 'enterprise') {
-        setPortalMode('enterprise');
-      } else if (stored === 'customer') {
-        setPortalMode('customer');
-      } else {
-        setPortalMode('student'); // Default for Google login
-      }
-    } else {
+    if (!user) {
       setPortalMode(null);
+      return;
     }
-  }, [user]);
+    const stored = localStorage.getItem('auth_portal_mode');
+    const mode = resolvePortalMode(stored, pathPortal);
+    persistPortalMode(mode);
+    setPortalMode(mode);
+
+    // بعد الدخول: التوجيه إلى مسار البوابة (/customer | /student | /enterprise)
+    if (isGatewayPath()) {
+      goToPortal(mode, { replace: true });
+    } else if (pathPortal && pathPortal !== mode) {
+      goToPortal(mode, { replace: true });
+    }
+  }, [user, pathPortal, goToPortal]);
 
   const handleSetPortalMode = (mode) => {
+    persistPortalMode(mode);
+    goToPortal(mode);
     setPortalMode(mode);
-    localStorage.setItem('auth_portal_mode', mode);
   };
 
   if (authLoading) {
@@ -62,6 +73,7 @@ function App() {
   if (!user) {
     return (
       <AuthPage
+        pathPortal={pathPortal}
         loginWithGoogle={loginWithGoogle}
         login={login}
         error={authError}
