@@ -14,6 +14,8 @@ import { Loader2 } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
+import CustomerAppView from './components/CustomerAppView';
+import EnterpriseDashboard from './components/EnterpriseDashboard';
 
 function App() {
   const {
@@ -25,15 +27,29 @@ function App() {
     loginWithGoogle,
     logout,
     setError,
-    registrationSuccessMessage,
-    verificationNotice,
-    verificationIsResend,
-    unverifiedLoginEmail,
-    clearUnverifiedLoginEmail,
-    resendVerificationEmail,
-    clearVerificationNotice,
-    clearRegistrationSuccess,
   } = useAuth();
+
+  const [portalMode, setPortalMode] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      const stored = localStorage.getItem('auth_portal_mode');
+      if (stored === 'enterprise') {
+        setPortalMode('enterprise');
+      } else if (stored === 'customer') {
+        setPortalMode('customer');
+      } else {
+        setPortalMode('student'); // Default for Google login
+      }
+    } else {
+      setPortalMode(null);
+    }
+  }, [user]);
+
+  const handleSetPortalMode = (mode) => {
+    setPortalMode(mode);
+    localStorage.setItem('auth_portal_mode', mode);
+  };
 
   if (authLoading) {
     return (
@@ -47,16 +63,32 @@ function App() {
     return (
       <AuthPage
         loginWithGoogle={loginWithGoogle}
+        login={login}
         error={authError}
         setError={setError}
       />
     );
   }
 
-  return <Dashboard user={user} logout={logout} />;
+  if (portalMode === 'enterprise') {
+    return <EnterpriseDashboard user={user} logout={logout} />;
+  }
+
+  if (portalMode === 'customer') {
+    return <CustomerAppView user={user} logout={logout} setPortalMode={handleSetPortalMode} />;
+  }
+
+  return (
+    <Dashboard 
+      user={user} 
+      logout={logout} 
+      portalMode={portalMode} 
+      setPortalMode={handleSetPortalMode} 
+    />
+  );
 }
 
-function Dashboard({ user, logout }) {
+function Dashboard({ user, logout, portalMode, setPortalMode }) {
   const [activeWorkspace, setActiveWorkspace] = useState('home');
   const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -254,6 +286,8 @@ function Dashboard({ user, logout }) {
           onDeleteWorkspace={handleDeleteWorkspace}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(v => !v)}
+          portalMode={portalMode}
+          setPortalMode={setPortalMode}
         />
       </div>
 
@@ -266,6 +300,8 @@ function Dashboard({ user, logout }) {
           customWorkspaces={customWorkspaces}
           isSidebarCollapsed={isSidebarCollapsed}
           onToggleSidebar={() => setIsSidebarCollapsed(v => !v)}
+          portalMode={portalMode}
+          setPortalMode={setPortalMode}
         />
         
         <div className="flex-1 p-6 md:p-8 pb-40 overflow-y-auto">

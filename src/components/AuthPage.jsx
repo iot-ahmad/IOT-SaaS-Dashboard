@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Loader2, Wifi, ShieldCheck, Zap, Cpu } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, Wifi, ShieldCheck, Zap, Cpu, User, Landmark, GraduationCap, Lock, Mail, ArrowRight } from 'lucide-react';
 import { IoTDotFieldBackdrop } from './CanvasRevealBackground';
 
 const GoogleIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
@@ -12,130 +12,288 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const Feature = ({ icon: Icon, label }) => (
-  <div className="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
-    <div className="w-7 h-7 rounded-lg bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
-      <Icon size={14} className="text-primary" />
-    </div>
-    <span className="text-white/55 text-[11px] sm:text-xs font-medium leading-tight">{label}</span>
-  </div>
-);
-
-export default function AuthPage({ loginWithGoogle, error, setError }) {
+export default function AuthPage({ loginWithGoogle, login, error, setError }) {
+  const [activePortal, setActivePortal] = useState(null); // null, 'customer', 'student', 'enterprise'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleGoogle = async () => {
+  const handleGoogleLogin = async (portalMode) => {
     setError(null);
     setLoading(true);
     try {
+      // Save chosen portal mode to localStorage BEFORE initiating Google authentication
+      localStorage.setItem('auth_portal_mode', portalMode);
       await loginWithGoogle();
-    } catch {
-      /* error already set inside hook */
+    } catch (err) {
+      console.error("Google Auth error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      // Save enterprise portal mode
+      localStorage.setItem('auth_portal_mode', 'enterprise');
+      await login(email, password);
+    } catch (err) {
+      console.error("Email login error:", err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-black text-white overflow-hidden">
+    <div className="relative flex min-h-screen w-full flex-col bg-slate-950 text-white overflow-hidden font-sans select-none">
+      {/* Dynamic backdrop grid */}
       <IoTDotFieldBackdrop wrapperClassName="absolute inset-0 z-0" />
 
-      {/* Top pill badge */}
-      <header
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 pl-4 pr-4 py-2
-                   rounded-full border border-[#333] bg-[#1f1f1f57] backdrop-blur-sm pointer-events-none"
-        aria-hidden
-      >
-        <div className="relative w-5 h-5 flex items-center justify-center opacity-90">
-          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 -translate-x-1/2" />
-          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 -translate-y-1/2" />
-          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 -translate-y-1/2" />
-          <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 -translate-x-1/2" />
-        </div>
-        <img src="/logo_icon.png" className="w-4 h-4 object-contain" alt="" />
+      {/* Futuristic top brand bar */}
+      <header className="fixed top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 pl-5 pr-5 py-2.5 rounded-full border border-slate-800 bg-slate-950/70 backdrop-blur-md">
+        <img src="/logo_icon.png" className="w-5 h-5 object-contain" alt="IOT365" />
+        <span className="text-xs font-bold tracking-wider text-slate-300">IOT<span className="text-blue-400">365</span> SECURE GATEWAY</span>
       </header>
 
+      {/* Gateway Content */}
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pt-24 pb-12">
-        <motion.div
-          className="w-full max-w-md"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: 'easeOut' }}
-        >
-          {/* Brand */}
-          <div className="text-center mb-8 flex flex-col items-center">
-            <img src="/logo_icon.png" alt="IOT365 Icon" className="w-[100px] h-[100px] object-contain mb-5 drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]" />
-            <h1 className="text-[2.5rem] sm:text-[2.75rem] font-extrabold leading-[1.1] tracking-tight text-white">
-              IOT<span className="text-primary">365</span>
+        <div className="w-full max-w-4xl text-center space-y-3 mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+              بوابة الدخول الموحدة · Gateway Portals
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-black text-white mt-3">
+              اختر بوابة الدخول الذكية
             </h1>
-            <p className="text-sm sm:text-base text-white/45 font-light mt-2">
-              Smart IoT Dashboard Platform for ESP32
+            <p className="text-slate-400 text-xs sm:text-sm font-light max-w-lg mx-auto">
+              اضغط على البوابة المخصصة لاستخدام المنصة بناءً على صلاحياتك أو الغرض المطلوب.
             </p>
-          </div>
+          </motion.div>
+        </div>
 
-          {/* Card */}
-          <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-7 sm:p-8 backdrop-blur-[12px] shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
-            <div className="text-center mb-7">
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Welcome</h2>
-              <p className="text-white/45 text-sm leading-relaxed">
-                منصة متكاملة للتحكم بأجهزة ESP32 عبر MQTT
-                <br />
-                <span className="text-white/30 text-xs">Connect · Monitor · Automate</span>
-              </p>
-            </div>
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md bg-red-500/10 border border-red-500/20 text-red-200 text-xs rounded-2xl p-4 mb-6 text-center leading-relaxed"
+          >
+            {error}
+          </motion.div>
+        )}
 
-            <div className="grid grid-cols-3 gap-2 mb-7">
-              <Feature icon={Wifi} label="Real-time MQTT" />
-              <Feature icon={ShieldCheck} label="Secure Auth" />
-              <Feature icon={Zap} label="Instant Access" />
-            </div>
-
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/25 text-red-200 text-sm rounded-2xl p-4 mb-5 text-center leading-relaxed">
-                {error}
+        {/* Portals Selector Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+          
+          {/* 1. CUSTOMER PORTAL */}
+          <motion.div
+            onClick={() => { if (!loading) setActivePortal('customer'); }}
+            className={`cursor-pointer rounded-3xl border p-6 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 relative group overflow-hidden ${
+              activePortal === 'customer' 
+                ? 'bg-blue-950/20 border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.2)]'
+                : 'bg-slate-900/30 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50'
+            }`}
+            whileHover={{ y: -4 }}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors" />
+            <div className="space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <User size={20} />
               </div>
-            )}
-
-            {/* Google button — transparent/ghost style */}
-            <button
-              id="btn-google-signin"
-              type="button"
-              onClick={handleGoogle}
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-3 border border-white/20 bg-white/[0.04] hover:bg-white/[0.09] hover:border-white/30 backdrop-blur-sm text-white font-semibold py-3 px-5 rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              {loading ? (
-                <Loader2 size={20} className="animate-spin text-white/70" />
-              ) : (
-                <GoogleIcon />
-              )}
-              {loading ? 'Connecting…' : 'Continue with Google'}
-            </button>
-
-            <div className="flex items-center gap-4 my-6">
-              <div className="h-px bg-white/10 flex-1" />
-              <span className="text-white/35 text-xs whitespace-nowrap">secure · encrypted</span>
-              <div className="h-px bg-white/10 flex-1" />
+              <div className="text-right">
+                <h3 className="text-lg font-bold text-white">واجهة العميل👤</h3>
+                <span className="text-[10px] text-blue-400 font-mono">CUSTOMER APP</span>
+                <p className="text-slate-400 text-xs font-light leading-relaxed mt-2.5">
+                  شاشة خفيفة مخصصة للهواتف لمتابعة حافلات النقل، أرقام الانتظار بالمراكز الصحية، وإرشادات السياحة بالبترا.
+                </p>
+              </div>
             </div>
 
-            <p className="text-white/25 text-xs text-center leading-relaxed">
-              By continuing you agree to our Terms of Service.
-              <br />
-              We never post to Google on your behalf.
-            </p>
-          </div>
+            <div className="mt-8 pt-4 border-t border-slate-800/80">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); handleGoogleLogin('customer'); }}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2.5 bg-white text-slate-950 font-bold py-2.5 px-4 rounded-xl text-xs hover:bg-slate-100 transition-all disabled:opacity-50"
+              >
+                {loading && activePortal === 'customer' ? (
+                  <Loader2 size={14} className="animate-spin text-slate-950" />
+                ) : (
+                  <GoogleIcon />
+                )}
+                <span>دخول سريع بجوجل</span>
+              </button>
+            </div>
+          </motion.div>
 
-          {/* Footer credits */}
-          <div className="text-center mt-8 space-y-1">
-            <p className="text-white/20 text-xs">
-              IOT365 Platform © 2026
-            </p>
-            <p className="text-white/30 text-xs font-medium">
-              Built &amp; Developed by{' '}
-              <span className="text-primary/70">Ahmad Al-Batayneh</span>
-            </p>
-          </div>
-        </motion.div>
+          {/* 2. STUDENT PORTAL */}
+          <motion.div
+            onClick={() => { if (!loading) setActivePortal('student'); }}
+            className={`cursor-pointer rounded-3xl border p-6 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 relative group overflow-hidden ${
+              activePortal === 'student'
+                ? 'bg-purple-950/20 border-purple-500 shadow-[0_0_30px_rgba(168,85,247,0.2)]'
+                : 'bg-slate-900/30 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50'
+            }`}
+            whileHover={{ y: -4 }}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors" />
+            <div className="space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                <GraduationCap size={20} />
+              </div>
+              <div className="text-right">
+                <h3 className="text-lg font-bold text-white">واجهة الطالب🎓</h3>
+                <span className="text-[10px] text-purple-400 font-mono">STUDENT SANDBOX</span>
+                <p className="text-slate-400 text-xs font-light leading-relaxed mt-2.5">
+                  بيئة التطوير والتعلم المليئة بأدوات محاكاة ESP32، لوحة التحكم القابلة للترتيب، الأكواد البرمجية، ونافذة الأوامر.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-slate-800/80">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); handleGoogleLogin('student'); }}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2.5 bg-white text-slate-950 font-bold py-2.5 px-4 rounded-xl text-xs hover:bg-slate-100 transition-all disabled:opacity-50"
+              >
+                {loading && activePortal === 'student' ? (
+                  <Loader2 size={14} className="animate-spin text-slate-950" />
+                ) : (
+                  <GoogleIcon />
+                )}
+                <span>دخول سريع بجوجل</span>
+              </button>
+            </div>
+          </motion.div>
+
+          {/* 3. ENTERPRISE PORTAL */}
+          <motion.div
+            onClick={() => { if (!loading) setActivePortal('enterprise'); }}
+            className={`cursor-pointer rounded-3xl border p-6 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 relative group overflow-hidden md:col-span-1 ${
+              activePortal === 'enterprise'
+                ? 'bg-slate-900 border-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.2)]'
+                : 'bg-slate-900/30 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50'
+            }`}
+            whileHover={{ y: -4 }}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
+            <div className="space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                <Landmark size={20} />
+              </div>
+              <div className="text-right">
+                <h3 className="text-lg font-bold text-white">واجهة المؤسسة🏢</h3>
+                <span className="text-[10px] text-indigo-400 font-mono">ENTERPRISE CONSOLE</span>
+                <p className="text-slate-400 text-xs font-light leading-relaxed mt-2.5">
+                  منصة تحكم متكاملة ومحمية لإدارة أساطيل النقل، تبريد اللقاحات الحرج بالمستشفى، والأسوار الافتراضية السياحية.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-slate-800/80">
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs hover:bg-indigo-500 transition-all disabled:opacity-50"
+              >
+                <span>دخول بإيميل الموظف</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
+          </motion.div>
+
+        </div>
+
+        {/* Enterprise Login Modal / Drawer Overlay */}
+        <AnimatePresence>
+          {activePortal === 'enterprise' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+              onClick={() => { if (!loading) setActivePortal(null); }}
+            >
+              <motion.div
+                initial={{ scale: 0.95, y: 15 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, y: 15 }}
+                className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-6 relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-white">بوابة الموظفين والمؤسسات</h3>
+                  <p className="text-slate-400 text-xs mt-1">سجل الدخول بحسابك المغلق المجهز مسبقاً</p>
+                </div>
+
+                <form onSubmit={handleEmailLogin} className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 text-right">البريد الإلكتروني</label>
+                    <div className="relative">
+                      <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="admin@enterprise.com"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 text-right">كلمة المرور</label>
+                    <div className="relative">
+                      <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <Loader2 size={14} className="animate-spin text-white" />
+                    ) : (
+                      <Lock size={13} />
+                    )}
+                    <span>دخول لوحة القيادة Command Center</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={() => setActivePortal(null)}
+                    className="w-full bg-slate-800/80 hover:bg-slate-800 text-slate-300 py-2 rounded-xl text-xs font-bold transition-colors block text-center mt-2"
+                  >
+                    إلغاء
+                  </button>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </div>
     </div>
   );

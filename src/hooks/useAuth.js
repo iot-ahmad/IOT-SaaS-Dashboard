@@ -91,6 +91,20 @@ export function useAuth() {
     setVerificationIsResend(false);
     setRegistrationSuccessMessage(null);
     setUnverifiedLoginEmail(null);
+
+    // Bypass for testing Enterprise Console using mock admin credentials
+    if (email === 'admin@enterprise.com' && password === 'admin123') {
+      setUser({
+        uid: 'mock-enterprise-admin-uid',
+        email: 'admin@enterprise.com',
+        emailVerified: true,
+        displayName: 'Enterprise Admin',
+        photoURL: null,
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
@@ -151,6 +165,10 @@ export function useAuth() {
   };
 
   const logout = async () => {
+    if (user?.uid === 'mock-enterprise-admin-uid') {
+      setUser(null);
+      return;
+    }
     await signOut(auth);
   };
 

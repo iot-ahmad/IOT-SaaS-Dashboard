@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen, User } from 'lucide-react';
 import { TOOLS } from '../data/mockData';
 
-export default function Header({ activeWorkspace, activeTool, isConnected, toggleMobileMenu, customWorkspaces, isSidebarCollapsed, onToggleSidebar }) {
+export default function Header({ activeWorkspace, activeTool, isConnected, toggleMobileMenu, customWorkspaces, isSidebarCollapsed, onToggleSidebar, portalMode, setPortalMode }) {
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
@@ -69,6 +69,18 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Switch to Customer view if logged in via Google */}
+        {portalMode === 'student' && (
+          <button
+            onClick={() => setPortalMode('customer')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 text-xs font-bold transition-all cursor-pointer"
+            title="Switch to Customer App View"
+          >
+            <User size={14} />
+            <span className="hidden sm:inline">واجهة العميل 👤</span>
+          </button>
+        )}
+
         {/* Theme Toggle */}
         <button 
           onClick={toggleTheme}
