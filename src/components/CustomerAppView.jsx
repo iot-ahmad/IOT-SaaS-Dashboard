@@ -7,11 +7,13 @@ import {
   ChevronRight, ArrowLeft, Zap, Globe, CloudSun, ShieldAlert
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { TOURIST_SITES, WMO_ARABIC, WMO_ICON } from '../data/jordanData';
 import { BUS_ROUTES, getAllRoutes, STATS } from '../data/busRoutes';
+import { TRANSLATIONS } from '../data/translations';
+import { AdvancedMap } from './AdvancedMap';
 
 // Fix Leaflet default icon paths broken by bundlers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -37,8 +39,6 @@ function makeNeonIcon(color) {
   });
 }
 
-const PURPLE_ICON = makeNeonIcon('#a855f7');
-const YELLOW_ICON = makeNeonIcon('#eab308');
 const BUS_ICON = L.divIcon({
   className: '',
   html: `<div style="
@@ -79,7 +79,7 @@ function MovingBus({ progress }) {
       markerRef.current.setLatLng(pos);
     } else {
       markerRef.current = L.marker(pos, { icon: BUS_ICON }).addTo(map);
-      markerRef.current.bindPopup('<b>باص إربد - عمان</b><br/>تتبع حي');
+      markerRef.current.bindPopup('<b>Bus Tracker</b><br/>Live GPS Feed');
     }
   }, [progress, map, getPos]);
 
@@ -200,9 +200,9 @@ function useWeather(lat, lon) {
         humidity: c.relative_humidity_2m,
         wind: Math.round(c.wind_speed_10m),
         icon: WMO_ICON[c.weathercode] || '🌡️',
-        desc: WMO_ARABIC[c.weathercode] || 'غير معروف',
+        desc: WMO_ARABIC[c.weathercode] || 'Weather Info',
       });
-    } catch { setError('تعذّر تحميل الطقس'); }
+    } catch { setError('Weather error'); }
     finally { setLoading(false); }
   }, [lat, lon]);
   useEffect(() => { fetchWeather(); const id = setInterval(fetchWeather, 600000); return () => clearInterval(id); }, [fetchWeather]);
@@ -210,19 +210,19 @@ function useWeather(lat, lon) {
 }
 
 // ─── Weather Widget ───────────────────────────
-function WeatherWidget({ site }) {
+function WeatherWidget({ site, t }) {
   const { weather, loading, error } = useWeather(site?.lat, site?.lon);
   if (!site) return null;
   return (
     <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 backdrop-blur-xl shadow-lg">
       <div className="flex items-center justify-between mb-3">
         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-          <Globe size={10} className="text-purple-400" /> الطقس الآن · Live Weather
+          <Globe size={10} className="text-purple-400" /> {t.weatherNow}
         </span>
         <span className="text-[9px] text-slate-500 font-mono">{site.nameEn}</span>
       </div>
-      {loading && <div className="flex items-center gap-2 text-slate-500 text-xs"><div className="w-3 h-3 rounded-full border border-purple-500/50 border-t-purple-400 animate-spin" />جاري التحميل...</div>}
-      {error && <div className="text-xs text-red-400/70">{error}</div>}
+      {loading && <div className="flex items-center gap-2 text-slate-500 text-xs"><div className="w-3 h-3 rounded-full border border-purple-500/50 border-t-purple-400 animate-spin" />{t.loading}</div>}
+      {error && <div className="text-xs text-red-400/70">{t.failedWeather}</div>}
       {weather && !loading && (
         <div className="space-y-3">
           <div className="flex items-center gap-3">
@@ -232,7 +232,7 @@ function WeatherWidget({ site }) {
               <div className="text-[10px] text-slate-400">{weather.desc}</div>
             </div>
             <div className="ml-auto text-right">
-              <div className="text-[10px] text-slate-500">يبدو كـ</div>
+              <div className="text-[10px] text-slate-500">{t.feelsLike}</div>
               <div className="text-sm font-bold text-slate-300">{weather.feelsLike}°C</div>
             </div>
           </div>
@@ -240,17 +240,17 @@ function WeatherWidget({ site }) {
             <div className="bg-[#050608]/70 rounded-xl p-2.5 text-center border border-white/5">
               <Droplets size={12} className="text-blue-400 mx-auto mb-1" />
               <div className="text-xs font-bold text-slate-300">{weather.humidity}%</div>
-              <div className="text-[9px] text-slate-500">الرطوبة</div>
+              <div className="text-[9px] text-slate-500">{t.humidity}</div>
             </div>
             <div className="bg-[#050608]/70 rounded-xl p-2.5 text-center border border-white/5">
               <Wind size={12} className="text-slate-400 mx-auto mb-1" />
               <div className="text-xs font-bold text-slate-300">{weather.wind}</div>
-              <div className="text-[9px] text-slate-500">كم/س</div>
+              <div className="text-[9px] text-slate-500">{t.windSpeed}</div>
             </div>
             <div className="bg-[#050608]/70 rounded-xl p-2.5 text-center border border-white/5">
               <Thermometer size={12} className="text-orange-400 mx-auto mb-1" />
               <div className="text-xs font-bold text-slate-300">{weather.temp}°</div>
-              <div className="text-[9px] text-slate-500">حرارة</div>
+              <div className="text-[9px] text-slate-500">{t.temp}</div>
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ function WeatherWidget({ site }) {
   );
 }
 
-// ─── Jordan Real Leaflet Map ──────────────────
+// ─── Custom site marker builder ──────────────────
 function makeSiteNeonIcon(emoji, color, isSelected) {
   const size = isSelected ? 32 : 24;
   const innerSize = isSelected ? 18 : 13;
@@ -285,91 +285,59 @@ function makeSiteNeonIcon(emoji, color, isSelected) {
   });
 }
 
-function MapRecenter({ site }) {
-  const map = useMap();
-  useEffect(() => {
-    if (site) {
-      map.setView([site.lat, site.lon], 9, { animate: true, duration: 1.2 });
-    }
-  }, [site, map]);
-  return null;
-}
-
-function JordanRealMap({ selectedSite, onSelectSite, crowdLevels }) {
-  return (
-    <MapContainer
-      center={[31.18, 35.8]}
-      zoom={7.5}
-      style={{ height: '100%', width: '100%', background: '#07080a' }}
-      zoomControl={false}
-      scrollWheelZoom={true}
-      attributionControl={false}
-    >
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        attribution="&copy; CartoDB"
-      />
-      <MapRecenter site={selectedSite} />
-      {TOURIST_SITES.map(site => {
-        const isSel = selectedSite?.id === site.id;
-        const crowd = crowdLevels[site.id] ?? 40;
-        const color = crowd < 40 ? '#22c55e' : crowd < 70 ? '#eab308' : '#ef4444';
-        const siteIcon = makeSiteNeonIcon(site.emoji, color, isSel);
-        
-        return (
-          <Marker
-            key={site.id}
-            position={[site.lat, site.lon]}
-            icon={siteIcon}
-            eventHandlers={{
-              click: () => onSelectSite(site),
-            }}
-          >
-            <Popup>
-              <div className="text-right font-sans">
-                <div className="flex items-center gap-1.5 justify-end font-bold">
-                  <span className="text-xs text-white">{site.name}</span>
-                  <span>{site.emoji}</span>
-                </div>
-                <div className="text-[10px] text-slate-400 mt-1 font-mono">{site.nameEn}</div>
-                <div className="text-[9px] mt-1.5 flex items-center gap-1 justify-end" style={{ color }}>
-                  <span>% {crowd} · {crowd < 40 ? 'هادئ' : crowd < 70 ? 'متوسط' : 'مزدحم'}</span>
-                  <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: color }} />
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        );
-      })}
-    </MapContainer>
-  );
-}
-
-
 // ─── Site Detail Card ─────────────────────────
-function SiteDetailCard({ site, crowdLevel, onBack }) {
+function SiteDetailCard({ site, crowdLevel, onBack, t }) {
   const typeColors = { heritage: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20', nature: 'text-green-400 bg-green-500/10 border-green-500/20', adventure: 'text-orange-400 bg-orange-500/10 border-orange-500/20', religious: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
-  const typeLabels = { heritage: 'تراث', nature: 'طبيعة', adventure: 'مغامرة', religious: 'ديني' };
+  const typeLabels = { heritage: t.heritage, nature: t.nature, adventure: t.adventure, religious: t.religious };
   const crowdColor = crowdLevel < 40 ? '#22c55e' : crowdLevel < 70 ? '#eab308' : '#ef4444';
-  const crowdLabel = crowdLevel < 40 ? 'هادئ' : crowdLevel < 70 ? 'متوسط' : 'مزدحم';
+  const crowdLabel = crowdLevel < 40 ? t.calm : crowdLevel < 70 ? t.moderate : t.crowded;
+
+  const siteName = t.sites?.[site.id]?.name || site.name;
+  const siteDesc = t.sites?.[site.id]?.desc || site.description;
+  const siteHighlights = t.sites?.[site.id]?.highlights || site.highlights;
+
+  const getTranslatedEntryFee = (fee) => {
+    if (fee === 'مجاني' || fee === 'Free') return t.freeEntry;
+    if (t.dir === 'ltr') {
+      return fee.replace('دينار', 'JOD').replace('المنتجعات', 'Resorts');
+    } else {
+      return fee.replace('JOD', 'دينار').replace('Resorts', 'المنتجعات');
+    }
+  };
+
+  const getTranslatedOpenHours = (hours) => {
+    if (hours === 'طوال الساعة' || hours === '24/7') return t.twentyFourSeven;
+    if (t.dir === 'ltr') {
+      return hours.replace('طوال الساعة', '24/7');
+    }
+    return hours;
+  };
+
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="space-y-4">
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-purple-500/40 transition-all cursor-pointer"><ArrowLeft size={14} /></button>
+        <button onClick={onBack} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-purple-500/40 transition-all cursor-pointer">
+          <ArrowLeft size={14} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+        </button>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xl">{site.emoji}</span>
-            <h3 className="text-base font-black text-white">{site.name}</h3>
+            <h3 className="text-base font-black text-white">{siteName}</h3>
             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${typeColors[site.type] || ''}`}>{typeLabels[site.type] || site.type}</span>
           </div>
           <p className="text-[10px] text-slate-500 font-mono mt-0.5">{site.nameEn}</p>
         </div>
       </div>
       <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 backdrop-blur-xl">
-        <p className="text-xs text-slate-300 leading-relaxed text-right">{site.description}</p>
+        <p className="text-xs text-slate-300 leading-relaxed text-start">{siteDesc}</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        {[['سعر الدخول', site.entryFee, 'text-yellow-400 text-sm font-black'], ['أوقات العمل', site.openHours, 'text-[11px] font-bold text-slate-300'], ['متوسط الزيارة', `${site.avgVisitHours} ساعة`, 'text-sm font-black text-purple-400'], ['ذروة الازدحام', site.crowdPeakHour, 'text-[11px] font-bold text-slate-300']].map(([label, val, cls], i) => (
+        {[
+          [t.entryFee, getTranslatedEntryFee(site.entryFee), 'text-yellow-400 text-sm font-black'],
+          [t.openHours, getTranslatedOpenHours(site.openHours), 'text-[11px] font-bold text-slate-300'],
+          [t.avgVisit, `${site.avgVisitHours} ${t.visitHoursUnit}`, 'text-sm font-black text-purple-400'],
+          [t.crowdPeak, site.crowdPeakHour, 'text-[11px] font-bold text-slate-300']
+        ].map(([label, val, cls], i) => (
           <div key={i} className="bg-white/[0.02] border border-white/10 rounded-xl p-3 backdrop-blur-xl">
             <div className="text-[9px] text-slate-500 mb-1">{label}</div>
             <div className={cls}>{val}</div>
@@ -378,7 +346,7 @@ function SiteDetailCard({ site, crowdLevel, onBack }) {
       </div>
       <div className="bg-white/[0.02] border border-white/10 rounded-xl p-3.5 backdrop-blur-xl">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[10px] text-slate-400 font-bold">مستوى الازدحام الآن</span>
+          <span className="text-[10px] text-slate-400 font-bold">{t.crowdLevelNow}</span>
           <span className="text-[10px] font-bold font-mono" style={{ color: crowdColor }}>{crowdLevel}% · {crowdLabel}</span>
         </div>
         <div className="h-2 w-full bg-[#050608] rounded-full overflow-hidden border border-white/5">
@@ -386,18 +354,18 @@ function SiteDetailCard({ site, crowdLevel, onBack }) {
         </div>
       </div>
       <div className="bg-white/[0.02] border border-white/10 rounded-xl p-3.5 backdrop-blur-xl">
-        <div className="text-[10px] text-slate-400 font-bold mb-2.5 flex items-center gap-1.5"><Star size={10} className="text-yellow-400" /> أبرز المعالم</div>
+        <div className="text-[10px] text-slate-400 font-bold mb-2.5 flex items-center gap-1.5"><Star size={10} className="text-yellow-400" /> {t.notableLandmarks}</div>
         <div className="flex flex-wrap gap-1.5">
-          {site.highlights.map((h, i) => <span key={i} className="text-[10px] px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">{h}</span>)}
+          {siteHighlights.map((h, i) => <span key={i} className="text-[10px] px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">{h}</span>)}
         </div>
       </div>
-      <WeatherWidget site={site} />
+      <WeatherWidget site={site} t={t} />
     </motion.div>
   );
 }
 
 // ─── Tourism Panel ────────────────────────────
-function TourismPanel() {
+function TourismPanel({ t }) {
   const [selectedSite, setSelectedSite] = useState(TOURIST_SITES[0]);
   const [crowdLevels, setCrowdLevels] = useState(() =>
     Object.fromEntries(TOURIST_SITES.map(s => [s.id, Math.floor(Math.random() * 55) + 15]))
@@ -413,22 +381,27 @@ function TourismPanel() {
     return () => clearInterval(id);
   }, []);
 
+  const selectedSiteName = selectedSite ? (t.sites?.[selectedSite.id]?.name || selectedSite.name) : '';
+  const selectedSiteNameEn = selectedSite ? selectedSite.nameEn : '';
+
   return (
     <div className="space-y-5">
       <div className="flex justify-between items-center">
         <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-yellow-400 bg-yellow-500/10 px-3 py-1.5 rounded-full border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.15)]">قطاع السياحة · Jordan Tourism Portal</span>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mt-2">استكشف المواقع السياحية الأردنية</h2>
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-yellow-400 bg-yellow-500/10 px-3 py-1.5 rounded-full border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.15)]">
+            {t.tourismHeader}
+          </span>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mt-2">{t.exploreSites}</h2>
         </div>
         <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#2c2d31] to-[#121315] border border-[#3c3e44] flex items-center justify-center shadow-md"><Compass size={20} /></div>
       </div>
       <div className="bg-gradient-to-r from-purple-900/30 to-yellow-600/10 border border-purple-500/30 rounded-2xl p-3.5 flex gap-3.5 items-center backdrop-blur-xl">
         <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center shrink-0"><CheckCircle2 size={20} className="text-purple-400 animate-pulse" /></div>
         <div className="min-w-0">
-          <span className="text-[9px] text-purple-400 font-mono tracking-widest uppercase block">QR Code Scan Successful · IOT Smart Tourism</span>
-          <h4 className="text-sm font-bold text-white">{selectedSite ? `${selectedSite.name} · ${selectedSite.nameEn}` : 'البترا · مسار السيق الأثري'}</h4>
+          <span className="text-[9px] text-purple-400 font-mono tracking-widest uppercase block">{t.scanSuccess}</span>
+          <h4 className="text-sm font-bold text-white">{selectedSite ? `${selectedSiteName} · ${selectedSiteNameEn}` : ''}</h4>
         </div>
-        <div className="ml-auto shrink-0 flex items-center gap-1 text-[9px] text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full"><Zap size={9} /> متصل</div>
+        <div className="ml-auto shrink-0 flex items-center gap-1 text-[9px] text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full"><Zap size={9} /> {t.connected}</div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
         <div className="lg:col-span-2 space-y-4">
@@ -436,30 +409,53 @@ function TourismPanel() {
             <FloatingPaths position={1} />
             <FloatingPaths position={-1} />
             <div className="relative z-10 flex items-center justify-between mb-3">
-              <span className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5"><MapPin size={10} className="text-purple-400" /> خريطة الأردن التفاعلية</span>
-              <span className="text-[9px] text-slate-500 font-mono">{TOURIST_SITES.length} موقع</span>
+              <span className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5"><MapPin size={10} className="text-purple-400" /> {t.interactiveMap}</span>
+              <span className="text-[9px] text-slate-500 font-mono">{TOURIST_SITES.length} {t.sitesCountUnit}</span>
             </div>
             <div className="relative z-10 h-80 lg:h-[340px] w-full rounded-xl overflow-hidden border border-white/5 shadow-inner" style={{ isolation: 'isolate' }}>
-              <JordanRealMap selectedSite={selectedSite} onSelectSite={setSelectedSite} crowdLevels={crowdLevels} />
+              <AdvancedMap
+                center={selectedSite ? [selectedSite.lat, selectedSite.lon] : [31.18, 35.8]}
+                zoom={selectedSite ? 10 : 7.5}
+                enableClustering={true}
+                enableSearch={true}
+                t={t}
+                onMarkerClick={(marker) => setSelectedSite(TOURIST_SITES.find(s => s.id === marker.id))}
+                markers={TOURIST_SITES.map(site => {
+                  const isSel = selectedSite?.id === site.id;
+                  const crowd = crowdLevels[site.id] ?? 40;
+                  const color = crowd < 40 ? '#22c55e' : crowd < 70 ? '#eab308' : '#ef4444';
+                  const crowdStatus = crowd < 40 ? t.calm : crowd < 70 ? t.moderate : t.crowded;
+                  return {
+                    id: site.id,
+                    position: [site.lat, site.lon],
+                    icon: makeSiteNeonIcon(site.emoji, color, isSel),
+                    popup: {
+                      title: `${t.sites?.[site.id]?.name || site.name} ${site.emoji}`,
+                      content: `${t.sites?.[site.id]?.desc || site.description} (${t.crowdLevelNow}: ${crowd}% · ${crowdStatus})`
+                    }
+                  };
+                })}
+              />
             </div>
             <div className="relative z-10 flex items-center justify-center gap-4 mt-3 text-[9px] text-slate-500">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> هادئ</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500 inline-block" /> متوسط</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> مزدحم</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> {t.calm}</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500 inline-block" /> {t.moderate}</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> {t.crowded}</span>
             </div>
           </div>
-          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-3.5 backdrop-blur-xl shadow-lg space-y-1.5">
-            <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest block mb-2">المواقع المتاحة</span>
+          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-3.5 backdrop-blur-xl shadow-lg space-y-1.5 text-start">
+            <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest block mb-2">{t.availSitesList}</span>
             {TOURIST_SITES.map(site => {
               const crowd = crowdLevels[site.id] ?? 40;
               const cc = crowd < 40 ? '#22c55e' : crowd < 70 ? '#eab308' : '#ef4444';
+              const nameTrans = t.sites?.[site.id]?.name || site.name;
               return (
                 <button key={site.id} onClick={() => setSelectedSite(site)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left cursor-pointer transition-all duration-200 border ${selectedSite?.id === site.id ? 'bg-purple-500/10 border-purple-500/30 text-white' : 'bg-transparent border-transparent hover:bg-white/[0.03] hover:border-white/10 text-slate-400'}`}>
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-start cursor-pointer transition-all duration-200 border ${selectedSite?.id === site.id ? 'bg-purple-500/10 border-purple-500/30 text-white' : 'bg-transparent border-transparent hover:bg-white/[0.03] hover:border-white/10 text-slate-400'}`}>
                   <span className="text-base shrink-0">{site.emoji}</span>
-                  <span className="text-xs font-semibold flex-1 truncate">{site.name}</span>
+                  <span className="text-xs font-semibold flex-1 truncate">{nameTrans}</span>
                   <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: cc }} />
-                  <ChevronRight size={12} className={selectedSite?.id === site.id ? 'text-purple-400' : 'text-slate-600'} />
+                  <ChevronRight size={12} className={`${selectedSite?.id === site.id ? 'text-purple-400' : 'text-slate-600'} ${t.dir === 'rtl' ? 'rotate-180' : ''}`} />
                 </button>
               );
             })}
@@ -468,8 +464,8 @@ function TourismPanel() {
         <div className="lg:col-span-3">
           <AnimatePresence mode="wait">
             {selectedSite
-              ? <SiteDetailCard key={selectedSite.id} site={selectedSite} crowdLevel={crowdLevels[selectedSite.id] ?? 40} onBack={() => setSelectedSite(null)} />
-              : <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center h-64 text-slate-600 gap-3"><Compass size={36} className="text-purple-500/30" /><p className="text-sm">اختر موقعاً من الخريطة أو القائمة</p></motion.div>
+              ? <SiteDetailCard key={selectedSite.id} site={selectedSite} crowdLevel={crowdLevels[selectedSite.id] ?? 40} onBack={() => setSelectedSite(null)} t={t} />
+              : <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center h-64 text-slate-600 gap-3"><Compass size={36} className="text-purple-500/30" /><p className="text-sm">{t.chooseSitePrompt}</p></motion.div>
             }
           </AnimatePresence>
         </div>
@@ -479,12 +475,12 @@ function TourismPanel() {
 }
 
 // ─── Bus Route Card ───────────────────────────
-function BusRouteCard({ route, cityColor, isSelected, onClick }) {
+function BusRouteCard({ route, cityColor, isSelected, onClick, t }) {
   const statusColor = route.active ? '#22c55e' : '#94a3b8';
   return (
     <button
       onClick={onClick}
-      className={`w-full text-right p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
+      className={`w-full text-start p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
         isSelected
           ? 'bg-purple-500/10 border-purple-500/40 shadow-[0_0_12px_rgba(168,85,247,0.15)]'
           : 'bg-white/[0.02] border-white/[0.06] hover:border-white/10 hover:bg-white/[0.04]'
@@ -494,31 +490,33 @@ function BusRouteCard({ route, cityColor, isSelected, onClick }) {
         <div className="flex items-center gap-2 min-w-0">
           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: statusColor, boxShadow: route.active ? `0 0 6px ${statusColor}` : 'none' }} />
           <span className={`text-[10px] font-mono shrink-0 px-1.5 py-0.5 rounded-md`} style={{ color: cityColor, background: `${cityColor}15`, border: `1px solid ${cityColor}30` }}>{route.id}</span>
-          {route.brt && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">BRT</span>}
-          {route.intercity && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20 shrink-0">بين مدن</span>}
+          {route.brt && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">{t.brtFast}</span>}
+          {route.intercity && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20 shrink-0">{t.intercityLabel}</span>}
         </div>
-        <span className="text-[9px] text-slate-500 shrink-0">{route.fare} JOD</span>
+        <span className="text-[9px] text-slate-500 shrink-0">{route.fare} {t.fareUnit}</span>
       </div>
       <div className="mt-1.5">
         <p className="text-xs font-semibold text-slate-200 truncate">{route.short}</p>
-        <p className="text-[10px] text-slate-500 mt-0.5">{route.frequency} · {route.stops.length} محطة</p>
+        <p className="text-[10px] text-slate-500 mt-0.5">{route.frequency} · {route.stops.length} {t.stopsLabel}</p>
       </div>
     </button>
   );
 }
 
 // ─── Route Detail Panel ───────────────────────
-function RouteDetailPanel({ route, cityColor, onBack }) {
+function RouteDetailPanel({ route, cityColor, onBack, t }) {
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="space-y-4">
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-purple-500/40 transition-all cursor-pointer"><ArrowLeft size={14} /></button>
+        <button onClick={onBack} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-purple-500/40 transition-all cursor-pointer">
+          <ArrowLeft size={14} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+        </button>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-md" style={{ color: cityColor, background: `${cityColor}15`, border: `1px solid ${cityColor}30` }}>{route.id}</span>
-            {route.brt && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">BRT سريع</span>}
-            {route.intercity && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20">بين مدن</span>}
-            {!route.active && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-slate-700 text-slate-400">متوقف</span>}
+            {route.brt && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">{t.brtFast}</span>}
+            {route.intercity && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20">{t.intercityLabel}</span>}
+            {!route.active && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-slate-700 text-slate-400">{t.stoppedLabel}</span>}
           </div>
           <h3 className="text-sm font-black text-white mt-1">{route.name}</h3>
         </div>
@@ -526,9 +524,9 @@ function RouteDetailPanel({ route, cityColor, onBack }) {
 
       <div className="grid grid-cols-3 gap-2">
         {[
-          { label: 'التعرفة', value: `${route.fare} JOD`, color: 'text-yellow-400' },
-          { label: 'التكرار', value: route.frequency, color: 'text-purple-400' },
-          { label: 'المحطات', value: `${route.stops.length} محطة`, color: 'text-slate-300' },
+          { label: t.fareLabel, value: `${route.fare} ${t.fareUnit}`, color: 'text-yellow-400' },
+          { label: t.freqLabel, value: route.frequency, color: 'text-purple-400' },
+          { label: t.stopsLabel, value: `${route.stops.length} ${t.stopsLabel}`, color: 'text-slate-300' },
         ].map((item, i) => (
           <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-2.5 text-center">
             <div className="text-[9px] text-slate-500 mb-1">{item.label}</div>
@@ -537,8 +535,8 @@ function RouteDetailPanel({ route, cityColor, onBack }) {
         ))}
       </div>
 
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3.5 space-y-2">
-        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5"><MapPin size={10} className="text-purple-400" /> المحطات</span>
+      <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3.5 space-y-2 text-start">
+        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5"><MapPin size={10} className="text-purple-400" /> {t.stopsLabel}</span>
         <div className="space-y-1.5 max-h-56 overflow-y-auto">
           {route.stops.map((stop, i) => (
             <div key={i} className={`flex items-center gap-2.5 text-xs ${stop.main ? 'text-white' : 'text-slate-400'}`}>
@@ -547,7 +545,7 @@ function RouteDetailPanel({ route, cityColor, onBack }) {
                 {i < route.stops.length - 1 && <div className="w-px h-4 bg-slate-700/50" />}
               </div>
               <span className={stop.main ? 'font-semibold' : ''}>{stop.name}</span>
-              {stop.main && <span className="text-[9px] text-purple-400/70 mr-auto">رئيسية</span>}
+              {stop.main && <span className="text-[9px] text-purple-400/70 mr-auto">{t.mainStopLabel}</span>}
             </div>
           ))}
         </div>
@@ -557,7 +555,7 @@ function RouteDetailPanel({ route, cityColor, onBack }) {
 }
 
 // ─── Transport Panel with Real Leaflet Map + FloatingPaths ────
-function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
+function TransportPanel({ busSeats, busEta, busProgress, busSpeed, t, lang }) {
   const { weather: ammanWeather } = useWeather(31.9454, 35.9284);
   const [selectedCity, setSelectedCity] = useState('irbid');
   const [selectedRoute, setSelectedRoute] = useState(null);
@@ -565,24 +563,15 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
   const cityData = BUS_ROUTES[selectedCity];
   const cityRoutes = cityData?.routes || [];
 
-  const getPos = (t) => {
-    const total = BUS_ROUTE.length - 1;
-    const seg = Math.min(Math.floor(t * total), total - 1);
-    const segT = (t * total) - seg;
-    const a = BUS_ROUTE[seg];
-    const b = BUS_ROUTE[seg + 1] || BUS_ROUTE[total];
-    return [a[0] + (b[0] - a[0]) * segT, a[1] + (b[1] - a[1]) * segT];
-  };
-
   return (
     <div className="space-y-6">
       {/* Sector Header */}
       <div className="flex justify-between items-center">
         <div>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.15)]">
-            قطاع النقل · Public Transit
+            {t.transitHeader}
           </span>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mt-2">شبكة الباصات الأردنية</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mt-2">{t.busNetwork}</h2>
         </div>
         <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#2c2d31] to-[#121315] border border-[#3c3e44] flex items-center justify-center shadow-md">
           <Navigation size={20} />
@@ -592,10 +581,10 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
       {/* Stats Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'إجمالي الخطوط', value: STATS.totalRoutes, color: 'text-purple-400' },
-          { label: 'خطوط BRT', value: STATS.brtRoutes, color: 'text-cyan-400' },
-          { label: 'بين المدن', value: STATS.intercityRoutes, color: 'text-orange-400' },
-          { label: 'متوسط التعرفة', value: `${STATS.avgFare} JOD`, color: 'text-yellow-400' },
+          { label: t.totalRoutes, value: STATS.totalRoutes, color: 'text-purple-400' },
+          { label: t.brtRoutes, value: STATS.brtRoutes, color: 'text-cyan-400' },
+          { label: t.intercityRoutes, value: STATS.intercityRoutes, color: 'text-orange-400' },
+          { label: t.avgFare, value: `${STATS.avgFare} ${t.fareUnit}`, color: 'text-yellow-400' },
         ].map((s, i) => (
           <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3 relative overflow-hidden">
             <FloatingPaths position={i % 2 === 0 ? 0.3 : -0.3} />
@@ -611,20 +600,23 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
         <div className="space-y-4">
           {/* City Tabs */}
           <div className="flex gap-2">
-            {Object.entries(BUS_ROUTES).map(([key, city]) => (
-              <button
-                key={key}
-                onClick={() => { setSelectedCity(key); setSelectedRoute(null); }}
-                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                  selectedCity === key
-                    ? 'text-white border-transparent'
-                    : 'bg-white/[0.02] border-white/[0.06] text-slate-400 hover:text-slate-200'
-                }`}
-                style={selectedCity === key ? { background: `${city.color}20`, borderColor: `${city.color}50`, color: city.color, boxShadow: `0 0 12px ${city.color}20` } : {}}
-              >
-                {city.city}
-              </button>
-            ))}
+            {Object.entries(BUS_ROUTES).map(([key, city]) => {
+              const translatedCityName = key === 'irbid' ? t.cityIrbid : key === 'amman' ? t.cityAmman : t.cityZarqa;
+              return (
+                <button
+                  key={key}
+                  onClick={() => { setSelectedCity(key); setSelectedRoute(null); }}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                    selectedCity === key
+                      ? 'text-white border-transparent'
+                      : 'bg-white/[0.02] border-white/[0.06] text-slate-400 hover:text-slate-200'
+                  }`}
+                  style={selectedCity === key ? { background: `${city.color}20`, borderColor: `${city.color}50`, color: city.color, boxShadow: `0 0 12px ${city.color}20` } : {}}
+                >
+                  {translatedCityName}
+                </button>
+              );
+            })}
           </div>
 
           {/* Live Map */}
@@ -632,52 +624,47 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
             <FloatingPaths position={1} />
             <FloatingPaths position={-1} />
             <div className="relative z-10 flex items-center justify-between px-4 pt-3 pb-2">
-              <span className="text-xs font-bold text-slate-300">مسار الحافلة الحي · Live Route</span>
+              <span className="text-xs font-bold text-slate-300">{t.liveRoute}</span>
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
-                <span className="text-[10px] text-purple-400 font-mono font-bold">GPS · تتبع حي</span>
+                <span className="text-[10px] text-purple-400 font-mono font-bold">{t.gpsTracking}</span>
               </div>
             </div>
             <div className="relative z-10 h-64 sm:h-72 w-full" style={{ isolation: 'isolate' }}>
-              <MapContainer
+              <AdvancedMap
                 center={cityData?.center || [31.9454, 35.9284]}
                 zoom={selectedCity === 'irbid' ? 11 : selectedCity === 'zarqa' ? 11 : 10}
-                style={{ height: '100%', width: '100%', background: '#07080a' }}
-                zoomControl={false}
-                scrollWheelZoom={false}
-                attributionControl={false}
-                key={selectedCity}
+                enableClustering={false}
+                enableSearch={false}
+                t={t}
+                polylines={cityRoutes.map(route => ({
+                  id: route.id,
+                  positions: route.stops.map(s => [s.lat, s.lng]),
+                  style: {
+                    color: selectedRoute?.id === route.id ? cityData.color : `${cityData.color}60`,
+                    weight: selectedRoute?.id === route.id ? 4 : 2,
+                    opacity: selectedRoute?.id === route.id ? 0.9 : 0.5,
+                    dashArray: route.active ? (route.brt ? '12 3' : '8 4') : '4 6'
+                  },
+                  popup: route.name
+                }))}
+                markers={((selectedRoute || cityRoutes[0])?.stops || []).map((stop, i) => ({
+                  position: [stop.lat, stop.lng],
+                  icon: stop.main ? makeNeonIcon(cityData.color) : makeNeonIcon('#475569'),
+                  popup: {
+                    title: stop.name,
+                    content: stop.main ? t.mainStopLabel : ''
+                  }
+                }))}
               >
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="&copy; CartoDB" />
-                {/* Draw all routes for selected city */}
-                {cityRoutes.map(route => (
-                  <Polyline
-                    key={route.id}
-                    positions={route.stops.map(s => [s.lat, s.lng])}
-                    color={selectedRoute?.id === route.id ? cityData.color : `${cityData.color}60`}
-                    weight={selectedRoute?.id === route.id ? 4 : 2}
-                    opacity={selectedRoute?.id === route.id ? 0.9 : 0.5}
-                    dashArray={route.active ? (route.brt ? '12 3' : '8 4') : '4 6'}
-                  />
-                ))}
-                {/* Stop markers for selected route */}
-                {(selectedRoute || cityRoutes[0])?.stops.map((stop, i) => (
-                  <Marker
-                    key={i}
-                    position={[stop.lat, stop.lng]}
-                    icon={stop.main ? makeNeonIcon(cityData.color) : makeNeonIcon('#475569')}
-                  >
-                    <Popup><span style={{ fontWeight: 'bold', color: cityData.color }}>{stop.name}</span></Popup>
-                  </Marker>
-                ))}
                 {/* Moving bus on selected/first route */}
                 <MovingBus progress={busProgress} />
-              </MapContainer>
+              </AdvancedMap>
             </div>
             <div className="relative z-10 flex justify-between items-center px-4 py-2.5 border-t border-white/5">
               <div className="flex items-center gap-2 text-[10px] text-slate-500">
                 <MapPin size={10} className="text-slate-600" />
-                <span>{cityData?.city} · {cityRoutes.filter(r => r.active).length} خط نشط</span>
+                <span>{selectedCity === 'irbid' ? t.cityIrbid : selectedCity === 'amman' ? t.cityAmman : selectedCity === 'zarqa' ? t.cityZarqa : ''} · {cityRoutes.filter(r => r.active).length} {t.activeRoutesCount}</span>
               </div>
               {ammanWeather && (
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
@@ -693,23 +680,23 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
             <FloatingPaths position={-0.3} />
             <div className="relative z-10 grid grid-cols-2 gap-3 mb-3">
               <div>
-                <span className="text-[9px] text-slate-500">المقاعد المتاحة</span>
+                <span className="text-[9px] text-slate-500">{t.availSeats}</span>
                 <div className="flex items-end gap-1 mt-0.5">
                   <span className="text-2xl font-black text-purple-400">{busSeats}</span>
-                  <span className="text-[10px] text-slate-500 mb-0.5">مقعد</span>
+                  <span className="text-[10px] text-slate-500 mb-0.5">{t.seatsUnit}</span>
                 </div>
               </div>
               <div>
-                <span className="text-[9px] text-slate-500">وقت الوصول</span>
+                <span className="text-[9px] text-slate-500">{t.eta}</span>
                 <div className="flex items-end gap-1 mt-0.5">
                   <span className="text-2xl font-black text-yellow-400">{busEta}</span>
-                  <span className="text-[10px] text-slate-500 mb-0.5">دقيقة</span>
+                  <span className="text-[10px] text-slate-500 mb-0.5">{t.minutesUnit}</span>
                 </div>
               </div>
             </div>
             <div className="relative z-10">
               <div className="flex justify-between text-[9px] text-slate-500 mb-1 font-mono">
-                <span>🏁 إربد</span><span>🏟️ جرش</span><span>🏁 عمان</span>
+                <span>🏁 {t.cityIrbid}</span><span>🏟️ {t.sites?.jerash?.name || 'Jerash'}</span><span>🏁 {t.cityAmman}</span>
               </div>
               <div className="h-2.5 w-full bg-[#050608] rounded-full overflow-hidden border border-white/5">
                 <motion.div
@@ -720,9 +707,9 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
                 />
               </div>
               <div className="flex justify-between text-[9px] text-slate-600 mt-1">
-                <span>الانطلاق</span>
-                <span className="text-purple-400 font-bold">{Math.round(busProgress * 100)}% مكتمل · {busSpeed} كم/س</span>
-                <span>الوصول</span>
+                <span>{t.departure}</span>
+                <span className="text-purple-400 font-bold">{Math.round(busProgress * 100)}% {t.completed} · {busSpeed} {t.windSpeed}</span>
+                <span>{t.arrival}</span>
               </div>
             </div>
           </div>
@@ -732,12 +719,12 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
         <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 backdrop-blur-xl shadow-xl min-h-[400px] flex flex-col">
           <AnimatePresence mode="wait">
             {selectedRoute ? (
-              <RouteDetailPanel key="detail" route={selectedRoute} cityColor={cityData.color} onBack={() => setSelectedRoute(null)} />
+              <RouteDetailPanel key="detail" route={selectedRoute} cityColor={cityData.color} onBack={() => setSelectedRoute(null)} t={t} />
             ) : (
               <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">خطوط {cityData?.city}</span>
-                  <span className="text-[9px] text-slate-500 font-mono">{cityRoutes.length} خط</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.routesOfCity} {selectedCity === 'irbid' ? t.cityIrbid : selectedCity === 'amman' ? t.cityAmman : selectedCity === 'zarqa' ? t.cityZarqa : ''}</span>
+                  <span className="text-[9px] text-slate-500 font-mono">{cityRoutes.length} {t.routeCountUnit}</span>
                 </div>
                 <div className="space-y-2 overflow-y-auto flex-1 pr-0.5">
                   {cityRoutes.map(route => (
@@ -747,6 +734,7 @@ function TransportPanel({ busSeats, busEta, busProgress, busSpeed }) {
                       cityColor={cityData.color}
                       isSelected={selectedRoute?.id === route.id}
                       onClick={() => setSelectedRoute(route)}
+                      t={t}
                     />
                   ))}
                 </div>
@@ -766,7 +754,9 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
   const [busEta, setBusEta] = useState(10);
   const [busProgress, setBusProgress] = useState(0.4);
   const [busSpeed, setBusSpeed] = useState(72);
+  const [lang, setLang] = useState('ar');
 
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.ar;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -783,7 +773,7 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
       <div className="fixed bottom-1/4 left-1/3 w-[600px] h-[600px] bg-yellow-500/[0.02] rounded-full blur-3xl pointer-events-none" />
 
-      <div className="w-full max-w-6xl bg-gradient-to-b from-[#121316] to-[#08090b] border border-[#212328] sm:rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col relative min-h-[750px]">
+      <div dir={t.dir} className="w-full max-w-6xl bg-gradient-to-b from-[#121316] to-[#08090b] border border-[#212328] sm:rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col relative min-h-[750px] transition-all duration-300">
 
         {/* Header */}
         <header className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-[#1f2126] bg-[#0c0d10]/95 backdrop-blur-md sticky top-0 z-30 gap-3">
@@ -791,15 +781,15 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-[#2e3035] to-[#121315] border border-[#3e4148] flex items-center justify-center text-slate-300 overflow-hidden shrink-0 shadow-inner">
               {user?.photoURL ? <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover" /> : <User size={18} />}
             </div>
-            <div className="min-w-0">
-              <h1 className="text-sm font-bold text-slate-200 tracking-tight truncate">{user?.displayName || 'Client Account'}</h1>
-              <p className="text-[9px] text-slate-500 font-mono tracking-wider">GATEWAY · SECURITY LEVEL 1</p>
+            <div className="min-w-0 text-start">
+              <h1 className="text-sm font-bold text-slate-200 tracking-tight truncate">{user?.displayName || t.clientAccount}</h1>
+              <p className="text-[9px] text-slate-500 font-mono tracking-wider">{t.secLevel}</p>
             </div>
           </div>
           <div className="hidden md:flex bg-gradient-to-b from-[#090a0c] to-[#131417] p-1.5 rounded-2xl border border-[#212328] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] shrink-0">
             {[
-              { id: 'transport', label: '🚌 النقل', icon: <Navigation2 size={11} className={activeTab==='transport'?'rotate-45 text-purple-400':''} /> },
-              { id: 'tourism', label: '🗺️ السياحة', icon: <Compass size={11} className={activeTab==='tourism'?'text-yellow-400':''} /> },
+              { id: 'transport', label: t.transportTab, icon: <Navigation2 size={11} className={activeTab==='transport'?'rotate-45 text-purple-400':''} /> },
+              { id: 'tourism', label: t.tourismTab, icon: <Compass size={11} className={activeTab==='tourism'?'text-yellow-400':''} /> },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${activeTab===tab.id ? 'bg-gradient-to-b from-[#3a3c41] via-[#24262a] to-[#151619] border-t border-white/10 border-b border-black/80 text-white shadow-[0_2px_6px_rgba(0,0,0,0.4)]' : 'text-slate-500 hover:text-slate-300'}`}>
@@ -808,10 +798,24 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
             ))}
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            {/* Language Switcher */}
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              className="bg-[#121316] text-xs font-bold text-slate-300 border border-[#212328] rounded-xl px-2.5 py-1.5 outline-none cursor-pointer focus:border-purple-500/50 transition-all hover:bg-white/[0.02]"
+              dir="ltr"
+            >
+              <option value="ar">🇸🇦 العربية</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="it">🇮🇹 Italiano</option>
+            </select>
+
             <PremiumMetalButton onClick={() => setPortalMode('student')} className="h-9 px-3 rounded-xl">
-              <Code size={12} className="mr-1 text-slate-400" /><span>Sandbox</span>
+              <Code size={12} className="mr-1 text-slate-400" /><span>{t.sandboxBtn}</span>
             </PremiumMetalButton>
-            <button onClick={logout} className="p-2.5 bg-gradient-to-b from-[#2e3035] to-[#121315] hover:bg-red-500/10 border border-[#3e4148] hover:border-red-500/30 text-slate-400 hover:text-red-400 rounded-xl transition-colors cursor-pointer shadow-md" title="Sign Out">
+            <button onClick={logout} className="p-2.5 bg-gradient-to-b from-[#2e3035] to-[#121315] hover:bg-red-500/10 border border-[#3e4148] hover:border-red-500/30 text-slate-400 hover:text-red-400 rounded-xl transition-colors cursor-pointer shadow-md" title={t.signOut}>
               <LogOut size={15} />
             </button>
           </div>
@@ -824,14 +828,14 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
             {/* ══ TRANSPORT ══ */}
             {activeTab === 'transport' && (
               <motion.div key="transport" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.25 }}>
-                <TransportPanel busSeats={busSeats} busEta={busEta} busProgress={busProgress} busSpeed={busSpeed} />
+                <TransportPanel busSeats={busSeats} busEta={busEta} busProgress={busProgress} busSpeed={busSpeed} t={t} lang={lang} />
               </motion.div>
             )}
 
             {/* ══ TOURISM ══ */}
             {activeTab === 'tourism' && (
               <motion.div key="tourism" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.25 }}>
-                <TourismPanel />
+                <TourismPanel t={t} />
               </motion.div>
             )}
 
@@ -841,15 +845,18 @@ export default function CustomerAppView({ user, logout, setPortalMode }) {
         {/* Mobile Nav */}
         <nav className="md:hidden absolute bottom-0 left-0 right-0 h-20 bg-[#0c0d10] border-t border-[#1b1c1f] flex justify-around items-center px-4 z-20 shadow-inner">
           {[
-            { id: 'transport', icon: <Navigation2 size={18} className={activeTab==='transport'?'rotate-45 text-purple-400':''} />, label: 'النقل' },
-            { id: 'tourism', icon: <Compass size={18} className={activeTab==='tourism'?'text-yellow-400':''} />, label: 'السياحة' },
-          ].map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center gap-1 px-3 py-1 cursor-pointer transition-colors ${activeTab===tab.id?(tab.id==='tourism'?'text-yellow-400 font-bold':'text-purple-400 font-bold'):'text-slate-500'}`}>
-              {tab.icon}
-              <span className="text-[9px] font-bold">{tab.label}</span>
-            </button>
-          ))}
+            { id: 'transport', icon: <Navigation2 size={18} className={activeTab==='transport'?'rotate-45 text-purple-400':''} />, label: t.transportTab },
+            { id: 'tourism', icon: <Compass size={18} className={activeTab==='tourism'?'text-yellow-400':''} />, label: t.tourismTab },
+          ].map(tab => {
+            const cleanLabel = tab.label.replace('🚌', '').replace('🗺️', '').trim();
+            return (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                className={`flex flex-col items-center gap-1 px-3 py-1 cursor-pointer transition-colors ${activeTab===tab.id?(tab.id==='tourism'?'text-yellow-400 font-bold':'text-purple-400 font-bold'):'text-slate-500'}`}>
+                {tab.icon}
+                <span className="text-[9px] font-bold">{cleanLabel}</span>
+              </button>
+            );
+          })}
         </nav>
       </div>
     </div>
