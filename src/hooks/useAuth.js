@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { DEMO_ACCOUNTS } from '../features/enterprise/config/roles';
+
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -93,20 +93,7 @@ export function useAuth() {
     setRegistrationSuccessMessage(null);
     setUnverifiedLoginEmail(null);
 
-    // Demo enterprise accounts (sector-specific + super admin)
-    const demo = DEMO_ACCOUNTS.find((a) => a.email === email.toLowerCase() && a.password === password);
-    if (demo) {
-      setUser({
-        uid: `mock-enterprise-${demo.role}`,
-        email: demo.email,
-        emailVerified: true,
-        displayName: demo.label,
-        photoURL: null,
-        enterpriseRole: demo.role,
-      });
-      setLoading(false);
-      return;
-    }
+
 
     try {
       await signInWithEmailAndPassword(auth, email, password);

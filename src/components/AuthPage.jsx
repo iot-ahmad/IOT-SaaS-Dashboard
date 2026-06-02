@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, User, Landmark, GraduationCap, Lock, Mail, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Loader2, GraduationCap } from 'lucide-react';
 import { IoTDotFieldBackdrop } from './CanvasRevealBackground';
-import { navigateToPortal, navigateToGateway, getPortalPath } from '../config/portals';
+import { getPortalPath } from '../config/portals';
 
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
@@ -14,16 +14,6 @@ const GoogleIcon = () => (
 );
 
 const PORTAL_META = {
-  customer: {
-    roleLabel: 'عميل',
-    title: 'واجهة العميل',
-    subtitle: 'CUSTOMER APP',
-    badge: 'بوابة العملاء',
-    color: 'blue',
-    icon: User,
-    description: 'شاشة خفيفة لمتابعة حافلات النقل، أرقام الانتظار بالمراكز الصحية، وإرشادات السياحة.',
-    google: true,
-  },
   student: {
     roleLabel: 'طالب IoT',
     title: 'طالب IoT',
@@ -34,27 +24,9 @@ const PORTAL_META = {
     description: 'بيئة تعلم وتطوير: محاكاة ESP32، لوحة تحكم قابلة للترتيب، أكواد جاهزة، ونافذة أوامر MQTT.',
     google: true,
   },
-  enterprise: {
-    roleLabel: 'موظف',
-    title: 'واجهة الموظف والمؤسسة',
-    subtitle: 'ENTERPRISE CONSOLE',
-    badge: 'بوابة الموظفين',
-    color: 'indigo',
-    icon: Landmark,
-    description: 'منصة تحكم لإدارة أساطيل النقل، تبريد اللقاحات، والأسوار الافتراضية السياحية.',
-    google: false,
-  },
 };
 
 const colorClasses = {
-  blue: {
-    active: 'bg-blue-950/20 border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.2)]',
-    idle: 'bg-slate-900/30 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50',
-    icon: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
-    label: 'text-blue-400',
-    btn: 'bg-blue-600 hover:bg-blue-500',
-    glow: 'bg-blue-500/5 group-hover:bg-blue-500/10',
-  },
   purple: {
     active: 'bg-purple-950/20 border-purple-500 shadow-[0_0_30px_rgba(168,85,247,0.2)]',
     idle: 'bg-slate-900/30 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50',
@@ -63,75 +35,16 @@ const colorClasses = {
     btn: 'bg-purple-600 hover:bg-purple-500',
     glow: 'bg-purple-500/5 group-hover:bg-purple-500/10',
   },
-  indigo: {
-    active: 'bg-slate-900 border-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.2)]',
-    idle: 'bg-slate-900/30 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50',
-    icon: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-    label: 'text-indigo-400',
-    btn: 'bg-indigo-600 hover:bg-indigo-500',
-    glow: 'bg-indigo-500/5 group-hover:bg-indigo-500/10',
-  },
 };
 
-function GatewayChoiceCard({ portalId, isActive, onSelect, onContinue }) {
-  const meta = PORTAL_META[portalId];
-  const colors = colorClasses[meta.color];
-  const Icon = meta.icon;
-
-  return (
-    <motion.div
-      onClick={() => onSelect(portalId)}
-      className={`cursor-pointer rounded-3xl border p-6 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 relative group overflow-hidden ${
-        isActive ? colors.active : colors.idle
-      }`}
-      whileHover={{ y: -4 }}
-    >
-      <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl transition-colors ${colors.glow}`} />
-      <div className="space-y-4">
-        <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center ${colors.icon}`}>
-          <Icon size={20} />
-        </div>
-        <div className="text-right">
-          <span className={`text-[10px] font-black uppercase tracking-wider ${colors.label}`}>{meta.roleLabel}</span>
-          <h3 className="text-lg font-bold text-white mt-1">{meta.title}</h3>
-          <p className="text-slate-400 text-xs font-light leading-relaxed mt-2">{meta.description}</p>
-        </div>
-      </div>
-      <div className="mt-8 pt-4 border-t border-slate-800/80">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onContinue(portalId);
-          }}
-          className={`w-full flex items-center justify-center gap-2 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all ${colors.btn}`}
-        >
-          <span>متابعة إلى تسجيل الدخول</span>
-          <ArrowRight size={13} />
-        </button>
-      </div>
-    </motion.div>
-  );
-}
-
-export default function AuthPage({ pathPortal = null, loginWithGoogle, login, error, setError }) {
-  const [gatewaySelection, setGatewaySelection] = useState(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function AuthPage({ loginWithGoogle, error, setError }) {
   const [loading, setLoading] = useState(false);
 
-  const isGateway = pathPortal === null;
-  const loginPortal = pathPortal;
-  const loginMeta = loginPortal ? PORTAL_META[loginPortal] : null;
-  const LoginIcon = loginMeta?.icon;
-
-  const handleContinueToLogin = (portalId) => {
-    setGatewaySelection(portalId);
-    navigateToPortal(portalId);
-  };
+  const loginPortal = 'student';
+  const loginMeta = PORTAL_META[loginPortal];
+  const LoginIcon = loginMeta.icon;
 
   const handleGoogleLogin = async () => {
-    if (!loginPortal) return;
     setError(null);
     setLoading(true);
     try {
@@ -139,24 +52,6 @@ export default function AuthPage({ pathPortal = null, loginWithGoogle, login, er
       await loginWithGoogle();
     } catch (err) {
       console.error('Google Auth error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEmailLogin = async (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError('Please enter both email and password.');
-      return;
-    }
-    setError(null);
-    setLoading(true);
-    try {
-      localStorage.setItem('auth_portal_mode', 'enterprise');
-      await login(email, password);
-    } catch (err) {
-      console.error('Email login error:', err);
     } finally {
       setLoading(false);
     }
@@ -177,19 +72,15 @@ export default function AuthPage({ pathPortal = null, loginWithGoogle, login, er
         <div className="w-full max-w-4xl text-center space-y-3 mb-10">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-              {isGateway ? 'الخطوة 1 · من أنت؟' : loginMeta.badge}
+              {loginMeta.badge}
             </span>
             <h1 className="text-3xl sm:text-4xl font-black text-white mt-3">
-              {isGateway ? 'اختر نوع حسابك' : `تسجيل الدخول · ${loginMeta.roleLabel}`}
+              {`تسجيل الدخول · ${loginMeta.roleLabel}`}
             </h1>
             <p className="text-slate-400 text-xs sm:text-sm font-light max-w-lg mx-auto">
-              {isGateway
-                ? 'حدّد إن كنت عميلاً، طالب IoT، أو موظفاً — ثم ستظهر صفحة الدخول المناسبة.'
-                : loginMeta.description}
+              {loginMeta.description}
             </p>
-            {!isGateway && (
-              <p className="text-[10px] text-slate-500 font-mono mt-2">{getPortalPath(loginPortal)}</p>
-            )}
+            <p className="text-[10px] text-slate-500 font-mono mt-2">{getPortalPath(loginPortal)}</p>
           </motion.div>
         </div>
 
@@ -203,119 +94,45 @@ export default function AuthPage({ pathPortal = null, loginWithGoogle, login, er
           </motion.div>
         )}
 
-        {isGateway ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-            {(['customer', 'student', 'enterprise']).map((id) => (
-              <GatewayChoiceCard
-                key={id}
-                portalId={id}
-                isActive={gatewaySelection === id}
-                onSelect={setGatewaySelection}
-                onContinue={handleContinueToLogin}
-              />
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-md"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl p-6 shadow-2xl">
+            <div className="text-center mb-6">
+              <div
+                className={`w-12 h-12 rounded-2xl border flex items-center justify-center mx-auto mb-3 ${colorClasses[loginMeta.color].icon}`}
+              >
+                <LoginIcon size={22} />
+              </div>
+              <h3 className="text-xl font-bold text-white">{loginMeta.title}</h3>
+              <span className={`text-[10px] font-mono ${colorClasses[loginMeta.color].label}`}>
+                {loginMeta.subtitle}
+              </span>
+            </div>
+
             <button
               type="button"
-              onClick={() => navigateToGateway()}
-              className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-blue-400 mb-4 transition-colors cursor-pointer"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2.5 bg-white text-slate-950 font-bold py-3 px-4 rounded-xl text-sm hover:bg-slate-100 transition-all disabled:opacity-50 cursor-pointer"
             >
-              <ArrowLeft size={12} />
-              <span>العودة لاختيار نوع الحساب</span>
+              {loading ? (
+                <Loader2 size={16} className="animate-spin text-slate-950" />
+              ) : (
+                <GoogleIcon />
+              )}
+              <span>دخول سريع بحساب Google</span>
             </button>
 
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl p-6 shadow-2xl">
-              <div className="text-center mb-6">
-                <div
-                  className={`w-12 h-12 rounded-2xl border flex items-center justify-center mx-auto mb-3 ${colorClasses[loginMeta.color].icon}`}
-                >
-                  {LoginIcon && <LoginIcon size={22} />}
-                </div>
-                <h3 className="text-xl font-bold text-white">{loginMeta.title}</h3>
-                <span className={`text-[10px] font-mono ${colorClasses[loginMeta.color].label}`}>
-                  {loginMeta.subtitle}
-                </span>
-              </div>
-
-              {loginPortal === 'enterprise' ? (
-                <form onSubmit={handleEmailLogin} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 text-right">
-                      البريد الإلكتروني
-                    </label>
-                    <div className="relative">
-                      <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="admin@enterprise.com"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                      />
-                    </div>
-                    <p className="text-[9px] text-slate-500 mt-2 text-right leading-relaxed">
-                      حسابات تجريبية (كلمة المرور: admin123):
-                      <br />
-                      admin@enterprise.com · transport@iot365.gov · health@iot365.gov · tourism@iot365.gov · safety@iot365.gov
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 text-right">
-                      كلمة المرور
-                    </label>
-                    <div className="relative">
-                      <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-                      <input
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                      />
-                    </div>
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-2"
-                  >
-                    {loading ? <Loader2 size={14} className="animate-spin" /> : <Lock size={13} />}
-                    <span>دخول لوحة القيادة</span>
-                  </button>
-                </form>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-2.5 bg-white text-slate-950 font-bold py-3 px-4 rounded-xl text-sm hover:bg-slate-100 transition-all disabled:opacity-50"
-                >
-                  {loading ? (
-                    <Loader2 size={16} className="animate-spin text-slate-950" />
-                  ) : (
-                    <GoogleIcon />
-                  )}
-                  <span>دخول سريع بحساب Google</span>
-                </button>
-              )}
-
-              {loginPortal === 'student' && (
-                <p className="text-center text-[10px] text-purple-400/80 mt-4 font-medium">
-                  مخصص لطلاب IoT والمطورين — ESP32 · MQTT · لوحة تحكم حية
-                </p>
-              )}
-            </div>
-          </motion.div>
-        )}
+            <p className="text-center text-[10px] text-purple-400/80 mt-4 font-medium">
+              مخصص لطلاب IoT والمطورين — ESP32 · MQTT · لوحة تحكم حية
+            </p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
 }
+

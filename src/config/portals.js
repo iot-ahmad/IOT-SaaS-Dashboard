@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 
-/** @typedef {'customer' | 'student' | 'enterprise'} PortalId */
+/** @typedef {'student'} PortalId */
 
-export const PORTAL_IDS = /** @type {const} */ (['customer', 'student', 'enterprise']);
+export const PORTAL_IDS = /** @type {const} */ (['student']);
 
 export const PORTAL_PATH_PREFIX = {
-  customer: '/customer',
   student: '/student',
-  enterprise: '/enterprise',
 };
 
 /**
@@ -16,7 +14,7 @@ export const PORTAL_PATH_PREFIX = {
  */
 export function getPortalFromPath(pathname = typeof window !== 'undefined' ? window.location.pathname : '/') {
   const seg = pathname.replace(/\/+$/, '').split('/').filter(Boolean)[0];
-  if (seg === 'customer' || seg === 'student' || seg === 'enterprise') return seg;
+  if (seg === 'student') return seg;
   return null;
 }
 
@@ -67,12 +65,6 @@ export function navigateToGateway(opts = {}) {
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
-/** @param {string | null} stored @param {PortalId | null} pathPortal */
-export function resolvePortalMode(stored, pathPortal) {
-  if (pathPortal) return pathPortal;
-  if (stored === 'enterprise' || stored === 'customer' || stored === 'student') return stored;
-  return 'student';
-}
 
 export function usePortalPath() {
   const read = () => getPortalFromPath();

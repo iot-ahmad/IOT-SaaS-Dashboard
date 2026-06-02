@@ -3,7 +3,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AuthPage from './components/AuthPage';
 import { IoTDotFieldBackdrop } from './components/CanvasRevealBackground';
-import { FarmView, HomeView, OfficeView } from './components/Views';
+import { HomeView } from './components/Views';
 import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, SettingsView, LiveTerminal } from './components/ToolViews';
 import NewDevicesView from './components/DevicesView';
@@ -14,11 +14,9 @@ import { Loader2 } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
-import CustomerAppView from './components/CustomerAppView';
-import EnterpriseDashboard from './components/EnterpriseDashboard';
+
 import {
   usePortalPath,
-  resolvePortalMode,
   persistPortalMode,
   isGatewayPath,
 } from './config/portals';
@@ -28,39 +26,27 @@ function App() {
     user,
     loading: authLoading,
     error: authError,
-    login,
-    signup,
     loginWithGoogle,
     logout,
     setError,
   } = useAuth();
 
   const { pathPortal, goToPortal } = usePortalPath();
-  const [portalMode, setPortalMode] = useState(null);
 
   useEffect(() => {
     if (!user) {
-      setPortalMode(null);
       return;
     }
-    const stored = localStorage.getItem('auth_portal_mode');
-    const mode = resolvePortalMode(stored, pathPortal);
+    const mode = 'student';
     persistPortalMode(mode);
-    setPortalMode(mode);
 
-    // بعد الدخول: التوجيه إلى مسار البوابة (/customer | /student | /enterprise)
+    // بعد الدخول: التوجيه إلى مسار البوابة (/student)
     if (isGatewayPath()) {
       goToPortal(mode, { replace: true });
     } else if (pathPortal && pathPortal !== mode) {
       goToPortal(mode, { replace: true });
     }
   }, [user, pathPortal, goToPortal]);
-
-  const handleSetPortalMode = (mode) => {
-    persistPortalMode(mode);
-    goToPortal(mode);
-    setPortalMode(mode);
-  };
 
   if (authLoading) {
     return (
@@ -73,34 +59,22 @@ function App() {
   if (!user) {
     return (
       <AuthPage
-        pathPortal={pathPortal}
         loginWithGoogle={loginWithGoogle}
-        login={login}
         error={authError}
         setError={setError}
       />
     );
   }
 
-  if (portalMode === 'enterprise') {
-    return <EnterpriseDashboard user={user} logout={logout} />;
-  }
-
-  if (portalMode === 'customer') {
-    return <CustomerAppView user={user} logout={logout} setPortalMode={handleSetPortalMode} />;
-  }
-
   return (
     <Dashboard 
       user={user} 
       logout={logout} 
-      portalMode={portalMode} 
-      setPortalMode={handleSetPortalMode} 
     />
   );
 }
 
-function Dashboard({ user, logout, portalMode, setPortalMode }) {
+function Dashboard({ user, logout }) {
   const [activeWorkspace, setActiveWorkspace] = useState('home');
   const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -298,8 +272,7 @@ function Dashboard({ user, logout, portalMode, setPortalMode }) {
           onDeleteWorkspace={handleDeleteWorkspace}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(v => !v)}
-          portalMode={portalMode}
-          setPortalMode={setPortalMode}
+
         />
       </div>
 
@@ -312,8 +285,7 @@ function Dashboard({ user, logout, portalMode, setPortalMode }) {
           customWorkspaces={customWorkspaces}
           isSidebarCollapsed={isSidebarCollapsed}
           onToggleSidebar={() => setIsSidebarCollapsed(v => !v)}
-          portalMode={portalMode}
-          setPortalMode={setPortalMode}
+
         />
         
         <div className="flex-1 p-6 md:p-8 pb-40 overflow-y-auto">

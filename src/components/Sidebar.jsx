@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, User } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
 
@@ -23,8 +23,6 @@ export default function Sidebar({
   onDeleteWorkspace,
   isCollapsed,
   onToggleCollapse,
-  portalMode,
-  setPortalMode,
 }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newName, setNewName] = useState('');
@@ -183,21 +181,7 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* SWITCH PORTAL */}
-        {portalMode === 'student' && (
-          <div className="pt-2 border-t border-slate-100 dark:border-white/5">
-            <Button
-              type="button"
-              onClick={() => setPortalMode('customer')}
-              variant="ghost"
-              className={`${navBtnClass} text-blue-500 dark:text-blue-400 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-350 ${isCollapsed ? 'justify-center px-2' : ''}`}
-              title={isCollapsed ? 'Customer App View' : ''}
-            >
-              <User size={16} className="shrink-0" />
-              {!isCollapsed && <span>Customer App 👤</span>}
-            </Button>
-          </div>
-        )}
+
 
         {/* USER + SIGN OUT */}
         <div className="mt-auto space-y-3 pt-2">
