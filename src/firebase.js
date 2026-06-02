@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBzWpAA0x0Fc0GI3RXevpWplApZSZ8U5eI",
-  authDomain: "iot-0-1c24c.firebaseapp.com",
-  projectId: "iot-0-1c24c",
-  storageBucket: "iot-0-1c24c.firebasestorage.app",
-  messagingSenderId: "18330410203",
-  appId: "1:18330410203:web:1b26e89827faa2eb8280fe",
-  measurementId: "G-BSEZJKFXKN"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
