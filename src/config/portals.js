@@ -5,21 +5,19 @@ import { useState, useEffect, useCallback } from 'react';
 export const PORTAL_IDS = /** @type {const} */ (['student']);
 
 export const PORTAL_PATH_PREFIX = {
-  student: '/student',
+  student: '/',
 };
 
 /**
  * @param {string} [pathname]
  * @returns {PortalId | null} null = gateway (/)
  */
-export function getPortalFromPath(pathname = typeof window !== 'undefined' ? window.location.pathname : '/') {
-  const seg = pathname.replace(/\/+$/, '').split('/').filter(Boolean)[0];
-  if (seg === 'student') return seg;
-  return null;
+export function getPortalFromPath(pathname) {
+  return 'student';
 }
 
-export function isGatewayPath(pathname = typeof window !== 'undefined' ? window.location.pathname : '/') {
-  return getPortalFromPath(pathname) === null;
+export function isGatewayPath(pathname) {
+  return false;
 }
 
 /** @param {PortalId} portal */

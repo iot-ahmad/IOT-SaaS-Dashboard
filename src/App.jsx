@@ -15,11 +15,7 @@ import { WORKSPACES } from './data/mockData';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
-import {
-  usePortalPath,
-  persistPortalMode,
-  isGatewayPath,
-} from './config/portals';
+import { persistPortalMode } from './config/portals';
 
 function App() {
   const {
@@ -31,22 +27,12 @@ function App() {
     setError,
   } = useAuth();
 
-  const { pathPortal, goToPortal } = usePortalPath();
-
   useEffect(() => {
     if (!user) {
       return;
     }
-    const mode = 'student';
-    persistPortalMode(mode);
-
-    // بعد الدخول: التوجيه إلى مسار البوابة (/student)
-    if (isGatewayPath()) {
-      goToPortal(mode, { replace: true });
-    } else if (pathPortal && pathPortal !== mode) {
-      goToPortal(mode, { replace: true });
-    }
-  }, [user, pathPortal, goToPortal]);
+    persistPortalMode('student');
+  }, [user]);
 
   if (authLoading) {
     return (
