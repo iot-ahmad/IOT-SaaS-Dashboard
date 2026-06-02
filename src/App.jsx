@@ -234,7 +234,7 @@ function Dashboard({ user, logout }) {
   const mainPl = isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64';
 
   return (
-     <div className="relative min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex selection:bg-primary/30">
+     <div className="relative h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex selection:bg-primary/30 overflow-hidden">
       <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
 
       {isMobileMenuOpen && (
@@ -262,7 +262,7 @@ function Dashboard({ user, logout }) {
         />
       </div>
 
-      <main className={`relative z-10 flex-1 flex flex-col min-w-0 transition-all duration-300 ${mainPl}`}>
+      <main className={`relative z-10 flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-all duration-300 ${mainPl}`}>
         <Header 
           activeWorkspace={activeWorkspace}
           activeTool={activeTool}
@@ -274,11 +274,17 @@ function Dashboard({ user, logout }) {
 
         />
         
-        <div className="flex-1 p-6 md:p-8 pb-40 overflow-y-auto">
-          <div className="max-w-7xl mx-auto space-y-6">
+        {activeTool === 'developer' ? (
+          <div className="flex-1 flex flex-col px-6 md:px-8 pb-6 pt-4 min-h-0">
             {renderContent()}
           </div>
-        </div>
+        ) : (
+          <div className="flex-1 p-6 md:p-8 pb-40 overflow-y-auto">
+            <div className="max-w-7xl mx-auto space-y-6">
+              {renderContent()}
+            </div>
+          </div>
+        )}
 
         <LiveTerminal messages={messages} isConnected={isConnected} />
       </main>
