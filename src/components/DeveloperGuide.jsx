@@ -226,24 +226,79 @@ export default function DeveloperGuide({ userUID }) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
-
-  const handleSend = (textToSend) => {
+  const handleSend = async (textToSend) => {
     const query = textToSend || inputVal;
     if (!query.trim()) return;
 
     // Add user message
     const userMsg = { id: Date.now(), sender: 'user', text: query };
-    setMessages(prev => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     if (!textToSend) setInputVal('');
 
     // Trigger typing state
     setIsTyping(true);
 
-    setTimeout(() => {
-      const responseText = getBotResponse(query, userUID);
-      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: responseText }]);
+    const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
+
+    if (!apiKey || apiKey.startsWith('your_')) {
+      // Fallback to static bot responses if no real API key is configured
+      setTimeout(() => {
+        const responseText = getBotResponse(query, userUID);
+        setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: responseText }]);
+        setIsTyping(false);
+      }, 600);
+      return;
+    }
+
+    try {
+      // Build context from the last 8 messages
+      const contextMessages = updatedMessages.slice(-8).map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      }));
+
+      const response = await fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "deepseek-chat",
+          messages: [
+            {
+              role: "system",
+              content: `أنت مساعد ذكي لمنصة IOT365 لمساعدة الطلاب والمطورين في مشاريع إنترنت الأشياء والـ ESP32 وبرمجة Arduino C++ بروتوكول MQTT.
+معلومات المنصة الأساسية:
+- الـ UID الخاص بالمستخدم الحالي هو: ${userUID || 'YOUR_UID'}
+- الـ MQTT Broker المستعمل: broker.hivemq.com والمنفذ: 1883.
+- بنية الـ Topics هي دائماً: [UID]/[Topic_Name] (مثال: ${userUID || 'YOUR_UID'}/sensor/temp).
+أجب باللغة العربية بأسلوب هندسي دقيق وواضح، وعند كتابة أكواد ESP32/C++ اكتب كوداً نظيفاً ومتكاملاً وخالياً من الأخطاء البرمجية (Syntax Errors).`
+            },
+            ...contextMessages
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const botResponseText = data.choices[0].message.content;
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botResponseText }]);
+    } catch (error) {
+      console.error("DeepSeek API error:", error);
+      // Fallback warning message
+      setMessages(prev => [...prev, { 
+        id: Date.now() + 1, 
+        sender: 'bot', 
+        text: `⚠️ **حدث خطأ أثناء الاتصال بـ DeepSeek API.**\n\n*السبب:* قد يكون هناك مشكلة في مفتاح API أو مشكلة في الاتصال بالشبكة. \n\n*إجابة بديلة مؤقتة:*\n${getBotResponse(query, userUID)}` 
+      }]);
+    } finally {
       setIsTyping(false);
-    }, 800);
+    }
   };
 
   const getBotResponse = (input, uid) => {

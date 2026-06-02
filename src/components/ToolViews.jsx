@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X } from 'lucide-react';
+import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X, Sparkles, Play } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
@@ -153,6 +153,330 @@ export const DevicesView = ({ userUID, lastSeen }) => {
   );
 };
 
+// ==================== COSMOS3 PHYSICAL AI DIAGNOSTICS ====================
+const getMockCosmosResponse = (device, scenario) => {
+  const sc = scenario.toLowerCase();
+  if (sc.includes('مضخة') || sc.includes('pump') || sc.includes('موتور') || sc.includes('motor')) {
+    return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+
+**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
+*   **الحالة:** تم رصد انخفاض تيار التشغيل الكهربائي للمضخة بشكل فجائي مع بقاء إشارة GPIO نشطة.
+*   **التشخيص الفيزيائي:** انسداد ميكانيكي (Mechanical Blockage) في مروحة السحب الخاصة بالمضخة، أو تشغيل جاف (Dry Running) للمضخة بسبب نفاد منسوب المياه في الخزان الرئيسي، مما قد يتسبب في تلف الملفات الداخلية للحرارة الزائدة.
+
+**2. الأتمتة والسيناريو الهندسي المقترح (Smart Rules):**
+*   **قاعدة الحماية التلقائية:**
+    \`إذا كان مستوى المياه في الخزان < 10% ← إيقاف مضخة المياه فوراً وإرسال تنبيه حرج\`
+*   **كود الحماية في الـ ESP32:**
+\`\`\`cpp
+// حماية مدمجة بالعتاد لمنع التشغيل الجاف
+if (waterLevelPercent < 10.0) {
+  digitalWrite(PUMP_PIN, LOW); // إيقاف المضخة فوراً
+  client.publish("users/YOUR_UID/alerts", "CRITICAL: Dry run protection triggered!");
+}
+\`\`\``;
+  }
+  
+  if (sc.includes('بطارية') || sc.includes('battery') || sc.includes('شحن') || sc.includes('شاحن')) {
+    return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+
+**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
+*   **الحالة:** هبوط جهد البطارية (Battery Voltage) إلى 2.8V، وهو ما يقل عن الحد التشغيلي الآمن لمنظم الجهد (LDO Regulator) الخاص بـ ESP32.
+*   **التشخيص الفيزيائي:** دورة استيقاظ مكثفة للحساس مع استهلاك مستمر للتيار بمعدل ~80mA. عدم تفعيل بروتوكول النوم العميق (Deep Sleep) مما يتسبب في تفريغ سريع لخلية الليثيوم (LiPo).
+
+**2. الإجراء الهندسي والحل المقترح:**
+*   **الأتمتة المقترحة:** تقليل وتيرة الإرسال وتخفيض الإضاءة الخلفية للشاشة إن وجدت، وإرسال تنبيه صيانة عند انخفاض الشحن عن 15%.
+*   **تفعيل النوم العميق (Deep Sleep C++):**
+\`\`\`cpp
+// إدخال الـ ESP32 في نوم عميق لمدة 15 دقيقة بعد كل قراءة لتوفير الطاقة
+esp_sleep_enable_timer_wakeup(15 * 60 * 1000000ULL);
+esp_deep_sleep_start();
+\`\`\``;
+  }
+
+  if (sc.includes('مطر') || sc.includes('rain') || sc.includes('ري') || sc.includes('سقي') || sc.includes('irrigation')) {
+    return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+
+**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
+*   **الحالة:** تضارب في سيناريو الأتمتة (Automation Logic Conflict): حساس الرطوبة يسجل مستوى منخفض (< 20%) ويطلب تشغيل الري، بينما مستشعر المطر يرصد هطول أمطار غزيرة.
+*   **التشخيص الفيزيائي:** هطول مطري مباشر يغمر الحساسات الخارجية، ولكن التربة لم تمتص المياه بالكامل بعد. تشغيل الري سيؤدي لغرق الجذور وضياع المياه.
+
+**2. الأتمتة الذكية المقترحة (Logical Resolution):**
+*   **قاعدة الأتمتة الهجينة:**
+    \`إذا كانت رطوبة التربة < 20% و المطر = 0 (لا يوجد مطر) ← تشغيل الري. وإلا، يمنع الري تماماً ويتم تأجيل العملية\`
+*   **كود الأتمتة الذكي:**
+\`\`\`cpp
+bool isRaining = digitalRead(RAIN_SENSOR_PIN) == LOW; // LOW يعني وجود مطر
+int moisture = analogRead(SOIL_PIN);
+int moisturePercent = map(moisture, 4095, 1200, 0, 100);
+
+if (moisturePercent < 20 && !isRaining) {
+  digitalWrite(IRRIGATION_PIN, HIGH); // تشغيل الري الآمن
+} else {
+  digitalWrite(IRRIGATION_PIN, LOW);  // إيقاف أو تأجيل الري
+}
+\`\`\``;
+  }
+
+  return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+
+**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
+*   تم استقبال استعلامك بخصوص جهاز **[${device}]** وتحليله عبر محرك Cosmos3.
+*   **التشخيص:** يقترح النموذج مراجعة توصيل الطاقة واستقرار قراءات الحساسات عبر بروتوكول I2C/SPI، مع التأكد من عدم وجود تداخل مغناطيسي أو حراري يؤثر على دقة القراءات.
+
+**2. مقترحات الأتمتة:**
+*   إنشاء قواعد أتمتة احتياطية (Fail-safe rules) لمنع حدوث كوارث فيزيائية في حال فقدان الاتصال بالإنترنت (Offline Mode).`;
+};
+
+export const CosmosPhysicalDiagnostics = ({ userUID }) => {
+  const [device, setDevice] = useState('Soil Sensor #01');
+  const [scenario, setScenario] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleDiagnose = async (e) => {
+    e.preventDefault();
+    if (!scenario.trim()) return;
+
+    setLoading(true);
+    setResponse('');
+    
+    try {
+      const res = await callCosmos3API(device, scenario.trim());
+      setResponse(res);
+    } catch (err) {
+      console.error(err);
+      setResponse('حدث خطأ أثناء إجراء التشخيص الفيزيائي.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const callCosmos3API = async (dev, sc) => {
+    const apiKey = import.meta.env.VITE_NVIDIA_API_KEY;
+    if (!apiKey || apiKey.startsWith('your_')) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(getMockCosmosResponse(dev, sc));
+        }, 1200);
+      });
+    }
+
+    try {
+      const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "nvidia/llama-3.1-nemotron-51b-instruct",
+          messages: [
+            {
+              role: "system",
+              content: `أنت نموذج Cosmos3 الذكاء الفيزيائي (Physical AI) ومحرك التحليل الهندسي لمشاريع إنترنت الأشياء والعتاد (Hardware Diagnostics).
+مهمتك:
+1. تحليل سلوك العتاد والمشاكل الفيزيائية (مثل انخفاض بطارية الحساس، توقف المضخة، تداخل أو تضارب القواعد، أعطال الدوائر الكهربائية).
+2. تقديم تشخيص هندسي دقيق قائم على التفكير الفيزيائي المنطقي (Reasoning).
+3. اقتراح حلول عملية، سيناريوهات أتمتة ذكية، وقواعد أتمتة لحل المشكلة.
+أجب باللغة العربية بأسلوب احترافي وهندسي مذهل وجذاب.`
+            },
+            {
+              role: "user",
+              content: `الجهاز المستهدف: ${dev}\nالمشكلة أو السيناريو الفيزيائي المطلوب تحليله: ${sc}`
+            }
+          ],
+          temperature: 0.2,
+          max_tokens: 1024
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`NVIDIA API Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error("NVIDIA/Cosmos3 API error:", error);
+      return `⚠️ **فشل الاتصال بمحرك Cosmos3**\n\n*السبب:* قد يكون مفتاح API غير صحيح أو انتهت صلاحيته. تم تفعيل المحاكي الفيزيائي الاحتياطي:\n\n${getMockCosmosResponse(dev, sc)}`;
+    }
+  };
+
+  const renderDiagnosticContent = (text) => {
+    const parts = [];
+    const lines = text.split('\n');
+    let inCode = false;
+    let codeLines = [];
+    let codeLang = '';
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.startsWith('```')) {
+        if (inCode) {
+          parts.push({
+            type: 'code',
+            code: codeLines.join('\n'),
+            lang: codeLang
+          });
+          codeLines = [];
+          inCode = false;
+        } else {
+          inCode = true;
+          codeLang = line.replace('```', '').trim() || 'cpp';
+        }
+      } else {
+        if (inCode) {
+          codeLines.push(line);
+        } else {
+          parts.push({
+            type: 'text',
+            content: line
+          });
+        }
+      }
+    }
+
+    return parts.map((part, idx) => {
+      if (part.type === 'code') {
+        return (
+          <div key={idx} className="my-3 font-mono">
+            <pre className="bg-[#030406] border border-slate-200 dark:border-white/[0.07] rounded-xl p-4 overflow-x-auto text-[11px] leading-relaxed font-mono text-emerald-400 dark:text-emerald-400/90 scrollbar-thin">
+              <code>{part.code}</code>
+            </pre>
+          </div>
+        );
+      }
+
+      let line = part.content;
+      if (line.trim() === '') return <div key={idx} className="h-1.5" />;
+
+      let html = line.replace(/`([^`]+)`/g, '<code class="bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 px-1.5 py-0.5 rounded font-mono text-amber-500 dark:text-amber-300 text-[10px]">$1</code>');
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>');
+      
+      if (line.trim().startsWith('*')) {
+        html = html.trim().substring(1).trim();
+        return (
+          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-slate-700 dark:text-white/70">
+            <span className="text-primary mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
+            <span dangerouslySetInnerHTML={{ __html: html }} />
+          </div>
+        );
+      }
+
+      if (line.trim().startsWith('>')) {
+        html = html.trim().substring(1).trim();
+        return (
+          <blockquote key={idx} className="border-l-2 border-primary/50 pl-3 my-2 text-xs text-slate-500 dark:text-white/40 italic bg-slate-50 dark:bg-white/[0.01] py-1 pr-2 rounded-r-md" dangerouslySetInnerHTML={{ __html: html }} />
+        );
+      }
+
+      return (
+        <p key={idx} className="text-xs text-slate-700 dark:text-white/70 leading-relaxed mt-0.5" dangerouslySetInnerHTML={{ __html: html }} />
+      );
+    });
+  };
+
+  return (
+    <Card className="bg-gradient-to-br from-indigo-500/5 to-violet-500/10 border-violet-500/20 shadow-lg relative overflow-hidden mb-6">
+      <div className="absolute top-0 right-0 w-40 h-40 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+      
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.15)] shrink-0">
+          <Sparkles size={18} className="animate-pulse" />
+        </div>
+        <div className="text-left font-sans">
+          <h3 className="font-extrabold text-slate-950 dark:text-white text-sm">Cosmos3 Physical AI Diagnostics</h3>
+          <p className="text-[10px] text-slate-500 dark:text-white/30 font-medium">محرك التحليل والذكاء الفيزيائي للعتاد والأتمتة الهندسية</p>
+        </div>
+      </div>
+
+      <form onSubmit={handleDiagnose} className="space-y-4 font-sans">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="sm:col-span-1 text-left">
+            <label className="block text-[11px] font-bold text-slate-600 dark:text-white/40 uppercase mb-1.5">الجهاز أو الحساس المستهدف</label>
+            <select
+              value={device}
+              onChange={(e) => setDevice(e.target.value)}
+              className="w-full bg-slate-100 dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-primary/50 text-slate-800 dark:text-white"
+            >
+              <option>Soil Sensor #01</option>
+              <option>Main Irrigation Valve</option>
+              <option>Greenhouse Temp</option>
+              <option>Water Tank Level</option>
+              <option>Water Pump A</option>
+              <option>Greenhouse Vents</option>
+              <option>Rain Sensor</option>
+              <option>Light Sensor</option>
+            </select>
+          </div>
+          <div className="sm:col-span-2 text-left">
+            <label className="block text-[11px] font-bold text-slate-600 dark:text-white/40 uppercase mb-1.5">المشكلة الفيزيائية أو سيناريو الأتمتة المعقد</label>
+            <div className="flex gap-2">
+              <input
+                required
+                value={scenario}
+                onChange={(e) => setScenario(e.target.value)}
+                placeholder="مثال: توقف مضخة المياه فجأة، أو تضارب الري التلقائي عند نزول المطر..."
+                className="flex-1 bg-slate-100 dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-primary/50 text-slate-800 dark:text-white"
+              />
+              <button
+                type="submit"
+                disabled={loading || !scenario.trim()}
+                className="bg-violet-600 text-white px-5 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-violet-500 transition-colors text-xs disabled:opacity-50"
+              >
+                {loading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />}
+                {loading ? 'تحليل...' : 'تشخيص'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Presets badges */}
+        <div className="flex flex-wrap gap-2 pt-1.5">
+          <span className="text-[10px] text-slate-400 dark:text-white/20 self-center">أمثلة سريعة:</span>
+          {[
+            { label: '🚨 توقف مضخة المياه فجأة', sc: 'المضخة متوقفة ولا تسحب مياه رغم وجود أمر تشغيل والرطوبة منخفضة جداً' },
+            { label: '🔋 انخفاض بطارية ESP32 وحلول التوفير', sc: 'البطارية انخفضت لـ 2.8 فولت ونريد كود sleep موفر للطاقة' },
+            { label: '🌧️ تضارب أتمتة الري مع المطر المكتشف', sc: 'رطوبة التربة منخفضة وتطلب ري ولكن حساس المطر يرصد هطول أمطار' }
+          ].map((preset, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setScenario(preset.sc)}
+              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/50 hover:border-violet-500/40 hover:text-violet-400 hover:bg-violet-500/5 transition-all text-right shrink-0"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </form>
+
+      {/* Result Diagnostic Panel */}
+      {(loading || response) && (
+        <div className="mt-5 border-t border-slate-200 dark:border-white/5 pt-4 text-left">
+          <div className="bg-[#07090d] border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-inner relative">
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
+              <span className="text-[9px] text-violet-400 font-mono uppercase tracking-wider font-bold">PHYSICAL REAL-TIME DIAGNOSTIC</span>
+            </div>
+            
+            {loading ? (
+              <div className="py-8 flex flex-col items-center justify-center gap-3">
+                <RefreshCw size={24} className="text-violet-500 animate-spin" />
+                <p className="text-xs text-slate-500 dark:text-white/30 animate-pulse">يقوم Cosmos3 بتحليل الخواص الفيزيائية للعتاد واستخلاص السلوك الهندسي...</p>
+              </div>
+            ) : (
+              <div className="space-y-2 text-slate-200 font-sans leading-relaxed">
+                {renderDiagnosticContent(response)}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+};
+
 // ==================== AUTOMATIONS VIEW ====================
 export const AutomationsToolView = ({ publish, userUID }) => {
   const [autos, setAutos] = useState([]);
@@ -228,6 +552,9 @@ export const AutomationsToolView = ({ publish, userUID }) => {
           <Zap size={18} /> New Rule
         </button>
       </div>
+
+      {/* Cosmos3 Physical AI Hardware Diagnostics Hub */}
+      <CosmosPhysicalDiagnostics userUID={userUID} />
 
       {loading ? (
         <div className="text-slate-500 text-sm">Loading...</div>
@@ -437,6 +764,9 @@ export const AlertsView = ({ userUID }) => {
           </button>
         </div>
       </div>
+
+      {/* Cosmos3 Physical AI & Hardware Reasoning Hub */}
+      <CosmosPhysicalDiagnostics userUID={userUID} />
 
       {loading ? (
         <div className="text-slate-500 text-sm">Loading alerts...</div>
