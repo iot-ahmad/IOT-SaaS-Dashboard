@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X, Sparkles, Play } from 'lucide-react';
+import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X, Sparkles, Play, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';

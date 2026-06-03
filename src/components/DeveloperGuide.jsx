@@ -108,57 +108,63 @@ export default function DeveloperGuide({ userUID }) {
     if (!textToSend) setInputVal('');
     setIsTyping(true);
 
-    const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
+    const groqKey  = import.meta.env.VITE_GROQ_API_KEY;
 
-    if (!apiKey || apiKey.startsWith('your_')) {
+    // If no valid key → use static fallback responses
+    if (!groqKey || groqKey.startsWith('your_')) {
       setTimeout(() => {
-        const responseText = getBotResponse(query, userUID);
-        setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: responseText }]);
+        setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: getBotResponse(query, userUID) }]);
         setIsTyping(false);
       }, 600);
       return;
     }
 
-    try {
-      const contextMessages = updatedMessages.slice(-8).map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'assistant',
-        content: msg.text
-      }));
+    const systemPrompt = `أنت مساعد ذكي متخصص لمنصة IOT365. مهمتك مساعدة الطلاب والمطورين في مشاريع إنترنت الأشياء والـ ESP32 وبرمجة Arduino C++ وبروتوكول MQTT.
+معلومات المنصة:
+- UID المستخدم الحالي: ${userUID || 'YOUR_UID'}
+- MQTT Broker: broker.hivemq.com — المنفذ: 1883
+- بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
+قواعد الإجابة:
+- أجب دائماً باللغة العربية.
+- عند كتابة أكواد ESP32/C++ اكتب كوداً نظيفاً ومتكاملاً وخالياً من الأخطاء.
+- اجعل إجاباتك دقيقة وعملية ومركّزة.`;
 
-      const response = await fetch("https://api.deepseek.com/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
+    const tryApi = async (url, key, modelName, bodyOverride = {}) => {
+      const contextMessages = updatedMessages.slice(-10).map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text
+      }));
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
         body: JSON.stringify({
-          model: "deepseek-chat",
-          messages: [
-            {
-              role: "system",
-              content: `أنت مساعد ذكي لمنصة IOT365 لمساعدة الطلاب والمطورين في مشاريع إنترنت الأشياء والـ ESP32 وبرمجة Arduino C++ بروتوكول MQTT.
-معلومات المنصة الأساسية:
-- الـ UID الخاص بالمستخدم الحالي هو: ${userUID || 'YOUR_UID'}
-- الـ MQTT Broker المستعمل: broker.hivemq.com والمنفذ: 1883.
-- بنية الـ Topics هي دائماً: [UID]/[Topic_Name] (مثال: ${userUID || 'YOUR_UID'}/sensor/temp).
-أجب باللغة العربية بأسلوب هندسي دقيق وواضح، وعند كتابة أكواد ESP32/C++ اكتب كوداً نظيفاً ومتكاملاً وخالياً من الأخطاء البرمجية (Syntax Errors).`
-            },
-            ...contextMessages
-          ]
+          model: modelName,
+          messages: [{ role: 'system', content: systemPrompt }, ...contextMessages],
+          temperature: 0.7,
+          max_tokens: 2048,
+          ...bodyOverride
         })
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      return data.choices[0].message.content;
+    };
 
-      if (!response.ok) throw new Error(`API Error: ${response.status}`);
-
-      const data = await response.json();
-      const botResponseText = data.choices[0].message.content;
-      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botResponseText }]);
-    } catch (error) {
-      console.error("DeepSeek API error:", error);
+    try {
+      // Primary: Groq (supports browser CORS natively)
+      const botText = await tryApi(
+        'https://api.groq.com/openai/v1/chat/completions',
+        groqKey,
+        'llama-3.3-70b-versatile'
+      );
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botText }]);
+    } catch (err) {
+      console.warn('Groq failed, using static fallback:', err);
+      // Last resort: static keyword-based response
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: 'bot',
-        text: `⚠️ **حدث خطأ أثناء الاتصال بـ DeepSeek API.**\n\n*السبب:* قد يكون هناك مشكلة في مفتاح API أو مشكلة في الاتصال بالشبكة.\n\n*إجابة بديلة مؤقتة:*\n${getBotResponse(query, userUID)}`
+        text: getBotResponse(query, userUID)
       }]);
     } finally {
       setIsTyping(false);
