@@ -353,7 +353,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       let html = line.replace(/`([^`]+)`/g, '<code class="bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 px-1.5 py-0.5 rounded font-mono text-amber-500 dark:text-amber-300 text-[10px]">$1</code>');
       html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>');
       
-      if (line.trim().startsWith('*')) {
+      if (/^\*(?!\*)/.test(line.trim())) {
         html = html.trim().substring(1).trim();
         return (
           <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-slate-700 dark:text-white/70">
