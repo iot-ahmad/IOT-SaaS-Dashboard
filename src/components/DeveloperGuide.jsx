@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Copy, Check, Send, Sparkles, RefreshCw, Bot } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Copy, Check, Send, Sparkles, RefreshCw, Bot, Paperclip, Plus, ArrowUp, Cpu, Zap, Globe, Terminal, Play, CircleUserRound } from 'lucide-react';
 
 /* ── tiny copy button ─────────────────────────────────────────────────────── */
 function CopyBtn({ text }) {
@@ -82,6 +82,54 @@ const getBotResponse = (input, uid) => {
   return `عذراً، لم أفهم استفسارك بشكل كامل. 😅\n\nهل يمكنك إعادة صياغة السؤال؟ أو اختر أحد المواضيع الشائعة:\n*   كيف أربط ESP32؟\n*   معلومات الـ MQTT Broker\n*   تسمية الـ Topics والـ UID\n*   حفظ تصميم لوحة التحكم\n*   مطور المشروع ومجانيته`;
 };
 
+function useAutoResizeTextarea({ minHeight, maxHeight }) {
+  const textareaRef = useRef(null);
+
+  const adjustHeight = useCallback(
+    (reset) => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      if (reset) {
+        textarea.style.height = `${minHeight}px`;
+        return;
+      }
+
+      // Temporarily shrink to get the right scrollHeight
+      textarea.style.height = `${minHeight}px`;
+
+      // Calculate new height
+      const newHeight = Math.max(
+        minHeight,
+        Math.min(
+          textarea.scrollHeight,
+          maxHeight ?? Number.POSITIVE_INFINITY
+        )
+      );
+
+      textarea.style.height = `${newHeight}px`;
+    },
+    [minHeight, maxHeight]
+  );
+
+  useEffect(() => {
+    // Set initial height
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = `${minHeight}px`;
+    }
+  }, [minHeight]);
+
+  // Adjust height on window resize
+  useEffect(() => {
+    const handleResize = () => adjustHeight();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [adjustHeight]);
+
+  return { textareaRef, adjustHeight };
+}
+
 export default function DeveloperGuide({ userUID }) {
   const [messages, setMessages] = useState([
     {
@@ -93,6 +141,21 @@ export default function DeveloperGuide({ userUID }) {
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
+
+  const { textareaRef, adjustHeight } = useAutoResizeTextarea({
+    minHeight: 60,
+    maxHeight: 200,
+  });
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (inputVal.trim() && !isTyping) {
+        handleSend();
+        adjustHeight(true);
+      }
+    }
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -315,47 +378,99 @@ export default function DeveloperGuide({ userUID }) {
         <div ref={chatEndRef} />
       </div>
 
-      {/* ── Quick Suggestions ───────────────────────────────────────── */}
-      <div className="px-6 py-3 bg-white dark:bg-[#07080a] border-t border-slate-200 dark:border-white/10 shrink-0 flex flex-wrap gap-2">
-        {[
-          { label: '🔌 عنوان الـ Broker؟', q: 'ما هي معلومات الـ MQTT Broker؟' },
-          { label: '🚀 كيف أربط ESP32؟', q: 'كيف أربط جهاز الـ ESP32؟' },
-          { label: '💾 حفظ التصميم؟', q: 'كيف أحفظ لوحة التحكم والأسماء؟' },
-          { label: '🌡️ حساس الحرارة؟', q: 'كيف أقرأ بيانات حساس DHT22؟' },
-          { label: '🚗 سيارة RC؟', q: 'كيف أتحكم بسيارة RC عبر D-Pad؟' },
-          { label: '🧑‍💻 مطور المشروع؟', q: 'من هو مطور منصة IOT365؟' },
-        ].map((chip, idx) => (
-          <button
-            key={idx}
-            onClick={() => handleSend(chip.q)}
-            className="text-[11px] font-semibold px-3 py-1.5 rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all shrink-0"
-          >
-            {chip.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Input Box ───────────────────────────────────────────────── */}
-      <form
-        onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-        className="p-4 bg-white dark:bg-[#07080a] border-t border-slate-200 dark:border-white/10 shrink-0 flex gap-3 rounded-b-3xl"
-      >
-        <input
-          type="text"
-          value={inputVal}
-          onChange={(e) => setInputVal(e.target.value)}
-          placeholder="اكتب سؤالك هنا... (مثال: كيف أربط ESP32 بالـ DHT22؟)"
-          className="flex-1 bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/10 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 transition-all"
-        />
-        <button
-          type="submit"
-          disabled={!inputVal.trim() || isTyping}
-          className="bg-primary text-black px-5 py-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0 shadow-lg shadow-primary/20"
+      {/* ── Input Box & Suggestions (Vercel v0 Style) ────────────────── */}
+      <div className="p-6 bg-white dark:bg-[#07080a] border-t border-slate-200 dark:border-white/10 shrink-0 rounded-b-3xl flex flex-col gap-4">
+        
+        {/* Input Box */}
+        <form
+          onSubmit={(e) => { e.preventDefault(); if (inputVal.trim() && !isTyping) { handleSend(); adjustHeight(true); } }}
+          className="relative bg-slate-50 dark:bg-[#0b0c10] rounded-xl border border-slate-200 dark:border-neutral-800 transition-all focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20"
         >
-          <Send size={16} />
-          <span className="hidden sm:inline">إرسال</span>
-        </button>
-      </form>
+          <div className="overflow-y-auto">
+            <textarea
+              ref={textareaRef}
+              value={inputVal}
+              onChange={(e) => {
+                setInputVal(e.target.value);
+                adjustHeight();
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder="اكتب سؤالك هنا... (مثال: كيف أربط ESP32 بالـ DHT22؟)"
+              className="w-full px-4 py-3 resize-none bg-transparent border-none text-slate-800 dark:text-white text-sm focus:outline-none placeholder:text-slate-400 dark:placeholder:text-neutral-500 min-h-[60px]"
+              style={{
+                overflow: "hidden",
+              }}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-3 border-t border-slate-100 dark:border-neutral-900 bg-slate-50/50 dark:bg-[#0b0c10]/50 rounded-b-xl">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="group p-2 hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1 text-slate-500 dark:text-zinc-400"
+                title="إرفاق ملف"
+              >
+                <Paperclip className="w-4 h-4 text-slate-600 dark:text-white" />
+                <span className="text-[10px] text-slate-500 dark:text-zinc-400 hidden group-hover:inline transition-opacity">
+                  Attach
+                </span>
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="px-2.5 py-1 rounded-lg text-xs text-slate-600 dark:text-zinc-400 transition-colors border border-dashed border-slate-300 dark:border-zinc-700 hover:border-slate-400 dark:hover:border-zinc-600 hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-between gap-1"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Project
+              </button>
+              
+              <button
+                type="submit"
+                disabled={!inputVal.trim() || isTyping}
+                className={`px-2 py-2 rounded-lg transition-colors flex items-center justify-center ${
+                  inputVal.trim() && !isTyping
+                    ? "bg-primary text-black shadow-md shadow-primary/20"
+                    : "bg-slate-100 dark:bg-neutral-800 text-slate-400 dark:text-zinc-500 cursor-not-allowed"
+                }`}
+              >
+                <ArrowUp
+                  className={`w-4 h-4 ${
+                    inputVal.trim() && !isTyping
+                      ? "text-black"
+                      : "text-slate-400 dark:text-zinc-500"
+                  }`}
+                />
+                <span className="sr-only">إرسال</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        {/* Quick Suggestions (v0 Style Action Buttons) */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+          {[
+            { label: 'عنوان الـ Broker؟', q: 'ما هي معلومات الـ MQTT Broker؟', icon: <Globe className="w-3.5 h-3.5" /> },
+            { label: 'كيف أربط ESP32؟', q: 'كيف أربط جهاز الـ ESP32؟', icon: <Cpu className="w-3.5 h-3.5" /> },
+            { label: 'حفظ التصميم؟', q: 'كيف أحفظ لوحة التحكم والأسماء؟', icon: <Plus className="w-3.5 h-3.5" /> },
+            { label: 'حساس الحرارة؟', q: 'كيف أقرأ بيانات حساس DHT22؟', icon: <Zap className="w-3.5 h-3.5" /> },
+            { label: 'سيارة RC؟', q: 'كيف أتحكم بسيارة RC عبر D-Pad؟', icon: <Play className="w-3.5 h-3.5" /> },
+            { label: 'مطور المشروع؟', q: 'من هو مطور منصة IOT365؟', icon: <CircleUserRound className="w-3.5 h-3.5" /> },
+          ].map((chip, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => handleSend(chip.q)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-[#0b0c10] hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white rounded-full border border-slate-200 dark:border-neutral-800 transition-colors text-xs font-medium"
+            >
+              {chip.icon}
+              <span>{chip.label}</span>
+            </button>
+          ))}
+        </div>
+
+      </div>
     </div>
   );
 }
