@@ -1,49 +1,32 @@
-import { useState, Suspense, lazy, Component } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, GraduationCap, ArrowLeft, Cpu } from 'lucide-react';
+import { Loader2, GraduationCap, ArrowLeft } from 'lucide-react';
 
-const Spline = lazy(() => import('@splinetool/react-spline'));
-
-/* ─── Error Boundary: if Spline crashes, show a placeholder ─────────── */
-class SplineErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="w-full h-full flex items-center justify-center bg-black">
-          <Cpu className="w-24 h-24 text-white/5" />
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-/* ─── Spline Scene wrapped with error boundary + suspense ───────────── */
-function SplineScene({ scene }) {
+/* ─── Spline Robot via iframe (most stable, no WebGL crashes) ──────── */
+function SplineRobot() {
+  const [loaded, setLoaded] = useState(false);
   return (
-    <SplineErrorBoundary>
-      <Suspense
-        fallback={
-          <div className="w-full h-full flex items-center justify-center bg-black">
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="animate-spin text-white/20 w-7 h-7" />
-              <span className="text-[10px] text-white/15 font-mono tracking-widest uppercase">
-                Loading 3D...
-              </span>
-            </div>
-          </div>
-        }
-      >
-        <Spline scene={scene} className="w-full h-full" />
-      </Suspense>
-    </SplineErrorBoundary>
+    <div className="w-full h-full relative">
+      {/* Loading shimmer while iframe loads */}
+      {!loaded && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black gap-3 z-10">
+          <Loader2 className="animate-spin text-white/20 w-7 h-7" />
+          <span className="text-[10px] text-white/15 font-mono tracking-widest uppercase">
+            Loading 3D...
+          </span>
+        </div>
+      )}
+      <iframe
+        src="https://my.spline.design/nexbotrobotcharacterconcept-b0e5f62e3bfdaea2c5df7ef9c7885c65/"
+        frameBorder="0"
+        width="100%"
+        height="100%"
+        title="3D Robot"
+        onLoad={() => setLoaded(true)}
+        style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease' }}
+        allow="autoplay"
+      />
+    </div>
   );
 }
 
@@ -157,7 +140,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
               {/* RIGHT: 3D Scene — isolated, crash-safe */}
               <div className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black">
-                <SplineScene scene="https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode" />
+                <SplineRobot />
                 {/* Edge fades */}
                 <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent pointer-events-none" />
