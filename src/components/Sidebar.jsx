@@ -67,7 +67,10 @@ export default function Sidebar({
         <img src="/logo_icon.png" alt="IOT365 Icon" className="w-8 h-8 object-contain flex-shrink-0" />
         {!isCollapsed && (
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent truncate">IOT365</span>
+            <span className="text-sm font-extrabold truncate">
+              <span className="text-slate-950 dark:text-white">IOT</span>
+              <span className="text-primary">365</span>
+            </span>
             <span className="text-[9px] text-slate-500 dark:text-white/30 uppercase tracking-widest font-semibold truncate">Dashboard</span>
           </div>
         )}

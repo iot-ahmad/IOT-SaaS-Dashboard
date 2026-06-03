@@ -1060,7 +1060,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
         {activeTab === 'General' && (
           <>
             {/* ── Device UID — PROMINENT ───────────────────────────────── */}
-            <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-blue-950/20 to-transparent p-6 shadow-[0_0_40px_rgba(59,130,246,0.12)]">
+            <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-violet-950/20 to-transparent p-6 shadow-[0_0_40px_rgba(139,92,246,0.12)]">
               {/* glow blob */}
               <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -1276,10 +1276,10 @@ export const SettingsView = ({ userUID, user, logout }) => {
         {activeTab === 'Billing' && (
           <div className="space-y-6">
             <Card>
-              <h3 className="font-bold mb-4 flex items-center gap-2"><CreditCard size={18} className="text-blue-400" /> Billing & Plan</h3>
+              <h3 className="font-bold mb-4 flex items-center gap-2"><CreditCard size={18} className="text-primary" /> Billing & Plan</h3>
               
-              <div className="bg-gradient-to-br from-blue-900/40 to-black/40 border border-blue-500/20 rounded-xl p-5 mb-6 relative overflow-hidden text-center">
-                <div className="absolute right-0 top-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
+              <div className="bg-gradient-to-br from-purple-950/40 to-black/40 border border-primary/20 rounded-xl p-5 mb-6 relative overflow-hidden text-center">
+                <div className="absolute right-0 top-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10" />
                 <div className="relative z-10 py-6">
                   <div className="inline-block bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-primary/30 mb-4">قريباً (Coming Soon)</div>
                   <h4 className="text-xl font-bold mb-2">مجاني للاستخدام الشخصي</h4>
