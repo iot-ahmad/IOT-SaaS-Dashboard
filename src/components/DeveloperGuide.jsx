@@ -297,10 +297,10 @@ export default function DeveloperGuide({ userUID }) {
   };
 
   return (
-    <div className="flex flex-col h-full" style={{ height: 'calc(100vh - 120px)' }}>
+    <div className="flex flex-col h-full bg-white dark:bg-black border border-slate-200 dark:border-white/[0.08] rounded-3xl shadow-xl overflow-hidden" style={{ height: 'calc(100vh - 120px)' }}>
 
       {/* ── Chat Header ────────────────────────────────────────────── */}
-      <div className="bg-white dark:bg-[#07080a] border-b border-slate-200 dark:border-white/10 px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
+      <div className="bg-white dark:bg-black border-b border-slate-200 dark:border-white/10 px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
         <div className="flex items-center gap-4">
           <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.2)] shrink-0 overflow-hidden">
             <img src="/logo_icon.png" alt="Bot" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'; }} />
@@ -335,7 +335,7 @@ export default function DeveloperGuide({ userUID }) {
       </div>
 
       {/* ── Messages Area ───────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-50/50 dark:bg-black/10 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-50/50 dark:bg-black scrollbar-thin">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -379,7 +379,7 @@ export default function DeveloperGuide({ userUID }) {
       </div>
 
       {/* ── Input Box & Suggestions (Vercel v0 Style) ────────────────── */}
-      <div className="p-6 bg-white dark:bg-[#07080a] border-t border-slate-200 dark:border-white/10 shrink-0 rounded-b-3xl flex flex-col gap-4">
+      <div className="p-6 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 shrink-0 rounded-b-3xl flex flex-col gap-4">
         
         {/* Input Box */}
         <form
