@@ -9,6 +9,46 @@
 @layer base {
   body {
     @apply bg-slate-50 dark:bg-black text-slate-900 dark:text-white antialiased;
+    /* ── BiDi fix: RTL as global default (Arabic-primary app) ── */
+    direction: rtl;
+    unicode-bidi: embed;
+  }
+
+  /* Force LTR for purely English/code elements */
+  code, pre, kbd, samp,
+  input[type="email"], input[type="url"], input[type="password"],
+  .ltr {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: left;
+  }
+}
+
+@layer utilities {
+  /* ── Arabic RTL text block ── */
+  .rtl-text {
+    direction: rtl;
+    unicode-bidi: isolate;
+    text-align: right;
+  }
+
+  /* ── English / LTR text block ── */
+  .ltr-text {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: left;
+  }
+
+  /* ── Mixed-language paragraph: let browser sort BiDi intelligently ── */
+  .bidi-auto {
+    direction: rtl;
+    unicode-bidi: plaintext;
+    text-align: right;
+  }
+
+  /* ── Isolate inline foreign words so punctuation stays correct ── */
+  bdi, .bdi {
+    unicode-bidi: isolate;
   }
 }
 

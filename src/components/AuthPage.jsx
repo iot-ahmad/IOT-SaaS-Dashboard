@@ -7,11 +7,11 @@ function SplineRobot() {
   const [loaded, setLoaded] = useState(false);
   return (
     <div className="w-full h-full relative">
-      {/* Loading shimmer while iframe loads */}
       {!loaded && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black gap-3 z-10">
           <Loader2 className="animate-spin text-white/20 w-7 h-7" />
-          <span className="text-[10px] text-white/15 font-mono tracking-widest uppercase">
+          {/* LTR: purely English loading text */}
+          <span className="ltr text-[10px] text-white/15 font-mono tracking-widest uppercase">
             Loading 3D...
           </span>
         </div>
@@ -59,11 +59,15 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-black text-white overflow-x-hidden font-sans select-none">
+    /* dir="rtl" on root — fixes ALL BiDi issues globally for this page */
+    <div
+      dir="rtl"
+      className="relative flex min-h-screen w-full flex-col bg-black text-white overflow-x-hidden font-sans select-none"
+    >
 
-      {/* ── Header ── */}
+      {/* ── Header — LTR since it's brand name only ── */}
       <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-center py-5">
-        <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/10 bg-black/80 backdrop-blur-md">
+        <div dir="ltr" className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/10 bg-black/80 backdrop-blur-md">
           <img
             src="/logo_icon.png"
             className="w-5 h-5 object-contain"
@@ -71,7 +75,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
             alt="IOT365"
             onError={(e) => { e.target.style.display = 'none'; }}
           />
-          <span className="text-xs font-bold tracking-wider text-white/50">
+          <span className="ltr text-xs font-bold tracking-wider text-white/50">
             IOT<span className="text-white">365</span>
             <span className="text-white/25 ml-2">SECURE GATEWAY</span>
           </span>
@@ -92,14 +96,19 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               transition={{ duration: 0.45 }}
               className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-screen"
             >
-              {/* LEFT: Text — always visible, no dependency on Spline */}
-              <div className="flex flex-col items-start text-left space-y-7 px-4 lg:px-12 py-24 order-2 lg:order-1">
+              {/* LEFT: Text — RTL for Arabic content */}
+              <div
+                dir="rtl"
+                className="flex flex-col items-end text-right space-y-7 px-4 lg:px-12 py-24 order-2 lg:order-1"
+              >
 
+                {/* Arabic-only badge — purely RTL */}
                 <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.03] text-[10px] font-bold text-white/40 uppercase tracking-[0.18em]">
                   منصة إنترنت الأشياء الذكية
                 </span>
 
-                <div className="space-y-2">
+                {/* Title block — English words, LTR */}
+                <div dir="ltr" className="space-y-2 text-left">
                   <h1 className="text-5xl sm:text-6xl font-black text-white leading-[1.05] tracking-tight">
                     Interactive
                   </h1>
@@ -108,41 +117,50 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   </h1>
                 </div>
 
-                <p className="text-white/40 text-sm sm:text-base font-light leading-relaxed max-w-sm">
+                {/*
+                  Mixed paragraph — use dir="rtl" + unicode-bidi:plaintext
+                  so Arabic text flows RTL and inline English words (ESP32, MQTT)
+                  are isolated correctly via <bdi> tags
+                */}
+                <p
+                  dir="rtl"
+                  className="bidi-auto text-white/40 text-sm sm:text-base font-light leading-relaxed max-w-sm"
+                >
                   بيئة سحابية تفاعلية لطلاب ومطوري إنترنت الأشياء. ربط{' '}
-                  <code className="bg-white/5 border border-white/10 text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code>
+                  <bdi><code className="bg-white/5 border border-white/10 text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
                   {' '}لحظياً عبر{' '}
-                  <code className="bg-white/5 border border-white/10 text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code>
+                  <bdi><code className="bg-white/5 border border-white/10 text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
                   {' '}دون تعقيدات.
                 </p>
 
-                <div className="space-y-2.5 text-white/30 text-xs sm:text-sm">
+                {/* Feature list — Arabic text, RTL */}
+                <div dir="rtl" className="space-y-2.5 text-white/30 text-xs sm:text-sm text-right w-full max-w-sm">
                   {[
                     'لوحات تحكم تفاعلية وقابلة للتخصيص لحظياً.',
-                    'تشخيص ذكي للعتاد والدوائر عبر محرك Cosmos3.',
+                    <>تشخيص ذكي للعتاد والدوائر عبر محرك <bdi>Cosmos3</bdi>.</>,
                     'نظام أتمتة ذكي للسيناريوهات المعقدة.',
                     'تنبيهات ونظام إشعارات فوري للأجهزة.',
                   ].map((feat, idx) => (
-                    <div key={idx} className="flex gap-3 items-start">
+                    <div key={idx} className="flex flex-row-reverse gap-3 items-start">
                       <span className="shrink-0 w-1 h-1 rounded-full bg-white/20 mt-1.5" />
                       <span>{feat}</span>
                     </div>
                   ))}
                 </div>
 
+                {/* CTA button — mixed Arabic + English, use bdi for "Get Started" */}
                 <button
                   onClick={() => setShowLogin(true)}
                   className="mt-2 px-8 py-3.5 bg-white text-black font-bold rounded-xl hover:bg-white/90 active:scale-[0.97] transition-all duration-200 cursor-pointer text-sm tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_55px_rgba(255,255,255,0.2)]"
                 >
-                  ابدأ الآن · Get Started
+                  <span dir="rtl">ابدأ الآن · <bdi>Get Started</bdi></span>
                 </button>
               </div>
 
-              {/* RIGHT: 3D Scene — isolated, crash-safe */}
+              {/* RIGHT: 3D Scene */}
               <div className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black">
                 <SplineRobot />
-                {/* Edge fades */}
-                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent pointer-events-none" />
               </div>
@@ -160,7 +178,10 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               className="w-full max-w-sm flex flex-col items-center py-24"
             >
               {error && (
-                <div className="w-full bg-white/[0.03] border border-white/10 text-white/50 text-xs rounded-2xl p-4 mb-4 text-center leading-relaxed">
+                <div
+                  dir="rtl"
+                  className="w-full bg-white/[0.03] border border-white/10 text-white/50 text-xs rounded-2xl p-4 mb-4 text-center leading-relaxed"
+                >
                   {error}
                 </div>
               )}
@@ -170,23 +191,26 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
                 <div className="absolute -top-20 -right-20 w-48 h-48 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
 
-                <div className="text-center mb-8">
+                <div dir="rtl" className="text-center mb-8">
                   <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto mb-4 text-white/30">
                     <GraduationCap size={22} />
                   </div>
+                  {/* Arabic heading — RTL */}
                   <h2 className="text-2xl font-black text-white mb-1.5 tracking-tight">
                     تسجيل الدخول
                   </h2>
-                  <p className="text-[10px] font-mono tracking-[0.2em] text-white/20 uppercase">
+                  {/* Purely English subtitle — LTR isolated */}
+                  <p dir="ltr" className="ltr text-[10px] font-mono tracking-[0.2em] text-white/20 uppercase">
                     IOT STUDENT · SANDBOX GATEWAY
                   </p>
                 </div>
 
-                {/* Glassmorphic Google button */}
+                {/* Google login button — RTL with bdi around "Google" */}
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
                   disabled={loading}
+                  dir="rtl"
                   className="w-full flex items-center justify-center gap-3 bg-white/[0.04] hover:bg-white/[0.09] text-white/70 hover:text-white font-semibold py-4 px-6 rounded-2xl text-sm border border-white/[0.08] hover:border-white/20 transition-all duration-300 backdrop-blur-md disabled:opacity-40 cursor-pointer"
                 >
                   {loading ? (
@@ -194,14 +218,17 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   ) : (
                     <GoogleIcon />
                   )}
-                  <span>دخول سريع بحساب Google</span>
+                  <span>دخول سريع بحساب <bdi>Google</bdi></span>
                 </button>
 
+                {/* Back button — Arabic RTL */}
                 <button
                   onClick={() => { setError(null); setShowLogin(false); }}
+                  dir="rtl"
                   className="mt-6 text-[11px] text-white/20 hover:text-white/50 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <ArrowLeft size={12} />
+                  {/* ArrowLeft flips visually in RTL — use ArrowRight semantics */}
+                  <ArrowLeft size={12} className="rotate-180" />
                   <span>العودة للرئيسية</span>
                 </button>
               </div>
