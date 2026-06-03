@@ -1,39 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, GraduationCap, ArrowLeft } from 'lucide-react';
+import { GraduationCap, ArrowLeft, Loader2 } from 'lucide-react';
+import { SplineScene } from './SplineScene';
 
-/* ─── Spline Robot via iframe ──────────────────────────────────────── */
-function SplineRobot() {
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <div className="w-full h-full relative bg-black">
-      {/* Loading indicator */}
-      {!loaded && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black gap-3 z-10">
-          <Loader2 className="animate-spin text-white/20 w-7 h-7" />
-          <span className="ltr text-[10px] text-white/15 font-mono tracking-widest uppercase">
-            Loading 3D...
-          </span>
-        </div>
-      )}
-      <iframe
-        src="https://my.spline.design/PyzDhpQ9E5f1E3MT/"
-        frameBorder="0"
-        width="100%"
-        height="100%"
-        title="3D Robot"
-        onLoad={() => setLoaded(true)}
-        style={{
-          opacity: loaded ? 1 : 0,
-          transition: 'opacity 0.8s ease',
-          display: 'block',
-        }}
-        allow="autoplay"
-        allowFullScreen
-      />
-    </div>
-  );
-}
+/* SplineScene is now in ./SplineScene.jsx */
 
 /* ─── White-toned Google G icon ─────────────────────────────────────── */
 const GoogleIcon = () => (
@@ -163,10 +133,13 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 </button>
               </div>
 
-              {/* RIGHT: 3D Robot Scene */}
+              {/* RIGHT: 3D Robot Scene via @splinetool/react-spline */}
               <div className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black">
-                <SplineRobot />
-                {/* Fade left edge to blend into text column */}
+                <SplineScene
+                  scene="https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode"
+                  className="w-full h-full"
+                />
+                {/* Fade left edge toward text column */}
                 <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent pointer-events-none" />
