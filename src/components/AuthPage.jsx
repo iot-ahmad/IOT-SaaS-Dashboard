@@ -94,9 +94,10 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.45 }}
+              dir="ltr"
               className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-screen"
             >
-              {/* LEFT: Text — RTL for Arabic content */}
+              {/* LEFT: Text — RTL inside for Arabic content */}
               <div
                 dir="rtl"
                 className="flex flex-col items-end text-right space-y-7 px-4 lg:px-12 py-24 order-2 lg:order-1"
@@ -157,10 +158,11 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 </button>
               </div>
 
-              {/* RIGHT: 3D Scene */}
+              {/* RIGHT: 3D Robot Scene */}
               <div className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black">
                 <SplineRobot />
-                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black to-transparent pointer-events-none" />
+                {/* Fade left edge to blend into text column */}
+                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent pointer-events-none" />
               </div>
