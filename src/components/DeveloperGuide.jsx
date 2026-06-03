@@ -184,6 +184,7 @@ export default function DeveloperGuide({ userUID }) {
 
     const systemPrompt = `أنت مساعد ذكي متخصص لمنصة IOT365. مهمتك مساعدة الطلاب والمطورين في مشاريع إنترنت الأشياء والـ ESP32 وبرمجة Arduino C++ وبروتوكول MQTT.
 معلومات المنصة:
+- مطور ومصمم منصة IOT365 بالكامل هو: المطور أحمد البطاينة (Ahmad Al-Batayneh) 💻✨.
 - UID المستخدم الحالي: ${userUID || 'YOUR_UID'}
 - MQTT Broker: broker.hivemq.com — المنفذ: 1883
 - بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
