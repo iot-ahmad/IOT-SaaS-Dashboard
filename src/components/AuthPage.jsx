@@ -2,29 +2,34 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, GraduationCap, ArrowLeft } from 'lucide-react';
 
-/* ─── Spline Robot via iframe (most stable, no WebGL crashes) ──────── */
+/* ─── Spline Robot via iframe ──────────────────────────────────────── */
 function SplineRobot() {
   const [loaded, setLoaded] = useState(false);
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative bg-black">
+      {/* Loading indicator */}
       {!loaded && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black gap-3 z-10">
           <Loader2 className="animate-spin text-white/20 w-7 h-7" />
-          {/* LTR: purely English loading text */}
           <span className="ltr text-[10px] text-white/15 font-mono tracking-widest uppercase">
             Loading 3D...
           </span>
         </div>
       )}
       <iframe
-        src="https://my.spline.design/nexbotrobotcharacterconcept-b0e5f62e3bfdaea2c5df7ef9c7885c65/"
+        src="https://my.spline.design/PyzDhpQ9E5f1E3MT/"
         frameBorder="0"
         width="100%"
         height="100%"
         title="3D Robot"
         onLoad={() => setLoaded(true)}
-        style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease' }}
+        style={{
+          opacity: loaded ? 1 : 0,
+          transition: 'opacity 0.8s ease',
+          display: 'block',
+        }}
         allow="autoplay"
+        allowFullScreen
       />
     </div>
   );
