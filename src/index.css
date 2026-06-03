@@ -9,18 +9,6 @@
 @layer base {
   body {
     @apply bg-slate-50 dark:bg-black text-slate-900 dark:text-white antialiased;
-    /* ── BiDi fix: RTL as global default (Arabic-primary app) ── */
-    direction: rtl;
-    unicode-bidi: embed;
-  }
-
-  /* Force LTR for purely English/code elements */
-  code, pre, kbd, samp,
-  input[type="email"], input[type="url"], input[type="password"],
-  .ltr {
-    direction: ltr;
-    unicode-bidi: isolate;
-    text-align: left;
   }
 }
 

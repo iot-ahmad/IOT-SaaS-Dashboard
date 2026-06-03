@@ -25,11 +25,11 @@ function CopyBtn({ text }) {
 /* ── code block ───────────────────────────────────────────────────────────── */
 function CodeBlock({ code, language = 'cpp' }) {
   return (
-    <div className="relative group my-2">
+    <div className="relative group my-2 text-left" dir="ltr">
       <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
         <CopyBtn text={code} />
       </div>
-      <pre className="bg-[#050608] border border-slate-200 dark:border-white/[0.07] rounded-xl p-5 overflow-x-auto text-[11.5px] leading-relaxed font-mono text-slate-700 dark:text-white/70 scrollbar-thin">
+      <pre className="bg-[#050608] border border-slate-200 dark:border-white/[0.07] rounded-xl p-5 overflow-x-auto text-[11.5px] leading-relaxed font-mono text-slate-700 dark:text-white/70 scrollbar-thin text-left ltr-text">
         <code>{code}</code>
       </pre>
       <div className="absolute top-3 left-3 text-[9px] text-slate-400 dark:text-white/20 font-mono uppercase tracking-widest pointer-events-none">
@@ -262,7 +262,7 @@ export default function DeveloperGuide({ userUID }) {
     return parts.map((part, idx) => {
       if (part.type === 'code') {
         return (
-          <div key={idx} className="my-2.5 font-mono">
+          <div key={idx} className="my-2.5 font-mono text-left" dir="ltr">
             <CodeBlock code={part.code} language={part.lang} />
           </div>
         );
@@ -271,13 +271,13 @@ export default function DeveloperGuide({ userUID }) {
       let line = part.content;
       if (line.trim() === '') return <div key={idx} className="h-1.5" />;
 
-      let html = line.replace(/`([^`]+)`/g, '<code class="bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 px-1.5 py-0.5 rounded font-mono text-amber-500 dark:text-amber-300 text-[10px]">$1</code>');
+      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 px-1.5 py-0.5 rounded font-mono text-amber-500 dark:text-amber-300 text-[10px]">$1</code></bdi>');
       html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>');
 
       if (/^\*(?!\*)/.test(line.trim())) {
         html = html.trim().substring(1).trim();
         return (
-          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-slate-700 dark:text-white/70">
+          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-slate-700 dark:text-white/70 text-right rtl-text">
             <span className="text-primary mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
             <span dangerouslySetInnerHTML={{ __html: html }} />
           </div>
@@ -287,12 +287,12 @@ export default function DeveloperGuide({ userUID }) {
       if (line.trim().startsWith('>')) {
         html = html.trim().substring(1).trim();
         return (
-          <blockquote key={idx} className="border-l-2 border-primary/50 pl-3 my-2 text-xs text-slate-500 dark:text-white/40 italic bg-slate-50 dark:bg-white/[0.01] py-1 pr-2 rounded-r-md" dangerouslySetInnerHTML={{ __html: html }} />
+          <blockquote key={idx} className="border-r-2 border-primary/50 pr-3 pl-0 my-2 text-xs text-slate-500 dark:text-white/40 italic bg-slate-50 dark:bg-white/[0.01] py-1 text-right rtl-text rounded-l-md" dangerouslySetInnerHTML={{ __html: html }} />
         );
       }
 
       return (
-        <p key={idx} className="text-xs text-slate-700 dark:text-white/70 leading-relaxed mt-0.5" dangerouslySetInnerHTML={{ __html: html }} />
+        <p key={idx} className="text-xs text-slate-700 dark:text-white/70 leading-relaxed mt-0.5 text-right rtl-text" dangerouslySetInnerHTML={{ __html: html }} />
       );
     });
   };
@@ -348,13 +348,13 @@ export default function DeveloperGuide({ userUID }) {
               </div>
             )}
 
-            <div className={`p-4 rounded-2xl text-left border ${
+            <div dir="rtl" className={`p-4 rounded-2xl text-right rtl-text border ${
               msg.sender === 'user'
                 ? 'bg-primary text-black border-transparent rounded-tr-none text-sm font-semibold shadow-lg shadow-primary/20'
                 : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.07] text-slate-800 dark:text-white/90 rounded-tl-none space-y-1 shadow-sm'
             }`}>
               {msg.sender === 'user' ? (
-                <p className="leading-relaxed">{msg.text}</p>
+                <p className="leading-relaxed text-right rtl-text"><bdi>{msg.text}</bdi></p>
               ) : (
                 renderBotMessage(msg.text)
               )}
