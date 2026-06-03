@@ -157,7 +157,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
               {/* RIGHT: 3D Scene — isolated, crash-safe */}
               <div className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black">
-                <SplineScene scene="https://prod.spline.design/kZiKo5OwZgZrtuZh/scene.splinecode" />
+                <SplineScene scene="https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode" />
                 {/* Edge fades */}
                 <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none" />
                 <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent pointer-events-none" />
