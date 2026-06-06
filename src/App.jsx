@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AuthPage from './components/AuthPage';
@@ -10,12 +11,185 @@ import NewDevicesView from './components/DevicesView';
 import DeveloperGuide from './components/DeveloperGuide';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sun, Moon } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 import { persistPortalMode } from './config/portals';
+
+import ProjectFeed from './components/ProjectFeed';
+import ProjectPublisher from './components/ProjectPublisher';
+import ProjectDetail from './components/ProjectDetail';
+import UserProfile from './components/UserProfile';
+
+// Standalone Hub Layout — works for both logged-in users and guests
+function HubLayout({ children, user, logout }) {
+  const [isDark, setIsDark] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isDarkTheme = document.documentElement.classList.contains('dark') ||
+                        localStorage.theme === 'dark' ||
+                        (!('theme' in localStorage) && true);
+    setIsDark(isDarkTheme);
+    if (isDarkTheme) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+      localStorage.theme = 'dark';
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.theme = 'light';
+    }
+  };
+
+  return (
+    <div className="relative min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex flex-col selection:bg-primary/30 overflow-x-hidden">
+      <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
+
+      {/* ─── Top Navbar ─── */}
+      <header className="relative z-10 flex items-center justify-between py-3 px-6 md:px-12 border-b border-slate-200 dark:border-white/5 bg-white/60 dark:bg-black/60 backdrop-blur-md sticky top-0">
+
+        {/* Logo + nav links */}
+        <div className="flex items-center gap-6">
+          <button onClick={() => navigate('/hub')} className="flex items-center gap-2.5 cursor-pointer">
+            <img src="/logo_icon.png" alt="IOT365" className="w-7 h-7 object-contain" />
+            <span className="text-sm font-extrabold tracking-tight">
+              <span className="text-slate-950 dark:text-white">IOT</span>
+              <span className="text-primary">365</span>
+              <span className="text-slate-400 dark:text-white/30 text-[10px] ml-1 font-semibold">🇯🇴 الأردن</span>
+            </span>
+          </button>
+
+          {/* Nav links */}
+          <nav className="hidden md:flex items-center gap-1">
+            <button
+              onClick={() => navigate('/hub')}
+              className="text-xs font-semibold text-slate-500 dark:text-white/50 hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
+            >
+              استعرض المشاريع
+            </button>
+            {user && (
+              <button
+                onClick={() => navigate('/hub/new')}
+                className="text-xs font-semibold text-slate-500 dark:text-white/50 hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
+              >
+                + نشر مشروع
+              </button>
+            )}
+          </nav>
+        </div>
+
+        {/* Right side actions */}
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/60 hover:text-primary transition-colors cursor-pointer"
+            title="تبديل المظهر"
+          >
+            {isDark ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+
+          {user ? (
+            // ── Logged-in user actions ──
+            <div className="flex items-center gap-2">
+              {/* Back to dashboard */}
+              <button
+                onClick={() => navigate('/')}
+                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-white/50 hover:text-primary transition-colors px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 hover:border-primary/40 bg-white/50 dark:bg-white/5 cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                لوحة التحكم
+              </button>
+
+              {/* User avatar + dropdown */}
+              <div className="relative group">
+                <button className="flex items-center gap-1.5 cursor-pointer">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full object-cover border-2 border-primary/30 hover:border-primary/60 transition-all" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center text-primary text-xs font-bold uppercase">
+                      {(user.displayName || user.email || 'U').charAt(0)}
+                    </div>
+                  )}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 dark:text-white/30">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </button>
+                {/* Dropdown */}
+                <div className="absolute top-full right-0 mt-2 w-44 bg-white dark:bg-[#0b0c10] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl shadow-black/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden z-50">
+                  <div className="px-3 py-2.5 border-b border-slate-100 dark:border-white/5">
+                    <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">{user.displayName || 'مستخدم'}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="w-full text-right text-xs text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
+                  >
+                    لوحة التحكم
+                  </button>
+                  <button
+                    onClick={() => navigate('/hub/new')}
+                    className="w-full text-right text-xs text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
+                  >
+                    نشر مشروع جديد
+                  </button>
+                  <div className="border-t border-slate-100 dark:border-white/5">
+                    <button
+                      onClick={logout}
+                      className="w-full text-right text-xs text-red-400 hover:text-red-500 hover:bg-red-500/5 px-3 py-2 transition-colors cursor-pointer"
+                    >
+                      تسجيل الخروج
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // ── Guest actions ──
+            <button
+              onClick={() => navigate('/login')}
+              className="bg-primary hover:bg-primary/90 text-black text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-primary/10 cursor-pointer"
+            >
+              تسجيل الدخول
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* ─── Page Content ─── */}
+      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 md:px-10 py-8 overflow-y-auto">
+        {children}
+      </main>
+
+      {/* ─── Footer ─── */}
+      <footer className="relative z-10 border-t border-slate-200 dark:border-white/5 py-4 px-6 md:px-12 bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-[10px] text-slate-400 dark:text-white/20 font-mono">
+            IOT365 🇯🇴 · مجتمع مطوري الأجهزة الذكية في الأردن
+          </p>
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate('/hub')} className="text-[10px] text-slate-400 hover:text-primary transition-colors cursor-pointer">المشاريع</button>
+            {user ? (
+              <button onClick={() => navigate('/hub/new')} className="text-[10px] text-slate-400 hover:text-primary transition-colors cursor-pointer">نشر مشروع</button>
+            ) : (
+              <button onClick={() => navigate('/login')} className="text-[10px] text-slate-400 hover:text-primary transition-colors cursor-pointer">انضم للمجتمع الأردني 🇯🇴</button>
+            )}
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
 
 function App() {
   const {
@@ -42,25 +216,77 @@ function App() {
     );
   }
 
-  if (!user) {
-    return (
-      <AuthPage
-        loginWithGoogle={loginWithGoogle}
-        error={authError}
-        setError={setError}
-      />
-    );
-  }
-
   return (
-    <Dashboard 
-      user={user} 
-      logout={logout} 
-    />
+    <BrowserRouter>
+      <Routes>
+        {/* Auth page path */}
+        <Route path="/login" element={
+          !user ? (
+            <AuthPage
+              loginWithGoogle={loginWithGoogle}
+              error={authError}
+              setError={setError}
+            />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        } />
+
+        {/* ── Hub routes — standalone page for ALL users (logged-in or guest) ── */}
+        <Route path="/hub" element={
+          <HubLayout user={user} logout={logout}>
+            <ProjectFeed user={user} />
+          </HubLayout>
+        } />
+
+        <Route path="/hub/new" element={
+          user ? (
+            <HubLayout user={user} logout={logout}>
+              <ProjectPublisher user={user} />
+            </HubLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+
+        <Route path="/hub/project/:projectId" element={
+          <HubLayout user={user} logout={logout}>
+            <ProjectDetail currentUser={user} />
+          </HubLayout>
+        } />
+
+        {/* Authenticated routes (Dashboard) — must come before /:username wildcard */}
+        <Route path="/" element={
+          user ? (
+            <Dashboard user={user} logout={logout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+
+        {/* Vanity profile pages — must come after all specific routes */}
+        <Route path="/:username" element={
+          <HubLayout user={user} logout={logout}>
+            <UserProfile currentUser={user} />
+          </HubLayout>
+        } />
+
+        {/* Catch-all: authenticated tools or redirect to login */}
+        <Route path="/*" element={
+          user ? (
+            <Dashboard user={user} logout={logout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
 function Dashboard({ user, logout }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeWorkspace, setActiveWorkspace] = useState('home');
   const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -174,12 +400,18 @@ function Dashboard({ user, logout }) {
     setActiveWorkspace(workspaceId);
     setActiveTool(null);
     setIsMobileMenuOpen(false);
+    if (window.location.pathname !== '/') {
+      navigate('/');
+    }
   };
 
   const handleSetTool = (toolId) => {
     setActiveTool(toolId);
     setActiveWorkspace(null);
     setIsMobileMenuOpen(false);
+    if (window.location.pathname !== '/') {
+      navigate('/');
+    }
   };
 
   const renderContent = () => {
@@ -274,17 +506,13 @@ function Dashboard({ user, logout }) {
 
         />
         
-        {activeTool === 'developer' ? (
-          <div className="flex-1 flex flex-col px-6 md:px-8 pb-6 pt-4 min-h-0">
-            {renderContent()}
+        <div className={`flex-1 ${activeTool === 'developer' ? 'flex flex-col px-6 md:px-8 pb-6 pt-4 min-h-0' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>
+          <div className={activeTool !== 'developer' ? 'max-w-7xl mx-auto space-y-6' : ''}>
+            <Routes>
+              <Route path="/" element={renderContent()} />
+            </Routes>
           </div>
-        ) : (
-          <div className="flex-1 p-6 md:p-8 pb-40 overflow-y-auto">
-            <div className="max-w-7xl mx-auto space-y-6">
-              {renderContent()}
-            </div>
-          </div>
-        )}
+        </div>
 
         <LiveTerminal messages={messages} isConnected={isConnected} />
       </main>

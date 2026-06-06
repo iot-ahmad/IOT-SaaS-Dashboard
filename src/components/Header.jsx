@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { TOOLS } from '../data/mockData';
+import { useLocation } from 'react-router-dom';
 
 export default function Header({ activeWorkspace, activeTool, isConnected, toggleMobileMenu, customWorkspaces, isSidebarCollapsed, onToggleSidebar }) {
   const [isDark, setIsDark] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const isDarkTheme = document.documentElement.classList.contains('dark') || 
@@ -29,7 +31,21 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
   let title = 'Dashboard';
   let subtitle = 'Manage your connected devices and automations';
 
-  if (activeTool) {
+  const pathname = location.pathname;
+
+  if (pathname === '/hub') {
+    title = 'Global IoT Hub';
+    subtitle = 'Browse community projects and open source hardware documentation';
+  } else if (pathname === '/hub/new') {
+    title = 'Publish Project';
+    subtitle = 'Publish documentation, codes, and schematics to the global community';
+  } else if (pathname.startsWith('/hub/project/')) {
+    title = 'Project Details';
+    subtitle = 'View hardware documentation, circuit schematics, and source codes';
+  } else if (pathname !== '/' && pathname !== '/login') {
+    title = 'Developer Profile';
+    subtitle = 'Developer vanity portfolio and published IoT projects';
+  } else if (activeTool) {
     const tool = TOOLS.find(t => t.id === activeTool);
     title = tool ? tool.name : 'Tools';
     subtitle = `Manage your ${title.toLowerCase()}`;

@@ -4,6 +4,7 @@ export const WORKSPACES = [
 ];
 
 export const TOOLS = [
+  { id: 'hub', name: '🇯🇴 مجتمع الأردن', icon: 'Globe' },
   { id: 'devices', name: 'Devices', icon: 'Cpu' },
   { id: 'automations', name: 'Automations', icon: 'Zap' },
   { id: 'alerts', name: 'Alerts', icon: 'Bell' },

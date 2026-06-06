@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
+import { useNavigate } from 'react-router-dom';
 
 const iconMap = {
-  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard
+  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard, Globe
 };
 
 const navBtnClass =
@@ -24,6 +25,7 @@ export default function Sidebar({
   isCollapsed,
   onToggleCollapse,
 }) {
+  const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEsp32, setNewEsp32] = useState('');
@@ -170,7 +172,13 @@ export default function Sidebar({
                 <Button
                   key={tool.id}
                   type="button"
-                  onClick={() => setActiveTool(tool.id)}
+                  onClick={() => {
+                    if (tool.id === 'hub') {
+                      navigate('/hub');
+                    } else {
+                      setActiveTool(tool.id);
+                    }
+                  }}
                   variant={isActive ? 'default' : 'ghost'}
                   neon={isActive}
                   className={`${navBtnClass} ${isCollapsed ? 'justify-center px-2' : ''}`}
@@ -189,7 +197,19 @@ export default function Sidebar({
         {/* USER + SIGN OUT */}
         <div className="mt-auto space-y-3 pt-2">
           {!isCollapsed ? (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+            <div 
+              onClick={() => {
+                if (user?.username) {
+                  navigate(`/${user.username}`);
+                } else {
+                  setActiveTool('settings');
+                  if (window.location.pathname !== '/') {
+                    navigate('/');
+                  }
+                }
+              }}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-primary/40 cursor-pointer transition-colors"
+            >
               <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center flex-shrink-0">
                 <span className="text-slate-700 dark:text-white font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
@@ -201,7 +221,19 @@ export default function Sidebar({
               </div>
             </div>
           ) : (
-            <div className="flex justify-center">
+            <div 
+              onClick={() => {
+                if (user?.username) {
+                  navigate(`/${user.username}`);
+                } else {
+                  setActiveTool('settings');
+                  if (window.location.pathname !== '/') {
+                    navigate('/');
+                  }
+                }
+              }}
+              className="flex justify-center cursor-pointer"
+            >
               <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center" title={user?.displayName || 'User'}>
                 <span className="text-slate-700 dark:text-white font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
