@@ -63,7 +63,8 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
         {/* Mobile hamburger */}
         <button
           onClick={toggleMobileMenu}
-          className="md:hidden text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white p-1"
+          style={{ color: 'var(--foreground)' }}
+          className="md:hidden hover:text-primary p-1 transition-colors"
           title="Open menu"
         >
           <Menu size={22} />
@@ -72,7 +73,8 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
         {/* Desktop sidebar toggle */}
         <button
           onClick={onToggleSidebar}
-          className="hidden md:flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-primary transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
+          style={{ color: 'var(--muted-foreground)', background: 'transparent' }}
+          className="hidden md:flex items-center justify-center hover:text-primary transition-colors p-1 hover:bg-[var(--muted)]"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
@@ -88,16 +90,20 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
 
 
         {/* Theme Toggle */}
-        <button 
+        <button
           onClick={toggleTheme}
-          className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-primary transition-colors"
+          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
+          className="p-2 hover:text-primary transition-colors"
           title="Toggle Theme"
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
         {/* MQTT Status */}
-        <div className={`hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium ${isConnected ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+        <div style={isConnected
+          ? { background: 'color-mix(in srgb, var(--accent) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)', color: 'var(--accent)' }
+          : { background: 'color-mix(in srgb, var(--primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 30%, transparent)', color: 'var(--primary)' }
+        } className="hidden lg:flex items-center gap-2 px-3 py-2 text-xs font-medium">
           {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
           <span className="hidden xl:inline">{isConnected ? 'MQTT Connected' : 'Disconnected'}</span>
         </div>

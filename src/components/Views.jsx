@@ -10,7 +10,8 @@ import ESP32Model from './ESP32Model';
 import { Zap, Users, Thermometer, Briefcase, Plus, X, Gamepad2, Cpu } from 'lucide-react';
 
 const Card = ({ children, className = '' }) => (
-  <div className={`bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-6 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-slate-300 dark:border-white/20 group ${className}`}>
+  <div style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--card-foreground)' }}
+    className={`border p-6 backdrop-blur-md hover:opacity-90 transition-all duration-300 group ${className}`}>
     {children}
   </div>
 );
@@ -37,7 +38,7 @@ const OnboardingWizard = () => {
       subTitle: 'Create Workspace',
       desc: 'اضغط على زر "Add Project" لإنشاء مساحة عمل مخصصة لمشروعك (مثل: سيارة ذكية أو بيت زراعي).',
       icon: Plus,
-      color: 'from-blue-500 to-cyan-500 shadow-blue-500/20'
+      tokenColor: 'var(--accent)'
     },
     {
       number: '2',
@@ -45,7 +46,7 @@ const OnboardingWizard = () => {
       subTitle: 'Add Tool',
       desc: 'ادخل مساحة العمل واضغط "Add Tool" لإضافة أزرار، عدادات (Gauge)، أو D-Pad للتحكم والتحليل.',
       icon: Gamepad2,
-      color: 'from-violet-500 to-purple-500 shadow-violet-500/20'
+      tokenColor: 'var(--secondary)'
     },
     {
       number: '3',
@@ -53,7 +54,7 @@ const OnboardingWizard = () => {
       subTitle: 'Connect ESP32',
       desc: 'استخدم الـ Data Key المخصص للأداة لربط حساسات أو محركات جهازك ESP32 بالمنصة مباشرة.',
       icon: Cpu,
-      color: 'from-pink-500 to-rose-500 shadow-pink-500/20'
+      tokenColor: 'var(--destructive)'
     },
     {
       number: '4',
@@ -61,7 +62,7 @@ const OnboardingWizard = () => {
       subTitle: 'Copy Arduino Code',
       desc: 'توجه إلى "Developer Guide" وانسخ كود C++ الجاهز والمهيأ للبدء بالبث والتحكم بثوانٍ.',
       icon: Zap,
-      color: 'from-amber-500 to-orange-500 shadow-amber-500/20'
+      tokenColor: 'var(--primary)'
     }
   ];
 
@@ -91,7 +92,10 @@ const OnboardingWizard = () => {
           return (
             <div key={idx} className="flex flex-col items-center text-center group z-10 relative">
               {/* Step circle */}
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} border border-white/20 text-slate-900 dark:text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110`}>
+              <div
+                style={{ background: `color-mix(in srgb, ${step.tokenColor} 15%, var(--card))`, border: `1px solid color-mix(in srgb, ${step.tokenColor} 35%, transparent)`, color: step.tokenColor }}
+                className="w-14 h-14 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+              >
                 <StepIcon size={24} />
               </div>
               
@@ -141,9 +145,10 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
       <div className="relative z-10 space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Your Projects</h2>
-          <button 
+          <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+            style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+            className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg"
           >
             <Plus size={18} />
             <span>Add Project</span>
@@ -155,19 +160,20 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {customWorkspaces.map(ws => (
-              <button 
+              <button
                 key={ws.id}
                 onClick={() => setActiveWorkspace(ws.id)}
-                className="text-left bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-6 backdrop-blur-md hover:bg-white/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50 group"
+                style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--card-foreground)' }}
+                className="text-left border p-6 backdrop-blur-md hover:opacity-90 transition-all duration-300 group hover:[border-color:var(--primary)]"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <div style={{ background: 'color-mix(in srgb, var(--primary) 12%, transparent)', color: 'var(--primary)' }} className="w-10 h-10 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Gamepad2 size={20} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-800 dark:text-white group-hover:text-primary transition-colors">{ws.name}</h3>
-                      <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+                      <h3 style={{ color: 'var(--foreground)' }} className="text-lg font-bold group-hover:text-primary transition-colors">{ws.name}</h3>
+                      <p style={{ color: 'var(--muted-foreground)' }} className="text-xs mt-1">
                         {ws.esp32Prefix ? `Target: ${ws.esp32Prefix}` : 'Universal Control'}
                       </p>
                     </div>
@@ -181,34 +187,36 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
 
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0b0d] border border-white/10 p-6 rounded-2xl w-full max-w-sm relative">
-            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-white/40 hover:text-white">
+        <div style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)' }} className="border p-6 w-full max-w-sm relative">
+            <button onClick={() => setShowAddModal(false)} style={{ color: 'var(--muted-foreground)' }} className="absolute top-4 right-4 hover:text-primary transition-colors">
               <X size={20} />
             </button>
             <h3 className="text-xl font-bold mb-4">New Project</h3>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label className="block text-xs text-white/50 mb-1">Project Name</label>
-                <input 
+                <label style={{ color: 'var(--muted-foreground)' }} className="block text-xs mb-1">Project Name</label>
+                <input
                   autoFocus
                   required
-                  value={newName} 
+                  value={newName}
                   onChange={e => setNewName(e.target.value)}
                   placeholder="e.g. Smart Car, Weather Station..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm"
+                  style={{ background: 'var(--input)', borderColor: 'var(--border)', color: 'var(--foreground)' }}
+                  className="w-full border py-2.5 px-4 focus:outline-none focus:[border-color:var(--primary)] text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs text-white/50 mb-1">ESP32 Target UID (Optional)</label>
-                <input 
-                  value={newEsp32} 
+                <label style={{ color: 'var(--muted-foreground)' }} className="block text-xs mb-1">ESP32 Target UID (Optional)</label>
+                <input
+                  value={newEsp32}
                   onChange={e => setNewEsp32(e.target.value)}
                   placeholder="e.g. ESP_A1B2C3"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm"
+                  style={{ background: 'var(--input)', borderColor: 'var(--border)', color: 'var(--foreground)' }}
+                  className="w-full border py-2.5 px-4 focus:outline-none focus:[border-color:var(--primary)] text-sm"
                 />
-                <p className="text-[10px] text-white/30 mt-1">If provided, widgets in this project will automatically target this specific ESP32.</p>
+                <p style={{ color: 'var(--muted-foreground)' }} className="text-[10px] mt-1">If provided, widgets in this project will automatically target this specific ESP32.</p>
               </div>
-              <button type="submit" className="w-full bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors">
+              <button type="submit" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }} className="w-full font-bold py-2.5 hover:opacity-90 transition-opacity">
                 Create Project
               </button>
             </form>
