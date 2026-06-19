@@ -284,8 +284,15 @@ export default function UserProfile({ currentUser }) {
       }, 800);
 
     } catch (err) {
-      console.error("Error saving profile details:", err);
-      setModalError('فشل تحديث البيانات. يرجى التحقق من اتصال الإنترنت.');
+      console.error("❌ Firestore write error:", err?.code, err?.message);
+      // Detect Firebase permission errors
+      if (err?.code === 'permission-denied' || err?.message?.includes('Missing or insufficient permissions')) {
+        setModalError('⛔ خطأ صلاحيات Firestore — يرجى تطبيق قواعد الأمان من Firebase Console → Firestore → Rules');
+      } else if (err?.code === 'unavailable' || err?.code === 'network-request-failed') {
+        setModalError('📡 لا يوجد اتصال بالإنترنت. تحقق من اتصالك وأعد المحاولة.');
+      } else {
+        setModalError(`فشل الحفظ: ${err?.code || err?.message || 'خطأ غير معروف'}`);
+      }
     }
   };
 

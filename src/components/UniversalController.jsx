@@ -69,6 +69,10 @@ function useControllerFirestore(userUID, storageScopeId) {
 
   // Load from Firestore on mount, fallback to localStorage
   useEffect(() => {
+    setLoaded(false);
+    setSavedWidgets(null);
+    setSavedLayouts(null);
+
     if (!firestoreRef) {
       // No user — load from localStorage only
       const local = readLocal();
