@@ -495,8 +495,8 @@ export const AutomationsToolView = ({ publish, userUID }) => {
         } else {
           // Default mock data
           const defaults = [
-            { id: 1, name: 'Drought Prevention', rule: 'If Soil Moisture < 20% → Irrigation ON', trigger: 'farm/soil_moisture', action: 'farm/irrigation', active: true, lastRan: '2h ago', usage: '240L' },
-            { id: 2, name: 'Heat Protection', rule: 'If Temp > 35°C → Open Vents', trigger: 'farm/greenhouse_temp', action: 'farm/vents', active: true, lastRan: '45m ago', usage: '—' },
+            { id: 1, name: 'Drought Prevention', rule: 'If Soil Moisture < 20% → Irrigation ON', trigger: 'farm/soil_moisture', action: 'farm/irrigation:1', active: true, operator: '<', value: 20, lastRan: 'Never', usage: '—' },
+            { id: 2, name: 'Heat Protection', rule: 'If Temp > 35°C → Open Vents', trigger: 'farm/greenhouse_temp', action: 'farm/vents:1', active: true, operator: '>', value: 35, lastRan: 'Never', usage: '—' },
           ];
           setAutos(defaults);
         }
@@ -536,6 +536,8 @@ export const AutomationsToolView = ({ publish, userUID }) => {
       rule: `If ${fd.get('trigger')} ${fd.get('operator')} ${fd.get('value')} → ${fd.get('action')}`,
       trigger: fd.get('triggerTopic'),
       action: fd.get('actionTopic'),
+      operator: fd.get('operator'),
+      value: Number(fd.get('value')) || 0,
       active: true,
       lastRan: 'Never',
       usage: '—'

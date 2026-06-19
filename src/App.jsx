@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -13,7 +13,7 @@ import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
 import { Loader2, Sun, Moon } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
 import { persistPortalMode } from './config/portals';
@@ -395,6 +395,85 @@ function Dashboard({ user, logout }) {
 
   // Use Firebase UID as the MQTT topic prefix - unique per user
   const { isConnected, messages, deviceStates, lastSeen, publish, userUID } = useMqtt(user.uid);
+
+  // ─── Real-time Automation Engine ──────────────────────────────────────────────
+  const [automations, setAutomations] = useState([]);
+  const lastExecutedRef = useRef({}); // To prevent spamming publish commands
+
+  // Subscribe to user's automation rules
+  useEffect(() => {
+    if (!user?.uid) return;
+    const docRef = doc(db, 'users', user.uid, 'settings', 'automations');
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setAutomations(docSnap.data().list || []);
+      } else {
+        const defaults = [
+          { id: 1, name: 'Drought Prevention', rule: 'If Soil Moisture < 20% → Irrigation ON', trigger: 'farm/soil_moisture', action: 'farm/irrigation:1', active: true, operator: '<', value: 20, lastRan: 'Never', usage: '—' },
+          { id: 2, name: 'Heat Protection', rule: 'If Temp > 35°C → Open Vents', trigger: 'farm/greenhouse_temp', action: 'farm/vents:1', active: true, operator: '>', value: 35, lastRan: 'Never', usage: '—' },
+        ];
+        setAutomations(defaults);
+      }
+    }, (err) => {
+      console.error("Failed to listen to automations", err);
+    });
+    return () => unsubscribe();
+  }, [user?.uid]);
+
+  // Evaluate automation rules whenever incoming deviceStates update
+  useEffect(() => {
+    if (!automations || automations.length === 0) return;
+
+    automations.forEach(async (rule) => {
+      if (!rule.active) return;
+
+      const currentValRaw = deviceStates[rule.trigger];
+      if (currentValRaw === undefined) return;
+
+      const currentVal = Number(currentValRaw);
+      if (isNaN(currentVal)) return;
+
+      const threshold = Number(rule.value);
+      const op = rule.operator;
+
+      let conditionMet = false;
+      if (op === '>') conditionMet = currentVal > threshold;
+      else if (op === '<') conditionMet = currentVal < threshold;
+      else if (op === '=') conditionMet = currentVal === threshold;
+
+      if (conditionMet) {
+        // 10-second throttle per rule to prevent spamming commands
+        const ruleKey = `${rule.id}`;
+        const now = Date.now();
+        const lastExecution = lastExecutedRef.current[ruleKey] || 0;
+
+        if (now - lastExecution > 10000) {
+          lastExecutedRef.current[ruleKey] = now;
+
+          // Parse action topic and payload (e.g. "topic:payload")
+          let actionTopic = rule.action;
+          let payload = 'ON';
+          if (rule.action.includes(':')) {
+            const parts = rule.action.split(':');
+            actionTopic = parts[0];
+            payload = parts[1];
+          }
+
+          console.log(`⚡ Automation triggered: ${rule.name}. Publishing "${payload}" to "${actionTopic}"`);
+          publish(actionTopic, payload);
+
+          // Update lastRan in Firestore
+          try {
+            const docRef = doc(db, 'users', user.uid, 'settings', 'automations');
+            const updatedList = automations.map(a => a.id === rule.id ? { ...a, lastRan: new Date().toLocaleTimeString() } : a);
+            await setDoc(docRef, { list: updatedList }, { merge: true });
+          } catch (e) {
+            console.error("Failed to update lastRan for automation", e);
+          }
+        }
+      }
+    });
+  }, [deviceStates, automations, publish, user?.uid]);
 
   const handleSetWorkspace = (workspaceId) => {
     setActiveWorkspace(workspaceId);
