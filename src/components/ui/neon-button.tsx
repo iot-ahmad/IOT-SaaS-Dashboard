@@ -3,20 +3,32 @@ import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 
 const buttonVariants = cva(
-  "relative group border text-slate-900 dark:text-white mx-auto text-center rounded-full",
+  // Base: sharp corners to match --radius:0, Oxanium font, uppercase tracking
+  "relative group border text-foreground mx-auto text-center font-sans tracking-wide transition-all duration-200",
   {
     variants: {
       variant: {
-        default: "bg-primary/10 hover:bg-primary/20 border-primary/20",
+        // Active/selected item: crimson tint, left-border accent
+        default:
+          "bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary dark:text-primary",
+        // CTA solid button: full crimson fill
         solid:
-          "bg-primary hover:bg-primary/90 text-white border-transparent hover:border-slate-400 dark:hover:border-white/50 transition-all duration-200",
+          "bg-primary hover:bg-primary/85 text-primary-foreground border-transparent shadow-[0_2px_4px_rgba(0,0,0,0.4)]",
+        // Subtle ghost: no border until hovered
         ghost:
-          "border-transparent bg-transparent hover:border-slate-300 dark:hover:border-zinc-600 hover:bg-slate-100 dark:hover:bg-white/10",
+          "border-transparent bg-transparent hover:border-border hover:bg-card dark:hover:bg-card/60 text-foreground",
+        // Secondary/olive accent
+        secondary:
+          "bg-secondary/15 hover:bg-secondary/25 border-secondary/30 text-secondary dark:text-secondary",
+        // Accent / steel-blue
+        accent:
+          "bg-accent/15 hover:bg-accent/25 border-accent/30 text-accent dark:text-accent",
       },
       size: {
-        default: "px-7 py-1.5 ",
-        sm: "px-4 py-0.5 ",
-        lg: "px-10 py-2.5 ",
+        default: "px-5 py-1.5 text-sm",
+        sm: "px-3 py-1 text-xs",
+        lg: "px-8 py-2.5 text-base",
+        icon: "p-2",
       },
     },
     defaultVariants: {

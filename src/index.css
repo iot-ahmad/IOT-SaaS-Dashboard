@@ -135,7 +135,12 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 dark:bg-black text-slate-900 dark:text-white antialiased;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: var(--letter-spacing);
   }
 }
 
@@ -168,14 +173,15 @@
 }
 
 @layer utilities {
-  /* D-Pad button glow pulse */
+  /* ── D-Pad button glow pulse — uses --primary (crimson) ── */
   .dpad-glow {
     animation: dpadPulse 0.6s ease-in-out infinite alternate;
   }
 
   @keyframes dpadPulse {
-    from { box-shadow: 0 0 12px rgba(139, 92, 246, 0.6); }
-    to   { box-shadow: 0 0 28px rgba(139, 92, 246, 0.95), 0 0 60px rgba(139, 92, 246, 0.4); }
+    from { box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 60%, transparent); }
+    to   { box-shadow: 0 0 28px color-mix(in srgb, var(--primary) 95%, transparent),
+                       0 0 60px color-mix(in srgb, var(--primary) 40%, transparent); }
   }
 
   /* Modal fade-in */
@@ -188,11 +194,11 @@
     to   { opacity: 1; transform: scale(1) translateY(0); }
   }
 
-  /* React-grid-layout overrides */
+  /* React-grid-layout overrides — uses --primary */
   .react-grid-item.react-grid-placeholder {
-    background: rgba(139, 92, 246, 0.12) !important;
-    border: 1px dashed rgba(139, 92, 246, 0.4) !important;
-    border-radius: 16px !important;
+    background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
+    border: 1px dashed color-mix(in srgb, var(--primary) 40%, transparent) !important;
+    border-radius: 0 !important;
     opacity: 1 !important;
   }
 
@@ -204,7 +210,80 @@
     opacity: 0.4;
   }
   .react-resizable-handle::after {
-    border-color: rgba(139, 92, 246, 0.6) !important;
+    border-color: color-mix(in srgb, var(--primary) 60%, transparent) !important;
+  }
+
+  /* ── Icon utilities — matches design token palette ── */
+
+  /* Primary icon: crimson */
+  .icon-primary {
+    color: var(--primary);
+    stroke: var(--primary);
+  }
+  /* Muted icon: subdued foreground */
+  .icon-muted {
+    color: var(--muted-foreground);
+    stroke: var(--muted-foreground);
+  }
+  /* Accent icon: steel-blue */
+  .icon-accent {
+    color: var(--accent);
+    stroke: var(--accent);
+  }
+  /* Secondary icon: olive */
+  .icon-secondary {
+    color: var(--secondary);
+    stroke: var(--secondary);
+  }
+  /* Destructive icon: orange */
+  .icon-destructive {
+    color: var(--destructive);
+    stroke: var(--destructive);
+  }
+
+  /* Icon inside an active nav button gets primary tint */
+  [data-active="true"] svg,
+  .btn-active svg {
+    color: var(--primary);
+    stroke: var(--primary);
+  }
+
+  /* Icon button container — square, no rounding (radius:0) */
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted-foreground);
+    padding: 0.4rem;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    cursor: pointer;
+  }
+  .icon-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 8%, var(--card));
+  }
+  .icon-btn.active {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 15%, var(--card));
+  }
+
+  /* Sidebar nav icon wrapper */
+  .nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+    transition: color 0.15s;
+  }
+  .nav-icon.active {
+    color: var(--primary);
   }
 }
 
@@ -223,25 +302,26 @@
   display: none !important;
 }
 .leaflet-popup-content-wrapper {
-  background: rgba(12, 13, 16, 0.95) !important;
-  border: 1px solid rgba(168, 85, 247, 0.25) !important;
-  border-radius: 12px !important;
-  color: #e2e8f0 !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 16px rgba(168, 85, 247, 0.15) !important;
+  background: color-mix(in srgb, var(--card) 95%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent) !important;
+  border-radius: 0 !important;
+  color: var(--foreground) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6),
+              0 0 16px color-mix(in srgb, var(--primary) 15%, transparent) !important;
   backdrop-filter: blur(12px);
 }
 .leaflet-popup-tip {
-  background: rgba(12, 13, 16, 0.95) !important;
+  background: var(--card) !important;
 }
 .leaflet-popup-content {
   margin: 10px 14px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
-  color: #e2e8f0 !important;
+  color: var(--foreground) !important;
 }
 .leaflet-popup-close-button {
-  color: #64748b !important;
+  color: var(--muted-foreground) !important;
 }
 .leaflet-popup-close-button:hover {
-  color: #a855f7 !important;
+  color: var(--primary) !important;
 }
