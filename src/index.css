@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
 @custom-variant dark (&:is(.dark *));
 
 /* ── Design Tokens: Light Mode ── */
@@ -19,8 +20,8 @@
   --primary: #f59e0b;
   --sidebar: #f9fafb;
   --spacing: 0.25rem;
-  --font-mono: JetBrains Mono, monospace;
-  --font-sans: Inter, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Oxanium", sans-serif;
   --secondary: #f3f4f6;
   --background: #ffffff;
   --font-serif: Source Serif 4, serif;
