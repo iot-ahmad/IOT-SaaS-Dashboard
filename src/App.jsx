@@ -393,6 +393,14 @@ function Dashboard({ user, logout }) {
     if (activeWorkspace === id) setActiveWorkspace('home');
   };
 
+  // Dynamically inject the Jordan Community workspace under the Home workspace
+  const displayWorkspaces = (() => {
+    const homeItem = customWorkspaces.find(ws => ws.id === 'home') || { id: 'home', name: 'Home', icon: 'Home' };
+    const hubItem = { id: 'hub', name: '🇯🇴 مجتمع الأردن', icon: 'Globe' };
+    const others = customWorkspaces.filter(ws => ws.id !== 'home' && ws.id !== 'hub');
+    return [homeItem, hubItem, ...others];
+  })();
+
   // Use Firebase UID as the MQTT topic prefix - unique per user
   const { isConnected, messages, deviceStates, lastSeen, publish, userUID } = useMqtt(user.uid);
 
@@ -568,7 +576,7 @@ function Dashboard({ user, logout }) {
       
       <div className={`fixed inset-y-0 left-0 z-30 ${sidebarW} transform transition-all duration-300 ease-in-out md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <Sidebar 
-          workspaces={customWorkspaces}
+          workspaces={displayWorkspaces}
           activeWorkspace={activeWorkspace} 
           setActiveWorkspace={handleSetWorkspace}
           activeTool={activeTool}
@@ -590,7 +598,7 @@ function Dashboard({ user, logout }) {
           activeTool={activeTool}
           isConnected={isConnected}
           toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          customWorkspaces={customWorkspaces}
+          customWorkspaces={displayWorkspaces}
           isSidebarCollapsed={isSidebarCollapsed}
           onToggleSidebar={() => setIsSidebarCollapsed(v => !v)}
 
