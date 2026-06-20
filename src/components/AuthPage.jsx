@@ -44,11 +44,9 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
       <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-center py-5">
         <div dir="ltr" className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-border bg-black/80 backdrop-blur-md">
           <img
-            src="/logo_icon.png"
-            className="w-5 h-5 object-contain"
-            style={{ filter: 'brightness(0) invert(1)' }}
+            src="/robot_logo.svg"
+            className="w-6 h-6 object-contain"
             alt="IOT365"
-            onError={(e) => { e.target.style.display = 'none'; }}
           />
           <span className="ltr text-xs font-bold tracking-wider text-white/50">
             IOT<span className="text-white">365</span>
