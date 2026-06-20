@@ -7,7 +7,7 @@ import {
   Gamepad2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight,
   Trash2, Activity, Zap, Car, GripVertical, Move, Loader2, Radio,
 } from 'lucide-react';
-import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, YAxis, AreaChart, Area } from 'recharts';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -251,18 +251,18 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-[#13151a] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
+      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/5">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
             <h2 className="font-bold text-lg">Add Tool</h2>
             {step === 'config' && (
-              <button onClick={() => setStep('category')} className="text-xs text-slate-600 dark:text-white/40 hover:text-slate-900 dark:text-white mt-0.5 transition-colors">
+              <button onClick={() => setStep('category')} className="text-xs text-foreground/90/40 hover:text-foreground mt-0.5 transition-colors">
                 ← Back to categories
               </button>
             )}
           </div>
-          <button onClick={onClose} className="text-slate-500 dark:text-white/30 hover:text-slate-900 dark:text-white transition-colors p-1">
+          <button onClick={onClose} className="text-muted-foreground dark:text-white/30 hover:text-foreground transition-colors p-1">
             <X size={20} />
           </button>
         </div>
@@ -288,12 +288,12 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                             onClick={() => handleSelectItem(item)}
                             className={`flex items-start gap-3 p-3 rounded-xl border bg-gradient-to-br ${cat.color} hover:brightness-125 transition-all text-left`}
                           >
-                            <div className={`mt-0.5 p-1.5 rounded-lg bg-slate-100 dark:bg-white/5 ${cat.accent}`}>
+                            <div className={`mt-0.5 p-1.5 rounded-lg bg-muted ${cat.accent}`}>
                               <ItemIcon size={16} />
                             </div>
                             <div>
-                              <p className="font-semibold text-sm text-slate-900 dark:text-white">{item.label}</p>
-                              <p className="text-[11px] text-slate-600 dark:text-white/40 mt-0.5 leading-relaxed">{item.desc}</p>
+                              <p className="font-semibold text-sm text-foreground">{item.label}</p>
+                              <p className="text-[11px] text-foreground/90/40 mt-0.5 leading-relaxed">{item.desc}</p>
                             </div>
                           </button>
                         );
@@ -306,9 +306,9 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Widget Name</label>
+                <label className="text-xs text-foreground/90/40 block mb-1">Widget Name</label>
                 <input
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Front Temperature"
@@ -322,7 +322,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                   <span className="text-[9px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Required</span>
                 </label>
                 <input
-                  className={`w-full bg-slate-100 dark:bg-white/5 border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
+                  className={`w-full bg-muted border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
                     form.dataKey.trim() ? 'border-amber-500/40 focus:border-amber-400' : 'border-red-500/40 focus:border-red-400'
                   }`}
                   value={form.dataKey}
@@ -330,21 +330,21 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                   placeholder="e.g. temperature_1"
                 />
                 {/* Live Firebase path preview */}
-                <div className="mt-2 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg px-3 py-2">
-                  <p className="text-[10px] text-slate-500 dark:text-white/30 mb-0.5">Firebase path:</p>
+                <div className="mt-2 bg-muted bg-background/40 border border-border rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-muted-foreground dark:text-white/30 mb-0.5">Firebase path:</p>
                   <code className="text-[11px] font-mono text-amber-300/80 break-all">
                     users/{userUID ? userUID.slice(0, 8) + '…' : '[UID]'}/widgets/<span className="text-amber-300">{form.dataKey || '[data_key]'}</span>
                   </code>
                 </div>
-                <p className="text-[10px] text-slate-500 dark:text-white/30 mt-1.5 leading-relaxed">
+                <p className="text-[10px] text-muted-foreground dark:text-white/30 mt-1.5 leading-relaxed">
                   استخدم هذا الـ Key في كود Arduino الخاص بك لربط جهازك بهذه الأداة.
                 </p>
               </div>
 
               <div>
-                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">MQTT Topic</label>
+                <label className="text-xs text-foreground/90/40 block mb-1">MQTT Topic</label>
                 <input
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
                   value={form.topic}
                   onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
                   placeholder="e.g. car/move"
@@ -353,19 +353,19 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               {selectedItem.type === 'gauge' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Unit</label>
+                    <label className="text-xs text-foreground/90/40 block mb-1">Unit</label>
                     <input
-                      className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                       value={form.unit}
                       onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
                       placeholder="°C"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Max Value</label>
+                    <label className="text-xs text-foreground/90/40 block mb-1">Max Value</label>
                     <input
                       type="number"
-                      className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                       value={form.maxVal}
                       onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))}
                     />
@@ -375,7 +375,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               <button
                 onClick={handleAdd}
                 disabled={!form.dataKey.trim()}
-                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 dark:text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
+                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-foreground font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
               >
                 Add to dashboard
               </button>
@@ -413,16 +413,16 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-[#13151a] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
+      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/5">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
             <h2 className="font-bold text-lg">Edit Tool Settings</h2>
-            <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Modify name, topic, or parameter config for this tool.
             </p>
           </div>
-          <button onClick={onClose} className="text-slate-500 dark:text-white/30 hover:text-slate-900 dark:text-white transition-colors p-1">
+          <button onClick={onClose} className="text-muted-foreground dark:text-white/30 hover:text-foreground transition-colors p-1">
             <X size={20} />
           </button>
         </div>
@@ -430,9 +430,9 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
         {/* Body */}
         <div className="p-6 space-y-4">
           <div>
-            <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Widget Name</label>
+            <label className="text-xs text-foreground/90/40 block mb-1">Widget Name</label>
             <input
-              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+              className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               placeholder="e.g. Front Temperature"
@@ -446,7 +446,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
               <span className="text-[9px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Required</span>
             </label>
             <input
-              className={`w-full bg-slate-100 dark:bg-white/5 border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
+              className={`w-full bg-muted border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none transition-colors ${
                 form.dataKey.trim() ? 'border-amber-500/40 focus:border-amber-400' : 'border-red-500/40 focus:border-red-400'
               }`}
               value={form.dataKey}
@@ -454,8 +454,8 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
               placeholder="e.g. temperature_1"
             />
             {/* Live Firebase path preview */}
-            <div className="mt-2 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg px-3 py-2">
-              <p className="text-[10px] text-slate-500 dark:text-white/30 mb-0.5">Firebase path:</p>
+            <div className="mt-2 bg-muted bg-background/40 border border-border rounded-lg px-3 py-2">
+              <p className="text-[10px] text-muted-foreground dark:text-white/30 mb-0.5">Firebase path:</p>
               <code className="text-[11px] font-mono text-amber-300/80 break-all">
                 users/{userUID ? userUID.slice(0, 8) + '…' : '[UID]'}/widgets/<span className="text-amber-300">{form.dataKey || '[data_key]'}</span>
               </code>
@@ -463,9 +463,9 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           </div>
 
           <div>
-            <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">MQTT Topic</label>
+            <label className="text-xs text-foreground/90/40 block mb-1">MQTT Topic</label>
             <input
-              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
+              className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
               value={form.topic}
               onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
               placeholder="e.g. car/move"
@@ -475,19 +475,19 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           {widget.type === 'gauge' && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Unit</label>
+                <label className="text-xs text-foreground/90/40 block mb-1">Unit</label>
                 <input
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                   value={form.unit}
                   onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
                   placeholder="°C"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-600 dark:text-white/40 block mb-1">Max Value</label>
+                <label className="text-xs text-foreground/90/40 block mb-1">Max Value</label>
                 <input
                   type="number"
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
                   value={form.maxVal}
                   onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))}
                 />
@@ -498,7 +498,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           <button
             onClick={handleSave}
             disabled={!form.dataKey.trim()}
-            className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 dark:text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
+            className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-foreground font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
           >
             Save changes
           </button>
@@ -529,7 +529,7 @@ function GaugeWidget({ widget, value, history = [] }) {
           <Activity size={16} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
-        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
           {widget.topic}
         </span>
       </div>
@@ -556,7 +556,7 @@ function GaugeWidget({ widget, value, history = [] }) {
                 <div className="text-2xl font-black tracking-tight" style={{ color, textShadow: `0 0 10px ${glowColor}` }}>
                   {num.toFixed(1)}
                 </div>
-                <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold uppercase tracking-widest">{widget.unit || ''}</span>
+                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">{widget.unit || ''}</span>
               </div>
             </div>
 
@@ -582,11 +582,11 @@ function GaugeWidget({ widget, value, history = [] }) {
           <div className="flex flex-col items-center justify-center gap-2.5 py-4 my-auto">
             <div className="relative flex items-center justify-center">
               <div className="absolute w-8 h-8 rounded-full bg-cyan-500/10 animate-ping" />
-              <div className="relative w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center">
+              <div className="relative w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center">
                 <Radio className="text-cyan-400 animate-pulse" size={14} />
               </div>
             </div>
-            <span className="text-[11px] text-slate-400 dark:text-white/30 font-medium tracking-wide animate-pulse">Waiting for data...</span>
+            <span className="text-[11px] text-muted-foreground font-medium tracking-wide animate-pulse">Waiting for data...</span>
           </div>
         )}
       </div>
@@ -607,7 +607,7 @@ function SwitchWidget({ widget, value, publish }) {
           <Zap size={16} className={isOn ? "animate-pulse" : ""} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
-        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
           {widget.topic}
         </span>
       </div>
@@ -616,7 +616,7 @@ function SwitchWidget({ widget, value, publish }) {
         {/* Pulsing indicator light */}
         <div className="absolute top-0 right-2 flex items-center gap-1.5">
           <span className={`h-2 w-2 rounded-full ${isOn ? 'bg-amber-400' : 'bg-slate-400'}`} style={{ boxShadow: isOn ? '0 0 10px #f59e0b, 0 0 20px #f59e0b' : 'none' }} />
-          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-amber-500' : 'text-slate-400 dark:text-white/20'}`}>
+          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-amber-500' : 'text-muted-foreground/60'}`}>
             {isOn ? 'ACTIVE' : 'IDLE'}
           </span>
         </div>
@@ -626,12 +626,12 @@ function SwitchWidget({ widget, value, publish }) {
           className={`w-18 h-18 rounded-3xl flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
             isOn
               ? 'bg-amber-500/10 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)] scale-95'
-              : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30'
+              : 'bg-background dark:bg-card/5 border-border hover:border-slate-400 dark:hover:border-white/30'
           }`}
           onClick={toggle}
           title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
         >
-          <Zap size={32} className={isOn ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'text-slate-400 dark:text-white/20'} />
+          <Zap size={32} className={isOn ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'text-muted-foreground/60'} />
         </div>
       </div>
     </div>
@@ -662,7 +662,7 @@ function SliderWidget({ widget, publish }) {
           <Icon size={16} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
-        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
           {widget.topic}
         </span>
       </div>
@@ -670,7 +670,7 @@ function SliderWidget({ widget, publish }) {
       <div className="flex-1 flex flex-col justify-center gap-4 px-1">
         <div className="flex justify-between items-baseline">
           <span className="text-3xl font-black font-mono tracking-tight" style={{ color, textShadow: `0 0 10px ${glowColor}` }}>{val}</span>
-          <span className="text-[10px] font-bold text-slate-500 dark:text-white/30 uppercase tracking-widest">{label} / {max}</span>
+          <span className="text-[10px] font-bold text-muted-foreground dark:text-white/30 uppercase tracking-widest">{label} / {max}</span>
         </div>
         
         {/* Styled Premium Slider */}
@@ -681,7 +681,7 @@ function SliderWidget({ widget, publish }) {
             max={max}
             value={val}
             onChange={handleChange}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200 dark:bg-white/10"
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
             style={{ 
               accentColor: color,
             }}
@@ -694,7 +694,7 @@ function SliderWidget({ widget, publish }) {
 
 const DP_BTN_BASE =
   'flex items-center justify-center w-12 h-12 rounded-2xl border-2 transition-all duration-150 cursor-pointer select-none active:scale-95';
-const DP_BTN_IDLE = 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/50 hover:bg-violet-500/10 dark:hover:bg-violet-500/10 hover:border-violet-500/30 dark:hover:border-violet-500/30 hover:text-violet-500 dark:hover:text-violet-300';
+const DP_BTN_IDLE = 'bg-background dark:bg-card/5 border-border text-foreground/90/50 hover:bg-violet-500/10 dark:hover:bg-violet-500/10 hover:border-violet-500/30 dark:hover:border-violet-500/30 hover:text-violet-500 dark:hover:text-violet-300';
 const DP_BTN_GLOW =
   'bg-violet-600 dark:bg-violet-500 border-violet-400 dark:border-violet-300 text-white shadow-[0_0_20px_rgba(139,92,246,0.6)] ring-1 ring-violet-400/50';
 
@@ -746,7 +746,7 @@ function DPadWidget({ widget, publish }) {
           <Gamepad2 size={16} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
-        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
           {widget.topic}
         </span>
       </div>
@@ -767,7 +767,7 @@ function DPadWidget({ widget, publish }) {
         </div>
         <DPadDirButton cmd="BACK" icon={ChevronDown} activeCmd={active} onPress={press} onRelease={release} />
         <div className="mt-1 flex items-center gap-1.5">
-          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20' : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/20'}`}>
+          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20' : 'bg-muted text-muted-foreground/60'}`}>
             CMD: {active || 'IDLE'}
           </span>
         </div>
@@ -848,7 +848,7 @@ function JoystickWidget({ widget, publish }) {
           <Move size={16} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
-        <span className="text-[9px] font-mono text-slate-500 dark:text-white/30 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5 truncate max-w-[50%]">
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
           {widget.topic}
         </span>
       </div>
@@ -879,7 +879,7 @@ function JoystickWidget({ widget, publish }) {
             className={`absolute w-12 h-12 rounded-full border-2 transition-all duration-75 flex items-center justify-center shadow-md ${
               knobLit
                 ? 'bg-violet-500/30 border-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.6)] scale-95'
-                : 'bg-white/10 dark:bg-white/5 border-slate-300 dark:border-white/20'
+                : 'bg-card/10 dark:bg-card/5 border-slate-300 dark:border-white/20'
             }`}
             style={{
               left: `calc(50% + ${knob.x}px)`,
@@ -887,16 +887,16 @@ function JoystickWidget({ widget, publish }) {
               transform: 'translate(-50%, -50%)',
             }}
           >
-            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-violet-300' : 'bg-slate-400 dark:bg-white/25'}`} />
+            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-violet-300' : 'bg-slate-400 dark:bg-card/25'}`} />
           </div>
 
-          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">F</span>
-          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">B</span>
-          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">L</span>
-          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] text-slate-500 dark:text-white/20 font-extrabold uppercase pointer-events-none">R</span>
+          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] text-muted-foreground dark:text-white/20 font-extrabold uppercase pointer-events-none">F</span>
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] text-muted-foreground dark:text-white/20 font-extrabold uppercase pointer-events-none">B</span>
+          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground dark:text-white/20 font-extrabold uppercase pointer-events-none">L</span>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground dark:text-white/20 font-extrabold uppercase pointer-events-none">R</span>
         </div>
 
-        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20 animate-pulse' : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/20'}`}>
+        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20 animate-pulse' : 'bg-muted text-muted-foreground dark:text-white/20'}`}>
           DIR: {active || 'IDLE'}
         </span>
       </div>
@@ -919,23 +919,23 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
   };
 
   return (
-    <div className="h-full bg-white/[0.01] dark:bg-[#07080b]/75 border border-slate-200 dark:border-white/5 rounded-2xl p-5 backdrop-blur-md hover:bg-white/[0.025] hover:border-slate-300 dark:hover:border-white/10 transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
+    <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl p-5 backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
       {/* Edit button */}
       <button
         onClick={() => onEdit(widget)}
-        className="absolute top-2 right-8 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-slate-500 dark:text-white/30 p-1"
+        className="absolute top-2 right-8 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-muted-foreground dark:text-white/30 p-1"
         title="Edit Tool"
       >
         <SlidersHorizontal size={14} />
       </button>
       {/* Drag handle */}
-      <div className="drag-handle absolute top-2 right-14 opacity-0 group-hover:opacity-40 hover:!opacity-80 transition-opacity cursor-grab active:cursor-grabbing text-slate-600 dark:text-white/50 p-1">
+      <div className="drag-handle absolute top-2 right-14 opacity-0 group-hover:opacity-40 hover:!opacity-80 transition-opacity cursor-grab active:cursor-grabbing text-foreground/90/50 p-1">
         <GripVertical size={14} />
       </div>
       {/* Remove button */}
       <button
         onClick={() => onRemove(widget.id)}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-slate-500 dark:text-white/30 p-1"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground dark:text-white/30 p-1"
         title="Remove Tool"
       >
         <Trash2 size={14} />
@@ -1072,7 +1072,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-slate-900 dark:text-white transition-all shadow-lg shadow-violet-500/20 active:scale-95"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-foreground transition-all shadow-lg shadow-violet-500/20 active:scale-95"
         >
           <Plus size={18} />
           Add Tool
@@ -1082,8 +1082,8 @@ export default function UniversalController({ deviceStates, publish, storageScop
       {widgets.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Gamepad2 size={48} className="text-slate-300 dark:text-white/10 mb-4" />
-          <p className="text-slate-500 dark:text-white/30 text-lg font-medium">No tools yet</p>
-          <p className="text-slate-400 dark:text-white/20 text-sm mt-1">Use Add Tool to place sensors, actuators, or RC controls</p>
+          <p className="text-muted-foreground dark:text-white/30 text-lg font-medium">No tools yet</p>
+          <p className="text-muted-foreground/60 text-sm mt-1">Use Add Tool to place sensors, actuators, or RC controls</p>
         </div>
       ) : (
         mounted && (

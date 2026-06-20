@@ -53,27 +53,27 @@ export default function Sidebar({
   };
 
   return (
-    <aside className="w-full h-full bg-white/80 dark:bg-black/80 backdrop-blur-md border-r border-slate-200 dark:border-white/5 flex flex-col gap-6 overflow-hidden relative">
+    <aside className="w-full h-full bg-card/80 bg-background/80 backdrop-blur-md border-r border-border flex flex-col gap-6 overflow-hidden relative">
 
       {/* Collapse toggle — desktop only */}
       <button
         onClick={onToggleCollapse}
-        className="hidden md:flex absolute top-4 right-[-12px] z-50 w-6 h-6 rounded-full bg-white dark:bg-[#1a1b1e] border border-slate-200 dark:border-white/15 items-center justify-center text-slate-500 dark:text-white/50 hover:text-primary hover:border-primary/40 transition-all shadow-md"
+        className="hidden md:flex absolute top-4 right-[-12px] z-50 w-6 h-6 rounded-full bg-card dark:bg-[#1a1b1e] border border-border items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-all shadow-md"
         title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
 
       {/* Brand Logo */}
-      <div className={`px-4 pt-5 pb-3 flex items-center gap-3 border-b border-slate-100 dark:border-white/5 ${isCollapsed ? 'justify-center' : ''}`}>
+      <div className={`px-4 pt-5 pb-3 flex items-center gap-3 border-b border-border ${isCollapsed ? 'justify-center' : ''}`}>
         <img src="/logo_icon.png" alt="IOT365 Icon" className="w-8 h-8 object-contain flex-shrink-0" />
         {!isCollapsed && (
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-extrabold truncate">
-              <span className="text-slate-950 dark:text-white">IOT</span>
+              <span className="text-foreground">IOT</span>
               <span className="text-primary">365</span>
             </span>
-            <span className="text-[9px] text-slate-500 dark:text-white/30 uppercase tracking-widest font-semibold truncate">Dashboard</span>
+            <span className="text-[9px] text-muted-foreground dark:text-white/30 uppercase tracking-widest font-semibold truncate">Dashboard</span>
           </div>
         )}
       </div>
@@ -84,12 +84,12 @@ export default function Sidebar({
         <div>
           <div className={`flex items-center mb-4 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
             {!isCollapsed && (
-              <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider">Workspaces</h2>
+              <h2 className="text-foreground/90/40 text-xs font-semibold uppercase tracking-wider">Workspaces</h2>
             )}
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
-              className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
               title="Add workspace"
             >
               <Plus size={16} />
@@ -105,18 +105,18 @@ export default function Sidebar({
               return (
                 <div key={ws.id} className="group relative">
                   {isRenaming ? (
-                    <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 border border-primary/40 rounded-xl px-2 py-1.5">
+                    <div className="flex items-center gap-1 bg-muted border border-primary/40 rounded-xl px-2 py-1.5">
                       <input
                         autoFocus
                         value={renameValue}
                         onChange={e => setRenameValue(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') commitRename(ws.id); if (e.key === 'Escape') setRenamingId(null); }}
-                        className="flex-1 bg-transparent text-sm outline-none text-slate-900 dark:text-white min-w-0"
+                        className="flex-1 bg-transparent text-sm outline-none text-foreground min-w-0"
                       />
                       <button onClick={() => commitRename(ws.id)} className="text-primary hover:text-primary/70 flex-shrink-0">
                         <Check size={14} />
                       </button>
-                      <button onClick={() => setRenamingId(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white flex-shrink-0">
+                      <button onClick={() => setRenamingId(null)} className="text-muted-foreground hover:text-muted-foreground dark:hover:text-white flex-shrink-0">
                         <X size={14} />
                       </button>
                     </div>
@@ -137,14 +137,14 @@ export default function Sidebar({
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-1 flex-shrink-0">
                           <button
                             onClick={e => { e.stopPropagation(); startRename(ws); }}
-                            className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white transition-colors"
+                            className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-slate-700 dark:hover:text-white transition-colors"
                             title="Rename"
                           >
                             <Pencil size={11} />
                           </button>
                           <button
                             onClick={e => { e.stopPropagation(); onDeleteWorkspace(ws.id); }}
-                            className="p-1 rounded-md hover:bg-red-500/10 text-slate-400 dark:text-white/30 hover:text-red-400 transition-colors"
+                            className="p-1 rounded-md hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
                             title="Delete"
                           >
                             <Trash2 size={11} />
@@ -162,7 +162,7 @@ export default function Sidebar({
         {/* TOOLS */}
         <div>
           {!isCollapsed && (
-            <h2 className="text-slate-600 dark:text-white/40 text-xs font-semibold uppercase tracking-wider mb-4">Tools</h2>
+            <h2 className="text-foreground/90/40 text-xs font-semibold uppercase tracking-wider mb-4">Tools</h2>
           )}
           <div className="space-y-1.5">
             {TOOLS.map(tool => {
@@ -208,16 +208,16 @@ export default function Sidebar({
                   }
                 }
               }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-primary/40 cursor-pointer transition-colors"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted border border-border hover:border-primary/40 cursor-pointer transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center flex-shrink-0">
-                <span className="text-slate-700 dark:text-white font-bold text-sm">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                <span className="text-foreground font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex flex-col text-left min-w-0">
-                <span className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.displayName || 'User'}</span>
-                <span className="text-xs text-slate-500 dark:text-white/50 truncate">{user?.email}</span>
+                <span className="text-sm font-medium text-foreground truncate">{user?.displayName || 'User'}</span>
+                <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
               </div>
             </div>
           ) : (
@@ -234,8 +234,8 @@ export default function Sidebar({
               }}
               className="flex justify-center cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center" title={user?.displayName || 'User'}>
-                <span className="text-slate-700 dark:text-white font-bold text-sm">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center" title={user?.displayName || 'User'}>
+                <span className="text-foreground font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
               </div>
@@ -247,7 +247,7 @@ export default function Sidebar({
             onClick={logout}
             variant="ghost"
             neon={false}
-            className={`${navBtnClass} text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white ${isCollapsed ? 'justify-center px-2' : ''}`}
+            className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
             title={isCollapsed ? 'Sign Out' : ''}
           >
             <LogOut size={16} />
@@ -259,32 +259,32 @@ export default function Sidebar({
       {/* Add Workspace Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0a0b0d] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-sm relative text-slate-900 dark:text-white shadow-2xl">
-            <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white">
+          <div className="bg-card dark:bg-[#0a0b0d] border border-border p-6 rounded-2xl w-full max-w-sm relative text-foreground shadow-2xl">
+            <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground dark:text-white/40 hover:text-foreground">
               <X size={20} />
             </button>
             <h3 className="text-xl font-bold mb-4">New Dashboard</h3>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label className="block text-xs text-slate-500 dark:text-white/50 mb-1">Dashboard Name</label>
+                <label className="block text-xs text-muted-foreground mb-1">Dashboard Name</label>
                 <input
                   autoFocus
                   required
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
                   placeholder="e.g. Living Room, Garage..."
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary/50 text-sm text-slate-900 dark:text-white"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary/50 text-sm text-foreground"
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-500 dark:text-white/50 mb-1">ESP32 Target UID (Optional)</label>
+                <label className="block text-xs text-muted-foreground mb-1">ESP32 Target UID (Optional)</label>
                 <input
                   value={newEsp32}
                   onChange={e => setNewEsp32(e.target.value)}
                   placeholder="e.g. ESP_A1B2C3"
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary/50 text-sm text-slate-900 dark:text-white"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary/50 text-sm text-foreground"
                 />
-                <p className="text-[10px] text-slate-400 dark:text-white/30 mt-1">If provided, widgets in this dashboard will automatically target this specific ESP32.</p>
+                <p className="text-[10px] text-muted-foreground mt-1">If provided, widgets in this dashboard will automatically target this specific ESP32.</p>
               </div>
               <Button type="submit" variant="solid" className="w-full mx-0 rounded-xl">
                 Create Dashboard

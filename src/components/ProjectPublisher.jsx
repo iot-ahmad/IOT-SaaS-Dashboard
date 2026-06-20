@@ -65,7 +65,7 @@ const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) 
 
 // Custom Markdown syntax-highlighted renderer for the preview
 export const MarkdownPreview = ({ text }) => {
-  if (!text) return <p className="text-slate-500 dark:text-white/20 text-sm italic">لا يوجد توثيق بعد...</p>;
+  if (!text) return <p className="text-muted-foreground dark:text-white/20 text-sm italic">لا يوجد توثيق بعد...</p>;
 
   // Simple, fast parser for Markdown elements
   const parseMarkdown = (markdownText) => {
@@ -156,7 +156,7 @@ export const MarkdownPreview = ({ text }) => {
       .replace(/>/g, "&gt;");
 
     // Wrap comments first
-    html = html.replace(comments, '<span class="text-slate-500 dark:text-zinc-500 font-mono">$1</span>');
+    html = html.replace(comments, '<span class="text-muted-foreground dark:text-zinc-500 font-mono">$1</span>');
     
     // Keywords (avoid replacing inside class tags)
     html = html.replace(keywords, (match) => {
@@ -183,7 +183,7 @@ export const MarkdownPreview = ({ text }) => {
     formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-extrabold text-white">$1</strong>');
     
     // `inline code`
-    formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-white/10 px-1.5 py-0.5 rounded font-mono text-pink-400 text-xs">$1</code>');
+    formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-muted dark:bg-zinc-900 border border-border px-1.5 py-0.5 rounded font-mono text-pink-400 text-xs">$1</code>');
     
     // [link](url)
     formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">$1</a>');
@@ -198,7 +198,7 @@ export const MarkdownPreview = ({ text }) => {
       {parsedElements.map((el, idx) => {
         if (el.type === 'h1') {
           return (
-            <h1 key={idx} className="text-2xl font-extrabold text-white mt-6 mb-3 border-b border-white/10 pb-2">
+            <h1 key={idx} className="text-2xl font-extrabold text-white mt-6 mb-3 border-b border-border pb-2">
               <span dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
             </h1>
           );
@@ -228,13 +228,13 @@ export const MarkdownPreview = ({ text }) => {
         }
         if (el.type === 'blockquote') {
           return (
-            <blockquote key={idx} className="border-r-4 border-primary/50 pr-4 pl-0 my-3 text-sm text-slate-400 italic bg-white/[0.01] py-2 rounded-l-lg" dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
+            <blockquote key={idx} className="border-r-4 border-primary/50 pr-4 pl-0 my-3 text-sm text-muted-foreground italic bg-card/[0.01] py-2 rounded-l-lg" dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
           );
         }
         if (el.type === 'code') {
           return (
             <div key={idx} className="my-4 font-mono text-left" dir="ltr">
-              <div className="flex items-center justify-between bg-zinc-950 px-4 py-1.5 border-t border-x border-white/5 rounded-t-xl text-[10px] text-slate-500 font-sans tracking-wide">
+              <div className="flex items-center justify-between bg-zinc-950 px-4 py-1.5 border-t border-x border-border rounded-t-xl text-[10px] text-muted-foreground font-sans tracking-wide">
                 <span>{el.language.toUpperCase()}</span>
                 <button
                   type="button"
@@ -246,7 +246,7 @@ export const MarkdownPreview = ({ text }) => {
                   نسخ الكود
                 </button>
               </div>
-              <pre className="bg-[#030406] border border-white/5 rounded-b-xl p-4 overflow-x-auto text-xs leading-relaxed font-mono scrollbar-thin text-left ltr-text text-slate-300">
+              <pre className="bg-[#030406] border border-border rounded-b-xl p-4 overflow-x-auto text-xs leading-relaxed font-mono scrollbar-thin text-left ltr-text text-slate-300">
                 <code dangerouslySetInnerHTML={{ __html: highlightCode(el.content, el.language) }} />
               </pre>
             </div>
@@ -492,10 +492,10 @@ void loop() {
   // If user does not have a vanity username set up
   if (!hasUsername) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
+      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
         <AlertCircle className="w-16 h-16 text-violet-400 mx-auto mb-4" />
         <h3 className="text-xl font-bold text-white">تحتاج إلى تعيين اسم مستخدم أولاً</h3>
-        <p className="text-sm text-slate-400 mt-3 leading-relaxed">
+        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
           لتتمكن من نشر مشاريعك ومشاركتها مع مجتمع المطورين العالمي، يرجى التوجه لصفحة حسابك الشخصي وإنشاء رابط Vanity URL فريد (Username).
         </p>
         <button
@@ -512,13 +512,13 @@ void loop() {
     <div className="max-w-5xl mx-auto space-y-6">
       
       {/* Upper Title Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
           <h2 className="text-2xl font-black text-white flex items-center gap-2">
             <Sparkles className="text-primary w-6 h-6 animate-pulse" />
             أنشئ مشروع IoT عالمي جديد
           </h2>
-          <p className="text-xs text-slate-500 mt-1">شارك مخططات الدوائر وأكواد البرمجة مع مجتمع إنترنت الأشياء العالمي</p>
+          <p className="text-xs text-muted-foreground mt-1">شارك مخططات الدوائر وأكواد البرمجة مع مجتمع إنترنت الأشياء العالمي</p>
         </div>
         
         {/* Step Progress indicators */}
@@ -534,12 +534,12 @@ void loop() {
                     ? 'bg-primary text-black shadow-lg shadow-primary/20 ring-2 ring-primary/45'
                     : step > num
                     ? 'bg-primary/10 text-primary border border-primary/20 cursor-pointer'
-                    : 'bg-white/5 text-slate-500 border border-white/5'
+                    : 'bg-card/5 text-muted-foreground border border-border'
                 }`}
               >
                 {num}
               </button>
-              {num < 3 && <div className={`w-8 h-0.5 ${step > num ? 'bg-primary/50' : 'bg-white/5'}`} />}
+              {num < 3 && <div className={`w-8 h-0.5 ${step > num ? 'bg-primary/50' : 'bg-card/5'}`} />}
             </div>
           ))}
         </div>
@@ -554,30 +554,30 @@ void loop() {
 
       {/* STEP 1: Basic Info */}
       {step === 1 && (
-        <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl space-y-5 backdrop-blur-xl">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
+        <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
+          <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-border pb-2">
             <Cpu size={18} className="text-primary" /> الخطوة 1: البيانات الأساسية للعتاد
           </h3>
           
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-400 mb-1.5 text-right">عنوان المشروع *</label>
+                <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">عنوان المشروع *</label>
                 <input
                   required
                   type="text"
                   placeholder="مثال: محطة طقس ذكية تدعم التنبيهات الفورية"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white"
+                  className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1.5 text-right">خصوصية المشروع *</label>
+                <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">خصوصية المشروع *</label>
                 <select
                   value={visibility}
                   onChange={(e) => setVisibility(e.target.value)}
-                  className="w-full bg-[#0d0e12] border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white"
+                  className="w-full bg-[#0d0e12] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white"
                 >
                   <option value="public">عام (Public Feed)</option>
                   <option value="private">خاص (Private - لك فقط)</option>
@@ -586,19 +586,19 @@ void loop() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5 text-right">الوصف المختصر للمشروع *</label>
+              <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">الوصف المختصر للمشروع *</label>
               <textarea
                 required
                 rows={3}
                 placeholder="صف الفكرة والهدف من مشروعك باختصار لجذب المطورين لمشاهدته..."
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white resize-none"
+                className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white resize-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1.5 text-right">المكونات والقطع الإلكترونية المستخدمة</label>
+              <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">المكونات والقطع الإلكترونية المستخدمة</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -606,12 +606,12 @@ void loop() {
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white"
+                  className="flex-1 bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right rtl-text text-white"
                 />
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {componentsList.length === 0 && (
-                  <p className="text-xs text-slate-600">لا توجد قطع مضافة حالياً. أضف بعض القطع لتسهيل البحث عن مشروعك.</p>
+                  <p className="text-xs text-muted-foreground">لا توجد قطع مضافة حالياً. أضف بعض القطع لتسهيل البحث عن مشروعك.</p>
                 )}
                 {componentsList.map((tag, idx) => (
                   <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
@@ -629,8 +629,8 @@ void loop() {
 
       {/* STEP 2: Media and Schematic Upload */}
       {step === 2 && (
-        <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl space-y-6 backdrop-blur-xl">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
+        <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-6 backdrop-blur-xl">
+          <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-border pb-2">
             <Upload size={18} className="text-primary" /> الخطوة 2: الصور والمخططات الهندسية
           </h3>
 
@@ -639,7 +639,7 @@ void loop() {
             {/* Images Drop Zone */}
             <div className="space-y-4">
               <label className="block text-sm font-bold text-white text-right">صور المشروع (العتاد المادي)</label>
-              <div className="border border-dashed border-white/10 rounded-2xl p-6 bg-white/[0.01] hover:bg-white/[0.02] hover:border-primary/40 transition-colors flex flex-col items-center justify-center text-center relative group">
+              <div className="border border-dashed border-border rounded-2xl p-6 bg-card/[0.01] hover:bg-card/[0.02] hover:border-primary/40 transition-colors flex flex-col items-center justify-center text-center relative group">
                 <input
                   type="file"
                   multiple
@@ -647,17 +647,17 @@ void loop() {
                   onChange={(e) => handleFileUpload(e, 'images')}
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
-                <Upload className="w-10 h-10 text-slate-500 group-hover:text-primary transition-colors mb-3" />
+                <Upload className="w-10 h-10 text-muted-foreground group-hover:text-primary transition-colors mb-3" />
                 <span className="text-xs font-bold text-slate-300">اسحب الصور وأفلتها هنا أو اضغط للتصفح</span>
-                <span className="text-[10px] text-slate-500 mt-1">يتم ضغط الصور تلقائياً للحفاظ على سرعة التحميل</span>
+                <span className="text-[10px] text-muted-foreground mt-1">يتم ضغط الصور تلقائياً للحفاظ على سرعة التحميل</span>
               </div>
 
               {/* Uploading List */}
               {Object.keys(uploadsInProgress).length > 0 && (
                 <div className="space-y-2">
                   {Object.entries(uploadsInProgress).map(([name, progress]) => (
-                    <div key={name} className="flex items-center justify-between text-xs bg-white/5 p-2.5 rounded-xl border border-white/5">
-                      <span className="text-slate-400 max-w-[70%] truncate font-mono">{name}</span>
+                    <div key={name} className="flex items-center justify-between text-xs bg-card/5 p-2.5 rounded-xl border border-border">
+                      <span className="text-muted-foreground max-w-[70%] truncate font-mono">{name}</span>
                       <span className="text-primary font-bold">{progress}%</span>
                     </div>
                   ))}
@@ -667,7 +667,7 @@ void loop() {
               {/* Images Grid */}
               <div className="grid grid-cols-3 gap-3">
                 {images.map((img, idx) => (
-                  <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group shadow-md">
+                  <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-border group shadow-md">
                     <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -684,7 +684,7 @@ void loop() {
             {/* Schematics Drop Zone */}
             <div className="space-y-4">
               <label className="block text-sm font-bold text-white text-right">مخططات التوصيل والدوائر الكهربائية</label>
-              <div className="border border-dashed border-white/10 rounded-2xl p-6 bg-white/[0.01] hover:bg-white/[0.02] hover:border-primary/40 transition-colors flex flex-col items-center justify-center text-center relative group">
+              <div className="border border-dashed border-border rounded-2xl p-6 bg-card/[0.01] hover:bg-card/[0.02] hover:border-primary/40 transition-colors flex flex-col items-center justify-center text-center relative group">
                 <input
                   type="file"
                   multiple
@@ -692,15 +692,15 @@ void loop() {
                   onChange={(e) => handleFileUpload(e, 'schematics')}
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
-                <Upload className="w-10 h-10 text-slate-500 group-hover:text-primary transition-colors mb-3" />
+                <Upload className="w-10 h-10 text-muted-foreground group-hover:text-primary transition-colors mb-3" />
                 <span className="text-xs font-bold text-slate-300">اسحب مخططات Fritzing أو صور التوصيل هنا</span>
-                <span className="text-[10px] text-slate-500 mt-1">امتدادات مقبولة: الصور والـ PDF</span>
+                <span className="text-[10px] text-muted-foreground mt-1">امتدادات مقبولة: الصور والـ PDF</span>
               </div>
 
               {/* Schematics Grid */}
               <div className="space-y-2">
                 {schematics.map((sch, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 text-xs">
+                  <div key={idx} className="flex items-center justify-between bg-card/5 border border-border rounded-xl p-3 text-xs">
                     <div className="flex items-center gap-2 text-slate-300 font-medium truncate max-w-[80%]">
                       <FileText size={14} className="text-primary shrink-0" />
                       <span className="truncate font-mono">{sch.name}</span>
@@ -708,7 +708,7 @@ void loop() {
                     <button
                       type="button"
                       onClick={() => handleRemoveMedia(sch, 'schematics')}
-                      className="p-1 hover:bg-red-500/10 text-slate-400 hover:text-red-400 rounded-md transition-colors"
+                      className="p-1 hover:bg-red-500/10 text-muted-foreground hover:text-red-400 rounded-md transition-colors"
                     >
                       <X size={14} />
                     </button>
@@ -726,9 +726,9 @@ void loop() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* Markdown Editor */}
-          <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[600px]">
-            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-              <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-mono">يدعم التنسيق المتقدم والأكواد الملونة</span>
+          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[600px]">
+            <div className="flex justify-between items-center border-b border-border pb-2">
+              <span className="text-[10px] text-muted-foreground dark:text-zinc-500 font-mono">يدعم التنسيق المتقدم والأكواد الملونة</span>
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Code size={16} className="text-primary" /> التوثيق الهندسي (Markdown)
               </h3>
@@ -736,13 +736,13 @@ void loop() {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 w-full bg-[#030406] border border-white/5 rounded-2xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-left ltr-text leading-relaxed"
+              className="flex-1 w-full bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-left ltr-text leading-relaxed"
             />
           </div>
 
           {/* Real-time Document Preview */}
-          <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[600px] overflow-hidden">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
+          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[600px] overflow-hidden">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-border pb-2">
               <Eye size={16} className="text-primary" /> معاينة التوثيق الهندسي
             </h3>
             <div className="flex-1 overflow-y-auto scrollbar-thin pr-1">
@@ -754,7 +754,7 @@ void loop() {
       )}
 
       {/* Wizard Action Controls */}
-      <div className="flex items-center justify-between pt-4 border-t border-white/5">
+      <div className="flex items-center justify-between pt-4 border-t border-border">
         <div>
           {step < 3 ? (
             <button
@@ -783,7 +783,7 @@ void loop() {
             <button
               type="button"
               onClick={() => setStep(step - 1)}
-              className="bg-white/5 text-slate-300 border border-white/5 px-6 py-2.5 rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 cursor-pointer"
+              className="bg-card/5 text-slate-300 border border-border px-6 py-2.5 rounded-xl hover:bg-card/10 transition-colors flex items-center gap-2 cursor-pointer"
             >
               <ArrowLeft size={16} />
               الخطوة السابقة

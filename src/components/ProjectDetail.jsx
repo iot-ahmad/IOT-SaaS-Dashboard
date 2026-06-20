@@ -132,10 +132,10 @@ export default function ProjectDetail() {
 
   if (error || !project) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
+      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
         <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
         <h3 className="text-xl font-bold text-white">خطأ في التحميل</h3>
-        <p className="text-sm text-slate-400 mt-3">{error || 'المشروع غير موجود.'}</p>
+        <p className="text-sm text-muted-foreground mt-3">{error || 'المشروع غير موجود.'}</p>
         <button
           onClick={() => navigate('/hub')}
           className="mt-6 bg-primary text-black font-bold px-6 py-2 rounded-xl hover:bg-primary/95 transition-all shadow-md shadow-primary/10"
@@ -150,7 +150,7 @@ export default function ProjectDetail() {
     <div className="max-w-5xl mx-auto space-y-6">
       
       {/* Back button & Action list */}
-      <div className="flex justify-between items-center border-b border-white/5 pb-4">
+      <div className="flex justify-between items-center border-b border-border pb-4">
         <div className="flex gap-2">
           {/* Like */}
           <button
@@ -158,7 +158,7 @@ export default function ProjectDetail() {
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
               liked
                 ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/20'
+                : 'bg-card/5 border-border text-muted-foreground hover:border-white/20'
             }`}
           >
             <ThumbsUp size={14} className={liked ? 'fill-current' : ''} />
@@ -181,7 +181,7 @@ export default function ProjectDetail() {
 
         <button
           onClick={() => navigate('/hub')}
-          className="bg-white/5 text-slate-300 border border-white/5 px-4 py-2 rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 text-xs cursor-pointer"
+          className="bg-card/5 text-slate-300 border border-border px-4 py-2 rounded-xl hover:bg-card/10 transition-colors flex items-center gap-2 text-xs cursor-pointer"
         >
           المستودع العام
           <ArrowLeft size={14} />
@@ -195,8 +195,8 @@ export default function ProjectDetail() {
         <div className="lg:col-span-1 space-y-6">
           
           {/* Author Card */}
-          <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl backdrop-blur-xl space-y-4">
-            <h4 className="text-xs font-bold text-slate-500 uppercase text-right">المطور المسؤول</h4>
+          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl backdrop-blur-xl space-y-4">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase text-right">المطور المسؤول</h4>
             <div className="flex items-center gap-3 justify-end text-right">
               <div>
                 <button
@@ -205,64 +205,64 @@ export default function ProjectDetail() {
                 >
                   {project.ownerName}
                 </button>
-                <p className="text-xs text-slate-500">@{project.ownerUsername}</p>
+                <p className="text-xs text-muted-foreground">@{project.ownerUsername}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-sm font-bold text-white uppercase shadow-md shrink-0">
+              <div className="w-10 h-10 rounded-full bg-slate-800 border border-border flex items-center justify-center text-sm font-bold text-white uppercase shadow-md shrink-0">
                 {project.ownerName.charAt(0)}
               </div>
             </div>
-            <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-3 text-xs text-slate-500">
+            <div className="flex items-center justify-between border-t border-border pt-3 mt-3 text-xs text-muted-foreground">
               <span className="font-mono">{new Date(project.createdAt).toLocaleDateString()}</span>
               <span>تاريخ النشر</span>
             </div>
           </div>
 
           {/* Project Hardware Metrics */}
-          <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl backdrop-blur-xl">
-            <h4 className="text-xs font-bold text-slate-500 uppercase text-right mb-4">التفاعل مع المشروع</h4>
+          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl backdrop-blur-xl">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase text-right mb-4">التفاعل مع المشروع</h4>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-                <Eye className="w-5 h-5 text-slate-400 mx-auto mb-1" />
+              <div className="bg-card/5 p-3 rounded-2xl border border-border">
+                <Eye className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
                 <span className="block text-sm font-black text-white font-mono">{project.metrics?.views || 0}</span>
-                <span className="text-[10px] text-slate-500">مشاهدة</span>
+                <span className="text-[10px] text-muted-foreground">مشاهدة</span>
               </div>
-              <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-                <ThumbsUp className="w-5 h-5 text-slate-400 mx-auto mb-1" />
+              <div className="bg-card/5 p-3 rounded-2xl border border-border">
+                <ThumbsUp className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
                 <span className="block text-sm font-black text-white font-mono">{project.metrics?.likes || 0}</span>
-                <span className="text-[10px] text-slate-500">إعجاب</span>
+                <span className="text-[10px] text-muted-foreground">إعجاب</span>
               </div>
-              <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
-                <Copy className="w-5 h-5 text-slate-400 mx-auto mb-1" />
+              <div className="bg-card/5 p-3 rounded-2xl border border-border">
+                <Copy className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
                 <span className="block text-sm font-black text-white font-mono">{project.metrics?.clones || 0}</span>
-                <span className="text-[10px] text-slate-500">نسخ الكود</span>
+                <span className="text-[10px] text-muted-foreground">نسخ الكود</span>
               </div>
             </div>
           </div>
 
           {/* Components List */}
-          <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl backdrop-blur-xl">
-            <h4 className="text-xs font-bold text-slate-500 uppercase text-right mb-3">القطع الإلكترونية المستخدمة</h4>
+          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl backdrop-blur-xl">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase text-right mb-3">القطع الإلكترونية المستخدمة</h4>
             <div className="flex flex-wrap gap-2 justify-end">
               {project.componentsList && project.componentsList.length > 0 ? (
                 project.componentsList.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-zinc-900 border border-white/5 text-xs text-primary font-bold"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-zinc-900 border border-border text-xs text-primary font-bold"
                   >
                     <Cpu size={12} className="shrink-0" />
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-slate-500">لم يتم تحديد قطع لهذا المشروع.</span>
+                <span className="text-xs text-muted-foreground">لم يتم تحديد قطع لهذا المشروع.</span>
               )}
             </div>
           </div>
 
           {/* Schematic Diagrams & Files */}
           {project.schematics && project.schematics.length > 0 && (
-            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl backdrop-blur-xl space-y-3">
-              <h4 className="text-xs font-bold text-slate-500 uppercase text-right">مخططات التوصيل والدوائر الكهربائية</h4>
+            <div className="bg-card/[0.01] border border-border p-6 rounded-3xl backdrop-blur-xl space-y-3">
+              <h4 className="text-xs font-bold text-muted-foreground uppercase text-right">مخططات التوصيل والدوائر الكهربائية</h4>
               <div className="space-y-2">
                 {project.schematics.map((url, idx) => (
                   <a
@@ -270,7 +270,7 @@ export default function ProjectDetail() {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between bg-white/5 border border-white/5 rounded-xl p-3 text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-all hover:border-primary/20"
+                    className="flex items-center justify-between bg-card/5 border border-border rounded-xl p-3 text-xs text-slate-300 hover:bg-card/10 hover:text-white transition-all hover:border-primary/20"
                   >
                     <FileText size={14} className="text-primary shrink-0" />
                     <span className="truncate font-mono font-medium max-w-[80%]">مخطط الدائرة الكهربائية #{idx + 1}</span>
@@ -286,16 +286,16 @@ export default function ProjectDetail() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Main Info */}
-          <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl backdrop-blur-xl space-y-4">
+          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl backdrop-blur-xl space-y-4">
             <div className="space-y-2 text-right">
               <h1 className="text-2xl md:text-3xl font-black text-white">{project.title}</h1>
-              <p className="text-sm text-slate-400 leading-relaxed">{project.summary}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{project.summary}</p>
             </div>
 
             {/* Image Gallery */}
             {project.images && project.images.length > 0 && (
               <div className="space-y-3 pt-2">
-                <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                <div className="aspect-video w-full rounded-2xl overflow-hidden border border-border bg-black/40">
                   <img src={activeImage} alt={project.title} className="w-full h-full object-contain" />
                 </div>
                 
@@ -306,7 +306,7 @@ export default function ProjectDetail() {
                         key={idx}
                         onClick={() => setActiveImage(imgUrl)}
                         className={`aspect-video w-20 rounded-xl overflow-hidden border shrink-0 transition-all ${
-                          activeImage === imgUrl ? 'border-primary scale-95 ring-2 ring-primary/45' : 'border-white/10 hover:border-white/30'
+                          activeImage === imgUrl ? 'border-primary scale-95 ring-2 ring-primary/45' : 'border-border hover:border-white/30'
                         }`}
                       >
                         <img src={imgUrl} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
@@ -319,9 +319,9 @@ export default function ProjectDetail() {
           </div>
 
           {/* Technical Documentation Markup */}
-          <div className="bg-white/[0.01] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3 mb-6">
-              <span className="text-[10px] text-slate-500 font-mono">DOCUMENTATION & CODE PREVIEW</span>
+          <div className="bg-card/[0.01] border border-border p-8 rounded-3xl backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-border pb-3 mb-6">
+              <span className="text-[10px] text-muted-foreground font-mono">DOCUMENTATION & CODE PREVIEW</span>
               <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
                 <Sparkles size={16} className="text-primary" /> التوثيق الفني والبرمجي
               </h3>

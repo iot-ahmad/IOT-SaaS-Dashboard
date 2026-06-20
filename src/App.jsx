@@ -50,20 +50,20 @@ function HubLayout({ children, user, logout }) {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex flex-col selection:bg-primary/30 overflow-x-hidden">
+    <div className="relative min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30 overflow-x-hidden">
       <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
 
       {/* ─── Top Navbar ─── */}
-      <header className="relative z-10 flex items-center justify-between py-3 px-6 md:px-12 border-b border-slate-200 dark:border-white/5 bg-white/60 dark:bg-black/60 backdrop-blur-md sticky top-0">
+      <header className="relative z-10 flex items-center justify-between py-3 px-6 md:px-12 border-b border-border bg-card/60 bg-background/60 backdrop-blur-md sticky top-0">
 
         {/* Logo + nav links */}
         <div className="flex items-center gap-6">
           <button onClick={() => navigate('/hub')} className="flex items-center gap-2.5 cursor-pointer">
             <img src="/logo_icon.png" alt="IOT365" className="w-7 h-7 object-contain" />
             <span className="text-sm font-extrabold tracking-tight">
-              <span className="text-slate-950 dark:text-white">IOT</span>
+              <span className="text-foreground">IOT</span>
               <span className="text-primary">365</span>
-              <span className="text-slate-400 dark:text-white/30 text-[10px] ml-1 font-semibold">🇯🇴 الأردن</span>
+              <span className="text-muted-foreground text-[10px] ml-1 font-semibold">🇯🇴 الأردن</span>
             </span>
           </button>
 
@@ -71,14 +71,14 @@ function HubLayout({ children, user, logout }) {
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => navigate('/hub')}
-              className="text-xs font-semibold text-slate-500 dark:text-white/50 hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
+              className="text-xs font-semibold text-muted-foreground hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
             >
               استعرض المشاريع
             </button>
             {user && (
               <button
                 onClick={() => navigate('/hub/new')}
-                className="text-xs font-semibold text-slate-500 dark:text-white/50 hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
+                className="text-xs font-semibold text-muted-foreground hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
               >
                 + نشر مشروع
               </button>
@@ -90,7 +90,7 @@ function HubLayout({ children, user, logout }) {
         <div className="flex items-center gap-2.5">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/60 hover:text-primary transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-muted border border-border text-muted-foreground dark:text-white/60 hover:text-primary transition-colors cursor-pointer"
             title="تبديل المظهر"
           >
             {isDark ? <Sun size={15} /> : <Moon size={15} />}
@@ -102,7 +102,7 @@ function HubLayout({ children, user, logout }) {
               {/* Back to dashboard */}
               <button
                 onClick={() => navigate('/')}
-                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-white/50 hover:text-primary transition-colors px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 hover:border-primary/40 bg-white/50 dark:bg-white/5 cursor-pointer"
+                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 rounded-xl border border-border hover:border-primary/40 bg-card/50 dark:bg-card/5 cursor-pointer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -121,29 +121,29 @@ function HubLayout({ children, user, logout }) {
                       {(user.displayName || user.email || 'U').charAt(0)}
                     </div>
                   )}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 dark:text-white/30">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                     <path d="m6 9 6 6 6-6"/>
                   </svg>
                 </button>
                 {/* Dropdown */}
-                <div className="absolute top-full right-0 mt-2 w-44 bg-white dark:bg-[#0b0c10] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl shadow-black/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden z-50">
-                  <div className="px-3 py-2.5 border-b border-slate-100 dark:border-white/5">
-                    <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">{user.displayName || 'مستخدم'}</p>
-                    <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+                <div className="absolute top-full right-0 mt-2 w-44 bg-card dark:bg-[#0b0c10] border border-border rounded-2xl shadow-xl shadow-black/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden z-50">
+                  <div className="px-3 py-2.5 border-b border-border">
+                    <p className="text-[11px] font-bold text-foreground truncate">{user.displayName || 'مستخدم'}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
                   </div>
                   <button
                     onClick={() => navigate('/')}
-                    className="w-full text-right text-xs text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
+                    className="w-full text-right text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
                   >
                     لوحة التحكم
                   </button>
                   <button
                     onClick={() => navigate('/hub/new')}
-                    className="w-full text-right text-xs text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
+                    className="w-full text-right text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
                   >
                     نشر مشروع جديد
                   </button>
-                  <div className="border-t border-slate-100 dark:border-white/5">
+                  <div className="border-t border-border">
                     <button
                       onClick={logout}
                       className="w-full text-right text-xs text-red-400 hover:text-red-500 hover:bg-red-500/5 px-3 py-2 transition-colors cursor-pointer"
@@ -172,17 +172,17 @@ function HubLayout({ children, user, logout }) {
       </main>
 
       {/* ─── Footer ─── */}
-      <footer className="relative z-10 border-t border-slate-200 dark:border-white/5 py-4 px-6 md:px-12 bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+      <footer className="relative z-10 border-t border-border py-4 px-6 md:px-12 bg-card/40 bg-background/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[10px] text-slate-400 dark:text-white/20 font-mono">
+          <p className="text-[10px] text-muted-foreground/60 font-mono">
             IOT365 🇯🇴 · مجتمع مطوري الأجهزة الذكية في الأردن
           </p>
           <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/hub')} className="text-[10px] text-slate-400 hover:text-primary transition-colors cursor-pointer">المشاريع</button>
+            <button onClick={() => navigate('/hub')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">المشاريع</button>
             {user ? (
-              <button onClick={() => navigate('/hub/new')} className="text-[10px] text-slate-400 hover:text-primary transition-colors cursor-pointer">نشر مشروع</button>
+              <button onClick={() => navigate('/hub/new')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">نشر مشروع</button>
             ) : (
-              <button onClick={() => navigate('/login')} className="text-[10px] text-slate-400 hover:text-primary transition-colors cursor-pointer">انضم للمجتمع الأردني 🇯🇴</button>
+              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">انضم للمجتمع الأردني 🇯🇴</button>
             )}
           </div>
         </div>
@@ -210,7 +210,7 @@ function App() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="text-primary animate-spin" size={40} />
       </div>
     );
@@ -556,12 +556,12 @@ function Dashboard({ user, logout }) {
   const mainPl = isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64';
 
   return (
-     <div className="relative h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white flex selection:bg-primary/30 overflow-hidden">
+     <div className="relative h-screen bg-background text-foreground flex selection:bg-primary/30 overflow-hidden">
       <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
 
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-20 md:hidden"
+          className="fixed inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm z-20 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

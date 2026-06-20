@@ -16,7 +16,7 @@ export default function ESP32Model() {
       >
         {/* The 3D PCB Board */}
         <div 
-          className="relative w-[320px] h-[460px] bg-zinc-900 rounded-[2px] shadow-[60px_80px_120px_rgba(0,0,0,0.9)] border border-white/5"
+          className="relative w-[320px] h-[460px] bg-zinc-900 rounded-[2px] shadow-[60px_80px_120px_rgba(0,0,0,0.9)] border border-border"
           style={{ transformStyle: 'preserve-3d' }}
         >
           {/* Subtly textured PCB surface */}
@@ -59,10 +59,10 @@ export default function ESP32Model() {
           {/* Detailed Components (Middle & Bottom Section) */}
           
           {/* LDO / IC Chip */}
-          <div className="absolute bottom-[110px] left-[80px] w-10 h-10 bg-zinc-800 rounded-sm border border-white/5 shadow-lg shadow-black/50" />
+          <div className="absolute bottom-[110px] left-[80px] w-10 h-10 bg-zinc-800 rounded-sm border border-border shadow-lg shadow-black/50" />
           
           {/* UART Chip */}
-          <div className="absolute bottom-[140px] right-[80px] w-8 h-8 bg-zinc-800 rounded-sm border border-white/5 shadow-lg shadow-black/50" />
+          <div className="absolute bottom-[140px] right-[80px] w-8 h-8 bg-zinc-800 rounded-sm border border-border shadow-lg shadow-black/50" />
 
           {/* Mixed Capacitors (Small gold/brown blocks) */}
           <div className="absolute top-[280px] left-1/2 -translate-x-1/2 w-24 grid grid-cols-4 gap-3">
@@ -73,14 +73,14 @@ export default function ESP32Model() {
 
           {/* USB-C / Micro-USB connector mockup */}
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-10 bg-zinc-700 border border-zinc-500 rounded-t-sm shadow-xl flex items-center justify-center">
-             <div className="w-10 h-4 bg-black rounded-full border border-white/10" />
+             <div className="w-10 h-4 bg-black rounded-full border border-border" />
           </div>
 
           {/* Buttons (BOOT & EN/RESET) */}
-          <div className="absolute bottom-[60px] left-[50px] w-6 h-6 bg-zinc-800 border-2 border-white/10 rounded-sm flex items-center justify-center p-1 cursor-pointer hover:bg-zinc-700 transition-colors">
+          <div className="absolute bottom-[60px] left-[50px] w-6 h-6 bg-zinc-800 border-2 border-border rounded-sm flex items-center justify-center p-1 cursor-pointer hover:bg-zinc-700 transition-colors">
              <div className="w-full h-full bg-zinc-900 rounded-full" />
           </div>
-          <div className="absolute bottom-[60px] right-[50px] w-6 h-6 bg-zinc-800 border-2 border-white/10 rounded-sm flex items-center justify-center p-1 cursor-pointer hover:bg-zinc-700 transition-colors">
+          <div className="absolute bottom-[60px] right-[50px] w-6 h-6 bg-zinc-800 border-2 border-border rounded-sm flex items-center justify-center p-1 cursor-pointer hover:bg-zinc-700 transition-colors">
              <div className="w-full h-full bg-zinc-900 rounded-full" />
           </div>
 

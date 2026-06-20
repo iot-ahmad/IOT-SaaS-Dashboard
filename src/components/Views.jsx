@@ -67,7 +67,7 @@ const OnboardingWizard = () => {
   ];
 
   return (
-    <div className="bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl relative overflow-hidden mt-6 shadow-xl">
+    <div className="bg-card/[0.02] border border-border rounded-3xl p-6 sm:p-8 backdrop-blur-xl relative overflow-hidden mt-6 shadow-xl">
       <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-violet-600/5 rounded-full blur-3xl -z-10" />
       
@@ -75,10 +75,10 @@ const OnboardingWizard = () => {
         <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary tracking-wide uppercase">
           دليل البدء السريع · Quick Start Guide
         </span>
-        <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mt-3">
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-3">
           مرحباً بك في منصة IOT365 الذكية
         </h3>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-white/40 mt-2 leading-relaxed">
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
           اتبع الخطوات الأربع البسيطة التالية لربط جهاز ESP32 الخاص بك وبدء التحكم به خلال دقائق معدودة
         </p>
       </div>
@@ -100,18 +100,18 @@ const OnboardingWizard = () => {
               </div>
               
               {/* Step number badge */}
-              <span className="mt-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/40 font-mono">
+              <span className="mt-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-muted border border-border text-muted-foreground font-mono">
                 STEP 0{step.number}
               </span>
 
-              <h4 className="text-sm font-bold text-slate-800 dark:text-white mt-3 mb-0.5">
+              <h4 className="text-sm font-bold text-foreground mt-3 mb-0.5">
                 {step.title}
               </h4>
               <span className="text-[10px] text-primary/80 font-mono uppercase tracking-wider">
                 {step.subTitle}
               </span>
               
-              <p className="text-xs text-slate-500 dark:text-white/30 mt-2 leading-relaxed max-w-[200px] md:max-w-none">
+              <p className="text-xs text-muted-foreground dark:text-white/30 mt-2 leading-relaxed max-w-[200px] md:max-w-none">
                 {step.desc}
               </p>
             </div>
@@ -144,7 +144,7 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
       <ESP32Model />
       <div className="relative z-10 space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Your Projects</h2>
+          <h2 className="text-2xl font-bold text-foreground">Your Projects</h2>
           <button
             onClick={() => setShowAddModal(true)}
             style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
@@ -235,12 +235,12 @@ export const OfficeView = () => (
           <div>
             <div className="flex items-center gap-2 mb-2 text-orange-400">
               <Users size={20} />
-              <h3 className="text-slate-800 dark:text-white/80 font-medium">Occupancy</h3>
+              <h3 className="text-foreground/80 font-medium">Occupancy</h3>
             </div>
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">14 People</span>
+            <span className="text-2xl font-bold text-foreground">14 People</span>
           </div>
         </div>
-        <p className="text-xs text-slate-600 dark:text-white/50 mt-4">Meeting Room A: Occupied</p>
+        <p className="text-xs text-foreground/90/50 mt-4">Meeting Room A: Occupied</p>
       </Card>
 
       <Card>
@@ -248,9 +248,9 @@ export const OfficeView = () => (
           <div>
             <div className="flex items-center gap-2 mb-2 text-teal-400">
               <Thermometer size={20} />
-              <h3 className="text-slate-800 dark:text-white/80 font-medium">Air Quality</h3>
+              <h3 className="text-foreground/80 font-medium">Air Quality</h3>
             </div>
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">Excellent</span>
+            <span className="text-2xl font-bold text-foreground">Excellent</span>
           </div>
         </div>
         <p className="text-xs text-teal-400 mt-4">CO2: 420 ppm</p>
@@ -258,12 +258,12 @@ export const OfficeView = () => (
 
       <Card className="md:col-span-2">
         <div className="flex items-center gap-2 mb-6">
-          <Briefcase className="text-slate-600 dark:text-white/40" size={20} />
-          <h3 className="text-slate-800 dark:text-white/80 font-medium">Desk Bookings</h3>
+          <Briefcase className="text-foreground/90/40" size={20} />
+          <h3 className="text-foreground/80 font-medium">Desk Bookings</h3>
         </div>
         <div className="grid grid-cols-4 gap-2">
           {[1,2,3,4,5,6,7,8].map(i => (
-            <div key={i} className={`h-8 rounded-md flex items-center justify-center text-[10px] font-bold ${i < 5 ? 'bg-primary/20 text-primary' : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/20'}`}>
+            <div key={i} className={`h-8 rounded-md flex items-center justify-center text-[10px] font-bold ${i < 5 ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground/60'}`}>
               D{i}
             </div>
           ))}

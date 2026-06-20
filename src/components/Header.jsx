@@ -58,7 +58,7 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
   }
 
   return (
-    <header className="flex items-center justify-between py-4 px-6 md:px-8 border-b border-slate-200 dark:border-white/5 bg-white/50 dark:bg-black/50 backdrop-blur-sm sticky top-0 z-10">
+    <header className="flex items-center justify-between py-4 px-6 md:px-8 border-b border-border bg-card/50 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
         <button
@@ -81,8 +81,8 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
         </button>
 
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">{title}</h1>
-          <p className="text-slate-500 dark:text-white/50 text-xs md:text-sm mt-0.5">{subtitle}</p>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">{title}</h1>
+          <p className="text-muted-foreground text-xs md:text-sm mt-0.5">{subtitle}</p>
         </div>
       </div>
 

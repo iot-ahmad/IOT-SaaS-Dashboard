@@ -40,7 +40,7 @@ export const SoilMoistureCard = ({ deviceStates, publish }) => {
               contentStyle={{ backgroundColor: '#000000', borderColor: '#ffffff20', borderRadius: '8px' }}
               itemStyle={{ color: '#424242' }}
             />
-            <Line type="monotone" dataKey="value" stroke="#3f3f3f" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: '#535353', stroke: '#000000', strokeWidth: 2 }} />
+            <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: 'var(--primary)', stroke: 'var(--background)', strokeWidth: 2 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -114,10 +114,10 @@ export const WaterTankCard = ({ deviceStates }) => {
           />
         </svg>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-          <span className="text-2xl font-bold text-slate-900 dark:text-white">{level}%</span>
+          <span className="text-2xl font-bold text-foreground">{level}%</span>
         </div>
       </div>
-      <p className="text-xs text-slate-600 dark:text-white/50 mt-4">Capacity: 10,000L</p>
+      <p className="text-xs text-foreground/90/50 mt-4">Capacity: 10,000L</p>
     </Card>
   );
 };
@@ -134,23 +134,23 @@ export const GreenhouseTempCard = ({ deviceStates }) => {
             <Thermometer className="icon-destructive" size={20} />
             <h3 style={{ color: 'var(--card-foreground)' }} className="font-medium">Greenhouse Temp</h3>
           </div>
-          <span className="text-5xl font-bold text-slate-900 dark:text-white">{temp}°</span>
+          <span className="text-5xl font-bold text-foreground">{temp}°</span>
         </div>
       </div>
       
       <div className="mt-4">
-        <div className="flex justify-between text-xs text-slate-600 dark:text-white/50 mb-2">
+        <div className="flex justify-between text-xs text-foreground/90/50 mb-2">
           <span>Min: 18°</span>
           <span>Target: 24°</span>
           <span>Max: 32°</span>
         </div>
-        <div className="h-2 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden flex">
+        <div className="h-2 w-full bg-secondary rounded-full overflow-hidden flex">
            <div style={{ background: 'var(--accent)', width: '25%' }} className="h-full" />
            <div style={{ background: 'var(--secondary)', width: '40%' }} className="h-full" />
            <div style={{ background: 'var(--destructive)', width: '35%' }} className="h-full" />
         </div>
         <div className="relative w-full h-2 -mt-2">
-           <div className="absolute w-3 h-3 bg-white rounded-full top-1/2 transform -translate-y-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all" style={{ left: '60%' }}></div>
+           <div className="absolute w-3 h-3 bg-card rounded-full top-1/2 transform -translate-y-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all" style={{ left: '60%' }}></div>
         </div>
       </div>
     </Card>

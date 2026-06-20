@@ -329,10 +329,10 @@ export default function UserProfile({ currentUser }) {
         <h2 className="text-2xl font-black text-white mb-2">
           مرحباً، {currentUser.displayName?.split(' ')[0] || 'مطور'} 👋
         </h2>
-        <p className="text-sm text-slate-400 mb-2">
+        <p className="text-sm text-muted-foreground mb-2">
           أنت على وشك إنشاء ملفك الشخصي في <span className="text-primary font-bold">IOT365 Hub</span>
         </p>
-        <p className="text-xs text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed">
+        <p className="text-xs text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
           اختر اسم مستخدم فريد ليصبح رابطك الشخصي على المنصة ويظهر مشاريعك للعالم.
         </p>
 
@@ -343,9 +343,9 @@ export default function UserProfile({ currentUser }) {
             { icon: '📦', label: 'نشر مشاريع' },
             { icon: '🌍', label: 'مجتمع عالمي' },
           ].map((f) => (
-            <div key={f.label} className="bg-white/[0.03] border border-white/10 rounded-2xl p-3">
+            <div key={f.label} className="bg-card/[0.03] border border-border rounded-2xl p-3">
               <span className="text-2xl">{f.icon}</span>
-              <p className="text-[10px] text-slate-400 mt-1 font-semibold">{f.label}</p>
+              <p className="text-[10px] text-muted-foreground mt-1 font-semibold">{f.label}</p>
             </div>
           ))}
         </div>
@@ -358,23 +358,23 @@ export default function UserProfile({ currentUser }) {
           إعداد الملف الشخصي الآن
         </button>
 
-        <p className="text-[10px] text-slate-600 mt-4">يمكنك تعديل هذه المعلومات لاحقاً في أي وقت</p>
+        <p className="text-[10px] text-muted-foreground mt-4">يمكنك تعديل هذه المعلومات لاحقاً في أي وقت</p>
 
         {/* Render the edit modal so they can fill in their info */}
         {showEditModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-[#0b0c10] border border-white/10 p-6 rounded-3xl w-full max-w-lg relative text-slate-200 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div className="bg-[#0b0c10] border border-border p-6 rounded-3xl w-full max-w-lg relative text-slate-200 shadow-2xl overflow-y-auto max-h-[90vh]">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors cursor-pointer"
               >
                 <X size={20} />
               </button>
-              <h3 className="text-xl font-bold mb-1 text-white text-right flex items-center justify-end gap-2 border-b border-white/5 pb-3">
+              <h3 className="text-xl font-bold mb-1 text-white text-right flex items-center justify-end gap-2 border-b border-border pb-3">
                 أنشئ ملفك الشخصي
                 <Sparkles size={18} className="text-primary" />
               </h3>
-              <p className="text-xs text-slate-500 text-right mb-5">ستظهر معلوماتك على صفحتك العامة في Hub</p>
+              <p className="text-xs text-muted-foreground text-right mb-5">ستظهر معلوماتك على صفحتك العامة في Hub</p>
 
               {modalError && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl flex items-center gap-2 text-xs mb-4">
@@ -405,30 +405,30 @@ export default function UserProfile({ currentUser }) {
                     </div>
                     <input type="file" accept="image/*" onChange={handleAvatarChange} className="absolute inset-0 opacity-0 cursor-pointer" />
                   </div>
-                  <span className="text-[10px] text-slate-500">{avatarUploading ? 'جاري الرفع...' : 'اضغط لرفع صورة شخصية'}</span>
+                  <span className="text-[10px] text-muted-foreground">{avatarUploading ? 'جاري الرفع...' : 'اضغط لرفع صورة شخصية'}</span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">اسم المستخدم الفريد *</label>
+                    <label className="block text-xs font-bold text-muted-foreground mb-1">اسم المستخدم الفريد *</label>
                     <input required type="text" value={editUsername} onChange={e => setEditUsername(e.target.value)}
                       placeholder="e.g. smart_dev" dir="ltr"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left" />
-                    <p className="text-[9px] text-slate-500 mt-1">رابطك: hub/{editUsername || 'username'}</p>
+                      className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left" />
+                    <p className="text-[9px] text-muted-foreground mt-1">رابطك: hub/{editUsername || 'username'}</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">الاسم الظاهر *</label>
+                    <label className="block text-xs font-bold text-muted-foreground mb-1">الاسم الظاهر *</label>
                     <input required type="text" value={editDisplayName} onChange={e => setEditDisplayName(e.target.value)}
                       placeholder="مثال: أحمد المحمد"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
+                      className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">العنوان التعريفي</label>
+                  <label className="block text-xs font-bold text-muted-foreground mb-1">العنوان التعريفي</label>
                   <input type="text" value={editHeadline} onChange={e => setEditHeadline(e.target.value)}
                     placeholder="مهندس عتاد وأنظمة مدمجة"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
+                    className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
                 </div>
 
                 <div className="pt-3 flex gap-3">
@@ -437,7 +437,7 @@ export default function UserProfile({ currentUser }) {
                     إنشاء الملف الشخصي
                   </button>
                   <button type="button" onClick={() => setShowEditModal(false)}
-                    className="flex-1 bg-white/5 border border-white/5 text-slate-400 font-bold py-2.5 rounded-xl text-xs cursor-pointer">
+                    className="flex-1 bg-card/5 border border-border text-muted-foreground font-bold py-2.5 rounded-xl text-xs cursor-pointer">
                     لاحقاً
                   </button>
                 </div>
@@ -452,10 +452,10 @@ export default function UserProfile({ currentUser }) {
   // ── 404: profile not found and user is a guest ───────────────────
   if (error || !profileUser) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
+      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
         <AlertCircle className="w-16 h-16 text-violet-400 mx-auto mb-4" />
         <h3 className="text-xl font-bold text-white">الملف الشخصي غير متاح</h3>
-        <p className="text-sm text-slate-400 mt-3">{error || 'لم يتم العثور على هذا المستخدم.'}</p>
+        <p className="text-sm text-muted-foreground mt-3">{error || 'لم يتم العثور على هذا المستخدم.'}</p>
         <button
           onClick={() => navigate('/hub')}
           className="mt-6 bg-primary text-black font-bold px-6 py-2 rounded-xl hover:bg-primary/95 transition-all shadow-md shadow-primary/10"
@@ -470,7 +470,7 @@ export default function UserProfile({ currentUser }) {
     <div className="max-w-5xl mx-auto space-y-6">
       
       {/* Developer Profile Header Card */}
-      <div className="bg-gradient-to-br from-white/[0.01] to-white/[0.03] border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden shadow-xl">
+      <div className="bg-gradient-to-br from-white/[0.01] to-white/[0.03] border border-border rounded-3xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden shadow-xl">
         
         {/* Glow backdrop on profile card */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
@@ -481,7 +481,7 @@ export default function UserProfile({ currentUser }) {
           {isOwnProfile && (
             <button
               onClick={() => setShowEditModal(true)}
-              className="bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/30 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
+              className="bg-card/5 hover:bg-card/10 border border-white/15 hover:border-white/30 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
             >
               <Edit3 size={14} />
               تعديل بروفايل المطور
@@ -509,31 +509,31 @@ export default function UserProfile({ currentUser }) {
               {profileUser.headline ? (
                 <p className="text-sm font-semibold text-slate-300">{profileUser.headline}</p>
               ) : (
-                <p className="text-xs text-slate-500 italic">مطور IoT هاوٍ</p>
+                <p className="text-xs text-muted-foreground italic">مطور IoT هاوٍ</p>
               )}
               {profileUser.bio && (
-                <p className="text-xs text-slate-400 max-w-lg leading-relaxed mt-2">{profileUser.bio}</p>
+                <p className="text-xs text-muted-foreground max-w-lg leading-relaxed mt-2">{profileUser.bio}</p>
               )}
 
               {/* Social Links Icons */}
               <div className="flex gap-4 justify-center md:justify-end pt-3">
                 {profileUser.socialLinks?.github && (
-                  <a href={profileUser.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors" title="Github">
+                  <a href={profileUser.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors" title="Github">
                     <GithubIcon size={18} />
                   </a>
                 )}
                 {profileUser.socialLinks?.linkedin && (
-                  <a href={profileUser.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors" title="LinkedIn">
+                  <a href={profileUser.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors" title="LinkedIn">
                     <LinkedinIcon size={18} />
                   </a>
                 )}
                 {profileUser.socialLinks?.website && (
-                  <a href={profileUser.socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors" title="Personal Website">
+                  <a href={profileUser.socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors" title="Personal Website">
                     <Globe size={18} />
                   </a>
                 )}
                 {!profileUser.socialLinks?.github && !profileUser.socialLinks?.linkedin && !profileUser.socialLinks?.website && (
-                  <span className="text-[10px] text-slate-600">لا توجد روابط اجتماعية مضافة</span>
+                  <span className="text-[10px] text-muted-foreground">لا توجد روابط اجتماعية مضافة</span>
                 )}
               </div>
             </div>
@@ -552,10 +552,10 @@ export default function UserProfile({ currentUser }) {
         </h3>
 
         {projects.length === 0 ? (
-          <div className="text-center py-16 bg-white/[0.01] border border-white/5 rounded-3xl p-8 backdrop-blur-xl">
-            <FolderCode className="w-14 h-14 text-slate-600 mx-auto mb-3" />
-            <h4 className="text-sm font-bold text-slate-400">لا توجد مشاريع عامة</h4>
-            <p className="text-xs text-slate-600 mt-1">لم يقم هذا المطور بنشر أي مشاريع عامة بعد.</p>
+          <div className="text-center py-16 bg-card/[0.01] border border-border rounded-3xl p-8 backdrop-blur-xl">
+            <FolderCode className="w-14 h-14 text-muted-foreground mx-auto mb-3" />
+            <h4 className="text-sm font-bold text-muted-foreground">لا توجد مشاريع عامة</h4>
+            <p className="text-xs text-muted-foreground mt-1">لم يقم هذا المطور بنشر أي مشاريع عامة بعد.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -563,17 +563,17 @@ export default function UserProfile({ currentUser }) {
               <div
                 key={proj.id}
                 onClick={() => navigate(`/hub/project/${proj.id}`)}
-                className="group bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-primary/50 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between h-[300px] relative overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-primary/5 cursor-pointer"
+                className="group bg-card/[0.02] hover:bg-card/[0.04] border border-border hover:border-primary/50 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between h-[300px] relative overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-primary/5 cursor-pointer"
               >
                 <div>
                   <div className="flex justify-between items-start mb-4">
-                    <span className="text-[9px] text-slate-500 font-mono">{new Date(proj.createdAt).toLocaleDateString()}</span>
+                    <span className="text-[9px] text-muted-foreground font-mono">{new Date(proj.createdAt).toLocaleDateString()}</span>
                     {proj.images && proj.images.length > 0 ? (
-                      <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/10 shrink-0">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden border border-border shrink-0">
                         <img src={proj.images[0]} alt={proj.title} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-card/5 border border-border flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0">
                         <Cpu size={20} />
                       </div>
                     )}
@@ -581,7 +581,7 @@ export default function UserProfile({ currentUser }) {
                   <h3 className="text-base font-extrabold text-white group-hover:text-primary transition-colors text-right line-clamp-1">
                     {proj.title}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-2 text-right leading-relaxed line-clamp-3">
+                  <p className="text-xs text-muted-foreground mt-2 text-right leading-relaxed line-clamp-3">
                     {proj.summary}
                   </p>
                 </div>
@@ -591,14 +591,14 @@ export default function UserProfile({ currentUser }) {
                     {proj.componentsList && proj.componentsList.slice(0, 3).map((tag, idx) => (
                       <span
                         key={idx}
-                        className="text-[9px] font-bold px-2 py-1 rounded-lg bg-zinc-900 border border-white/5 text-slate-400 group-hover:border-primary/20 group-hover:text-primary transition-colors"
+                        className="text-[9px] font-bold px-2 py-1 rounded-lg bg-zinc-900 border border-border text-muted-foreground group-hover:border-primary/20 group-hover:text-primary transition-colors"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-4 text-[10px] text-slate-500 font-mono">
+                  <div className="flex items-center justify-between border-t border-border pt-3 mt-4 text-[10px] text-muted-foreground font-mono">
                     <div className="flex items-center gap-1">
                       <Eye size={12} />
                       <span>{proj.metrics?.views || 0}</span>
@@ -622,16 +622,16 @@ export default function UserProfile({ currentUser }) {
       {/* Edit Profile Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0b0c10] border border-white/10 p-6 rounded-3xl w-full max-w-lg relative text-slate-200 shadow-2xl overflow-y-auto max-h-[90vh] scrollbar-thin">
+          <div className="bg-[#0b0c10] border border-border p-6 rounded-3xl w-full max-w-lg relative text-slate-200 shadow-2xl overflow-y-auto max-h-[90vh] scrollbar-thin">
             
             <button
               onClick={() => setShowEditModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors cursor-pointer"
             >
               <X size={20} />
             </button>
 
-            <h3 className="text-xl font-bold mb-4 text-white text-right flex items-center justify-end gap-2 border-b border-white/5 pb-2">
+            <h3 className="text-xl font-bold mb-4 text-white text-right flex items-center justify-end gap-2 border-b border-border pb-2">
               تعديل ملف المطور التعريفي
               <Sparkles size={18} className="text-primary" />
             </h3>
@@ -672,66 +672,66 @@ export default function UserProfile({ currentUser }) {
                     className="absolute inset-0 opacity-0 cursor-pointer"
                   />
                 </div>
-                <span className="text-[10px] text-slate-500">
+                <span className="text-[10px] text-muted-foreground">
                   {avatarUploading ? 'جاري الرفع والمعالجة...' : 'اضغط لتغيير الصورة الشخصية'}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 text-right">اسم المستخدم الفريد (Vanity URL) *</label>
+                  <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">اسم المستخدم الفريد (Vanity URL) *</label>
                   <input
                     required
                     type="text"
                     value={editUsername}
                     onChange={(e) => setEditUsername(e.target.value)}
                     placeholder="e.g. smart_dev"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left"
+                    className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left"
                     dir="ltr"
                   />
-                  <p className="text-[9px] text-slate-500 mt-1">يستخدم كـ Vanity URL: (domain/{editUsername || 'username'})</p>
+                  <p className="text-[9px] text-muted-foreground mt-1">يستخدم كـ Vanity URL: (domain/{editUsername || 'username'})</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 text-right">الاسم الظاهر للمجتمع *</label>
+                  <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">الاسم الظاهر للمجتمع *</label>
                   <input
                     required
                     type="text"
                     value={editDisplayName}
                     onChange={(e) => setEditDisplayName(e.target.value)}
                     placeholder="مثال: أحمد المحمد"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white"
+                    className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1 text-right">العنوان التعريفي (Headline)</label>
+                <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">العنوان التعريفي (Headline)</label>
                 <input
                   type="text"
                   value={editHeadline}
                   onChange={(e) => setEditHeadline(e.target.value)}
                   placeholder="مثال: مهندس عتاد وأنظمة مدمجة"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white"
+                  className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1 text-right">السيرة الذاتية القصيرة (Bio)</label>
+                <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">السيرة الذاتية القصيرة (Bio)</label>
                 <textarea
                   rows={3}
                   value={editBio}
                   onChange={(e) => setEditBio(e.target.value)}
                   placeholder="حدثنا باختصار عن اهتماماتك الهندسية وتجاربك البرمجية..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white resize-none"
+                  className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white resize-none"
                 />
               </div>
 
               {/* Social links Inputs */}
-              <div className="space-y-3 pt-2 border-t border-white/5">
-                <h4 className="text-xs font-bold text-slate-500 uppercase text-right">الروابط المهنية والاجتماعية</h4>
+              <div className="space-y-3 pt-2 border-t border-border">
+                <h4 className="text-xs font-bold text-muted-foreground uppercase text-right">الروابط المهنية والاجتماعية</h4>
                 
                 <div className="grid grid-cols-1 gap-2.5">
-                  <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-primary transition-all">
+                  <div className="flex items-center bg-card/5 border border-border rounded-xl px-3 focus-within:border-primary transition-all">
                     <input
                       type="url"
                       value={editGithub}
@@ -740,10 +740,10 @@ export default function UserProfile({ currentUser }) {
                       className="flex-1 bg-transparent border-none py-2 px-2 focus:outline-none text-xs text-left font-mono text-slate-300"
                       dir="ltr"
                     />
-                    <GithubIcon size={14} className="text-slate-400 shrink-0" />
+                    <GithubIcon size={14} className="text-muted-foreground shrink-0" />
                   </div>
 
-                  <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-primary transition-all">
+                  <div className="flex items-center bg-card/5 border border-border rounded-xl px-3 focus-within:border-primary transition-all">
                     <input
                       type="url"
                       value={editLinkedin}
@@ -752,10 +752,10 @@ export default function UserProfile({ currentUser }) {
                       className="flex-1 bg-transparent border-none py-2 px-2 focus:outline-none text-xs text-left font-mono text-slate-300"
                       dir="ltr"
                     />
-                    <LinkedinIcon size={14} className="text-slate-400 shrink-0" />
+                    <LinkedinIcon size={14} className="text-muted-foreground shrink-0" />
                   </div>
 
-                  <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 focus-within:border-primary transition-all">
+                  <div className="flex items-center bg-card/5 border border-border rounded-xl px-3 focus-within:border-primary transition-all">
                     <input
                       type="url"
                       value={editWebsite}
@@ -764,7 +764,7 @@ export default function UserProfile({ currentUser }) {
                       className="flex-1 bg-transparent border-none py-2 px-2 focus:outline-none text-xs text-left font-mono text-slate-300"
                       dir="ltr"
                     />
-                    <Globe size={14} className="text-slate-400 shrink-0" />
+                    <Globe size={14} className="text-muted-foreground shrink-0" />
                   </div>
                 </div>
               </div>
@@ -780,7 +780,7 @@ export default function UserProfile({ currentUser }) {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="flex-1 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 font-bold py-2.5 rounded-xl transition-all text-xs cursor-pointer"
+                  className="flex-1 bg-card/5 hover:bg-card/10 border border-border text-muted-foreground font-bold py-2.5 rounded-xl transition-all text-xs cursor-pointer"
                 >
                   إلغاء
                 </button>

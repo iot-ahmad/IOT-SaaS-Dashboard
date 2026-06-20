@@ -13,7 +13,7 @@ function CopyBtn({ text }) {
     <button
       onClick={handle}
       className={`flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-lg font-semibold transition-all ${
-        copied ? 'bg-primary/20 text-primary' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/40 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white'
+        copied ? 'bg-primary/20 text-primary' : 'bg-muted text-foreground/90/40 hover:bg-secondary hover:text-foreground'
       }`}
     >
       {copied ? <Check size={12} /> : <Copy size={12} />}
@@ -29,10 +29,10 @@ function CodeBlock({ code, language = 'cpp' }) {
       <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
         <CopyBtn text={code} />
       </div>
-      <pre className="bg-[#050608] border border-slate-200 dark:border-white/[0.07] rounded-xl p-5 overflow-x-auto text-[11.5px] leading-relaxed font-mono text-slate-700 dark:text-white/70 scrollbar-thin text-left ltr-text">
+      <pre className="bg-[#050608] border border-border dark:border-white/[0.07] rounded-xl p-5 overflow-x-auto text-[11.5px] leading-relaxed font-mono text-foreground/70 scrollbar-thin text-left ltr-text">
         <code>{code}</code>
       </pre>
-      <div className="absolute top-3 left-3 text-[9px] text-slate-400 dark:text-white/20 font-mono uppercase tracking-widest pointer-events-none">
+      <div className="absolute top-3 left-3 text-[9px] text-muted-foreground/60 font-mono uppercase tracking-widest pointer-events-none">
         {language}
       </div>
     </div>
@@ -271,13 +271,13 @@ export default function DeveloperGuide({ userUID }) {
       let line = part.content;
       if (line.trim() === '') return <div key={idx} className="h-1.5" />;
 
-      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 px-1.5 py-0.5 rounded font-mono text-amber-500 dark:text-amber-300 text-[10px]">$1</code></bdi>');
-      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>');
+      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-muted bg-background/40 border border-border px-1.5 py-0.5 rounded font-mono text-amber-500 dark:text-amber-300 text-[10px]">$1</code></bdi>');
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
 
       if (/^\*(?!\*)/.test(line.trim())) {
         html = html.trim().substring(1).trim();
         return (
-          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-slate-700 dark:text-white/70 text-right rtl-text">
+          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/70 text-right rtl-text">
             <span className="text-primary mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
             <span dangerouslySetInnerHTML={{ __html: html }} />
           </div>
@@ -287,30 +287,30 @@ export default function DeveloperGuide({ userUID }) {
       if (line.trim().startsWith('>')) {
         html = html.trim().substring(1).trim();
         return (
-          <blockquote key={idx} className="border-r-2 border-primary/50 pr-3 pl-0 my-2 text-xs text-slate-500 dark:text-white/40 italic bg-slate-50 dark:bg-white/[0.01] py-1 text-right rtl-text rounded-l-md" dangerouslySetInnerHTML={{ __html: html }} />
+          <blockquote key={idx} className="border-r-2 border-primary/50 pr-3 pl-0 my-2 text-xs text-muted-foreground italic bg-background dark:bg-card/[0.01] py-1 text-right rtl-text rounded-l-md" dangerouslySetInnerHTML={{ __html: html }} />
         );
       }
 
       return (
-        <p key={idx} className="text-xs text-slate-700 dark:text-white/70 leading-relaxed mt-0.5 text-right rtl-text" dangerouslySetInnerHTML={{ __html: html }} />
+        <p key={idx} className="text-xs text-foreground/70 leading-relaxed mt-0.5 text-right rtl-text" dangerouslySetInnerHTML={{ __html: html }} />
       );
     });
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-black border border-slate-200 dark:border-white/[0.08] rounded-3xl shadow-xl overflow-hidden" style={{ height: 'calc(100vh - 120px)' }}>
+    <div className="flex flex-col h-full bg-card bg-background border border-border dark:border-white/[0.08] rounded-3xl shadow-xl overflow-hidden" style={{ height: 'calc(100vh - 120px)' }}>
 
       {/* ── Chat Header ────────────────────────────────────────────── */}
-      <div className="bg-white dark:bg-black border-b border-slate-200 dark:border-white/10 px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
+      <div className="bg-card bg-background border-b border-border px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
         <div className="flex items-center gap-4">
           <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.2)] shrink-0 overflow-hidden">
             <img src="/logo_icon.png" alt="Bot" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'; }} />
           </div>
           <div className="text-left">
-            <h2 className="font-extrabold text-slate-900 dark:text-white text-base">IOT365 Smart Assistant</h2>
+            <h2 className="font-extrabold text-foreground text-base">IOT365 Smart Assistant</h2>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <p className="text-[11px] text-slate-500 dark:text-white/40 font-medium">مساعدك الذكي لمشاريع ESP32 و MQTT</p>
+              <p className="text-[11px] text-muted-foreground font-medium">مساعدك الذكي لمشاريع ESP32 و MQTT</p>
             </div>
           </div>
         </div>
@@ -318,16 +318,16 @@ export default function DeveloperGuide({ userUID }) {
         <div className="flex items-center gap-3">
           {/* UID Badge */}
           {userUID && (
-            <div className="hidden sm:flex bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 items-center gap-2">
-              <p className="text-[9px] text-slate-400 dark:text-white/30 uppercase font-bold tracking-wider">UID</p>
-              <span className="font-mono text-xs font-bold text-slate-700 dark:text-white/80">{userUID.substring(0, 8)}...</span>
+            <div className="hidden sm:flex bg-muted border border-border rounded-xl px-3 py-2 items-center gap-2">
+              <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider">UID</p>
+              <span className="font-mono text-xs font-bold text-foreground/80">{userUID.substring(0, 8)}...</span>
               <CopyBtn text={userUID} />
             </div>
           )}
           {/* Clear chat */}
           <button
             onClick={() => setMessages([{ id: 1, sender: 'bot', text: `مرحباً بك! أنا مساعد IOT365 الذكي 🤖\n\nيمكنني مساعدتك في أي سؤال بخصوص ربط الـ ESP32، بنية الـ Topics، كتابة الأكواد، حفظ التصاميم، أو أي استفسار تقني آخر.\n\nاسألني بحرية! 🚀` }])}
-            className="p-2.5 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+            className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
             title="مسح المحادثة"
           >
             <RefreshCw size={16} />
@@ -336,7 +336,7 @@ export default function DeveloperGuide({ userUID }) {
       </div>
 
       {/* ── Messages Area ───────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-50/50 dark:bg-black scrollbar-thin">
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-background/50 bg-background scrollbar-thin">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -351,7 +351,7 @@ export default function DeveloperGuide({ userUID }) {
             <div dir="rtl" className={`p-4 rounded-2xl text-right rtl-text border ${
               msg.sender === 'user'
                 ? 'bg-primary text-black border-transparent rounded-tr-none text-sm font-semibold shadow-lg shadow-primary/20'
-                : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.07] text-slate-800 dark:text-white/90 rounded-tl-none space-y-1 shadow-sm'
+                : 'bg-card dark:bg-card/[0.03] border-border dark:border-white/[0.07] text-foreground/90 rounded-tl-none space-y-1 shadow-sm'
             }`}>
               {msg.sender === 'user' ? (
                 <p className="leading-relaxed text-right rtl-text"><bdi>{msg.text}</bdi></p>
@@ -368,7 +368,7 @@ export default function DeveloperGuide({ userUID }) {
             <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
               <img src="/logo_icon.png" alt="Bot" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; }} />
             </div>
-            <div className="p-4 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.07] rounded-2xl rounded-tl-none flex items-center gap-1.5">
+            <div className="p-4 bg-card dark:bg-card/[0.03] border border-border dark:border-white/[0.07] rounded-2xl rounded-tl-none flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '150ms' }} />
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -380,12 +380,12 @@ export default function DeveloperGuide({ userUID }) {
       </div>
 
       {/* ── Input Box & Suggestions (Vercel v0 Style) ────────────────── */}
-      <div className="p-6 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 shrink-0 rounded-b-3xl flex flex-col gap-4">
+      <div className="p-6 bg-card bg-background border-t border-border shrink-0 rounded-b-3xl flex flex-col gap-4">
         
         {/* Input Box */}
         <form
           onSubmit={(e) => { e.preventDefault(); if (inputVal.trim() && !isTyping) { handleSend(); adjustHeight(true); } }}
-          className="relative bg-slate-50 dark:bg-[#0b0c10] rounded-xl border border-slate-200 dark:border-neutral-800 transition-all focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20"
+          className="relative bg-background dark:bg-[#0b0c10] rounded-xl border border-border dark:border-neutral-800 transition-all focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20"
         >
           <div className="overflow-y-auto">
             <textarea
@@ -397,22 +397,22 @@ export default function DeveloperGuide({ userUID }) {
               }}
               onKeyDown={handleKeyDown}
               placeholder="اكتب سؤالك هنا... (مثال: كيف أربط ESP32 بالـ DHT22؟)"
-              className="w-full px-4 py-3 resize-none bg-transparent border-none text-slate-800 dark:text-white text-sm focus:outline-none placeholder:text-slate-400 dark:placeholder:text-neutral-500 min-h-[60px]"
+              className="w-full px-4 py-3 resize-none bg-transparent border-none text-foreground text-sm focus:outline-none placeholder:text-muted-foreground dark:placeholder:text-neutral-500 min-h-[60px]"
               style={{
                 overflow: "hidden",
               }}
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 border-t border-slate-100 dark:border-neutral-900 bg-slate-50/50 dark:bg-[#0b0c10]/50 rounded-b-xl">
+          <div className="flex items-center justify-between p-3 border-t border-border dark:border-neutral-900 bg-background/50 dark:bg-[#0b0c10]/50 rounded-b-xl">
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="group p-2 hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1 text-slate-500 dark:text-zinc-400"
+                className="group p-2 hover:bg-muted dark:hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1 text-muted-foreground dark:text-zinc-400"
                 title="إرفاق ملف"
               >
-                <Paperclip className="w-4 h-4 text-slate-600 dark:text-white" />
-                <span className="text-[10px] text-slate-500 dark:text-zinc-400 hidden group-hover:inline transition-opacity">
+                <Paperclip className="w-4 h-4 text-foreground/90" />
+                <span className="text-[10px] text-muted-foreground dark:text-zinc-400 hidden group-hover:inline transition-opacity">
                   Attach
                 </span>
               </button>
@@ -421,7 +421,7 @@ export default function DeveloperGuide({ userUID }) {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="px-2.5 py-1 rounded-lg text-xs text-slate-600 dark:text-zinc-400 transition-colors border border-dashed border-slate-300 dark:border-zinc-700 hover:border-slate-400 dark:hover:border-zinc-600 hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-between gap-1"
+                className="px-2.5 py-1 rounded-lg text-xs text-muted-foreground dark:text-zinc-400 transition-colors border border-dashed border-slate-300 dark:border-zinc-700 hover:border-slate-400 dark:hover:border-zinc-600 hover:bg-muted dark:hover:bg-zinc-800 flex items-center justify-between gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Project
@@ -433,14 +433,14 @@ export default function DeveloperGuide({ userUID }) {
                 className={`px-2 py-2 rounded-lg transition-colors flex items-center justify-center ${
                   inputVal.trim() && !isTyping
                     ? "bg-primary text-black shadow-md shadow-primary/20"
-                    : "bg-slate-100 dark:bg-neutral-800 text-slate-400 dark:text-zinc-500 cursor-not-allowed"
+                    : "bg-muted dark:bg-neutral-800 text-muted-foreground dark:text-zinc-500 cursor-not-allowed"
                 }`}
               >
                 <ArrowUp
                   className={`w-4 h-4 ${
                     inputVal.trim() && !isTyping
                       ? "text-black"
-                      : "text-slate-400 dark:text-zinc-500"
+                      : "text-muted-foreground dark:text-zinc-500"
                   }`}
                 />
                 <span className="sr-only">إرسال</span>
@@ -463,7 +463,7 @@ export default function DeveloperGuide({ userUID }) {
               key={idx}
               type="button"
               onClick={() => handleSend(chip.q)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-[#0b0c10] hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white rounded-full border border-slate-200 dark:border-neutral-800 transition-colors text-xs font-medium"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-background dark:bg-[#0b0c10] hover:bg-muted dark:hover:bg-neutral-800 text-muted-foreground dark:text-neutral-400 hover:text-foreground rounded-full border border-border dark:border-neutral-800 transition-colors text-xs font-medium"
             >
               {chip.icon}
               <span>{chip.label}</span>

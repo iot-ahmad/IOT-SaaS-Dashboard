@@ -42,7 +42,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
       {/* ── Header — LTR since it's brand name only ── */}
       <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-center py-5">
-        <div dir="ltr" className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/10 bg-black/80 backdrop-blur-md">
+        <div dir="ltr" className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-border bg-black/80 backdrop-blur-md">
           <img
             src="/logo_icon.png"
             className="w-5 h-5 object-contain"
@@ -79,7 +79,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               >
 
                 {/* Arabic-only badge — purely RTL */}
-                <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.03] text-[10px] font-bold text-white/40 uppercase tracking-[0.18em]">
+                <span className="px-3 py-1 rounded-full border border-border bg-card/[0.03] text-[10px] font-bold text-white/40 uppercase tracking-[0.18em]">
                   منصة إنترنت الأشياء الذكية
                 </span>
 
@@ -103,9 +103,9 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   className="bidi-auto text-white/40 text-sm sm:text-base font-light leading-relaxed max-w-sm"
                 >
                   بيئة سحابية تفاعلية لطلاب ومطوري إنترنت الأشياء. ربط{' '}
-                  <bdi><code className="bg-white/5 border border-white/10 text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
+                  <bdi><code className="bg-card/5 border border-border text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
                   {' '}لحظياً عبر{' '}
-                  <bdi><code className="bg-white/5 border border-white/10 text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
+                  <bdi><code className="bg-card/5 border border-border text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
                   {' '}دون تعقيدات.
                 </p>
 
@@ -118,7 +118,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                     'تنبيهات ونظام إشعارات فوري للأجهزة.',
                   ].map((feat, idx) => (
                     <div key={idx} className="flex flex-row-reverse gap-3 items-start">
-                      <span className="shrink-0 w-1 h-1 rounded-full bg-white/20 mt-1.5" />
+                      <span className="shrink-0 w-1 h-1 rounded-full bg-card/20 mt-1.5" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -127,7 +127,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 {/* CTA button — mixed Arabic + English, use bdi for "Get Started" */}
                 <button
                   onClick={() => setShowLogin(true)}
-                  className="mt-2 px-8 py-3.5 bg-white text-black font-bold rounded-xl hover:bg-white/90 active:scale-[0.97] transition-all duration-200 cursor-pointer text-sm tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_55px_rgba(255,255,255,0.2)]"
+                  className="mt-2 px-8 py-3.5 bg-card text-black font-bold rounded-xl hover:bg-card/90 active:scale-[0.97] transition-all duration-200 cursor-pointer text-sm tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_55px_rgba(255,255,255,0.2)]"
                 >
                   <span dir="rtl">ابدأ الآن · <bdi>Get Started</bdi></span>
                 </button>
@@ -160,19 +160,19 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               {error && (
                 <div
                   dir="rtl"
-                  className="w-full bg-white/[0.03] border border-white/10 text-white/50 text-xs rounded-2xl p-4 mb-4 text-center leading-relaxed"
+                  className="w-full bg-card/[0.03] border border-border text-white/50 text-xs rounded-2xl p-4 mb-4 text-center leading-relaxed"
                 >
                   {error}
                 </div>
               )}
 
               {/* Glassmorphic card */}
-              <div className="w-full rounded-3xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-2xl p-8 shadow-[0_20px_80px_rgba(0,0,0,0.9)] relative overflow-hidden flex flex-col items-center">
+              <div className="w-full rounded-3xl border border-white/[0.07] bg-card/[0.02] backdrop-blur-2xl p-8 shadow-[0_20px_80px_rgba(0,0,0,0.9)] relative overflow-hidden flex flex-col items-center">
 
-                <div className="absolute -top-20 -right-20 w-48 h-48 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -top-20 -right-20 w-48 h-48 bg-card/[0.02] rounded-full blur-3xl pointer-events-none" />
 
                 <div dir="rtl" className="text-center mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto mb-4 text-white/30">
+                  <div className="w-12 h-12 rounded-2xl bg-card/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto mb-4 text-white/30">
                     <GraduationCap size={22} />
                   </div>
                   {/* Arabic heading — RTL */}
@@ -191,7 +191,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   onClick={handleGoogleLogin}
                   disabled={loading}
                   dir="rtl"
-                  className="w-full flex items-center justify-center gap-3 bg-white/[0.04] hover:bg-white/[0.09] text-white/70 hover:text-white font-semibold py-4 px-6 rounded-2xl text-sm border border-white/[0.08] hover:border-white/20 transition-all duration-300 backdrop-blur-md disabled:opacity-40 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-3 bg-card/[0.04] hover:bg-card/[0.09] text-white/70 hover:text-white font-semibold py-4 px-6 rounded-2xl text-sm border border-white/[0.08] hover:border-white/20 transition-all duration-300 backdrop-blur-md disabled:opacity-40 cursor-pointer"
                 >
                   {loading ? (
                     <Loader2 size={18} className="animate-spin text-white/30" />
