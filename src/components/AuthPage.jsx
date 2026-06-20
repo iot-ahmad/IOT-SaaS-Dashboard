@@ -127,14 +127,18 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 {/* CTA button — mixed Arabic + English, use bdi for "Get Started" */}
                 <button
                   onClick={() => setShowLogin(true)}
-                  className="mt-2 px-8 py-3.5 bg-card text-black font-bold rounded-xl hover:bg-card/90 active:scale-[0.97] transition-all duration-200 cursor-pointer text-sm tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_55px_rgba(255,255,255,0.2)]"
+                  style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+                  className="mt-2 px-8 py-3.5 font-bold rounded-xl hover:opacity-90 active:scale-[0.97] transition-all duration-200 cursor-pointer text-sm tracking-wide shadow-[0_0_40px_rgba(245,158,11,0.25)] hover:shadow-[0_0_55px_rgba(245,158,11,0.4)]"
                 >
                   <span dir="rtl">ابدأ الآن · <bdi>Get Started</bdi></span>
                 </button>
               </div>
 
               {/* RIGHT: 3D Robot Scene via @splinetool/react-spline */}
-              <div className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black">
+              <div 
+                style={{ filter: 'hue-rotate(150deg) brightness(1.15) contrast(1.1)' }}
+                className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black"
+              >
                 <SplineScene
                   scene="https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode"
                   className="w-full h-full"
