@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ArrowLeft, Loader2 } from 'lucide-react';
 import { SplineScene } from './SplineScene';
+import { FloatingPaths } from './ui/background-paths';
 
 /* SplineScene is now in ./SplineScene.jsx */
 
@@ -39,6 +40,10 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
       dir="rtl"
       className="relative flex min-h-screen w-full flex-col bg-black text-white overflow-x-hidden font-sans select-none"
     >
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
+      </div>
 
       {/* ── Header — LTR since it's brand name only ── */}
       <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-center py-5">

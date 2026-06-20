@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AuthPage from './components/AuthPage';
-import { IoTDotFieldBackdrop } from './components/CanvasRevealBackground';
+import { FloatingPaths } from './components/ui/background-paths';
 import { HomeView } from './components/Views';
 import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, SettingsView, LiveTerminal } from './components/ToolViews';
@@ -51,7 +51,10 @@ function HubLayout({ children, user, logout }) {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30 overflow-x-hidden">
-      <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
+      </div>
 
       {/* ─── Top Navbar ─── */}
       <header className="relative z-10 flex items-center justify-between py-3 px-6 md:px-12 border-b border-border bg-card/60 bg-background/60 backdrop-blur-md sticky top-0">
@@ -565,7 +568,10 @@ function Dashboard({ user, logout }) {
 
   return (
      <div className="relative h-screen bg-background text-foreground flex selection:bg-primary/30 overflow-hidden">
-      <IoTDotFieldBackdrop wrapperClassName="fixed inset-0 z-0 hidden dark:block" />
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
+      </div>
 
       {isMobileMenuOpen && (
         <div 
