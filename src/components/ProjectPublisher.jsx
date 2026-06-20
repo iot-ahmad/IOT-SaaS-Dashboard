@@ -500,7 +500,8 @@ void loop() {
         </p>
         <button
           onClick={() => navigate('/settings')} // Redirect to settings
-          className="mt-6 bg-primary text-black font-bold px-6 py-2.5 rounded-xl hover:bg-primary/95 transition-all shadow-lg shadow-primary/20"
+          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+          className="mt-6 font-bold px-6 py-2.5 hover:opacity-90 transition-opacity shadow-lg"
         >
           توجه إلى الإعدادات الآن
         </button>
@@ -760,7 +761,8 @@ void loop() {
             <button
               type="button"
               onClick={() => setStep(step + 1)}
-              className="bg-primary text-black font-bold px-6 py-2.5 rounded-xl hover:bg-primary/95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20 cursor-pointer"
+              style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+              className="font-bold px-6 py-2.5 hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg cursor-pointer"
             >
               الخطوة التالية
               <ArrowRight size={16} />
@@ -770,7 +772,8 @@ void loop() {
               type="button"
               disabled={loading}
               onClick={handlePublish}
-              className="bg-primary text-black font-bold px-8 py-2.5 rounded-xl hover:bg-primary/95 transition-all flex items-center gap-2 shadow-lg shadow-primary/25 cursor-pointer disabled:opacity-50"
+              style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+              className="font-bold px-8 py-2.5 hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
             >
               {loading ? 'جاري النشر...' : 'نشر المشروع للمجتمع العالمي'}
               <CheckCircle2 size={16} />

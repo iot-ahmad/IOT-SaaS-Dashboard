@@ -89,7 +89,7 @@ export default function ProjectFeed() {
     <div className="space-y-6">
       
       {/* Top Banner and Publish CTA */}
-      <div className="bg-gradient-to-r from-violet-900/20 via-primary/5 to-cyan-500/10 border border-border rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden backdrop-blur-xl">
+      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/5 border border-primary/20 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden backdrop-blur-xl">
         <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
         
@@ -106,7 +106,8 @@ export default function ProjectFeed() {
 
         <button
           onClick={() => navigate('/hub/new')}
-          className="bg-primary text-black font-black px-5 py-3 rounded-2xl flex items-center gap-2 hover:bg-primary/95 transition-all shadow-lg shadow-primary/25 text-sm cursor-pointer md:order-1 relative z-10"
+          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+          className="px-5 py-3 flex items-center gap-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm cursor-pointer md:order-1 relative z-10"
         >
           <Plus size={18} />
           أنشر مشروعك المادي

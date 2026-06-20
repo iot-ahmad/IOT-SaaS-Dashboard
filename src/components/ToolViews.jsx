@@ -72,7 +72,10 @@ export const DevicesView = ({ userUID, lastSeen }) => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-xl font-bold">Connected Devices</h2>
-        <button className="bg-primary text-black px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors text-sm">
+        <button
+          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+          className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm"
+        >
           <Plus size={18} /> Add Device
         </button>
       </div>
@@ -550,7 +553,11 @@ export const AutomationsToolView = ({ publish, userUID }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Workflow Automations</h2>
-        <button onClick={() => setShowAddModal(true)} className="bg-primary text-black px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors text-sm">
+        <button
+          onClick={() => setShowAddModal(true)}
+          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+          className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm"
+        >
           <Zap size={18} /> New Rule
         </button>
       </div>
@@ -650,7 +657,11 @@ export const AutomationsToolView = ({ publish, userUID }) => {
                 <label className="block text-xs text-muted-foreground mb-1">Action Topic Payload (Topic:Payload)</label>
                 <input required name="actionTopic" placeholder="e.g. actuator/fan:ON" className="w-full font-mono bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
               </div>
-              <button type="submit" className="w-full bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors mt-2">
+              <button
+                type="submit"
+                style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+                className="w-full font-bold py-2.5 hover:opacity-90 transition-opacity shadow-lg mt-2"
+              >
                 Save Rule
               </button>
             </form>
@@ -807,7 +818,11 @@ export const AlertsView = ({ userUID }) => {
       ) : (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button onClick={() => setShowAddModal(true)} className="bg-primary text-black px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors text-sm">
+            <button
+              onClick={() => setShowAddModal(true)}
+              style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+              className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm"
+            >
               <Bell size={16} /> New Alert Rule
             </button>
           </div>
@@ -877,7 +892,11 @@ export const AlertsView = ({ userUID }) => {
                   <input required name="value" placeholder="e.g. 40" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
                 </div>
               </div>
-              <button type="submit" className="w-full bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors mt-2">
+              <button
+                type="submit"
+                style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+                className="w-full font-bold py-2.5 hover:opacity-90 transition-opacity shadow-lg mt-2"
+              >
                 Save Alert Rule
               </button>
             </form>

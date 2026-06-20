@@ -375,7 +375,8 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               <button
                 onClick={handleAdd}
                 disabled={!form.dataKey.trim()}
-                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-foreground font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
+                style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+                className="w-full disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 mt-2"
               >
                 Add to dashboard
               </button>
@@ -498,7 +499,8 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           <button
             onClick={handleSave}
             disabled={!form.dataKey.trim()}
-            className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-foreground font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-500/20 mt-2"
+            style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+            className="w-full disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 mt-2"
           >
             Save changes
           </button>
@@ -694,9 +696,9 @@ function SliderWidget({ widget, publish }) {
 
 const DP_BTN_BASE =
   'flex items-center justify-center w-12 h-12 rounded-2xl border-2 transition-all duration-150 cursor-pointer select-none active:scale-95';
-const DP_BTN_IDLE = 'bg-background dark:bg-card/5 border-border text-foreground/90/50 hover:bg-violet-500/10 dark:hover:bg-violet-500/10 hover:border-violet-500/30 dark:hover:border-violet-500/30 hover:text-violet-500 dark:hover:text-violet-300';
+const DP_BTN_IDLE = 'bg-background dark:bg-card/5 border-border text-foreground/90/50 hover:bg-amber-400/10 dark:hover:bg-amber-400/10 hover:border-amber-400/40 dark:hover:border-amber-400/40 hover:text-amber-500 dark:hover:text-amber-400';
 const DP_BTN_GLOW =
-  'bg-violet-600 dark:bg-violet-500 border-violet-400 dark:border-violet-300 text-white shadow-[0_0_20px_rgba(139,92,246,0.6)] ring-1 ring-violet-400/50';
+  'bg-amber-400 border-amber-300 text-black shadow-[0_0_20px_rgba(251,191,36,0.7)] ring-1 ring-amber-300/60';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
@@ -742,7 +744,7 @@ function DPadWidget({ widget, publish }) {
   return (
     <div className="flex flex-col h-full gap-2 text-left">
       <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-violet-400">
+        <div className="flex items-center gap-2 text-primary">
           <Gamepad2 size={16} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
@@ -767,7 +769,7 @@ function DPadWidget({ widget, publish }) {
         </div>
         <DPadDirButton cmd="BACK" icon={ChevronDown} activeCmd={active} onPress={press} onRelease={release} />
         <div className="mt-1 flex items-center gap-1.5">
-          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20' : 'bg-muted text-muted-foreground/60'}`}>
+          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-amber-400/20 text-amber-500 border border-amber-400/30' : 'bg-muted text-muted-foreground/60'}`}>
             CMD: {active || 'IDLE'}
           </span>
         </div>
@@ -844,7 +846,7 @@ function JoystickWidget({ widget, publish }) {
   return (
     <div className="flex flex-col h-full gap-2 min-h-0 text-left">
       <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-violet-400">
+        <div className="flex items-center gap-2 text-primary">
           <Move size={16} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
@@ -856,7 +858,7 @@ function JoystickWidget({ widget, publish }) {
       <div className="flex-1 flex flex-col items-center justify-center min-h-0 gap-2 relative">
         <div
           ref={rootRef}
-          className="relative w-36 h-36 rounded-full border border-violet-500/20 bg-gradient-to-b from-violet-950/20 to-black/40 touch-none select-none cursor-grab active:cursor-grabbing shadow-[inset_0_2px_12px_rgba(0,0,0,0.6)] flex items-center justify-center"
+          className="relative w-36 h-36 rounded-full border border-amber-400/20 bg-gradient-to-b from-amber-950/10 to-black/40 touch-none select-none cursor-grab active:cursor-grabbing shadow-[inset_0_2px_12px_rgba(0,0,0,0.6)] flex items-center justify-center"
           onPointerDown={(e) => {
             e.currentTarget.setPointerCapture(e.pointerId);
             applyPointer(e.clientX, e.clientY);
@@ -872,14 +874,14 @@ function JoystickWidget({ widget, publish }) {
           onPointerCancel={endPointer}
         >
           {/* Dash ring inside */}
-          <div className="absolute inset-[20%] rounded-full border border-dashed border-violet-500/10 pointer-events-none" />
+          <div className="absolute inset-[20%] rounded-full border border-dashed border-amber-400/15 pointer-events-none" />
           
           {/* Glowing knob */}
           <div
             className={`absolute w-12 h-12 rounded-full border-2 transition-all duration-75 flex items-center justify-center shadow-md ${
               knobLit
-                ? 'bg-violet-500/30 border-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.6)] scale-95'
-                : 'bg-card/10 dark:bg-card/5 border-slate-300 dark:border-white/20'
+                ? 'bg-amber-400/40 border-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.7)] scale-95'
+                : 'bg-card/10 dark:bg-card/5 border-border dark:border-white/20'
             }`}
             style={{
               left: `calc(50% + ${knob.x}px)`,
@@ -887,7 +889,7 @@ function JoystickWidget({ widget, publish }) {
               transform: 'translate(-50%, -50%)',
             }}
           >
-            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-violet-300' : 'bg-slate-400 dark:bg-card/25'}`} />
+            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-amber-400' : 'bg-muted-foreground/30 dark:bg-card/25'}`} />
           </div>
 
           <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] text-muted-foreground dark:text-white/20 font-extrabold uppercase pointer-events-none">F</span>
@@ -896,7 +898,7 @@ function JoystickWidget({ widget, publish }) {
           <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground dark:text-white/20 font-extrabold uppercase pointer-events-none">R</span>
         </div>
 
-        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-violet-500/20 text-violet-400 border border-violet-500/20 animate-pulse' : 'bg-muted text-muted-foreground dark:text-white/20'}`}>
+        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full ${active ? 'bg-amber-400/20 text-amber-500 border border-amber-400/30 animate-pulse' : 'bg-muted text-muted-foreground dark:text-white/20'}`}>
           DIR: {active || 'IDLE'}
         </span>
       </div>
@@ -1072,7 +1074,8 @@ export default function UniversalController({ deviceStates, publish, storageScop
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-foreground transition-all shadow-lg shadow-violet-500/20 active:scale-95"
+          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+          className="flex items-center gap-2 px-4 py-2.5 font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-95"
         >
           <Plus size={18} />
           Add Tool

@@ -216,7 +216,7 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
                 />
                 <p style={{ color: 'var(--muted-foreground)' }} className="text-[10px] mt-1">If provided, widgets in this project will automatically target this specific ESP32.</p>
               </div>
-              <button type="submit" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }} className="w-full font-bold py-2.5 hover:opacity-90 transition-opacity">
+              <button type="submit" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }} className="w-full font-bold py-2.5 hover:opacity-90 transition-opacity shadow-lg">
                 Create Project
               </button>
             </form>

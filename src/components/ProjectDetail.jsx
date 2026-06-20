@@ -138,7 +138,8 @@ export default function ProjectDetail() {
         <p className="text-sm text-muted-foreground mt-3">{error || 'المشروع غير موجود.'}</p>
         <button
           onClick={() => navigate('/hub')}
-          className="mt-6 bg-primary text-black font-bold px-6 py-2 rounded-xl hover:bg-primary/95 transition-all shadow-md shadow-primary/10"
+          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+          className="mt-6 font-bold px-6 py-2 hover:opacity-90 transition-opacity shadow-lg"
         >
           العودة للمستودع العام
         </button>
@@ -168,10 +169,11 @@ export default function ProjectDetail() {
           {/* Clone/Copy Code */}
           <button
             onClick={handleClone}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
+            style={copied ? {} : { background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+            className={`px-4 py-2 text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
               copied
                 ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
-                : 'bg-primary text-black border-transparent hover:bg-primary/90'
+                : 'border-transparent hover:opacity-90 transition-opacity shadow-lg'
             }`}
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
