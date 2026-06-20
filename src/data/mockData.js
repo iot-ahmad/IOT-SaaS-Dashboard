@@ -1,10 +1,10 @@
 export const WORKSPACES = [
   { id: 'home', name: 'Home', icon: 'Home' },
+  { id: 'hub', name: '🇯🇴 مجتمع الأردن', icon: 'Globe' },
   { id: 'controller', name: 'Universal Controller', icon: 'Gamepad2' }
 ];
 
 export const TOOLS = [
-  { id: 'hub', name: '🇯🇴 مجتمع الأردن', icon: 'Globe' },
   { id: 'devices', name: 'Devices', icon: 'Cpu' },
   { id: 'automations', name: 'Automations', icon: 'Zap' },
   { id: 'alerts', name: 'Alerts', icon: 'Bell' },

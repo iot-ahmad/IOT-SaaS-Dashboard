@@ -123,7 +123,7 @@ export default function Sidebar({
                   ) : (
                     <Button
                       type="button"
-                      onClick={() => setActiveWorkspace(ws.id)}
+                      onClick={() => ws.id === 'hub' ? navigate('/hub') : setActiveWorkspace(ws.id)}
                       variant={isActive ? 'default' : 'ghost'}
                       neon={isActive}
                       className={`${navBtnClass} ${isCollapsed ? 'justify-center px-2' : ''} pr-2`}
