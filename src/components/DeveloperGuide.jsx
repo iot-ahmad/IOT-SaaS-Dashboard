@@ -304,7 +304,7 @@ export default function DeveloperGuide({ userUID }) {
       <div className="bg-card bg-background border-b border-border px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
         <div className="flex items-center gap-4">
           <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.2)] shrink-0 overflow-hidden">
-            <img src="/logo_icon.png" alt="Bot" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; e.target.parentNode.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'; }} />
+            <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain p-0.5" />
           </div>
           <div className="text-left">
             <h2 className="font-extrabold text-foreground text-base">IOT365 Smart Assistant</h2>
@@ -344,7 +344,7 @@ export default function DeveloperGuide({ userUID }) {
           >
             {msg.sender === 'bot' && (
               <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center shrink-0 self-start overflow-hidden">
-                <img src="/logo_icon.png" alt="Bot" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; e.target.parentNode.classList.add('p-1.5'); e.target.insertAdjacentHTML('afterend', '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'); }} />
+                <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain p-0.5" />
               </div>
             )}
 
@@ -366,7 +366,7 @@ export default function DeveloperGuide({ userUID }) {
         {isTyping && (
           <div className="flex gap-3 mr-auto max-w-[80%]">
             <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="/logo_icon.png" alt="Bot" className="w-full h-full object-contain" onError={(e) => { e.target.style.display='none'; }} />
+              <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain p-0.5" />
             </div>
             <div className="p-4 bg-card dark:bg-card/[0.03] border border-border dark:border-white/[0.07] rounded-2xl rounded-tl-none flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '0ms' }} />
