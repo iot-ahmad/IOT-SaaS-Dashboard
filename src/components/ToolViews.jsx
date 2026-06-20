@@ -380,11 +380,11 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-indigo-500/5 to-violet-500/10 border-violet-500/20 shadow-lg relative overflow-hidden mb-6">
-      <div className="absolute top-0 right-0 w-40 h-40 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+    <Card className="bg-gradient-to-br from-primary/5 to-amber-500/10 border-primary/20 shadow-lg relative overflow-hidden mb-6">
+      <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.15)] shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(245,158,11,0.15)] shrink-0">
           <Sparkles size={18} className="animate-pulse" />
         </div>
         <div className="text-left font-sans">
@@ -425,7 +425,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
               <button
                 type="submit"
                 disabled={loading || !scenario.trim()}
-                className="bg-violet-600 text-white px-5 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-violet-500 transition-colors text-xs disabled:opacity-50"
+                className="bg-primary text-black px-5 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors text-xs disabled:opacity-50"
               >
                 {loading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />}
                 {loading ? 'تحليل...' : 'تشخيص'}
@@ -446,7 +446,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
               key={idx}
               type="button"
               onClick={() => setScenario(preset.sc)}
-              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border bg-muted text-foreground/90/50 hover:border-violet-500/40 hover:text-violet-400 hover:bg-violet-500/5 transition-all text-right shrink-0"
+              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border bg-muted text-foreground/90/50 hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all text-right shrink-0"
             >
               {preset.label}
             </button>
@@ -459,13 +459,13 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
         <div className="mt-5 border-t border-border pt-4 text-left">
           <div className="bg-[#07090d] border border-border rounded-2xl p-5 shadow-inner relative">
             <div className="absolute top-4 right-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
-              <span className="text-[9px] text-violet-400 font-mono uppercase tracking-wider font-bold">PHYSICAL REAL-TIME DIAGNOSTIC</span>
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-[9px] text-primary font-mono uppercase tracking-wider font-bold">PHYSICAL REAL-TIME DIAGNOSTIC</span>
             </div>
             
             {loading ? (
               <div className="py-8 flex flex-col items-center justify-center gap-3">
-                <RefreshCw size={24} className="text-violet-500 animate-spin" />
+                <RefreshCw size={24} className="text-primary animate-spin" />
                 <p className="text-xs text-muted-foreground dark:text-white/30 animate-pulse">يقوم Cosmos3 بتحليل الخواص الفيزيائية للعتاد واستخلاص السلوك الهندسي...</p>
               </div>
             ) : (
@@ -1081,7 +1081,7 @@ export const SettingsView = ({ userUID, user, logout }) => {
         {activeTab === 'General' && (
           <>
             {/* ── Device UID — PROMINENT ───────────────────────────────── */}
-            <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-violet-950/20 to-transparent p-6 shadow-[0_0_40px_rgba(139,92,246,0.12)]">
+            <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-amber-500/5 to-transparent p-6 shadow-[0_0_40px_rgba(245,158,11,0.12)]">
               {/* glow blob */}
               <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
 

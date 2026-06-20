@@ -312,7 +312,7 @@ export default function UserProfile({ currentUser }) {
       <div className="max-w-lg mx-auto text-center py-10">
         {/* Glowing avatar placeholder */}
         <div className="relative mx-auto w-24 h-24 mb-6">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-violet-500/20 border-2 border-primary/40 flex items-center justify-center shadow-lg shadow-primary/10">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-amber-400/20 border-2 border-primary/40 flex items-center justify-center shadow-lg shadow-primary/10">
             {currentUser.photoURL ? (
               <img src={currentUser.photoURL} alt="" className="w-full h-full rounded-full object-cover" />
             ) : (
@@ -453,7 +453,7 @@ export default function UserProfile({ currentUser }) {
   if (error || !profileUser) {
     return (
       <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
-        <AlertCircle className="w-16 h-16 text-violet-400 mx-auto mb-4" />
+        <AlertCircle className="w-16 h-16 text-primary mx-auto mb-4" />
         <h3 className="text-xl font-bold text-white">الملف الشخصي غير متاح</h3>
         <p className="text-sm text-muted-foreground mt-3">{error || 'لم يتم العثور على هذا المستخدم.'}</p>
         <button

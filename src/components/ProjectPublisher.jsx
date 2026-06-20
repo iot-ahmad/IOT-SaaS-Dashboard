@@ -493,7 +493,7 @@ void loop() {
   if (!hasUsername) {
     return (
       <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
-        <AlertCircle className="w-16 h-16 text-violet-400 mx-auto mb-4" />
+        <AlertCircle className="w-16 h-16 text-primary mx-auto mb-4" />
         <h3 className="text-xl font-bold text-white">تحتاج إلى تعيين اسم مستخدم أولاً</h3>
         <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
           لتتمكن من نشر مشاريعك ومشاركتها مع مجتمع المطورين العالمي، يرجى التوجه لصفحة حسابك الشخصي وإنشاء رابط Vanity URL فريد (Username).

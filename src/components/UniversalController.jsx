@@ -199,8 +199,8 @@ const CATEGORIES = [
     id: 'robotics',
     label: 'Robotics',
     icon: Car,
-    color: 'from-violet-500/20 to-purple-500/20 border-violet-500/30',
-    accent: 'text-violet-400',
+    color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30',
+    accent: 'text-amber-400',
     items: [
       { type: 'dpad', label: 'Direction Controller (D-Pad)', desc: 'D-Pad: FORWARD, BACK, LEFT, RIGHT, STOP on one topic', icon: Gamepad2, w: 3, h: 4 },
       { type: 'joystick', label: 'Joystick', desc: 'Analog-style stick: same movement commands on one MQTT topic', icon: Move, w: 4, h: 4 },
@@ -308,7 +308,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               <div>
                 <label className="text-xs text-foreground/90/40 block mb-1">Widget Name</label>
                 <input
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Front Temperature"
@@ -344,7 +344,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               <div>
                 <label className="text-xs text-foreground/90/40 block mb-1">MQTT Topic</label>
                 <input
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.topic}
                   onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
                   placeholder="e.g. car/move"
@@ -355,7 +355,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                   <div>
                     <label className="text-xs text-foreground/90/40 block mb-1">Unit</label>
                     <input
-                      className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                       value={form.unit}
                       onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
                       placeholder="°C"
@@ -365,7 +365,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                     <label className="text-xs text-foreground/90/40 block mb-1">Max Value</label>
                     <input
                       type="number"
-                      className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                       value={form.maxVal}
                       onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))}
                     />
@@ -433,7 +433,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           <div>
             <label className="text-xs text-foreground/90/40 block mb-1">Widget Name</label>
             <input
-              className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+              className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               placeholder="e.g. Front Temperature"
@@ -466,7 +466,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           <div>
             <label className="text-xs text-foreground/90/40 block mb-1">MQTT Topic</label>
             <input
-              className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-violet-500/50 transition-colors"
+              className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50 transition-colors"
               value={form.topic}
               onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
               placeholder="e.g. car/move"
@@ -478,7 +478,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
               <div>
                 <label className="text-xs text-foreground/90/40 block mb-1">Unit</label>
                 <input
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.unit}
                   onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
                   placeholder="°C"
@@ -488,7 +488,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
                 <label className="text-xs text-foreground/90/40 block mb-1">Max Value</label>
                 <input
                   type="number"
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.maxVal}
                   onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))}
                 />
@@ -651,11 +651,11 @@ function SliderWidget({ widget, publish }) {
     publish(widget.topic, String(v));
   };
 
-  const color = widget.type === 'speed' ? '#a78bfa' : '#ffb300';
-  const glowColor = widget.type === 'speed' ? 'rgba(167, 139, 250, 0.4)' : 'rgba(255, 179, 0, 0.4)';
+  const color = widget.type === 'speed' ? '#f59e0b' : '#ffb300';
+  const glowColor = widget.type === 'speed' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(255, 179, 0, 0.4)';
   const label = widget.type === 'speed' ? 'Speed' : 'Angle';
   const Icon = widget.type === 'speed' ? Car : SlidersHorizontal;
-  const accentClass = widget.type === 'speed' ? 'text-violet-400 animate-pulse' : 'text-amber-500';
+  const accentClass = widget.type === 'speed' ? 'text-amber-400 animate-pulse' : 'text-amber-500';
 
   return (
     <div className="flex flex-col h-full gap-2 text-left">

@@ -69,7 +69,7 @@ const OnboardingWizard = () => {
   return (
     <div className="bg-card/[0.02] border border-border rounded-3xl p-6 sm:p-8 backdrop-blur-xl relative overflow-hidden mt-6 shadow-xl">
       <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-violet-600/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl -z-10" />
       
       <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
         <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary tracking-wide uppercase">
@@ -85,7 +85,7 @@ const OnboardingWizard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
         {/* Connection line between steps (desktop only) */}
-        <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-blue-500/20 via-violet-500/20 to-amber-500/20 z-0" />
+        <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-amber-500/20 via-primary/30 to-amber-500/20 z-0" />
 
         {steps.map((step, idx) => {
           const StepIcon = step.icon;
