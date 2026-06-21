@@ -2359,28 +2359,35 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
   };
 
   return (
-    <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl p-5 backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
-      {/* Edit button */}
-      <button
-        onClick={() => onEdit(widget)}
-        className="absolute top-2 right-8 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-muted-foreground dark:text-white/30 p-1"
-        title="Edit Tool"
+    <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
+      {/* ── Drag handle bar (top strip) ── */}
+      <div
+        className="drag-handle flex items-center justify-between px-3 pt-2.5 pb-1.5 cursor-grab active:cursor-grabbing select-none flex-shrink-0"
       >
-        <SlidersHorizontal size={14} />
-      </button>
-      {/* Drag handle */}
-      <div className="drag-handle absolute top-2 right-14 opacity-0 group-hover:opacity-40 hover:!opacity-80 transition-opacity cursor-grab active:cursor-grabbing text-foreground/90/50 p-1">
-        <GripVertical size={14} />
+        {/* Grip dots */}
+        <GripVertical size={13} className="text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors flex-shrink-0" />
+        {/* Action buttons – placed inside the bar but cancel drag so clicks work */}
+        <div className="no-drag flex items-center gap-0.5">
+          <button
+            onClick={() => onEdit(widget)}
+            className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-muted-foreground dark:text-white/30 p-1"
+            title="Edit Tool"
+          >
+            <SlidersHorizontal size={13} />
+          </button>
+          <button
+            onClick={() => onRemove(widget.id)}
+            className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground dark:text-white/30 p-1"
+            title="Remove Tool"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
       </div>
-      {/* Remove button */}
-      <button
-        onClick={() => onRemove(widget.id)}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground dark:text-white/30 p-1"
-        title="Remove Tool"
-      >
-        <Trash2 size={14} />
-      </button>
-      {renderContent()}
+      {/* ── Widget content (not draggable) ── */}
+      <div className="no-drag flex-1 px-4 pb-4 min-h-0 overflow-hidden">
+        {renderContent()}
+      </div>
     </div>
   );
 }
@@ -2536,6 +2543,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
             cols={COLS_BY_BP}
             rowHeight={80}
             draggableHandle=".drag-handle"
+            draggableCancel=".no-drag"
             isDraggable
             isResizable
             compactType="vertical"
