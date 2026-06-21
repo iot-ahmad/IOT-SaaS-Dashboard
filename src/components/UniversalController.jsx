@@ -383,9 +383,9 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
+      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div>
             <h2 className="font-bold text-lg">Add Tool</h2>
             {step === 'config' && (
@@ -400,7 +400,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
         </div>
 
         {/* Body */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1 scrollbar-thin">
           {step === 'category' ? (
             <div className="space-y-4">
               {CATEGORIES.map(cat => {
@@ -593,9 +593,9 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn">
+      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div>
             <h2 className="font-bold text-lg">Edit Tool Settings</h2>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -608,7 +608,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1 scrollbar-thin">
           <div>
             <label className="text-xs text-foreground/90/40 block mb-1">Widget Name</label>
             <input
