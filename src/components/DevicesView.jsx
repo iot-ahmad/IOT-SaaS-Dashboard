@@ -55,23 +55,6 @@ const DEVICE_TYPES = [
   { value: 'Sensor',   label: '📡 Sensor',        desc: 'Reads data from environment (temperature, moisture…)' },
   { value: 'Actuator', label: '⚡ Actuator',       desc: 'Receives commands to control hardware (relay, motor…)' },
   { value: 'Motor',    label: '🔧 Motor / Servo',  desc: 'Controls movement (servo, stepper, DC motor…)' },
-  // ── Classroom Control ──────────────────────────────────────────────────────
-  { value: 'Relay',    label: '🔌 Relay',          desc: 'تشغيل/إطفاء — إضاءة، بروجكتور، مروحة فصل' },
-  { value: 'PWM',      label: '💡 PWM Dimmer',     desc: 'تعتيم الإضاءة أو تحكم بالسرعة عبر PWM (0–255)' },
-  { value: 'RGB',      label: '🎨 RGB Strip',      desc: 'شريط ضوء RGB/RGBW ملون للتجارب البصرية' },
-  // ── STEM Lab ───────────────────────────────────────────────────────────────
-  { value: 'Servo',    label: '🔧 Servo Motor',    desc: 'سيرفو موتور — تحكم بالزاوية (0–180°)' },
-  { value: 'DCMotor',  label: '🔄 DC Motor',       desc: 'موتور DC — تحكم بالسرعة والاتجاه' },
-  { value: 'Stepper',  label: '📐 Stepper Motor',  desc: 'ستيبر موتور — خطوات دقيقة للمشاريع المتقدمة' },
-  { value: 'Curtain',  label: '🪟 Smart Curtain',  desc: 'ستارة/بلايند ذكي — مشروع تعليمي شائع' },
-  // ── Security & Safety ──────────────────────────────────────────────────────
-  { value: 'Lock',     label: '🔒 Door Lock',      desc: 'قفل باب إلكتروني — تعليم RFID والتحكم بالوصول' },
-  { value: 'Buzzer',   label: '🔔 Buzzer / Siren', desc: 'صفارة / سيرن — تنبيه سلامة تجريبي' },
-  // ── Agriculture ────────────────────────────────────────────────────────────
-  { value: 'Pump',     label: '💧 Water Pump',     desc: 'مضخة مياه — تشغيل/إطفاء يدوي أو بجدول' },
-  { value: 'Valve',    label: '🚰 Electric Valve', desc: 'صمام كهربائي — تحكم دقيق بكمية المياه' },
-  // ── Display ────────────────────────────────────────────────────────────────
-  { value: 'Display',  label: '📺 OLED / LCD',     desc: 'شاشة عرض — عرض قراءات الحساسات للطلاب' },
 ];
 
 const CHART_COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];

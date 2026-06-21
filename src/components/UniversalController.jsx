@@ -9,7 +9,8 @@ import {
   Lightbulb, Palette, Calendar, FlaskConical, Wind, Blinds,
   Lock, Bell, Camera, Droplets, Sprout, Monitor, Globe,
   Minus, RotateCcw, RotateCw, AlignJustify, Hash, ChevronRight as ChevronRightIcon,
-  Power, Cpu, Gauge, GraduationCap, Shield, Leaf, Wrench, Play, Sparkles, Grid, Send, Terminal
+  Power, Cpu, Gauge, GraduationCap, Shield, Leaf, Wrench, Play, Sparkles, Grid, Send, Terminal,
+  Bot, Hand, Navigation, Crosshair, LocateFixed
 } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, YAxis, AreaChart, Area } from 'recharts';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -179,112 +180,105 @@ function useControllerFirestore(userUID, storageScopeId) {
 // ─── Widget Definitions ───────────────────────────────────────────────────────
 const CATEGORIES = [
   {
-    id: 'digital_out',
-    label: '🔌 مخرجات رقمية بسيطة (Digital Output)',
-    icon: Power,
-    color: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
-    accent: 'text-blue-400',
+    id: 'sensors',
+    label: 'Sensors',
+    icon: Activity,
+    color: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/30',
+    accent: 'text-cyan-400',
     items: [
-      { type: 'relay', label: 'Relay / Transistor', desc: 'تشغيل/إطفاء أي حمل كهربائي (Boolean ON/OFF)', icon: Power, w: 2, h: 2 },
-      { type: 'mosfet', label: 'MOSFET', desc: 'تبديل تيار مستمر بجهد وتيار أعلى (Boolean)', icon: Cpu, w: 2, h: 2 },
-      { type: 'solenoid', label: 'Solenoid Actuator', desc: 'دفع/سحب ميكانيكي مفاجئ (Boolean / Pulse)', icon: Zap, w: 2, h: 2 },
-      { type: 'optocoupler', label: 'Optocoupler', desc: 'عزل كهربائي آمن بين دائرتين (Boolean)', icon: Shield, w: 2, h: 2 },
+      { type: 'gauge', label: 'Gauge / Chart', desc: 'Display a numeric sensor value with a live bar', icon: Thermometer, w: 3, h: 3 },
     ],
   },
   {
-    id: 'analog_pwm',
-    label: '🎛️ مخرجات تناظرية/PWM',
-    icon: SlidersHorizontal,
+    id: 'actuators',
+    label: 'Actuators',
+    icon: Zap,
     color: 'from-amber-500/20 to-orange-500/20 border-amber-500/30',
     accent: 'text-amber-400',
     items: [
-      { type: 'dimmer', label: 'Dimmer', desc: 'تعتيم أو تحكم بشدة الإضاءة عبر PWM (0-100%)', icon: Lightbulb, w: 3, h: 2 },
-      { type: 'dcmotor_speed', label: 'DC Motor Speed (PWM)', desc: 'التحكم بسرعة موتور DC عبر إشارة PWM (0-100%)', icon: RotateCw, w: 3, h: 2 },
-      { type: 'fan_speed', label: 'PWM Fan Speed', desc: 'التحكم بسرعة مروحة التبريد الذكية عبر PWM', icon: Wind, w: 3, h: 2 },
-      { type: 'dac', label: 'DAC Output', desc: 'إشارة تناظرية حقيقية من منافذ DAC بالـ ESP32', icon: Activity, w: 3, h: 2 },
+      { type: 'switch', label: 'LED Switch', desc: 'Toggle an LED or relay ON / OFF', icon: ToggleLeft, w: 2, h: 2 },
+      { type: 'slider', label: 'Servo Slider', desc: 'Send a 0–180° value to a servo motor', icon: SlidersHorizontal, w: 3, h: 2 },
     ],
   },
   {
-    id: 'motors_movement',
-    label: '⚙️ محركات وحركة',
-    icon: RotateCw,
-    color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
-    accent: 'text-emerald-400',
+    id: 'robotics',
+    label: '🕹️ تحكم وروبوتكس (Robotics)',
+    icon: Gamepad2,
+    color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30',
+    accent: 'text-amber-400',
     items: [
-      { type: 'servo', label: 'Servo Motor', desc: 'تحكم بزاوية محددة أو دوران مستمر (0-180°)', icon: SlidersHorizontal, w: 3, h: 2 },
-      { type: 'dcmotor', label: 'DC Motor H-Bridge', desc: 'التحكم بالسرعة والاتجاه (H-Bridge L298N)', icon: RotateCw, w: 3, h: 3 },
-      { type: 'stepper', label: 'Stepper Motor', desc: 'موضع وخطوات دقيقة (A4988 / ULN2003)', icon: Gauge, w: 3, h: 2 },
-      { type: 'bldc', label: 'BLDC Motor', desc: 'تحكم بمحرك BLDC عالي السرعة عبر ESC (0-100%)', icon: Play, w: 3, h: 2 },
-      { type: 'linear_actuator', label: 'Linear Actuator', desc: 'تحكم بحركة خطية مدفوعة (0-100%)', icon: Blinds, w: 3, h: 2 },
+      { type: 'dpad', label: 'Direction Controller (D-Pad)', desc: 'D-Pad: FORWARD, BACK, LEFT, RIGHT, STOP on one topic', icon: Gamepad2, w: 3, h: 4 },
+      { type: 'joystick', label: 'Joystick', desc: 'Analog-style stick: same movement commands on one MQTT topic', icon: Move, w: 4, h: 4 },
+      { type: 'speed', label: 'Speed Slider', desc: 'Send speed value (0–255) to your speed topic', icon: Car, w: 3, h: 2 },
+      { type: 'robot_arm',   label: 'Robot Arm (3 Joints)', desc: 'التحكم بذراع روبوتية بثلاثة مفاصل سيرفو مستقلة', icon: Bot,       w: 4, h: 4 },
+      { type: 'gripper',     label: 'Gripper / Claw',       desc: 'التحكم بقابض الروبوت (فتح/غلق/قوة القبضة)', icon: Hand,      w: 3, h: 3 },
+      { type: 'omni_drive',  label: 'Omni/Mecanum Drive',   desc: 'تحكم كامل بعجلات omni: يمين/يسار/أمام/خلف/دوران', icon: Navigation, w: 4, h: 4 },
+      { type: 'robot_speed', label: 'Dual Motor Speed',     desc: 'تحكم مستقل بسرعة المحرك الأيسر والأيمن لتوجيه الروبوت', icon: Gauge,    w: 3, h: 3 },
     ],
   },
   {
-    id: 'lighting',
-    label: '💡 إضاءة',
-    icon: Palette,
+    id: 'classroom',
+    label: '🏫 تحكم الفصل الدراسي',
+    icon: GraduationCap,
     color: 'from-violet-500/20 to-purple-500/20 border-violet-500/30',
     accent: 'text-violet-400',
     items: [
-      { type: 'single_led', label: 'LED مفرد', desc: 'تحكم بتشغيل وتعتيم دايود ضوئي واحد (PWM)', icon: Lightbulb, w: 2, h: 2 },
-      { type: 'rgb', label: 'RGB/RGBW Strip', desc: 'تحكم بألوان شريط الإضاءة الملونة بالكامل', icon: Palette, w: 3, h: 3 },
-      { type: 'neopixel', label: 'Addressable LED (WS2812B)', desc: 'التحكم بكل بكسل ملون على حدة (NeoPixel)', icon: Sparkles, w: 3, h: 3 },
+      { type: 'relay',     label: 'Relay — تشغيل/إطفاء',       desc: 'التحكم بالإضاءة، البروجكتور، المروحة عبر Relay',          icon: Power,          w: 2, h: 2 },
+      { type: 'dimmer',    label: 'Dimmer PWM — تعتيم الإضاءة', desc: 'تعتيم الإضاءة تدريجياً أثناء العروض (0-100%)',           icon: Lightbulb,      w: 3, h: 2 },
+      { type: 'rgb',       label: 'RGB Strip — شريط ملون',      desc: 'التحكم بألوان شريط RGB/RGBW للتجارب البصرية والمسابقات', icon: Palette,        w: 3, h: 3 },
+      { type: 'scene',     label: 'Scenes — أوضاع جاهزة',       desc: 'وضع امتحان / محاضرة / استراحة بضغطة واحدة',            icon: Cpu,            w: 3, h: 3 },
+      { type: 'scheduler', label: 'Scheduler — جرس الحصص',      desc: 'جدولة تشغيل/إيقاف تلقائي لجرس الحصص أو الري',         icon: Calendar,       w: 3, h: 3 },
     ],
   },
   {
-    id: 'sound',
-    label: '🔊 صوت',
-    icon: Bell,
-    color: 'from-pink-500/20 to-rose-500/20 border-pink-500/30',
-    accent: 'text-pink-400',
+    id: 'stem',
+    label: '🔬 مختبر STEM',
+    icon: FlaskConical,
+    color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
+    accent: 'text-emerald-400',
     items: [
-      { type: 'buzzer', label: 'Buzzer (Active/Passive)', desc: 'صفارة أو نغمات تنبيه عند حدوث شروط معينة', icon: Bell, w: 2, h: 2 },
-      { type: 'speaker', label: 'Mini Speaker', desc: 'إرسال نغمات أو ترددات عبر I2S أو DAC للسمّاعة', icon: Activity, w: 2, h: 2 },
+      { type: 'servo',   label: 'Servo Motor — زاوية',       desc: 'التحكم بزاوية السيرفو (0–180°) لتجارب الروبوتيك',       icon: Wrench,          w: 3, h: 2 },
+      { type: 'dcmotor', label: 'DC Motor — سرعة واتجاه',    desc: 'التحكم بسرعة واتجاه موتور DC لتجارب الفيزياء',          icon: RotateCw,        w: 3, h: 3 },
+      { type: 'stepper', label: 'Stepper — خطوات دقيقة',     desc: 'التحكم دقيق بعدد الخطوات لمشاريع CNC والطباعة الثلاثية', icon: Gauge,           w: 3, h: 2 },
+      { type: 'pwmfan',  label: 'PWM Fan — مروحة ذكية',      desc: 'التحكم PWM بالمروحة مع ربطها بحساس حرارة',              icon: Wind,            w: 3, h: 3 },
+      { type: 'curtain', label: 'Smart Curtain — ستارة ذكية', desc: 'التحكم بنسبة فتح الستائر — مشروع تعليمي شائع',         icon: Blinds,          w: 3, h: 2 },
     ],
   },
   {
-    id: 'displays',
-    label: '📺 شاشات وعرض بصري',
+    id: 'security',
+    label: '🔒 الأمن والسلامة',
+    icon: Shield,
+    color: 'from-red-500/20 to-rose-500/20 border-red-500/30',
+    accent: 'text-red-400',
+    items: [
+      { type: 'doorlock', label: 'Door Lock — قفل ذكي',       desc: 'التحكم بقفل الباب الإلكتروني مع مؤقت auto-lock',  icon: Lock,   w: 2, h: 2 },
+      { type: 'buzzer',   label: 'Buzzer / Siren — صفارة',   desc: 'تنبيه سلامة فوري — زر لحظي يرسل pulse',        icon: Bell,   w: 2, h: 2 },
+      { type: 'pantilt',  label: 'Pan-Tilt Camera — كاميرا', desc: 'التحكم ثنائي المحاور بكاميرا المراقبة التعليمية', icon: Camera, w: 3, h: 3 },
+    ],
+  },
+  {
+    id: 'agriculture',
+    label: '🌱 مشاريع زراعية',
+    icon: Leaf,
+    color: 'from-green-500/20 to-lime-500/20 border-green-500/30',
+    accent: 'text-green-400',
+    items: [
+      { type: 'pump',       label: 'Water Pump — مضخة مياه',      desc: 'تشغيل/إيقاف مضخة المياه يدوياً أو بجدول',            icon: Droplets, w: 2, h: 2 },
+      { type: 'valve',      label: 'Electric Valve — صمام',        desc: 'التحكم دقيق بصمام المياه الكهربائي',                   icon: Wrench,   w: 2, h: 2 },
+      { type: 'irrigation', label: 'Smart Irrigation — ري ذكي',   desc: 'ري تلقائي حسب رطوبة التربة — مشروع تعليمي متكامل',   icon: Sprout,   w: 4, h: 3 },
+    ],
+  },
+  {
+    id: 'advanced',
+    label: '🎯 أدوات متقدمة',
     icon: Monitor,
     color: 'from-sky-500/20 to-indigo-500/20 border-sky-500/30',
     accent: 'text-sky-400',
     items: [
-      { type: 'oled', label: 'OLED / LCD Display', desc: 'إرسال نص لعرضه على شاشة OLED/LCD رقمية', icon: Monitor, w: 3, h: 2 },
-      { type: 'seven_segment', label: '7-Segment Display', desc: 'عرض أرقام عائمة أو صحيحة على شاشة 7-Segment', icon: Hash, w: 2, h: 2 },
-      { type: 'led_matrix', label: 'LED Matrix', desc: 'عرض نصوص متحركة ورسومات على مصفوفة LED', icon: Grid, w: 3, h: 2 },
-    ],
-  },
-  {
-    id: 'fluids',
-    label: '🚰 صمامات وموائع (Fluid Control)',
-    icon: Droplets,
-    color: 'from-teal-500/20 to-emerald-500/20 border-teal-500/30',
-    accent: 'text-teal-400',
-    items: [
-      { type: 'solenoid_valve', label: 'Solenoid Valve', desc: 'فتح وإغلاق تدفق السوائل والغازات كهربائياً', icon: Droplets, w: 2, h: 2 },
-      { type: 'fluid_pump', label: 'Water/Air Pump', desc: 'تشغيل والتحكم بسرعة مضخة المياه أو الهواء', icon: RotateCw, w: 2, h: 2 },
-    ],
-  },
-  {
-    id: 'locks_security',
-    label: '🔐 أقفال وميكانيكا أمان',
-    icon: Lock,
-    color: 'from-red-500/20 to-rose-500/20 border-red-500/30',
-    accent: 'text-red-400',
-    items: [
-      { type: 'elec_lock', label: 'Electronic Solenoid Lock', desc: 'التحكم بقفل الباب الإلكتروني والمزلاج (ON/OFF)', icon: Lock, w: 2, h: 2 },
-      { type: 'latch', label: 'Latch Mechanism', desc: 'التحكم بآلية تروس القفل المغناطيسي أو المحرك', icon: Shield, w: 2, h: 2 },
-    ],
-  },
-  {
-    id: 'communication',
-    label: '📡 اتصالات وإشارات خارجية',
-    icon: Globe,
-    color: 'from-indigo-500/20 to-violet-500/20 border-indigo-500/30',
-    accent: 'text-indigo-400',
-    items: [
-      { type: 'ir_sender', label: 'IR Transmitter', desc: 'إرسال إشارات تحت الحمراء للتحكم بالتلفزيون/المكيف', icon: Send, w: 2, h: 2 },
-      { type: 'rf_sender', label: 'RF Transmitter (433MHz)', desc: 'إرسال إشارات لاسلكية لفتح البوابات أو الأجهزة البعيدة', icon: Zap, w: 2, h: 2 },
-      { type: 'bus_controller', label: 'I2C/SPI/UART Controller', desc: 'إرسال بايتات أو نصوص للتحكم بجهاز ESP32 كـ Master', icon: Terminal, w: 3, h: 2 },
+      { type: 'oled',         label: 'OLED/LCD Display — شاشة',      desc: 'إرسال نص لشاشة OLED أو LCD مباشرة',                     icon: Monitor,       w: 3, h: 2 },
+      { type: 'numericInput', label: 'Numeric Input — قيمة رقمية',   desc: 'إرسال قيمة Setpoint لحساس أو متحكم (min/max/step)',      icon: Hash,          w: 2, h: 2 },
+      { type: 'dropdown',     label: 'Dropdown — قائمة أوضاع',       desc: 'اختيار وضع التشغيل: Auto / Manual / Test',               icon: AlignJustify,  w: 3, h: 2 },
+      { type: 'momentary',    label: 'Momentary Button — زر لحظي',   desc: 'زر يرسل payload محدد لمرة واحدة فقط عند الضغط',          icon: Zap,           w: 2, h: 2 },
     ],
   },
 ];
@@ -309,6 +303,12 @@ const DEFAULT_TOPICS = {
   momentary:    'control/trigger',
   pwmfan:       'stem/fan',
   doorlock:     'security/door',
+
+  // Robotics
+  robot_arm:    'robot/arm',
+  gripper:      'robot/gripper',
+  omni_drive:   'robot/omni',
+  robot_speed:  'robot/speed',
 
   // Digital Outputs
   relay:          'actuator/relay',
@@ -2276,6 +2276,344 @@ function JoystickWidget({ widget, publish }) {
   );
 }
 
+// ─── Robot Arm Widget (3 servo joints) ─────────────────────────────────────
+function RobotArmWidget({ widget, publish }) {
+  const [joints, setJoints] = useState({ base: 90, shoulder: 90, elbow: 90 });
+
+  const setJoint = (name, val) => {
+    const next = { ...joints, [name]: val };
+    setJoints(next);
+    publish(widget.topic, `${name.toUpperCase()},${val}`);
+  };
+
+  const center = () => {
+    const c = { base: 90, shoulder: 90, elbow: 90 };
+    setJoints(c);
+    publish(widget.topic, 'CENTER');
+  };
+
+  const arms = [
+    { key: 'base',     label: 'قاعدة (Base)',      color: '#06b6d4', range: [0, 180] },
+    { key: 'shoulder', label: 'كتف (Shoulder)',     color: '#8b5cf6', range: [0, 180] },
+    { key: 'elbow',    label: 'مرفق (Elbow)',       color: '#f59e0b', range: [0, 135] },
+  ];
+
+  // Simple 2D arm preview
+  const baseAngle = ((joints.base - 90) * Math.PI) / 180;
+  const shoulderAngle = ((joints.shoulder - 90) * Math.PI) / 180 + baseAngle;
+  const elbowAngle = ((joints.elbow - 90) * Math.PI) / 180 + shoulderAngle;
+  const L1 = 36, L2 = 28;
+  const x0 = 60, y0 = 78;
+  const x1 = x0 + L1 * Math.sin(shoulderAngle);
+  const y1 = y0 - L1 * Math.cos(shoulderAngle);
+  const x2 = x1 + L2 * Math.sin(elbowAngle);
+  const y2 = y1 - L2 * Math.cos(elbowAngle);
+
+  return (
+    <div className="flex flex-col h-full gap-2 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 text-cyan-400">
+          <Bot size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+        </div>
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
+          {widget.topic}
+        </span>
+      </div>
+      <div className="flex-1 flex flex-col min-h-0 gap-2">
+        {/* SVG arm preview */}
+        <div className="flex justify-center">
+          <svg width="120" height="90" viewBox="0 0 120 90">
+            {/* Base platform */}
+            <rect x="44" y="80" width="32" height="6" rx="3" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" strokeWidth="1"/>
+            {/* Upper arm */}
+            <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#8b5cf6" strokeWidth="4" strokeLinecap="round"/>
+            {/* Forearm */}
+            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#f59e0b" strokeWidth="3" strokeLinecap="round"/>
+            {/* Joints */}
+            <circle cx={x0} cy={y0} r="5" fill="#06b6d4" filter="url(#glow)"/>
+            <circle cx={x1} cy={y1} r="4" fill="#8b5cf6"/>
+            <circle cx={x2} cy={y2} r="3" fill="#f59e0b"/>
+            <defs><filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          </svg>
+        </div>
+        {/* Joint sliders */}
+        <div className="space-y-2 px-1">
+          {arms.map(a => (
+            <div key={a.key}>
+              <div className="flex justify-between mb-0.5">
+                <label className="text-[9px] font-bold" style={{ color: a.color }}>{a.label}</label>
+                <span className="text-[9px] font-mono" style={{ color: a.color }}>{joints[a.key]}°</span>
+              </div>
+              <input type="range" min={a.range[0]} max={a.range[1]} value={joints[a.key]}
+                onChange={e => setJoint(a.key, Number(e.target.value))}
+                className="w-full h-1 rounded-lg appearance-none cursor-pointer"
+                style={{ accentColor: a.color }}
+              />
+            </div>
+          ))}
+        </div>
+        <button onClick={center}
+          className="w-full py-1.5 rounded-xl text-[10px] font-black bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 transition-all active:scale-95">
+          ⊙ توسيط الذراع (90°, 90°, 90°)
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Gripper Widget ───────────────────────────────────────────────────────────
+function GripperWidget({ widget, publish }) {
+  const [openPct, setOpenPct] = useState(100);
+  const [force, setForce] = useState(50);
+  const [grip, setGrip] = useState(false);
+
+  const sendGrip = (open) => {
+    setGrip(!open);
+    publish(widget.topic, open ? `OPEN,${force}` : `GRIP,${force}`);
+  };
+
+  const handleOpen = (v) => {
+    setOpenPct(v);
+    publish(widget.topic, `POS,${v},${force}`);
+  };
+
+  const jawGap = (openPct / 100) * 28;
+
+  return (
+    <div className="flex flex-col h-full gap-2 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 text-violet-400">
+          <Hand size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+        </div>
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
+          {widget.topic}
+        </span>
+      </div>
+      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
+        {/* Gripper SVG */}
+        <div className="flex justify-center">
+          <svg width="90" height="60" viewBox="0 0 90 60">
+            {/* Palm */}
+            <rect x="30" y="24" width="30" height="16" rx="4" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6" strokeWidth="1.5"/>
+            {/* Upper jaw */}
+            <rect x={45 - jawGap / 2 - 14} y="10" width="14" height="14" rx="3" fill="rgba(139,92,246,0.3)" stroke="#8b5cf6" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
+            {/* Lower jaw */}
+            <rect x={45 + jawGap / 2} y="10" width="14" height="14" rx="3" fill="rgba(139,92,246,0.3)" stroke="#8b5cf6" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
+            <text x="45" y="38" textAnchor="middle" fontSize="8" fill="#a78bfa" fontWeight="bold">{openPct}%</text>
+          </svg>
+        </div>
+        {/* Open % */}
+        <div>
+          <div className="flex justify-between mb-1">
+            <label className="text-[10px] text-muted-foreground">انفتاح القابض</label>
+            <span className="text-[10px] font-mono font-bold text-violet-400">{openPct}%</span>
+          </div>
+          <input type="range" min="0" max="100" value={openPct} onChange={e => handleOpen(Number(e.target.value))}
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ accentColor: '#8b5cf6' }}/>
+        </div>
+        {/* Force */}
+        <div>
+          <div className="flex justify-between mb-1">
+            <label className="text-[10px] text-muted-foreground">قوة القبضة</label>
+            <span className="text-[10px] font-mono font-bold text-pink-400">{force}%</span>
+          </div>
+          <input type="range" min="10" max="100" value={force} onChange={e => setForce(Number(e.target.value))}
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ accentColor: '#ec4899' }}/>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => sendGrip(true)}
+            className="flex-1 py-2 rounded-xl text-xs font-black bg-violet-500/10 border border-violet-500/30 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">
+            ✋ فتح
+          </button>
+          <button onClick={() => sendGrip(false)}
+            className="flex-1 py-2 rounded-xl text-xs font-black bg-pink-500/10 border border-pink-500/30 text-pink-400 hover:bg-pink-500/20 transition-all active:scale-95">
+            👊 إمساك
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Omni/Mecanum Drive Widget ────────────────────────────────────────────────
+function OmniDriveWidget({ widget, publish }) {
+  const rootRef = useRef(null);
+  const activeRef = useRef(null);
+  const [active, setActive] = useState(null);
+  const [knob, setKnob] = useState({ x: 0, y: 0 });
+  const [rotate, setRotate] = useState(0); // -1 CCW, 0 stop, 1 CW
+
+  const setCmd = (cmd) => { activeRef.current = cmd; setActive(cmd); };
+  const deadPx = 12, maxStick = 50;
+
+  const dirFromDelta = (dx, dy) => {
+    const dist = Math.hypot(dx, dy);
+    if (dist < deadPx) return null;
+    const angle = Math.atan2(dy, dx);
+    if (angle >= -Math.PI * 0.75 && angle < -Math.PI * 0.25) return 'FORWARD';
+    if (angle >= -Math.PI * 0.25 && angle < Math.PI * 0.25) return 'RIGHT';
+    if (angle >= Math.PI * 0.25 && angle < Math.PI * 0.75) return 'BACK';
+    return 'LEFT';
+  };
+
+  const applyPointer = (clientX, clientY) => {
+    const el = rootRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    let dx = clientX - cx, dy = clientY - cy;
+    const dist = Math.hypot(dx, dy);
+    const cmd = dirFromDelta(dx, dy);
+    const cap = Math.min(dist, maxStick);
+    if (dist > 1e-6) { dx = (dx / dist) * cap; dy = (dy / dist) * cap; } else { dx = 0; dy = 0; }
+    setKnob({ x: dx, y: dy });
+    const prev = activeRef.current;
+    if (cmd !== prev) {
+      if (cmd) { setCmd(cmd); publish(widget.topic, `MOVE,${cmd},${rotate}`); }
+      else { if (prev) publish(widget.topic, `STOP,0,${rotate}`); setCmd(null); }
+    }
+  };
+
+  const endPointer = () => {
+    setKnob({ x: 0, y: 0 });
+    if (activeRef.current) publish(widget.topic, `STOP,0,${rotate}`);
+    setCmd(null);
+  };
+
+  const setRotateCmd = (r) => { setRotate(r); publish(widget.topic, `ROTATE,${r > 0 ? 'CW' : r < 0 ? 'CCW' : 'STOP'}`); };
+  const knobLit = active != null;
+
+  return (
+    <div className="flex flex-col h-full gap-2 min-h-0 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 text-cyan-400">
+          <Navigation size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+        </div>
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
+          {widget.topic}
+        </span>
+      </div>
+      <div className="flex-1 flex gap-3 items-center justify-center min-h-0">
+        {/* Joystick */}
+        <div
+          ref={rootRef}
+          className="relative w-32 h-32 rounded-full border border-cyan-400/20 bg-gradient-to-b from-cyan-950/10 to-black/40 touch-none select-none cursor-grab active:cursor-grabbing shadow-[inset_0_2px_12px_rgba(0,0,0,0.6)] flex items-center justify-center flex-shrink-0"
+          onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); applyPointer(e.clientX, e.clientY); }}
+          onPointerMove={e => { if (!e.currentTarget.hasPointerCapture(e.pointerId)) return; applyPointer(e.clientX, e.clientY); }}
+          onPointerUp={e => { try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {} endPointer(); }}
+          onPointerCancel={endPointer}
+        >
+          <div className="absolute inset-[18%] rounded-full border border-dashed border-cyan-400/15 pointer-events-none" />
+          <div
+            className={`absolute w-11 h-11 rounded-full border-2 transition-all duration-75 flex items-center justify-center ${
+              knobLit ? 'bg-cyan-400/40 border-cyan-300 shadow-[0_0_16px_rgba(34,211,238,0.7)] scale-95' : 'bg-card/10 border-border'
+            }`}
+            style={{ left: `calc(50% + ${knob.x}px)`, top: `calc(50% + ${knob.y}px)`, transform: 'translate(-50%,-50%)' }}
+          >
+            <div className={`w-3 h-3 rounded-full ${knobLit ? 'bg-cyan-400' : 'bg-muted-foreground/30'}`} />
+          </div>
+          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">F</span>
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">B</span>
+          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">L</span>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">R</span>
+        </div>
+        {/* Rotation controls */}
+        <div className="flex flex-col gap-2">
+          <button onClick={() => setRotateCmd(1)}
+            className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center text-xs font-black transition-all active:scale-90 ${
+              rotate > 0 ? 'bg-cyan-400/20 border-cyan-400 text-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.4)]' : 'bg-muted border-border text-muted-foreground hover:border-cyan-400/40'
+            }`}>
+            ↻
+          </button>
+          <button onClick={() => setRotateCmd(0)}
+            className="w-10 h-10 rounded-xl border-2 bg-muted border-border text-muted-foreground text-[9px] font-black hover:border-red-400/40 transition-all active:scale-90">
+            ■
+          </button>
+          <button onClick={() => setRotateCmd(-1)}
+            className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center text-xs font-black transition-all active:scale-90 ${
+              rotate < 0 ? 'bg-cyan-400/20 border-cyan-400 text-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.4)]' : 'bg-muted border-border text-muted-foreground hover:border-cyan-400/40'
+            }`}>
+            ↺
+          </button>
+        </div>
+      </div>
+      <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full text-center ${
+        active ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/30 animate-pulse' : 'bg-muted text-muted-foreground'
+      }`}>
+        {active || 'IDLE'}{rotate !== 0 ? (rotate > 0 ? ' + ↻CW' : ' + ↺CCW') : ''}
+      </span>
+    </div>
+  );
+}
+
+// ─── Dual Motor Speed Widget ──────────────────────────────────────────────────
+function RobotSpeedWidget({ widget, publish }) {
+  const [left, setLeft] = useState(0);
+  const [right, setRight] = useState(0);
+
+  const send = (l, r) => publish(widget.topic, `L${l},R${r}`);
+
+  const presets = [
+    { label: '↑', l: 150, r: 150 },
+    { label: '↓', l: -150, r: -150 },
+    { label: '↰', l: 80, r: 200 },
+    { label: '↱', l: 200, r: 80 },
+    { label: '⬛', l: 0, r: 0 },
+  ];
+
+  return (
+    <div className="flex flex-col h-full gap-2 text-left">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 text-emerald-400">
+          <Gauge size={16} />
+          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+        </div>
+        <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
+          {widget.topic}
+        </span>
+      </div>
+      <div className="flex-1 flex flex-col justify-center gap-2.5 px-1">
+        {/* Left motor */}
+        <div>
+          <div className="flex justify-between mb-1">
+            <label className="text-[10px] text-emerald-400 font-bold">◀ المحرك الأيسر</label>
+            <span className="text-[10px] font-mono text-emerald-400">{left}</span>
+          </div>
+          <input type="range" min="-255" max="255" value={left}
+            onChange={e => { const v = Number(e.target.value); setLeft(v); send(v, right); }}
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ accentColor: '#34d399' }}/>
+        </div>
+        {/* Right motor */}
+        <div>
+          <div className="flex justify-between mb-1">
+            <label className="text-[10px] text-cyan-400 font-bold">المحرك الأيمن ▶</label>
+            <span className="text-[10px] font-mono text-cyan-400">{right}</span>
+          </div>
+          <input type="range" min="-255" max="255" value={right}
+            onChange={e => { const v = Number(e.target.value); setRight(v); send(left, v); }}
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ accentColor: '#22d3ee' }}/>
+        </div>
+        {/* Quick presets */}
+        <div className="flex gap-1.5">
+          {presets.map(p => (
+            <button key={p.label}
+              onClick={() => { setLeft(p.l); setRight(p.r); send(p.l, p.r); }}
+              className="flex-1 py-1.5 rounded-lg text-xs font-black bg-muted border border-border text-muted-foreground hover:border-emerald-400/40 hover:text-emerald-400 transition-all active:scale-95">
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <div className="text-[9px] text-center text-muted-foreground font-mono bg-muted rounded-lg py-1 border border-border">
+          L{left} / R{right}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Widget Card Shell ────────────────────────────────────────────────────────
 function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) {
   const renderContent = () => {
@@ -2354,39 +2692,56 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
       // ── Communications ──
       case 'bus_controller':  return <OLEDWidget widget={widget} publish={publish} />;
 
+      // ── Robotics ──
+      case 'robot_arm':   return <RobotArmWidget   widget={widget} publish={publish} />;
+      case 'gripper':     return <GripperWidget     widget={widget} publish={publish} />;
+      case 'omni_drive':  return <OmniDriveWidget   widget={widget} publish={publish} />;
+      case 'robot_speed': return <RobotSpeedWidget  widget={widget} publish={publish} />;
+
       default: return null;
     }
   };
 
   return (
-    <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
-      {/* ── Drag handle bar (top strip) ── */}
+    <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-row relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
+      {/* ── LEFT edge drag handle ── */}
       <div
-        className="drag-handle flex items-center justify-between px-3 pt-2.5 pb-1.5 cursor-grab active:cursor-grabbing select-none flex-shrink-0"
+        className="drag-handle w-4 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none flex-shrink-0 group-hover:bg-primary/5 transition-colors rounded-l-2xl"
+        title="اسحب من الحافة لتحريك الأداة"
       >
-        {/* Grip dots */}
-        <GripVertical size={13} className="text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors flex-shrink-0" />
-        {/* Action buttons – placed inside the bar but cancel drag so clicks work */}
-        <div className="no-drag flex items-center gap-0.5">
+        <GripVertical size={12} className="text-muted-foreground/20 group-hover:text-muted-foreground/50 transition-colors" />
+      </div>
+
+      {/* ── Widget content (not draggable) ── */}
+      <div className="no-drag flex-1 flex flex-col min-h-0 overflow-hidden py-3 pr-3 pl-1">
+        {/* Action buttons row */}
+        <div className="flex justify-end gap-0.5 mb-1 flex-shrink-0">
           <button
             onClick={() => onEdit(widget)}
             className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-muted-foreground dark:text-white/30 p-1"
             title="Edit Tool"
           >
-            <SlidersHorizontal size={13} />
+            <SlidersHorizontal size={12} />
           </button>
           <button
             onClick={() => onRemove(widget.id)}
             className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground dark:text-white/30 p-1"
             title="Remove Tool"
           >
-            <Trash2 size={13} />
+            <Trash2 size={12} />
           </button>
         </div>
+        <div className="flex-1 min-h-0 overflow-hidden">
+          {renderContent()}
+        </div>
       </div>
-      {/* ── Widget content (not draggable) ── */}
-      <div className="no-drag flex-1 px-4 pb-4 min-h-0 overflow-hidden">
-        {renderContent()}
+
+      {/* ── RIGHT edge drag handle ── */}
+      <div
+        className="drag-handle w-4 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none flex-shrink-0 group-hover:bg-primary/5 transition-colors rounded-r-2xl"
+        title="اسحب من الحافة لتحريك الأداة"
+      >
+        <GripVertical size={12} className="text-muted-foreground/20 group-hover:text-muted-foreground/50 transition-colors" />
       </div>
     </div>
   );
