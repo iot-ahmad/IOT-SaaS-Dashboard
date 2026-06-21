@@ -20,19 +20,19 @@
 
     <!-- Gradients -->
     <radialGradient id="bg-glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.3"/>
+      <stop offset="0%" stop-color="#eab308" stop-opacity="0.35"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
     </radialGradient>
 
     <linearGradient id="shield-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#a855f7"/>
-      <stop offset="50%" stop-color="#6366f1"/>
-      <stop offset="100%" stop-color="#4f46e5"/>
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
     </linearGradient>
 
     <linearGradient id="face-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1e1b4b"/>
-      <stop offset="100%" stop-color="#0f0b29"/>
+      <stop offset="0%" stop-color="#1c190b"/>
+      <stop offset="100%" stop-color="#0a0904"/>
     </linearGradient>
   </defs>
 
@@ -40,51 +40,51 @@
   <circle cx="50" cy="50" r="48" fill="url(#bg-glow)" />
 
   <!-- Shield / Outer ring -->
-  <circle cx="50" cy="50" r="42" stroke="url(#shield-grad)" stroke-width="2.5" fill="#0c071a" />
+  <circle cx="50" cy="50" r="42" stroke="url(#shield-grad)" stroke-width="2.5" fill="#0c0a06" />
   
   <!-- Outer dotted track / accents -->
-  <circle cx="50" cy="50" r="38" stroke="#a855f7" stroke-width="0.75" stroke-dasharray="4 8" opacity="0.6" />
+  <circle cx="50" cy="50" r="38" stroke="#eab308" stroke-width="0.75" stroke-dasharray="4 8" opacity="0.6" />
 
   <!-- Robot Head Group -->
   <g transform="translate(0, 2)">
     <!-- Ears / Side antennas -->
-    <path d="M26 42 L22 36 L22 48 Z" fill="#4c1d95" stroke="#a855f7" stroke-width="1" />
-    <path d="M74 42 L78 36 L78 48 Z" fill="#4c1d95" stroke="#a855f7" stroke-width="1" />
+    <path d="M26 42 L22 36 L22 48 Z" fill="#78350f" stroke="#fbbf24" stroke-width="1" />
+    <path d="M74 42 L78 36 L78 48 Z" fill="#78350f" stroke="#fbbf24" stroke-width="1" />
 
     <!-- Crown / Forehead antenna -->
-    <path d="M50 20 L50 28" stroke="#c084fc" stroke-width="2" stroke-linecap="round" filter="url(#glow)" />
-    <circle cx="50" cy="18" r="2.5" fill="#c084fc" filter="url(#glow)" />
+    <path d="M50 20 L50 28" stroke="#fef08a" stroke-width="2" stroke-linecap="round" filter="url(#glow)" />
+    <circle cx="50" cy="18" r="2.5" fill="#fef08a" filter="url(#glow)" />
 
     <!-- Head Outline -->
     <path d="M30 34 C30 26, 70 26, 70 34 L70 52 C70 58, 62 64, 50 64 C38 64, 30 58, 30 52 Z" 
           fill="url(#face-grad)" stroke="url(#shield-grad)" stroke-width="2" />
 
     <!-- Forehead Plate lines -->
-    <path d="M36 34 L64 34" stroke="#a855f7" stroke-width="1.5" opacity="0.8" />
-    <path d="M50 34 L50 28" stroke="#a855f7" stroke-width="1.5" opacity="0.8" />
+    <path d="M36 34 L64 34" stroke="#eab308" stroke-width="1.5" opacity="0.8" />
+    <path d="M50 34 L50 28" stroke="#eab308" stroke-width="1.5" opacity="0.8" />
 
     <!-- Cheek lines -->
-    <path d="M35 52 L42 58" stroke="#a855f7" stroke-width="1" opacity="0.6" />
-    <path d="M65 52 L58 58" stroke="#a855f7" stroke-width="1" opacity="0.6" />
+    <path d="M35 52 L42 58" stroke="#eab308" stroke-width="1" opacity="0.6" />
+    <path d="M65 52 L58 58" stroke="#eab308" stroke-width="1" opacity="0.6" />
 
     <!-- Glowing Eyes -->
     <g filter="url(#glow)">
       <!-- Left Eye -->
-      <polygon points="34,42 46,40 44,46 36,46" fill="#d8b4fe" />
+      <polygon points="34,42 46,40 44,46 36,46" fill="#fef08a" />
       <circle cx="40" cy="43" r="1" fill="#fff" />
       
       <!-- Right Eye -->
-      <polygon points="66,42 54,40 56,46 64,46" fill="#d8b4fe" />
+      <polygon points="66,42 54,40 56,46 64,46" fill="#fef08a" />
       <circle cx="60" cy="43" r="1" fill="#fff" />
     </g>
 
     <!-- Mouth / Glowing Panel -->
-    <rect x="42" y="52" width="16" height="3" rx="1.5" fill="#a855f7" opacity="0.8" filter="url(#glow)" />
+    <rect x="42" y="52" width="16" height="3" rx="1.5" fill="#eab308" opacity="0.8" filter="url(#glow)" />
     <line x1="45" y1="53.5" x2="55" y2="53.5" stroke="#fff" stroke-width="0.75" stroke-linecap="round" opacity="0.9" />
 
     <!-- Neck -->
-    <path d="M44 64 L44 70 L56 70 L56 64" fill="#0f0b29" stroke="#a855f7" stroke-width="1.5" />
-    <line x1="47" y1="67" x2="53" y2="67" stroke="#a855f7" stroke-width="1.5" />
+    <path d="M44 64 L44 70 L56 70 L56 64" fill="#141207" stroke="#eab308" stroke-width="1.5" />
+    <line x1="47" y1="67" x2="53" y2="67" stroke="#eab308" stroke-width="1.5" />
 
     <!-- Collar / Shoulders -->
     <path d="M34 71 L66 71 L60 76 L40 76 Z" fill="url(#face-grad)" stroke="url(#shield-grad)" stroke-width="1.5" />
