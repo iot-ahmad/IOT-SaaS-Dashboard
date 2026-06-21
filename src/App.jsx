@@ -62,7 +62,7 @@ function HubLayout({ children, user, logout }) {
         {/* Logo + nav links */}
         <div className="flex items-center gap-6">
           <button onClick={() => navigate('/hub')} className="flex items-center gap-2.5 cursor-pointer">
-            <img src="/robot_logo.svg" alt="IOT365" className="w-8 h-8 object-contain drop-shadow-[0_0_5px_rgba(245,158,11,0.4)]" />
+            <img src="/robot_logo.svg" alt="IOT365" className="w-8 h-8 object-contain drop-shadow-[0_0_5px_rgba(168,85,247,0.4)]" />
             <span className="text-sm font-extrabold tracking-tight">
               <span className="text-foreground">IOT</span>
               <span className="text-primary">365</span>
