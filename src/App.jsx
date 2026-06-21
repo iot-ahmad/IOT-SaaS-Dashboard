@@ -74,14 +74,14 @@ function HubLayout({ children, user, logout }) {
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => navigate('/hub')}
-              className="text-xs font-semibold text-muted-foreground hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
+              className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary/15 transition-all cursor-pointer"
             >
               استعرض المشاريع
             </button>
             {user && (
               <button
                 onClick={() => navigate('/hub/new')}
-                className="text-xs font-semibold text-muted-foreground hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all cursor-pointer"
+                className="text-xs font-semibold text-muted-foreground hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer"
               >
                 + نشر مشروع
               </button>
@@ -170,7 +170,7 @@ function HubLayout({ children, user, logout }) {
       </header>
 
       {/* ─── Page Content ─── */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 md:px-10 py-8 overflow-y-auto">
+      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-5 overflow-y-auto">
         {children}
       </main>
 
