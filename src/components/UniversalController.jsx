@@ -7,9 +7,9 @@ import {
   Gamepad2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight,
   Trash2, Activity, Zap, Car, GripVertical, Move, Loader2, Radio,
   Lightbulb, Palette, Calendar, FlaskConical, Wind, Blinds,
-  Lock, Bell, Camera, Droplets, Sprout, Monitor,
+  Lock, Bell, Camera, Droplets, Sprout, Monitor, Globe,
   Minus, RotateCcw, RotateCw, AlignJustify, Hash, ChevronRight as ChevronRightIcon,
-  Power, Cpu, Gauge, GraduationCap, Shield, Leaf, Wrench
+  Power, Cpu, Gauge, GraduationCap, Shield, Leaf, Wrench, Play, Sparkles, Grid, Send, Terminal
 } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, YAxis, AreaChart, Area } from 'recharts';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -179,142 +179,182 @@ function useControllerFirestore(userUID, storageScopeId) {
 // ─── Widget Definitions ───────────────────────────────────────────────────────
 const CATEGORIES = [
   {
-    id: 'sensors',
-    label: 'Sensors',
-    icon: Activity,
-    color: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/30',
-    accent: 'text-cyan-400',
+    id: 'digital_out',
+    label: '🔌 مخرجات رقمية بسيطة (Digital Output)',
+    icon: Power,
+    color: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
+    accent: 'text-blue-400',
     items: [
-      { type: 'gauge', label: 'Gauge / Chart', desc: 'Display a numeric sensor value with a live bar', icon: Thermometer, w: 3, h: 3 },
+      { type: 'relay', label: 'Relay / Transistor', desc: 'تشغيل/إطفاء أي حمل كهربائي (Boolean ON/OFF)', icon: Power, w: 2, h: 2 },
+      { type: 'mosfet', label: 'MOSFET', desc: 'تبديل تيار مستمر بجهد وتيار أعلى (Boolean)', icon: Cpu, w: 2, h: 2 },
+      { type: 'solenoid', label: 'Solenoid Actuator', desc: 'دفع/سحب ميكانيكي مفاجئ (Boolean / Pulse)', icon: Zap, w: 2, h: 2 },
+      { type: 'optocoupler', label: 'Optocoupler', desc: 'عزل كهربائي آمن بين دائرتين (Boolean)', icon: Shield, w: 2, h: 2 },
     ],
   },
   {
-    id: 'actuators',
-    label: 'Actuators',
-    icon: Zap,
+    id: 'analog_pwm',
+    label: '🎛️ مخرجات تناظرية/PWM',
+    icon: SlidersHorizontal,
     color: 'from-amber-500/20 to-orange-500/20 border-amber-500/30',
     accent: 'text-amber-400',
     items: [
-      { type: 'switch', label: 'LED Switch', desc: 'Toggle an LED or relay ON / OFF', icon: ToggleLeft, w: 2, h: 2 },
-      { type: 'slider', label: 'Servo Slider', desc: 'Send a 0–180° value to a servo motor', icon: SlidersHorizontal, w: 3, h: 2 },
+      { type: 'dimmer', label: 'Dimmer', desc: 'تعتيم أو تحكم بشدة الإضاءة عبر PWM (0-100%)', icon: Lightbulb, w: 3, h: 2 },
+      { type: 'dcmotor_speed', label: 'DC Motor Speed (PWM)', desc: 'التحكم بسرعة موتور DC عبر إشارة PWM (0-100%)', icon: RotateCw, w: 3, h: 2 },
+      { type: 'fan_speed', label: 'PWM Fan Speed', desc: 'التحكم بسرعة مروحة التبريد الذكية عبر PWM', icon: Wind, w: 3, h: 2 },
+      { type: 'dac', label: 'DAC Output', desc: 'إشارة تناظرية حقيقية من منافذ DAC بالـ ESP32', icon: Activity, w: 3, h: 2 },
     ],
   },
   {
-    id: 'robotics',
-    label: 'Robotics',
-    icon: Car,
-    color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30',
-    accent: 'text-amber-400',
-    items: [
-      { type: 'dpad', label: 'Direction Controller (D-Pad)', desc: 'D-Pad: FORWARD, BACK, LEFT, RIGHT, STOP on one topic', icon: Gamepad2, w: 3, h: 4 },
-      { type: 'joystick', label: 'Joystick', desc: 'Analog-style stick: same movement commands on one MQTT topic', icon: Move, w: 4, h: 4 },
-      { type: 'speed', label: 'Speed Slider', desc: 'Send speed value (0–255) to your speed topic', icon: Car, w: 3, h: 2 },
-    ],
-  },
-  // ── Classroom Control ──────────────────────────────────────────────────────
-  {
-    id: 'classroom',
-    label: '🏫 تحكم الفصل الدراسي',
-    icon: GraduationCap,
-    color: 'from-violet-500/20 to-purple-500/20 border-violet-500/30',
-    accent: 'text-violet-400',
-    items: [
-      { type: 'relay',     label: 'Relay — تشغيل/إطفاء',       desc: 'تحكم بالإضاءة، البروجكتور، المروحة عبر Relay',          icon: Power,          w: 2, h: 2 },
-      { type: 'dimmer',    label: 'Dimmer PWM — تعتيم الإضاءة', desc: 'تعتيم الإضاءة تدريجياً أثناء العروض (0-100%)',           icon: Lightbulb,      w: 3, h: 2 },
-      { type: 'rgb',       label: 'RGB Strip — شريط ملون',      desc: 'تحكم بألوان شريط RGB/RGBW للتجارب البصرية والمسابقات', icon: Palette,        w: 3, h: 3 },
-      { type: 'scene',     label: 'Scenes — أوضاع جاهزة',       desc: 'وضع امتحان / محاضرة / استراحة بضغطة واحدة',            icon: Cpu,            w: 3, h: 3 },
-      { type: 'scheduler', label: 'Scheduler — جرس الحصص',      desc: 'جدولة تشغيل/إيقاف تلقائي لجرس الحصص أو الري',         icon: Calendar,       w: 3, h: 3 },
-    ],
-  },
-  // ── STEM Lab ───────────────────────────────────────────────────────────────
-  {
-    id: 'stem',
-    label: '🔬 مختبر STEM',
-    icon: FlaskConical,
+    id: 'motors_movement',
+    label: '⚙️ محركات وحركة',
+    icon: RotateCw,
     color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
     accent: 'text-emerald-400',
     items: [
-      { type: 'servo',   label: 'Servo Motor — زاوية',       desc: 'تحكم بزاوية السيرفو (0–180°) لتجارب الروبوتيك',       icon: Wrench,          w: 3, h: 2 },
-      { type: 'dcmotor', label: 'DC Motor — سرعة واتجاه',    desc: 'تحكم بسرعة واتجاه موتور DC لتجارب الفيزياء',          icon: RotateCw,        w: 3, h: 3 },
-      { type: 'stepper', label: 'Stepper — خطوات دقيقة',     desc: 'تحكم دقيق بعدد الخطوات لمشاريع CNC والطباعة الثلاثية', icon: Gauge,           w: 3, h: 2 },
-      { type: 'pwmfan',  label: 'PWM Fan — مروحة ذكية',      desc: 'تحكم PWM بالمروحة مع ربطها بحساس حرارة',              icon: Wind,            w: 3, h: 3 },
-      { type: 'curtain', label: 'Smart Curtain — ستارة ذكية', desc: 'تحكم بنسبة فتح الستائر — مشروع تعليمي شائع',         icon: Blinds,          w: 3, h: 2 },
+      { type: 'servo', label: 'Servo Motor', desc: 'تحكم بزاوية محددة أو دوران مستمر (0-180°)', icon: SlidersHorizontal, w: 3, h: 2 },
+      { type: 'dcmotor', label: 'DC Motor H-Bridge', desc: 'التحكم بالسرعة والاتجاه (H-Bridge L298N)', icon: RotateCw, w: 3, h: 3 },
+      { type: 'stepper', label: 'Stepper Motor', desc: 'موضع وخطوات دقيقة (A4988 / ULN2003)', icon: Gauge, w: 3, h: 2 },
+      { type: 'bldc', label: 'BLDC Motor', desc: 'تحكم بمحرك BLDC عالي السرعة عبر ESC (0-100%)', icon: Play, w: 3, h: 2 },
+      { type: 'linear_actuator', label: 'Linear Actuator', desc: 'تحكم بحركة خطية مدفوعة (0-100%)', icon: Blinds, w: 3, h: 2 },
     ],
   },
-  // ── Security & Safety ──────────────────────────────────────────────────────
   {
-    id: 'security',
-    label: '🔒 الأمن والسلامة',
-    icon: Shield,
-    color: 'from-red-500/20 to-rose-500/20 border-red-500/30',
-    accent: 'text-red-400',
+    id: 'lighting',
+    label: '💡 إضاءة',
+    icon: Palette,
+    color: 'from-violet-500/20 to-purple-500/20 border-violet-500/30',
+    accent: 'text-violet-400',
     items: [
-      { type: 'doorlock', label: 'Door Lock — قفل ذكي',       desc: 'تحكم بقفل الباب الإلكتروني مع مؤقت auto-lock',  icon: Lock,   w: 2, h: 2 },
-      { type: 'buzzer',   label: 'Buzzer / Siren — صفارة',   desc: 'تنبيه سلامة فوري — زر لحظي يرسل pulse',        icon: Bell,   w: 2, h: 2 },
-      { type: 'pantilt',  label: 'Pan-Tilt Camera — كاميرا', desc: 'تحكم ثنائي المحاور بكاميرا المراقبة التعليمية', icon: Camera, w: 3, h: 3 },
+      { type: 'single_led', label: 'LED مفرد', desc: 'تحكم بتشغيل وتعتيم دايود ضوئي واحد (PWM)', icon: Lightbulb, w: 2, h: 2 },
+      { type: 'rgb', label: 'RGB/RGBW Strip', desc: 'تحكم بألوان شريط الإضاءة الملونة بالكامل', icon: Palette, w: 3, h: 3 },
+      { type: 'neopixel', label: 'Addressable LED (WS2812B)', desc: 'التحكم بكل بكسل ملون على حدة (NeoPixel)', icon: Sparkles, w: 3, h: 3 },
     ],
   },
-  // ── Agricultural Projects ──────────────────────────────────────────────────
   {
-    id: 'agriculture',
-    label: '🌱 مشاريع زراعية',
-    icon: Leaf,
-    color: 'from-green-500/20 to-lime-500/20 border-green-500/30',
-    accent: 'text-green-400',
+    id: 'sound',
+    label: '🔊 صوت',
+    icon: Bell,
+    color: 'from-pink-500/20 to-rose-500/20 border-pink-500/30',
+    accent: 'text-pink-400',
     items: [
-      { type: 'pump',       label: 'Water Pump — مضخة مياه',      desc: 'تشغيل/إيقاف مضخة المياه يدوياً أو بجدول',            icon: Droplets, w: 2, h: 2 },
-      { type: 'valve',      label: 'Electric Valve — صمام',        desc: 'تحكم دقيق بصمام المياه الكهربائي',                   icon: Wrench,   w: 2, h: 2 },
-      { type: 'irrigation', label: 'Smart Irrigation — ري ذكي',   desc: 'ري تلقائي حسب رطوبة التربة — مشروع تعليمي متكامل',   icon: Sprout,   w: 4, h: 3 },
+      { type: 'buzzer', label: 'Buzzer (Active/Passive)', desc: 'صفارة أو نغمات تنبيه عند حدوث شروط معينة', icon: Bell, w: 2, h: 2 },
+      { type: 'speaker', label: 'Mini Speaker', desc: 'إرسال نغمات أو ترددات عبر I2S أو DAC للسمّاعة', icon: Activity, w: 2, h: 2 },
     ],
   },
-  // ── Display & Advanced Tools ───────────────────────────────────────────────
   {
-    id: 'advanced',
-    label: '🎯 أدوات متقدمة',
+    id: 'displays',
+    label: '📺 شاشات وعرض بصري',
     icon: Monitor,
     color: 'from-sky-500/20 to-indigo-500/20 border-sky-500/30',
     accent: 'text-sky-400',
     items: [
-      { type: 'oled',         label: 'OLED/LCD Display — شاشة',      desc: 'إرسال نص لشاشة OLED أو LCD مباشرة',                     icon: Monitor,       w: 3, h: 2 },
-      { type: 'numericInput', label: 'Numeric Input — قيمة رقمية',   desc: 'إرسال قيمة Setpoint لحساس أو متحكم (min/max/step)',      icon: Hash,          w: 2, h: 2 },
-      { type: 'dropdown',     label: 'Dropdown — قائمة أوضاع',       desc: 'اختيار وضع التشغيل: Auto / Manual / Test',               icon: AlignJustify,  w: 3, h: 2 },
-      { type: 'momentary',    label: 'Momentary Button — زر لحظي',   desc: 'زر يرسل payload محدد لمرة واحدة فقط عند الضغط',          icon: Zap,           w: 2, h: 2 },
+      { type: 'oled', label: 'OLED / LCD Display', desc: 'إرسال نص لعرضه على شاشة OLED/LCD رقمية', icon: Monitor, w: 3, h: 2 },
+      { type: 'seven_segment', label: '7-Segment Display', desc: 'عرض أرقام عائمة أو صحيحة على شاشة 7-Segment', icon: Hash, w: 2, h: 2 },
+      { type: 'led_matrix', label: 'LED Matrix', desc: 'عرض نصوص متحركة ورسومات على مصفوفة LED', icon: Grid, w: 3, h: 2 },
+    ],
+  },
+  {
+    id: 'fluids',
+    label: '🚰 صمامات وموائع (Fluid Control)',
+    icon: Droplets,
+    color: 'from-teal-500/20 to-emerald-500/20 border-teal-500/30',
+    accent: 'text-teal-400',
+    items: [
+      { type: 'solenoid_valve', label: 'Solenoid Valve', desc: 'فتح وإغلاق تدفق السوائل والغازات كهربائياً', icon: Droplets, w: 2, h: 2 },
+      { type: 'fluid_pump', label: 'Water/Air Pump', desc: 'تشغيل والتحكم بسرعة مضخة المياه أو الهواء', icon: RotateCw, w: 2, h: 2 },
+    ],
+  },
+  {
+    id: 'locks_security',
+    label: '🔐 أقفال وميكانيكا أمان',
+    icon: Lock,
+    color: 'from-red-500/20 to-rose-500/20 border-red-500/30',
+    accent: 'text-red-400',
+    items: [
+      { type: 'elec_lock', label: 'Electronic Solenoid Lock', desc: 'التحكم بقفل الباب الإلكتروني والمزلاج (ON/OFF)', icon: Lock, w: 2, h: 2 },
+      { type: 'latch', label: 'Latch Mechanism', desc: 'التحكم بآلية تروس القفل المغناطيسي أو المحرك', icon: Shield, w: 2, h: 2 },
+    ],
+  },
+  {
+    id: 'communication',
+    label: '📡 اتصالات وإشارات خارجية',
+    icon: Globe,
+    color: 'from-indigo-500/20 to-violet-500/20 border-indigo-500/30',
+    accent: 'text-indigo-400',
+    items: [
+      { type: 'ir_sender', label: 'IR Transmitter', desc: 'إرسال إشارات تحت الحمراء للتحكم بالتلفزيون/المكيف', icon: Send, w: 2, h: 2 },
+      { type: 'rf_sender', label: 'RF Transmitter (433MHz)', desc: 'إرسال إشارات لاسلكية لفتح البوابات أو الأجهزة البعيدة', icon: Zap, w: 2, h: 2 },
+      { type: 'bus_controller', label: 'I2C/SPI/UART Controller', desc: 'إرسال بايتات أو نصوص للتحكم بجهاز ESP32 كـ Master', icon: Terminal, w: 3, h: 2 },
     ],
   },
 ];
 
 const DEFAULT_TOPICS = {
+  // Legacy
   gauge:        'sensor/temperature',
   switch:       'actuator/led',
   slider:       'actuator/servo',
   dpad:         'car/move',
   joystick:     'car/move',
   speed:        'car/speed',
-  // Classroom
-  relay:        'classroom/relay',
-  dimmer:       'classroom/dimmer',
-  rgb:          'classroom/rgb',
   scene:        'classroom/scene',
   scheduler:    'classroom/scheduler',
-  // STEM
-  servo:        'stem/servo',
-  dcmotor:      'stem/dcmotor',
-  stepper:      'stem/stepper',
-  pwmfan:       'stem/fan',
   curtain:      'stem/curtain',
-  // Security
-  doorlock:     'security/door',
-  buzzer:       'security/buzzer',
   pantilt:      'security/pantilt',
-  // Agriculture
   pump:         'farm/pump',
   valve:        'farm/valve',
   irrigation:   'farm/irrigation',
-  // Advanced
-  oled:         'display/oled',
   numericInput: 'control/setpoint',
   dropdown:     'control/mode',
   momentary:    'control/trigger',
+  pwmfan:       'stem/fan',
+  doorlock:     'security/door',
+
+  // Digital Outputs
+  relay:          'actuator/relay',
+  mosfet:         'actuator/mosfet',
+  solenoid:       'actuator/solenoid',
+  optocoupler:    'actuator/optocoupler',
+
+  // Analog / PWM
+  dimmer:         'actuator/dimmer',
+  dcmotor_speed:  'motor/speed',
+  fan_speed:      'fan/speed',
+  dac:            'actuator/dac',
+
+  // Motors
+  servo:          'motor/servo',
+  dcmotor:        'motor/dc',
+  stepper:        'motor/stepper',
+  bldc:           'motor/bldc',
+  linear_actuator:'actuator/linear',
+
+  // Lighting
+  single_led:     'light/led',
+  rgb:            'light/rgb',
+  neopixel:       'light/neopixel',
+
+  // Sound
+  buzzer:         'sound/buzzer',
+  speaker:        'sound/speaker',
+
+  // Displays
+  oled:           'display/oled',
+  seven_segment:  'display/7segment',
+  led_matrix:     'display/matrix',
+
+  // Fluids
+  solenoid_valve: 'fluid/valve',
+  fluid_pump:     'fluid/pump',
+
+  // Locks
+  elec_lock:      'security/lock',
+  latch:          'security/latch',
+
+  // Comms
+  ir_sender:      'signal/ir',
+  rf_sender:      'signal/rf',
+  bus_controller: 'signal/bus',
 };
 
 // ─── Add Tool Modal ───────────────────────────────────────────────────────────
@@ -882,11 +922,26 @@ function RelayWidget({ widget, value, publish }) {
   const isOn = value === '1' || value === 'ON' || value === 'true';
   const toggle = () => publish(widget.topic, isOn ? 'OFF' : 'ON');
 
+  // Dynamic config based on widget type
+  const config = {
+    relay:          { icon: Power,    label: 'Relay',       colorClass: 'text-violet-400', accentHex: '#8b5cf6', rgbStr: '139,92,246' },
+    mosfet:         { icon: Cpu,      label: 'MOSFET',      colorClass: 'text-cyan-400',    accentHex: '#06b6d4', rgbStr: '6,182,212' },
+    solenoid:       { icon: Zap,      label: 'Solenoid',    colorClass: 'text-amber-400',   accentHex: '#f59e0b', rgbStr: '245,158,11' },
+    optocoupler:    { icon: Shield,   label: 'Optocoupler', colorClass: 'text-emerald-400', accentHex: '#10b981', rgbStr: '16,185,129' },
+    solenoid_valve: { icon: Droplets,  label: 'Valve',       colorClass: 'text-blue-400',    accentHex: '#3b82f6', rgbStr: '59,130,246' },
+    latch:          { icon: Lock,     label: 'Latch',       colorClass: 'text-pink-400',    accentHex: '#ec4899', rgbStr: '236,72,153' },
+    elec_lock:      { icon: Lock,     label: 'Lock',        colorClass: 'text-red-400',     accentHex: '#ef4444', rgbStr: '239,68,68' },
+  }[widget.type] || { icon: Power,    label: 'Relay',       colorClass: 'text-violet-400', accentHex: '#8b5cf6', rgbStr: '139,92,246' };
+
+  const IconComponent = config.icon;
+  const shadowStyle = isOn ? `0 0 10px ${config.accentHex}, 0 0 20px ${config.accentHex}` : 'none';
+  const glowShadowClass = isOn ? `shadow-[0_0_24px_rgba(${config.rgbStr},0.35)]` : '';
+
   return (
     <div className="flex flex-col h-full gap-2 text-left">
       <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-violet-400">
-          <Power size={16} className={isOn ? 'animate-pulse' : ''} />
+        <div className={`flex items-center gap-2 ${config.colorClass}`}>
+          <IconComponent size={16} className={isOn ? 'animate-pulse' : ''} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
         <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
@@ -895,25 +950,26 @@ function RelayWidget({ widget, value, publish }) {
       </div>
       <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
         <div className="absolute top-0 right-2 flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full transition-all ${isOn ? 'bg-violet-400' : 'bg-slate-600'}`}
-            style={{ boxShadow: isOn ? '0 0 10px #8b5cf6, 0 0 20px #8b5cf6' : 'none' }} />
-          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-violet-400' : 'text-muted-foreground/60'}`}>
-            {isOn ? 'ON' : 'OFF'}
+          <span className="h-2 w-2 rounded-full transition-all bg-current"
+            style={{ color: isOn ? config.accentHex : '#475569', boxShadow: shadowStyle }} />
+          <span className={`text-[9px] font-extrabold uppercase ${isOn ? config.colorClass : 'text-muted-foreground/60'}`}>
+            {isOn ? 'ACTIVE' : 'IDLE'}
           </span>
         </div>
         <div
           className={`w-16 h-16 rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
             isOn
-              ? 'bg-violet-500/15 border-violet-400 shadow-[0_0_24px_rgba(139,92,246,0.35)] scale-95'
-              : 'bg-background dark:bg-card/5 border-border hover:border-violet-400/40'
+              ? `bg-muted/15 border-current ${glowShadowClass} scale-95`
+              : 'bg-background dark:bg-card/5 border-border hover:border-current/40'
           }`}
+          style={{ color: isOn ? config.accentHex : undefined }}
           onClick={toggle}
         >
-          <Power size={28} className={isOn ? 'text-violet-300 drop-shadow-[0_0_8px_rgba(139,92,246,0.9)]' : 'text-muted-foreground/50'} />
+          <IconComponent size={28} className={isOn ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]' : 'text-muted-foreground/50'} />
         </div>
         <span className={`text-[10px] font-bold px-3 py-0.5 rounded-full border ${
-          isOn ? 'bg-violet-500/10 border-violet-400/30 text-violet-400' : 'bg-muted border-border text-muted-foreground/50'
-        }`}>{isOn ? 'RELAY CLOSED' : 'RELAY OPEN'}</span>
+          isOn ? 'bg-muted/10 border-current/30 text-current' : 'bg-muted border-border text-muted-foreground/50'
+        }`} style={{ color: isOn ? config.accentHex : undefined }}>{isOn ? `${config.label.toUpperCase()} CLOSED` : `${config.label.toUpperCase()} OPEN`}</span>
       </div>
     </div>
   );
@@ -927,12 +983,27 @@ function DimmerWidget({ widget, publish }) {
     setPct(v);
     publish(widget.topic, String(v));
   };
-  const warmColor = `hsl(${40 + pct * 0.2}, 90%, ${20 + pct * 0.5}%)`;
+
+  // Dynamic config based on widget type
+  const config = {
+    dimmer:          { icon: Lightbulb, label: 'Brightness',  colorClass: 'text-yellow-400', accentHex: '#f59e0b' },
+    dcmotor_speed:   { icon: RotateCw,  label: 'Motor Speed', colorClass: 'text-emerald-400', accentHex: '#10b981' },
+    fan_speed:       { icon: Wind,      label: 'Fan Speed',   colorClass: 'text-teal-400',    accentHex: '#14b8a6' },
+    dac:             { icon: Activity,  label: 'DAC Output',  colorClass: 'text-cyan-400',    accentHex: '#06b6d4' },
+    bldc:            { icon: Play,      label: 'BLDC Speed',  colorClass: 'text-orange-400',  accentHex: '#f97316' },
+    linear_actuator: { icon: Blinds,    label: 'Extension',   colorClass: 'text-purple-400',  accentHex: '#a855f7' },
+    single_led:      { icon: Lightbulb, label: 'LED Dimmer',  colorClass: 'text-amber-400',   accentHex: '#fbbf24' },
+    fluid_pump:      { icon: Droplets,  label: 'Pump Speed',  colorClass: 'text-blue-400',    accentHex: '#3b82f6' },
+  }[widget.type] || { icon: Lightbulb, label: 'Level', colorClass: 'text-yellow-400', accentHex: '#f59e0b' };
+
+  const IconComponent = config.icon;
+  const shadowStyle = pct > 0 ? `0 0 12px ${config.accentHex}80` : 'none';
+
   return (
     <div className="flex flex-col h-full gap-2 text-left">
       <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-yellow-400">
-          <Lightbulb size={16} className={pct > 0 ? 'animate-pulse' : ''} />
+        <div className={`flex items-center gap-2 ${config.colorClass}`}>
+          <IconComponent size={16} className={pct > 0 ? 'animate-pulse' : ''} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
         <span className="text-[9px] font-mono text-muted-foreground dark:text-white/30 bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
@@ -940,24 +1011,30 @@ function DimmerWidget({ widget, publish }) {
         </span>
       </div>
       <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        {/* Bulb visual */}
+        {/* Visual icon container */}
         <div className="flex items-center justify-center">
           <div className="relative w-14 h-14 flex items-center justify-center">
             <div className="absolute inset-0 rounded-full transition-all duration-300"
-              style={{ background: `radial-gradient(circle, ${warmColor} 0%, transparent 70%)`, opacity: pct / 100 }} />
-            <Lightbulb size={28} style={{ color: pct > 0 ? `hsl(45, 95%, ${45 + pct * 0.35}%)` : undefined }}
-              className={pct > 0 ? '' : 'text-muted-foreground/40'} />
+              style={{
+                background: `radial-gradient(circle, ${config.accentHex}40 0%, transparent 70%)`,
+                opacity: pct / 100
+              }}
+            />
+            <IconComponent size={28} style={{ color: pct > 0 ? config.accentHex : undefined }}
+              className={pct > 0 ? 'text-current' : 'text-muted-foreground/40'} />
           </div>
         </div>
         <div className="flex justify-between items-baseline">
-          <span className="text-3xl font-black font-mono tracking-tight text-yellow-400" style={{ textShadow: pct > 0 ? '0 0 12px rgba(250,204,21,0.5)' : 'none' }}>{pct}%</span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Brightness</span>
+          <span className={`text-3xl font-black font-mono tracking-tight ${config.colorClass}`} style={{ textShadow: shadowStyle }}>
+            {pct}%
+          </span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{config.label}</span>
         </div>
         {/* Gradient track slider */}
-        <div style={{ background: 'linear-gradient(to right, #1a1a1a, #fbbf24)', borderRadius: '9999px', padding: '2px' }}>
+        <div style={{ background: `linear-gradient(to right, #1a1a1a, ${config.accentHex})`, borderRadius: '9999px', padding: '2px' }}>
           <input type="range" min="0" max="100" value={pct} onChange={handleChange}
             className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-transparent"
-            style={{ accentColor: '#fbbf24' }} />
+            style={{ accentColor: config.accentHex }} />
         </div>
       </div>
     </div>
@@ -2210,31 +2287,73 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
       case 'dpad':     return <DPadWidget     widget={widget}                publish={publish} />;
       case 'joystick': return <JoystickWidget widget={widget}                publish={publish} />;
       case 'speed':    return <SliderWidget   widget={widget}                publish={publish} />;
-      // Classroom
-      case 'relay':     return <RelayWidget     widget={widget} value={value} publish={publish} />;
-      case 'dimmer':    return <DimmerWidget    widget={widget}               publish={publish} />;
-      case 'rgb':       return <RGBWidget       widget={widget}               publish={publish} />;
-      case 'scene':     return <SceneWidget     widget={widget}               publish={publish} />;
-      case 'scheduler': return <SchedulerWidget widget={widget}               publish={publish} />;
-      // STEM
-      case 'servo':   return <ServoWidget   widget={widget}               publish={publish} />;
-      case 'dcmotor': return <DCMotorWidget widget={widget}               publish={publish} />;
-      case 'stepper': return <StepperWidget widget={widget}               publish={publish} />;
-      case 'pwmfan':  return <PWMFanWidget  widget={widget} value={value} publish={publish} />;
-      case 'curtain': return <CurtainWidget widget={widget}               publish={publish} />;
-      // Security
-      case 'doorlock': return <DoorLockWidget widget={widget} value={value} publish={publish} />;
-      case 'buzzer':   return <BuzzerWidget   widget={widget}               publish={publish} />;
-      case 'pantilt':  return <PanTiltWidget  widget={widget}               publish={publish} />;
-      // Agriculture
-      case 'pump':       return <PumpWidget       widget={widget} value={value} publish={publish} />;
-      case 'valve':      return <ValveWidget      widget={widget} value={value} publish={publish} />;
-      case 'irrigation': return <IrrigationWidget widget={widget} value={value} publish={publish} />;
-      // Advanced
-      case 'oled':         return <OLEDWidget         widget={widget}               publish={publish} />;
-      case 'numericInput': return <NumericInputWidget widget={widget}               publish={publish} />;
-      case 'dropdown':     return <DropdownWidget     widget={widget}               publish={publish} />;
-      case 'momentary':    return <MomentaryWidget    widget={widget}               publish={publish} />;
+
+      // ── Digital Outputs (ON/OFF) ──
+      case 'relay':
+      case 'mosfet':
+      case 'solenoid':
+      case 'optocoupler':
+      case 'solenoid_valve':
+      case 'elec_lock':
+      case 'latch':
+        return <RelayWidget widget={widget} value={value} publish={publish} />;
+
+      // ── Analog/PWM Outputs (slider 0-100%) ──
+      case 'dimmer':
+      case 'dcmotor_speed':
+      case 'fan_speed':
+      case 'dac':
+      case 'bldc':
+      case 'linear_actuator':
+      case 'single_led':
+      case 'fluid_pump':
+        return <DimmerWidget widget={widget} publish={publish} />;
+
+      // ── RGB/Addressable LEDs ──
+      case 'rgb':
+      case 'neopixel':
+        return <RGBWidget widget={widget} publish={publish} />;
+
+      // ── Motors ──
+      case 'servo':           return <ServoWidget   widget={widget}               publish={publish} />;
+      case 'dcmotor':         return <DCMotorWidget widget={widget}               publish={publish} />;
+      case 'stepper':         return <StepperWidget widget={widget}               publish={publish} />;
+      case 'pwmfan':          return <PWMFanWidget  widget={widget} value={value} publish={publish} />;
+      case 'curtain':         return <CurtainWidget widget={widget}               publish={publish} />;
+
+      // ── Scene / Scheduler ──
+      case 'scene':           return <SceneWidget     widget={widget} publish={publish} />;
+      case 'scheduler':       return <SchedulerWidget widget={widget} publish={publish} />;
+
+      // ── Security ──
+      case 'doorlock':        return <DoorLockWidget widget={widget} value={value} publish={publish} />;
+      case 'buzzer':
+      case 'speaker':
+        return <BuzzerWidget widget={widget} publish={publish} />;
+      case 'pantilt':         return <PanTiltWidget  widget={widget}               publish={publish} />;
+
+      // ── Agriculture ──
+      case 'pump':            return <PumpWidget       widget={widget} value={value} publish={publish} />;
+      case 'valve':           return <ValveWidget      widget={widget} value={value} publish={publish} />;
+      case 'irrigation':      return <IrrigationWidget widget={widget} value={value} publish={publish} />;
+
+      // ── Displays ──
+      case 'oled':
+      case 'seven_segment':
+      case 'led_matrix':
+        return <OLEDWidget widget={widget} publish={publish} />;
+
+      // ── Advanced Tools ──
+      case 'numericInput':    return <NumericInputWidget widget={widget} publish={publish} />;
+      case 'dropdown':        return <DropdownWidget     widget={widget} publish={publish} />;
+      case 'momentary':
+      case 'ir_sender':
+      case 'rf_sender':
+        return <MomentaryWidget widget={widget} publish={publish} />;
+
+      // ── Communications ──
+      case 'bus_controller':  return <OLEDWidget widget={widget} publish={publish} />;
+
       default: return null;
     }
   };
