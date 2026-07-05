@@ -35,6 +35,22 @@ function HubLayout({ children, user, logout }) {
   const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     const isDarkTheme = document.documentElement.classList.contains('dark') ||
@@ -65,7 +81,7 @@ function HubLayout({ children, user, logout }) {
       </div>
 
       {/* ─── Top Navbar ─── */}
-      <header className="relative z-10 flex items-center justify-between py-3 px-6 md:px-12 border-b border-border bg-card/60 bg-background/60 backdrop-blur-md sticky top-0">
+      <header className="relative z-40 flex items-center justify-between py-3 px-6 md:px-12 border-b border-border bg-card/60 bg-background/60 backdrop-blur-md sticky top-0">
 
         {/* Logo + nav links */}
         <div className="flex items-center gap-6">
@@ -134,8 +150,11 @@ function HubLayout({ children, user, logout }) {
               </button>
 
               {/* User avatar + dropdown */}
-              <div className="relative group">
-                <button className="flex items-center gap-1.5 cursor-pointer">
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(prev => !prev)}
+                  className="flex items-center gap-1.5 cursor-pointer"
+                >
                   {user.photoURL ? (
                     <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full object-cover border-2 border-primary/30 hover:border-primary/60 transition-all" />
                   ) : (
@@ -143,31 +162,42 @@ function HubLayout({ children, user, logout }) {
                       {(user.displayName || user.email || 'U').charAt(0)}
                     </div>
                   )}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={`text-muted-foreground transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                  >
                     <path d="m6 9 6 6 6-6"/>
                   </svg>
                 </button>
                 {/* Dropdown */}
-                <div className="absolute top-full right-0 mt-2 w-44 bg-card dark:bg-[#0b0c10] border border-border rounded-2xl shadow-xl shadow-black/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden z-50">
+                <div className={`absolute top-full right-0 mt-2 w-44 bg-card dark:bg-[#0b0c10] border border-border rounded-2xl shadow-xl shadow-black/20 transition-all duration-200 overflow-hidden z-50 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                   <div className="px-3 py-2.5 border-b border-border">
                     <p className="text-[11px] font-bold text-foreground truncate">{user.displayName || 'مستخدم'}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
                   </div>
                   <button
-                    onClick={() => navigate('/')}
+                    onClick={() => { navigate('/'); setIsDropdownOpen(false); }}
                     className="w-full text-right text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
                   >
                     لوحة التحكم
                   </button>
                   <button
-                    onClick={() => navigate('/hub/new')}
+                    onClick={() => { navigate('/hub/new'); setIsDropdownOpen(false); }}
                     className="w-full text-right text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
                   >
                     نشر مشروع جديد
                   </button>
                   <div className="border-t border-border">
                     <button
-                      onClick={logout}
+                      onClick={() => { logout(); setIsDropdownOpen(false); }}
                       className="w-full text-right text-xs text-red-400 hover:text-red-500 hover:bg-red-500/5 px-3 py-2 transition-colors cursor-pointer"
                     >
                       تسجيل الخروج
