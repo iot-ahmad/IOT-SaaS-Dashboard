@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, ArrowLeft, Loader2 } from 'lucide-react';
+import { GraduationCap, ArrowLeft, Loader2, LayoutDashboard, Cpu, Zap, BellRing } from 'lucide-react';
 import { WaveBackground } from './ui/WaveBackground';
 
 /* ─── White-toned Google G icon ─────────────────────────────────────── */
@@ -31,11 +31,49 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
     }
   };
 
+  const handleNavToFeatures = (e) => {
+    e.preventDefault();
+    if (showLogin) {
+      setError(null);
+      setShowLogin(false);
+      setTimeout(() => {
+        const el = document.getElementById('features');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 400);
+    } else {
+      const el = document.getElementById('features');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const featuresList = [
+    {
+      title: 'لوحات تحكم تفاعلية',
+      desc: 'قم بتصميم وتخصيص لوحات تحكم لحظية لعرض بيانات المستشعرات والتحكم بالأجهزة بنقرة واحدة.',
+      icon: <LayoutDashboard size={20} />
+    },
+    {
+      title: 'اتصال لحظي MQTT',
+      desc: 'ربط مباشر فوري للأجهزة والعتاد مثل ESP32 باستخدام بروتوكول MQTT الآمن وبزمن استجابة فائق السرعة.',
+      icon: <Cpu size={20} />
+    },
+    {
+      title: 'أتمتة ذكية وسيناريوهات',
+      desc: 'صياغة قواعد وسيناريوهات برمجية للتحكم التلقائي بأجهزتك بناءً على قراءات الحساسات المختلفة.',
+      icon: <Zap size={20} />
+    },
+    {
+      title: 'تنبيهات فورية وذكية',
+      desc: 'نظام إشعارات وتنبيهات ذكي يرسل تحديثات حالة الأجهزة فورياً لمنع المشاكل قبل حدوثها.',
+      icon: <BellRing size={20} />
+    }
+  ];
+
   return (
     /* dir="rtl" on root — fixes ALL BiDi issues globally for this page */
     <div
       dir="rtl"
-      className="relative flex min-h-screen w-full flex-col bg-[#080808] text-white overflow-hidden font-sans select-none"
+      className="relative flex min-h-screen w-full flex-col bg-[#080808] text-white overflow-y-auto overflow-x-hidden scroll-smooth font-sans select-none"
     >
       {/* Dynamic Wave & Grain Background */}
       <WaveBackground />
@@ -51,7 +89,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
         {/* Middle: Links */}
         <div dir="rtl" className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-white/40">
-          <a href="#features" className="hover:text-white transition-colors">المميزات</a>
+          <a href="#features" onClick={handleNavToFeatures} className="hover:text-white transition-colors">المميزات</a>
           <a href="#docs" className="hover:text-white transition-colors">التوثيق</a>
           <a href="#support" className="hover:text-white transition-colors">الدعم الفني</a>
         </div>
@@ -68,59 +106,95 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
       </header>
 
       {/* ── Content ── */}
-      <div className="relative z-10 flex flex-1 items-center justify-center min-h-screen px-4">
+      <div className="relative z-10 flex flex-1 items-center justify-center w-full px-4">
         <AnimatePresence mode="wait">
 
           {/* ══════════ LANDING PAGE ══════════ */}
           {!showLogin && (
             <motion.div
               key="landing"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.6, cubicBezier: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-4xl flex flex-col items-center justify-center text-center px-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full flex flex-col items-center"
             >
-              {/* Cyan Subtitle Badge */}
-              <span className="text-cyan-400 text-xs font-extrabold tracking-[0.25em] uppercase mb-4 opacity-80">
-                منصة إنترنت الأشياء الذكية · SMART IOT PLATFORM
-              </span>
+              {/* Hero Section */}
+              <div className="w-full min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20">
+                {/* Cyan Subtitle Badge */}
+                <span className="text-cyan-400 text-xs font-extrabold tracking-[0.25em] uppercase mb-4 opacity-80">
+                  منصة إنترنت الأشياء الذكية · SMART IOT PLATFORM
+                </span>
 
-              {/* Large Outline/Solid Typography Title */}
-              <div className="flex flex-col items-center mb-8">
-                <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter text-white leading-none uppercase">
-                  IOT365
-                </h1>
-                <h1 
-                  className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none mt-2 select-none uppercase"
-                  style={{ 
-                    WebkitTextStroke: '1px rgba(255, 255, 255, 0.35)', 
-                    color: 'transparent' 
-                  }}
+                {/* Large Outline/Solid Typography Title */}
+                <div className="flex flex-col items-center mb-8">
+                  <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter text-white leading-none uppercase">
+                    IOT365
+                  </h1>
+                  <h1 
+                    className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none mt-2 select-none uppercase"
+                    style={{ 
+                      WebkitTextStroke: '1px rgba(255, 255, 255, 0.35)', 
+                      color: 'transparent' 
+                    }}
+                  >
+                    GATEWAY
+                  </h1>
+                </div>
+
+                {/* Website Description */}
+                <p
+                  dir="rtl"
+                  className="bidi-auto text-white/50 text-sm sm:text-base font-light leading-relaxed max-w-xl mb-10 text-center"
                 >
-                  GATEWAY
-                </h1>
+                  بيئة سحابية تفاعلية لربط ومراقبة أجهزة إنترنت الأشياء لحظياً. تواصل مباشر وتحكم ذكي بالعتاد والـ{' '}
+                  <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
+                  {' '}عبر الـ{' '}
+                  <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
+                  {' '}بكل سهولة وبدون تعقيدات.
+                </p>
+
+                {/* Glowing Pill Button */}
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="px-10 py-4 bg-white text-black font-extrabold rounded-full hover:bg-neutral-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.55)] active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
+                >
+                  ابدأ الآن · GET STARTED
+                </button>
               </div>
 
-              {/* Website Description */}
-              <p
-                dir="rtl"
-                className="bidi-auto text-white/50 text-sm sm:text-base font-light leading-relaxed max-w-xl mb-10 text-center"
+              {/* Features Section */}
+              <section
+                id="features"
+                className="w-full max-w-5xl py-24 px-6 flex flex-col items-center justify-center text-center mt-12 scroll-mt-24"
               >
-                بيئة سحابية تفاعلية لربط ومراقبة أجهزة إنترنت الأشياء لحظياً. تواصل مباشر وتحكم ذكي بالعتاد والـ{' '}
-                <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
-                {' '}عبر الـ{' '}
-                <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
-                {' '}بكل سهولة وبدون تعقيدات.
-              </p>
+                <span className="text-cyan-400 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-3">
+                  مواصفات ومميزات المشروع
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-16 tracking-tight">
+                  بيئة متكاملة لإدارة أجهزة الـ IOT
+                </h2>
 
-              {/* Glowing Pill Button */}
-              <button
-                onClick={() => setShowLogin(true)}
-                className="px-10 py-4 bg-white text-black font-extrabold rounded-full hover:bg-neutral-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.55)] active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
-              >
-                ابدأ الآن · GET STARTED
-              </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full text-right">
+                  {featuresList.map((feat, idx) => (
+                    <div 
+                      key={idx} 
+                      className="p-8 rounded-3xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-md flex flex-col justify-between"
+                    >
+                      <div className="flex flex-row-reverse items-center justify-between mb-6">
+                        <div className="w-10 h-10 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center text-cyan-400">
+                          {feat.icon}
+                        </div>
+                        <span className="text-white/20 text-xs font-mono">0{idx + 1}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-white mb-2">{feat.title}</h3>
+                        <p className="text-sm text-white/45 leading-relaxed">{feat.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
             </motion.div>
           )}
 
@@ -132,7 +206,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -30 }}
               transition={{ duration: 0.5, cubicBezier: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-sm flex flex-col items-center"
+              className="w-full max-w-sm flex flex-col items-center py-24"
             >
               {error && (
                 <div
@@ -190,6 +264,25 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
         </AnimatePresence>
       </div>
+
+      {/* ── Footer ── */}
+      <footer className="absolute bottom-8 left-6 right-6 md:left-12 md:right-12 z-20 flex flex-col md:flex-row gap-4 items-center justify-between pointer-events-none">
+        {/* Left: AB Badge */}
+        <div className="flex items-center gap-2.5 pointer-events-auto select-none">
+          <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] font-black text-white/80">
+            AB
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="font-extrabold text-white/80 text-[11px] leading-none">Ahmad Batayneh</span>
+            <span className="text-[9px] text-white/40 leading-none mt-0.5 font-mono">@iot-ahmad</span>
+          </div>
+        </div>
+
+        {/* Right: Info */}
+        <div className="text-[9px] tracking-[0.2em] text-white/30 uppercase font-mono text-center md:text-right">
+          BASED ON MQTT & ESP32 · SECURE PORTAL
+        </div>
+      </footer>
     </div>
   );
 }

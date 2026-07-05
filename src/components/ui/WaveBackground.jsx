@@ -305,7 +305,7 @@ export function WaveBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full z-0 block pointer-events-none"
+      className="fixed top-0 left-0 w-full h-full z-0 block pointer-events-none"
       style={{ mixBlendMode: 'normal' }}
     />
   );
