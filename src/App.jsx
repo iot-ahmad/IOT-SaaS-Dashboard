@@ -34,6 +34,7 @@ import ProfilePage from './components/ProfilePage';
 function HubLayout({ children, user, logout }) {
   const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const isDarkTheme = document.documentElement.classList.contains('dark') ||
@@ -73,7 +74,6 @@ function HubLayout({ children, user, logout }) {
             <span className="text-sm font-extrabold tracking-tight">
               <span className="text-foreground">IOT</span>
               <span className="text-primary">365</span>
-              <span className="text-muted-foreground text-[10px] ml-1 font-semibold">🇯🇴 الأردن</span>
             </span>
           </button>
 
@@ -95,6 +95,18 @@ function HubLayout({ children, user, logout }) {
             )}
           </nav>
         </div>
+
+        {/* Middle: Centered branding text (only on /hub) */}
+        {location.pathname === '/hub' && (
+          <div className="hidden lg:flex flex-col items-center text-center absolute left-1/2 -translate-x-1/2 select-none pointer-events-none">
+            <h1 className="text-sm font-black text-white leading-tight">
+              منصة <span className="text-primary">IOT365</span>
+            </h1>
+            <p className="text-[10px] text-muted-foreground truncate max-w-md mt-0.5">
+              اكتشف مشاريع Arduino وESP32 — شارك، تعلّم، وابنِ.
+            </p>
+          </div>
+        )}
 
         {/* Right side actions */}
         <div className="flex items-center gap-2.5">
@@ -185,14 +197,14 @@ function HubLayout({ children, user, logout }) {
       <footer className="relative z-10 border-t border-border py-4 px-6 md:px-12 bg-card/40 bg-background/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[10px] text-muted-foreground/60 font-mono">
-            IOT365 🇯🇴 · مجتمع مطوري الأجهزة الذكية في الأردن
+            IOT365 · مجتمع مطوري الأجهزة الذكية
           </p>
           <div className="flex items-center gap-4">
             <button onClick={() => navigate('/hub')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">المشاريع</button>
             {user ? (
               <button onClick={() => navigate('/hub/new')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">نشر مشروع</button>
             ) : (
-              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">انضم للمجتمع الأردني 🇯🇴</button>
+              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">انضم للمجتمع 🚀</button>
             )}
           </div>
         </div>
@@ -438,7 +450,7 @@ function Dashboard({ user, logout }) {
   // Dynamically inject the Jordan Community workspace under the Home workspace
   const displayWorkspaces = (() => {
     const homeItem = customWorkspaces.find(ws => ws.id === 'home') || { id: 'home', name: 'Home', icon: 'Home' };
-    const hubItem = { id: 'hub', name: '🇯🇴 مجتمع الأردن', icon: 'Globe' };
+    const hubItem = { id: 'hub', name: 'مجتمع المشاريع', icon: 'Globe' };
     const others = customWorkspaces.filter(ws => ws.id !== 'home' && ws.id !== 'hub');
     return [homeItem, hubItem, ...others];
   })();

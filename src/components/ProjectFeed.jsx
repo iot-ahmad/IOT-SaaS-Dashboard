@@ -281,38 +281,6 @@ export default function ProjectFeed({ user }) {
 
       <div className="space-y-5 pb-10" dir="rtl">
 
-        {/* ══════════════════════════════════════════════════════════════════
-            COMPACT HERO — shrunk, fused with the grid context
-        ══════════════════════════════════════════════════════════════════ */}
-        <div className="relative rounded-2xl overflow-hidden border border-white/[0.06] bg-gradient-to-l from-amber-500/[0.07] via-transparent to-transparent px-5 py-4 flex items-center justify-between gap-4">
-          {/* Decorative blobs */}
-          <div className="absolute top-0 left-0 w-48 h-48 bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 right-1/3 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Left: Publish CTA */}
-          <button
-            onClick={() => navigate(user ? '/hub/new' : '/login')}
-            className="relative z-10 flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-black text-xs font-black px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-400/20 whitespace-nowrap cursor-pointer shrink-0"
-          >
-            <Plus size={15} />
-            أنشر مشروعك
-          </button>
-
-          {/* Right: Branding */}
-          <div className="relative z-10 text-right space-y-0.5 min-w-0">
-            <div className="flex items-center gap-1.5 justify-end">
-              <span className="text-[10px] font-bold text-amber-400/80 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full">
-                🇯🇴 مجتمع مطوري IoT
-              </span>
-            </div>
-            <h1 className="text-lg font-black text-white leading-tight">
-              منصة <span className="text-amber-400">IOT365</span> الأردنية
-            </h1>
-            <p className="text-[10px] text-zinc-500 hidden sm:block truncate max-w-sm">
-              اكتشف مشاريع Arduino وESP32 من مبدعي الأردن — شارك، تعلّم، وابنِ.
-            </p>
-          </div>
-        </div>
 
         {/* ══════════════════════════════════════════════════════════════════
             CATEGORY FILTER BAR

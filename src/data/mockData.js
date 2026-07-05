@@ -1,6 +1,6 @@
 export const WORKSPACES = [
   { id: 'home', name: 'Home', icon: 'Home' },
-  { id: 'hub', name: '🇯🇴 مجتمع الأردن', icon: 'Globe' },
+  { id: 'hub', name: 'مجتمع المشاريع', icon: 'Globe' },
   { id: 'controller', name: 'Universal Controller', icon: 'Gamepad2' }
 ];
 
