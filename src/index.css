@@ -2,137 +2,169 @@
 @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
 @custom-variant dark (&:is(.dark *));
 
-/* ── Design Tokens: Light Mode ── */
+/* ── Design Tokens: Light Mode (60/30/10 Rule) ── */
 :root {
+  /* 60% Dominant Color (Background & Page Foundations) */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+
+  /* 30% Secondary Colors (Cards, Fills, Borders, Sidebars, Inputs) */
   --card: #ffffff;
+  --card-foreground: #0f172a;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #334155;
+  --sidebar-border: #e2e8f0;
+  --border: #e2e8f0;
+  --input: #f1f5f9;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  /* 10% Accent Colors (Buttons, Active navigation, Highlight indicator) */
+  --primary: #f59e0b; /* Premium Amber */
+  --primary-foreground: #000000;
   --ring: #f59e0b;
-  --input: #e5e7eb;
-  --muted: #f9fafb;
-  --accent: #fffbeb;
-  --border: #e5e7eb;
-  --radius: 0.375rem;
+  
+  --accent: #fef3c7; /* Soft Amber highlight */
+  --accent-foreground: #b45309;
+  
+  --sidebar-accent: #fef3c7;
+  --sidebar-accent-foreground: #b45309;
+  --sidebar-primary: #f59e0b;
+  --sidebar-primary-foreground: #ffffff;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --sidebar-ring: #f59e0b;
+
   --chart-1: #f59e0b;
   --chart-2: #d97706;
   --chart-3: #b45309;
   --chart-4: #92400e;
   --chart-5: #78350f;
-  --popover: #ffffff;
-  --primary: #f59e0b;
-  --sidebar: #f9fafb;
+
+  --radius: 0.5rem;
   --spacing: 0.25rem;
   --font-mono: "JetBrains Mono", monospace;
   --font-sans: "Oxanium", sans-serif;
-  --secondary: #f3f4f6;
-  --background: #ffffff;
   --font-serif: Source Serif 4, serif;
-  --foreground: #262626;
-  --destructive: #ef4444;
+
   --shadow-blur: 8px;
   --shadow-color: hsl(0 0% 0%);
-  --sidebar-ring: #f59e0b;
   --shadow-spread: -1px;
   --letter-spacing: 0em;
-  --shadow-opacity: 0.1;
-  --sidebar-accent: #fffbeb;
-  --sidebar-border: #e5e7eb;
-  --card-foreground: #262626;
+  --shadow-opacity: 0.05;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 4px;
-  --sidebar-primary: #f59e0b;
-  --muted-foreground: #6b7280;
-  --accent-foreground: #92400e;
-  --popover-foreground: #262626;
-  --primary-foreground: #000000;
-  --sidebar-foreground: #262626;
-  --secondary-foreground: #4b5563;
-  --destructive-foreground: #ffffff;
-  --sidebar-accent-foreground: #92400e;
-  --sidebar-primary-foreground: #ffffff;
 }
 
-/* ── Design Tokens: Dark Mode ── */
+/* ── Design Tokens: Dark Mode (60/30/10 Rule) ── */
 .dark {
-  --card: #262626;
-  --ring: #f59e0b;
-  --input: #404040;
-  --muted: #262626;
-  --accent: #92400e;
-  --border: #404040;
-  --radius: 0.375rem;
-  --chart-1: #fbbf24;
+  /* 60% Dominant Color (Background & Main Canvas) */
+  --background: #080b11; /* Premium deep space-navy */
+  --foreground: #f8fafc; /* Crisp slate white */
+
+  /* 30% Secondary Colors (Cards, Sidebars, Borders, Modals, Inputs, Fills) */
+  --card: #111622; /* Slate card background */
+  --card-foreground: #f8fafc;
+  --sidebar: #0b0f17; /* Slate sidebar background */
+  --sidebar-foreground: #cbd5e1;
+  --sidebar-border: #1e293b;
+  --border: #1e293b; /* Slate border lines */
+  --input: #171e2e;
+  --muted: #171e2e;
+  --muted-foreground: #94a3b8; /* Slate-400 */
+  --secondary: #171e2e;
+  --secondary-foreground: #cbd5e1;
+  --popover: #111622;
+  --popover-foreground: #f8fafc;
+
+  /* 10% Accent Colors (Interactive controls, highlights, active status) */
+  --primary: #ff9f0a; /* Glow neon Amber */
+  --primary-foreground: #000000;
+  --ring: #ff9f0a;
+
+  --accent: #92400e; /* Deep amber warm glow */
+  --accent-foreground: #fde68a;
+
+  --sidebar-accent: #171e2e;
+  --sidebar-accent-foreground: #ff9f0a;
+  --sidebar-primary: #ff9f0a;
+  --sidebar-primary-foreground: #000000;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --sidebar-ring: #ff9f0a;
+
+  --chart-1: #ff9f0a;
   --chart-2: #d97706;
   --chart-3: #92400e;
   --chart-4: #b45309;
   --chart-5: #92400e;
-  --popover: #262626;
-  --primary: #f59e0b;
-  --sidebar: #0f0f0f;
-  --secondary: #262626;
-  --background: #171717;
-  --foreground: #e5e5e5;
-  --destructive: #ef4444;
-  --sidebar-ring: #f59e0b;
-  --sidebar-accent: #92400e;
-  --sidebar-border: #404040;
-  --card-foreground: #e5e5e5;
-  --sidebar-primary: #f59e0b;
-  --muted-foreground: #a3a3a3;
-  --accent-foreground: #fde68a;
-  --popover-foreground: #e5e5e5;
-  --primary-foreground: #000000;
-  --sidebar-foreground: #e5e5e5;
-  --secondary-foreground: #e5e5e5;
-  --destructive-foreground: #ffffff;
-  --sidebar-accent-foreground: #fde68a;
-  --sidebar-primary-foreground: #ffffff;
 }
 
-/* ── @theme inline: expose CSS vars to Tailwind utilities ── */
+/* ── @theme inline: expose all CSS vars to Tailwind 4 utilities ── */
 @theme inline {
+  /* ── 60% Dominant ── */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* ── 30% Secondary ── */
   --color-card: var(--card);
-  --color-ring: var(--ring);
+  --color-card-foreground: var(--card-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-border: var(--border);
   --color-input: var(--input);
   --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* ── 10% Accent ── */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-ring: var(--ring);
   --color-accent: var(--accent);
-  --color-border: var(--border);
-  --color-radius: var(--radius);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* ── Charts ── */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --color-popover: var(--popover);
-  --color-primary: var(--primary);
-  --color-sidebar: var(--sidebar);
+
+  /* ── Typography & Spacing ── */
+  --color-radius: var(--radius);
   --color-spacing: var(--spacing);
-  --color-font-mono: var(--font-mono);
-  --color-font-sans: var(--font-sans);
-  --color-secondary: var(--secondary);
-  --color-background: var(--background);
-  --color-font-serif: var(--font-serif);
-  --color-foreground: var(--foreground);
-  --color-destructive: var(--destructive);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  /* ── Shadows ── */
   --color-shadow-blur: var(--shadow-blur);
   --color-shadow-color: var(--shadow-color);
-  --color-sidebar-ring: var(--sidebar-ring);
   --color-shadow-spread: var(--shadow-spread);
-  --color-letter-spacing: var(--letter-spacing);
   --color-shadow-opacity: var(--shadow-opacity);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-card-foreground: var(--card-foreground);
   --color-shadow-offset-x: var(--shadow-offset-x);
   --color-shadow-offset-y: var(--shadow-offset-y);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-letter-spacing: var(--letter-spacing);
 }
 
 @layer base {
@@ -175,7 +207,7 @@
 }
 
 @layer utilities {
-  /* ── D-Pad button glow pulse — uses --primary (crimson) ── */
+  /* ── D-Pad button glow pulse — uses --primary (amber) ── */
   .dpad-glow {
     animation: dpadPulse 0.6s ease-in-out infinite alternate;
   }
@@ -215,9 +247,9 @@
     border-color: color-mix(in srgb, var(--primary) 60%, transparent) !important;
   }
 
-  /* ── Icon utilities — matches design token palette ── */
+  /* ── Icon utilities — matches 60/30/10 design palette ── */
 
-  /* Primary icon: crimson */
+  /* Primary icon: amber */
   .icon-primary {
     color: var(--primary);
     stroke: var(--primary);
@@ -227,10 +259,10 @@
     color: var(--muted-foreground);
     stroke: var(--muted-foreground);
   }
-  /* Accent icon: steel-blue */
+  /* Accent icon: warm amber glow */
   .icon-accent {
-    color: var(--accent);
-    stroke: var(--accent);
+    color: var(--accent-foreground);
+    stroke: var(--accent-foreground);
   }
   /* Secondary icon: olive */
   .icon-secondary {
@@ -291,7 +323,7 @@
 
 /* ── Leaflet Dark Theme Overrides ── */
 .leaflet-container {
-  background: #07080a !important;
+  background: var(--background) !important;
   font-family: inherit;
 }
 .leaflet-tile-pane {
