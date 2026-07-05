@@ -23,7 +23,13 @@ import ProjectPublisher from './components/ProjectPublisher';
 import ProjectDetail from './components/ProjectDetail';
 import UserProfile from './components/UserProfile';
 
-// Standalone Hub Layout — works for both logged-in users and guests
+/**
+ * Standalone layout wrapper for the public Hub section.
+ * Renders a top nav with branding, theme toggle, and optional user actions.
+ * Accessible to both authenticated users and anonymous guests.
+ *
+ * @param {{ children: React.ReactNode, user: object|null, logout: function }} props
+ */
 function HubLayout({ children, user, logout }) {
   const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
@@ -194,6 +200,12 @@ function HubLayout({ children, user, logout }) {
   );
 }
 
+/**
+ * Root application component.
+ * Handles auth state loading, portal persistence, and top-level route definitions.
+ * Delegates authenticated dashboard rendering to <Dashboard /> and
+ * public hub pages to <HubLayout />.
+ */
 function App() {
   const {
     user,
@@ -287,6 +299,13 @@ function App() {
   );
 }
 
+/**
+ * Main authenticated dashboard shell.
+ * Owns workspace state (Firestore + localStorage dual-persistence),
+ * the real-time automation engine, and MQTT connection via useMqtt.
+ *
+ * @param {{ user: object, logout: function }} props
+ */
 function Dashboard({ user, logout }) {
   const navigate = useNavigate();
   const location = useLocation();

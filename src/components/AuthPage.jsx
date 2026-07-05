@@ -83,7 +83,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
         {/* Left: Brand */}
         <div dir="ltr" className="flex items-center gap-2 select-none">
           <span className="text-white text-xl font-bold tracking-wider">
-            IOT365<span className="text-cyan-400">.</span>
+            IOT<span className="text-amber-400">365</span><span className="text-cyan-400">.</span>
           </span>
         </div>
 
@@ -129,7 +129,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 {/* Large Outline/Solid Typography Title */}
                 <div className="flex flex-col items-center mb-8">
                   <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter text-white leading-none uppercase">
-                    IOT365
+                    IOT<span className="text-amber-400">365</span>
                   </h1>
                   <h1 
                     className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none mt-2 select-none uppercase"

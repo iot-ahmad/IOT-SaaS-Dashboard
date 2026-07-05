@@ -28,3 +28,8 @@ dist-ssr
 .env.local
 .env.production
 .env.development
+
+# Temporary / one-off files — should never be committed
+*.py
+build_error.txt
+*.local.txt

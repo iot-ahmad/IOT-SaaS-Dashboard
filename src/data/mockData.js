@@ -28,6 +28,11 @@ export const AUTOMATIONS = [
   { id: 3, rule: 'If Rain Detected → Disable Irrigation', active: false, trigger: 'farm/rain_sensor', action: 'farm/irrigation', threshold: 1, payload: '0' },
 ];
 
+/**
+ * @deprecated Static device list used only by the legacy DevicesView in ToolViews.jsx.
+ * Real device data is persisted in Firestore and managed by DevicesView.jsx.
+ * Do not add new devices here — use the Firestore-backed UI instead.
+ */
 export const DEVICES = [
   { id: 1, name: 'Main Irrigation Valve', topic: 'farm/irrigation', type: 'Actuator', pin: 'GPIO 25', status: 'Online', battery: '95%', lastSeen: Date.now() },
   { id: 2, name: 'Soil Sensor #01', topic: 'farm/soil_moisture', type: 'Sensor', pin: 'GPIO 34 (ADC)', status: 'Online', battery: '82%', lastSeen: Date.now() },
