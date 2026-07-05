@@ -202,7 +202,7 @@ export default function Sidebar({
                 if (user?.username) {
                   navigate(`/${user.username}`);
                 } else {
-                  setActiveTool('settings');
+                  setActiveTool('profile');
                   if (window.location.pathname !== '/') {
                     navigate('/');
                   }
@@ -226,7 +226,7 @@ export default function Sidebar({
                 if (user?.username) {
                   navigate(`/${user.username}`);
                 } else {
-                  setActiveTool('settings');
+                  setActiveTool('profile');
                   if (window.location.pathname !== '/') {
                     navigate('/');
                   }

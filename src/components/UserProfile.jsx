@@ -477,10 +477,19 @@ export default function UserProfile({ currentUser }) {
 
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between relative z-10">
           
-          {/* Action button: Edit Profile */}
+          {/* Action button: Edit Profile (Redirects to unified ProfilePage in dashboard) */}
           {isOwnProfile && (
             <button
-              onClick={() => setShowEditModal(true)}
+              onClick={() => {
+                navigate('/');
+                // In App.jsx, the activeTool is checked. We want settings/profile to load.
+                // Since navigate('/') goes back to the root Dashboard, we let Sidebar/App state handle it.
+                // We will dispatch a custom event or let App.jsx know, but since the user is navigating to '/',
+                // they can click their avatar. Alternatively, we can let them know to click their avatar.
+                // To make it seamless, we can set localStorage activeTool before navigating.
+                localStorage.setItem('active_tool_fallback', 'profile');
+                window.location.href = '/?tool=profile';
+              }}
               className="bg-card/5 hover:bg-card/10 border border-white/15 hover:border-white/30 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
             >
               <Edit3 size={14} />
@@ -618,180 +627,6 @@ export default function UserProfile({ currentUser }) {
           </div>
         )}
       </div>
-
-      {/* Edit Profile Modal */}
-      {showEditModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0b0c10] border border-border p-6 rounded-3xl w-full max-w-lg relative text-slate-200 shadow-2xl overflow-y-auto max-h-[90vh] scrollbar-thin">
-            
-            <button
-              onClick={() => setShowEditModal(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors cursor-pointer"
-            >
-              <X size={20} />
-            </button>
-
-            <h3 className="text-xl font-bold mb-4 text-white text-right flex items-center justify-end gap-2 border-b border-border pb-2">
-              تعديل ملف المطور التعريفي
-              <Sparkles size={18} className="text-primary" />
-            </h3>
-
-            {modalError && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl flex items-center gap-2 text-xs mb-4">
-                <AlertCircle className="shrink-0" size={16} />
-                <p>{modalError}</p>
-              </div>
-            )}
-
-            {modalSuccess && (
-              <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 p-3 rounded-xl flex items-center gap-2 text-xs mb-4">
-                <Check className="shrink-0" size={16} />
-                <p>{modalSuccess}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSaveProfile} className="space-y-4 text-right">
-              
-              {/* Avatar upload update */}
-              <div className="flex flex-col items-center justify-center gap-2 mb-2">
-                <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-primary/25 group">
-                  {editAvatarUrl ? (
-                    <img src={editAvatarUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white text-2xl font-bold uppercase">
-                      {editDisplayName.charAt(0) || 'U'}
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
-                    <Camera size={18} className="text-white" />
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                </div>
-                <span className="text-[10px] text-muted-foreground">
-                  {avatarUploading ? 'جاري الرفع والمعالجة...' : 'اضغط لتغيير الصورة الشخصية'}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">اسم المستخدم الفريد (Vanity URL) *</label>
-                  <input
-                    required
-                    type="text"
-                    value={editUsername}
-                    onChange={(e) => setEditUsername(e.target.value)}
-                    placeholder="e.g. smart_dev"
-                    className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left"
-                    dir="ltr"
-                  />
-                  <p className="text-[9px] text-muted-foreground mt-1">يستخدم كـ Vanity URL: (domain/{editUsername || 'username'})</p>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">الاسم الظاهر للمجتمع *</label>
-                  <input
-                    required
-                    type="text"
-                    value={editDisplayName}
-                    onChange={(e) => setEditDisplayName(e.target.value)}
-                    placeholder="مثال: أحمد المحمد"
-                    className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">العنوان التعريفي (Headline)</label>
-                <input
-                  type="text"
-                  value={editHeadline}
-                  onChange={(e) => setEditHeadline(e.target.value)}
-                  placeholder="مثال: مهندس عتاد وأنظمة مدمجة"
-                  className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-muted-foreground mb-1 text-right">السيرة الذاتية القصيرة (Bio)</label>
-                <textarea
-                  rows={3}
-                  value={editBio}
-                  onChange={(e) => setEditBio(e.target.value)}
-                  placeholder="حدثنا باختصار عن اهتماماتك الهندسية وتجاربك البرمجية..."
-                  className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-right text-white resize-none"
-                />
-              </div>
-
-              {/* Social links Inputs */}
-              <div className="space-y-3 pt-2 border-t border-border">
-                <h4 className="text-xs font-bold text-muted-foreground uppercase text-right">الروابط المهنية والاجتماعية</h4>
-                
-                <div className="grid grid-cols-1 gap-2.5">
-                  <div className="flex items-center bg-card/5 border border-border rounded-xl px-3 focus-within:border-primary transition-all">
-                    <input
-                      type="url"
-                      value={editGithub}
-                      onChange={(e) => setEditGithub(e.target.value)}
-                      placeholder="https://github.com/username"
-                      className="flex-1 bg-transparent border-none py-2 px-2 focus:outline-none text-xs text-left font-mono text-slate-300"
-                      dir="ltr"
-                    />
-                    <GithubIcon size={14} className="text-muted-foreground shrink-0" />
-                  </div>
-
-                  <div className="flex items-center bg-card/5 border border-border rounded-xl px-3 focus-within:border-primary transition-all">
-                    <input
-                      type="url"
-                      value={editLinkedin}
-                      onChange={(e) => setEditLinkedin(e.target.value)}
-                      placeholder="https://linkedin.com/in/username"
-                      className="flex-1 bg-transparent border-none py-2 px-2 focus:outline-none text-xs text-left font-mono text-slate-300"
-                      dir="ltr"
-                    />
-                    <LinkedinIcon size={14} className="text-muted-foreground shrink-0" />
-                  </div>
-
-                  <div className="flex items-center bg-card/5 border border-border rounded-xl px-3 focus-within:border-primary transition-all">
-                    <input
-                      type="url"
-                      value={editWebsite}
-                      onChange={(e) => setEditWebsite(e.target.value)}
-                      placeholder="https://yourwebsite.com"
-                      className="flex-1 bg-transparent border-none py-2 px-2 focus:outline-none text-xs text-left font-mono text-slate-300"
-                      dir="ltr"
-                    />
-                    <Globe size={14} className="text-muted-foreground shrink-0" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 flex gap-3">
-                <button
-                  type="submit"
-                  disabled={avatarUploading}
-                  className="flex-1 bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/95 transition-all text-xs cursor-pointer shadow-md shadow-primary/10 disabled:opacity-50"
-                >
-                  حفظ التعديلات
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1 bg-card/5 hover:bg-card/10 border border-border text-muted-foreground font-bold py-2.5 rounded-xl transition-all text-xs cursor-pointer"
-                >
-                  إلغاء
-                </button>
-              </div>
-
-            </form>
-
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

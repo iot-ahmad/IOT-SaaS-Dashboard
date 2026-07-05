@@ -6,7 +6,7 @@ import AuthPage from './components/AuthPage';
 import { FloatingPaths } from './components/ui/background-paths';
 import { HomeView } from './components/Views';
 import UniversalController from './components/UniversalController';
-import { DevicesView, AutomationsToolView, AlertsView, SettingsView, LiveTerminal } from './components/ToolViews';
+import { DevicesView, AutomationsToolView, AlertsView, LiveTerminal } from './components/ToolViews';
 import NewDevicesView from './components/DevicesView';
 import DeveloperGuide from './components/DeveloperGuide';
 import { useMqtt } from './hooks/useMqtt';
@@ -22,6 +22,7 @@ import ProjectFeed from './components/ProjectFeed';
 import ProjectPublisher from './components/ProjectPublisher';
 import ProjectDetail from './components/ProjectDetail';
 import UserProfile from './components/UserProfile';
+import ProfilePage from './components/ProfilePage';
 
 /**
  * Standalone layout wrapper for the public Hub section.
@@ -318,6 +319,25 @@ function Dashboard({ user, logout }) {
   const [customWorkspaces, setCustomWorkspaces] = useState(WORKSPACES);
   const wsLocalKey = `iot_workspaces_${user.uid}`;
 
+  // Check query params or localStorage fallback for opening a specific tool
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const toolParam = params.get('tool');
+    if (toolParam) {
+      setActiveTool(toolParam);
+      setActiveWorkspace(null);
+      // Clean query params so refresh doesn't force tab reset
+      navigate(location.pathname, { replace: true });
+    } else {
+      const fb = localStorage.getItem('active_tool_fallback');
+      if (fb) {
+        setActiveTool(fb);
+        setActiveWorkspace(null);
+        localStorage.removeItem('active_tool_fallback');
+      }
+    }
+  }, [location, navigate]);
+
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
@@ -526,11 +546,12 @@ function Dashboard({ user, logout }) {
   const renderContent = () => {
     if (activeTool) {
       switch (activeTool) {
-        case 'devices': return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
+        case 'devices':    return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
-        case 'alerts': return <AlertsView userUID={userUID} />;
-        case 'settings': return <SettingsView userUID={userUID} user={user} logout={logout} />;
-        case 'developer': return <DeveloperGuide userUID={user.uid} />;
+        case 'alerts':     return <AlertsView userUID={userUID} />;
+        case 'profile':    return <ProfilePage user={user} userUID={userUID} logout={logout} />;
+        case 'settings':   return <ProfilePage user={user} userUID={userUID} logout={logout} />; // legacy alias
+        case 'developer':  return <DeveloperGuide userUID={user.uid} />;
         default: return <DevicesView userUID={userUID} lastSeen={lastSeen} />;
       }
     }
