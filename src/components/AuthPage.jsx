@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ArrowLeft, Loader2 } from 'lucide-react';
-import { SplineScene } from './SplineScene';
-import { FloatingPaths } from './ui/background-paths';
-
-/* SplineScene is now in ./SplineScene.jsx */
+import { WaveBackground } from './ui/WaveBackground';
 
 /* ─── White-toned Google G icon ─────────────────────────────────────── */
 const GoogleIcon = () => (
@@ -38,119 +35,92 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
     /* dir="rtl" on root — fixes ALL BiDi issues globally for this page */
     <div
       dir="rtl"
-      className="relative flex min-h-screen w-full flex-col bg-black text-white overflow-x-hidden font-sans select-none"
+      className="relative flex min-h-screen w-full flex-col bg-[#080808] text-white overflow-hidden font-sans select-none"
     >
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
+      {/* Dynamic Wave & Grain Background */}
+      <WaveBackground />
 
-      {/* ── Header — LTR since it's brand name only ── */}
-      <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-center py-5">
-        <div dir="ltr" className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-border bg-black/80 backdrop-blur-md">
-          <img
-            src="/robot_logo.svg"
-            className="w-6 h-6 object-contain"
-            alt="IOT365"
-          />
-          <span className="ltr text-xs font-bold tracking-wider text-white/50">
-            IOT<span className="text-white">365</span>
-            <span className="text-white/25 ml-2">SECURE GATEWAY</span>
+      {/* ── Header ── */}
+      <header className="fixed top-0 left-0 right-0 z-20 w-full px-6 py-6 md:px-12 flex items-center justify-between">
+        {/* Left: Brand */}
+        <div dir="ltr" className="flex items-center gap-2 select-none">
+          <span className="text-white text-xl font-bold tracking-wider">
+            IOT365<span className="text-cyan-400">.</span>
           </span>
+        </div>
+
+        {/* Middle: Links */}
+        <div dir="rtl" className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-white/40">
+          <a href="#features" className="hover:text-white transition-colors">المميزات</a>
+          <a href="#docs" className="hover:text-white transition-colors">التوثيق</a>
+          <a href="#support" className="hover:text-white transition-colors">الدعم الفني</a>
+        </div>
+
+        {/* Right: Toggle Button */}
+        <div dir="ltr">
+          <button
+            onClick={() => { setError(null); setShowLogin(!showLogin); }}
+            className="border border-white/20 hover:border-white/50 px-5 py-2 rounded-sm text-[10px] font-black tracking-widest text-white hover:bg-white/10 transition-all duration-300 cursor-pointer uppercase"
+          >
+            {showLogin ? 'HOME' : 'GATEWAY'}
+          </button>
         </div>
       </header>
 
       {/* ── Content ── */}
-      <div className="relative z-10 flex flex-1 items-center justify-center min-h-screen px-4 sm:px-8">
+      <div className="relative z-10 flex flex-1 items-center justify-center min-h-screen px-4">
         <AnimatePresence mode="wait">
 
           {/* ══════════ LANDING PAGE ══════════ */}
           {!showLogin && (
             <motion.div
               key="landing"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.45 }}
-              dir="ltr"
-              className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-screen"
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.6, cubicBezier: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-4xl flex flex-col items-center justify-center text-center px-4"
             >
-              {/* LEFT: Text — RTL inside for Arabic content */}
-              <div
+              {/* Cyan Subtitle Badge */}
+              <span className="text-cyan-400 text-xs font-extrabold tracking-[0.25em] uppercase mb-4 opacity-80">
+                منصة إنترنت الأشياء الذكية · SMART IOT PLATFORM
+              </span>
+
+              {/* Large Outline/Solid Typography Title */}
+              <div className="flex flex-col items-center mb-8">
+                <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter text-white leading-none uppercase">
+                  IOT365
+                </h1>
+                <h1 
+                  className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none mt-2 select-none uppercase"
+                  style={{ 
+                    WebkitTextStroke: '1px rgba(255, 255, 255, 0.35)', 
+                    color: 'transparent' 
+                  }}
+                >
+                  GATEWAY
+                </h1>
+              </div>
+
+              {/* Website Description */}
+              <p
                 dir="rtl"
-                className="flex flex-col items-end text-right space-y-7 px-4 lg:px-12 py-24 order-2 lg:order-1"
+                className="bidi-auto text-white/50 text-sm sm:text-base font-light leading-relaxed max-w-xl mb-10 text-center"
               >
+                بيئة سحابية تفاعلية لربط ومراقبة أجهزة إنترنت الأشياء لحظياً. تواصل مباشر وتحكم ذكي بالعتاد والـ{' '}
+                <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
+                {' '}عبر الـ{' '}
+                <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
+                {' '}بكل سهولة وبدون تعقيدات.
+              </p>
 
-                {/* Arabic-only badge — purely RTL */}
-                <span className="px-3 py-1 rounded-full border border-border bg-card/[0.03] text-[10px] font-bold text-white/40 uppercase tracking-[0.18em]">
-                  منصة إنترنت الأشياء الذكية
-                </span>
-
-                {/* Title block — English words, LTR */}
-                <div dir="ltr" className="space-y-2 text-left">
-                  <h1 className="text-5xl sm:text-6xl font-black text-white leading-[1.05] tracking-tight">
-                    Interactive
-                  </h1>
-                  <h1 className="text-5xl sm:text-6xl font-black text-white/30 leading-[1.05] tracking-tight">
-                    IOT365
-                  </h1>
-                </div>
-
-                {/*
-                  Mixed paragraph — use dir="rtl" + unicode-bidi:plaintext
-                  so Arabic text flows RTL and inline English words (ESP32, MQTT)
-                  are isolated correctly via <bdi> tags
-                */}
-                <p
-                  dir="rtl"
-                  className="bidi-auto text-white/40 text-sm sm:text-base font-light leading-relaxed max-w-sm"
-                >
-                  بيئة سحابية تفاعلية لطلاب ومطوري إنترنت الأشياء. ربط{' '}
-                  <bdi><code className="bg-card/5 border border-border text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
-                  {' '}لحظياً عبر{' '}
-                  <bdi><code className="bg-card/5 border border-border text-white/60 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
-                  {' '}دون تعقيدات.
-                </p>
-
-                {/* Feature list — Arabic text, RTL */}
-                <div dir="rtl" className="space-y-2.5 text-white/30 text-xs sm:text-sm text-right w-full max-w-sm">
-                  {[
-                    'لوحات تحكم تفاعلية وقابلة للتخصيص لحظياً.',
-                    <>تشخيص ذكي للعتاد والدوائر عبر محرك <bdi>Cosmos3</bdi>.</>,
-                    'نظام أتمتة ذكي للسيناريوهات المعقدة.',
-                    'تنبيهات ونظام إشعارات فوري للأجهزة.',
-                  ].map((feat, idx) => (
-                    <div key={idx} className="flex flex-row-reverse gap-3 items-start">
-                      <span className="shrink-0 w-1 h-1 rounded-full bg-card/20 mt-1.5" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* CTA button — mixed Arabic + English, use bdi for "Get Started" */}
-                <button
-                  onClick={() => setShowLogin(true)}
-                  style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-                  className="mt-2 px-8 py-3.5 font-bold rounded-xl hover:opacity-90 active:scale-[0.97] transition-all duration-200 cursor-pointer text-sm tracking-wide shadow-[0_0_40px_rgba(245,158,11,0.25)] hover:shadow-[0_0_55px_rgba(245,158,11,0.4)]"
-                >
-                  <span dir="rtl">ابدأ الآن · <bdi>Get Started</bdi></span>
-                </button>
-              </div>
-
-              {/* RIGHT: 3D Robot Scene via @splinetool/react-spline */}
-              <div 
-                style={{ filter: 'hue-rotate(150deg) brightness(1.15) contrast(1.1)' }}
-                className="h-[50vh] lg:h-screen w-full overflow-hidden relative order-1 lg:order-2 bg-black"
+              {/* Glowing Pill Button */}
+              <button
+                onClick={() => setShowLogin(true)}
+                className="px-10 py-4 bg-white text-black font-extrabold rounded-full hover:bg-neutral-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.55)] active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
               >
-                <SplineScene
-                  scene="https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode"
-                  className="w-full h-full"
-                />
-                {/* Fade left edge toward text column */}
-                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none" />
-                <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent pointer-events-none" />
-                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent pointer-events-none" />
-              </div>
+                ابدأ الآن · GET STARTED
+              </button>
             </motion.div>
           )}
 
@@ -158,11 +128,11 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           {showLogin && (
             <motion.div
               key="login"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-              className="w-full max-w-sm flex flex-col items-center py-24"
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.5, cubicBezier: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-sm flex flex-col items-center"
             >
               {error && (
                 <div
@@ -175,30 +145,27 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
               {/* Glassmorphic card */}
               <div className="w-full rounded-3xl border border-white/[0.07] bg-card/[0.02] backdrop-blur-2xl p-8 shadow-[0_20px_80px_rgba(0,0,0,0.9)] relative overflow-hidden flex flex-col items-center">
-
-                <div className="absolute -top-20 -right-20 w-48 h-48 bg-card/[0.02] rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -top-20 -right-20 w-48 h-48 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
 
                 <div dir="rtl" className="text-center mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-card/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto mb-4 text-white/30">
+                  <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mx-auto mb-4 text-white/30">
                     <GraduationCap size={22} />
                   </div>
-                  {/* Arabic heading — RTL */}
                   <h2 className="text-2xl font-black text-white mb-1.5 tracking-tight">
                     تسجيل الدخول
                   </h2>
-                  {/* Purely English subtitle — LTR isolated */}
                   <p dir="ltr" className="ltr text-[10px] font-mono tracking-[0.2em] text-white/20 uppercase">
                     IOT STUDENT · SANDBOX GATEWAY
                   </p>
                 </div>
 
-                {/* Google login button — RTL with bdi around "Google" */}
+                {/* Google login button */}
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
                   disabled={loading}
                   dir="rtl"
-                  className="w-full flex items-center justify-center gap-3 bg-card/[0.04] hover:bg-card/[0.09] text-white/70 hover:text-white font-semibold py-4 px-6 rounded-2xl text-sm border border-white/[0.08] hover:border-white/20 transition-all duration-300 backdrop-blur-md disabled:opacity-40 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-semibold py-4 px-6 rounded-2xl text-sm border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-md disabled:opacity-40 cursor-pointer"
                 >
                   {loading ? (
                     <Loader2 size={18} className="animate-spin text-white/30" />
@@ -208,13 +175,12 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   <span>دخول سريع بحساب <bdi>Google</bdi></span>
                 </button>
 
-                {/* Back button — Arabic RTL */}
+                {/* Back button */}
                 <button
                   onClick={() => { setError(null); setShowLogin(false); }}
                   dir="rtl"
                   className="mt-6 text-[11px] text-white/20 hover:text-white/50 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  {/* ArrowLeft flips visually in RTL — use ArrowRight semantics */}
                   <ArrowLeft size={12} className="rotate-180" />
                   <span>العودة للرئيسية</span>
                 </button>
