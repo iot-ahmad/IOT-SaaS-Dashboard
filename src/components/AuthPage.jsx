@@ -81,10 +81,8 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
       {/* ── Header ── */}
       <header className="fixed top-0 left-0 right-0 z-20 w-full px-6 py-6 md:px-12 flex items-center justify-between">
         {/* Left: Brand */}
-        <div dir="ltr" className="flex items-center gap-2 select-none">
-          <span className="text-white text-xl font-bold tracking-wider">
-            IOT<span className="text-amber-400">365</span><span className="text-cyan-400">.</span>
-          </span>
+        <div dir="ltr" className="flex items-center select-none">
+          <img src="/logo_horizontal.svg" alt="IOT365" className="w-24 h-6 object-contain" />
         </div>
 
         {/* Middle: Links */}
@@ -128,11 +126,13 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
                 {/* Large Outline/Solid Typography Title */}
                 <div className="flex flex-col items-center mb-8">
-                  <h1 className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter text-white leading-none uppercase">
-                    IOT<span className="text-amber-400">365</span>
-                  </h1>
+                  <img 
+                    src="/logo_horizontal.svg" 
+                    alt="IOT365 Logo" 
+                    className="w-64 sm:w-80 md:w-[400px] h-auto object-contain select-none mb-3" 
+                  />
                   <h1 
-                    className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none mt-2 select-none uppercase"
+                    className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none select-none uppercase"
                     style={{ 
                       WebkitTextStroke: '1px rgba(255, 255, 255, 0.35)', 
                       color: 'transparent' 

@@ -27,7 +27,7 @@ const CopyTopicButton = ({ topic, userUID }) => {
     <button 
       onClick={handleCopy}
       title={`Copy: ${fullTopic}`}
-      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-blue-500/20 text-blue-400' : 'bg-muted text-foreground/90/40 hover:bg-secondary hover:text-foreground/70'}`}
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-blue-500/20 text-blue-400' : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground/70'}`}
     >
       {copied ? <Check size={10} /> : <Copy size={10} />}
       {copied ? 'Copied!' : fullTopic}
@@ -85,7 +85,7 @@ export const DevicesView = ({ userUID, lastSeen }) => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-white/30" size={16} />
           <input className="w-full bg-muted border border-border rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:border-primary/50 text-sm placeholder:text-muted-foreground dark:text-white/30" placeholder="Search devices..." />
         </div>
-        <button className="bg-muted border border-border px-4 rounded-xl text-foreground/90/50 flex items-center gap-2 text-sm hover:bg-secondary transition-colors">
+        <button className="bg-muted border border-border px-4 rounded-xl text-muted-foreground flex items-center gap-2 text-sm hover:bg-secondary transition-colors">
           <Filter size={16} /> Filter
         </button>
       </div>
@@ -93,7 +93,7 @@ export const DevicesView = ({ userUID, lastSeen }) => {
       {/* Device Table */}
       <Card className="!p-0 overflow-x-auto">
         <table className="w-full text-left min-w-[700px]">
-          <thead className="bg-muted text-foreground/90/40 text-xs uppercase font-bold border-b border-border">
+          <thead className="bg-muted text-muted-foreground text-xs uppercase font-bold border-b border-border">
             <tr>
               <th className="px-5 py-3">Device</th>
               <th className="px-5 py-3">MQTT Topic</th>
@@ -108,7 +108,7 @@ export const DevicesView = ({ userUID, lastSeen }) => {
               <tr key={device.id} className="hover:bg-card/[0.02] transition-colors">
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-foreground/90/40 flex-shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground flex-shrink-0">
                       <Cpu size={14} />
                     </div>
                     <div>
@@ -121,12 +121,12 @@ export const DevicesView = ({ userUID, lastSeen }) => {
                   <CopyTopicButton topic={device.topic} userUID={userUID} />
                 </td>
                 <td className="px-5 py-3">
-                  <span className="text-xs font-mono text-foreground/90/50 bg-muted px-2 py-0.5 rounded">{device.pin}</span>
+                  <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded">{device.pin}</span>
                 </td>
                 <td className="px-5 py-3">
                   <LastSeenBadge lastSeenTimestamp={device.lastSeen} />
                 </td>
-                <td className="px-5 py-3 text-xs text-foreground/90/40">
+                <td className="px-5 py-3 text-xs text-muted-foreground">
                   {new Date(device.lastSeen).toLocaleTimeString()}
                 </td>
                 <td className="px-5 py-3 text-right">
@@ -396,7 +396,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       <form onSubmit={handleDiagnose} className="space-y-4 font-sans">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="sm:col-span-1 text-left">
-            <label className="block text-[11px] font-bold text-foreground/90/40 uppercase mb-1.5">الجهاز أو الحساس المستهدف</label>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">الجهاز أو الحساس المستهدف</label>
             <select
               value={device}
               onChange={(e) => setDevice(e.target.value)}
@@ -413,7 +413,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
             </select>
           </div>
           <div className="sm:col-span-2 text-left">
-            <label className="block text-[11px] font-bold text-foreground/90/40 uppercase mb-1.5">المشكلة الفيزيائية أو سيناريو الأتمتة المعقد</label>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">المشكلة الفيزيائية أو سيناريو الأتمتة المعقد</label>
             <div className="flex gap-2">
               <input
                 required
@@ -446,7 +446,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
               key={idx}
               type="button"
               onClick={() => setScenario(preset.sc)}
-              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border bg-muted text-foreground/90/50 hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all text-right shrink-0"
+              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border bg-muted text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all text-right shrink-0"
             >
               {preset.label}
             </button>
@@ -586,7 +586,7 @@ export const AutomationsToolView = ({ publish, userUID }) => {
                   </div>
                   <div>
                     <h3 className="font-bold text-sm">{auto.name}</h3>
-                    <p className="text-[11px] text-foreground/90/40 mt-0.5">{auto.rule}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{auto.rule}</p>
                   </div>
                 </div>
                 <button 

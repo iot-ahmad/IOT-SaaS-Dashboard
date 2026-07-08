@@ -65,17 +65,14 @@ export default function Sidebar({
       </button>
 
       {/* Brand Logo */}
-      <div className={`px-4 pt-5 pb-3 flex items-center gap-3 border-b border-border ${isCollapsed ? 'justify-center' : ''}`}>
-        <img src="/robot_logo.svg" alt="IOT365 Robot" className="w-9 h-9 object-contain flex-shrink-0 drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]" />
-        {!isCollapsed && (
-          <div className="flex flex-col min-w-0">
-            <span className="text-sm font-extrabold truncate">
-              <span className="text-foreground">IOT</span>
-              <span className="text-primary">365</span>
-            </span>
-            <span className="text-[9px] text-muted-foreground dark:text-white/30 uppercase tracking-widest font-semibold truncate">Dashboard</span>
-          </div>
-        )}
+      <div className={`pt-4 pb-4 border-b border-border flex items-center transition-all duration-300 ${isCollapsed ? 'px-2 justify-center' : 'px-4 justify-start'}`}>
+        <img 
+          src={isCollapsed ? "/logo_icon.svg" : "/logo_horizontal.svg"} 
+          alt="IOT365 Logo" 
+          className={`object-contain flex-shrink-0 transition-all duration-300 ${
+            isCollapsed ? 'w-6 h-6' : 'w-28 h-7'
+          }`} 
+        />
       </div>
 
       <div className="flex flex-col gap-6 flex-1 overflow-y-auto p-4 pt-2">
@@ -84,7 +81,7 @@ export default function Sidebar({
         <div>
           <div className={`flex items-center mb-4 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
             {!isCollapsed && (
-              <h2 className="text-foreground/90/40 text-xs font-semibold uppercase tracking-wider">Workspaces</h2>
+              <h2 className="text-muted-foreground/80 text-xs font-semibold uppercase tracking-wider">Workspaces</h2>
             )}
             <button
               type="button"
@@ -162,7 +159,7 @@ export default function Sidebar({
         {/* TOOLS */}
         <div>
           {!isCollapsed && (
-            <h2 className="text-foreground/90/40 text-xs font-semibold uppercase tracking-wider mb-4">Tools</h2>
+            <h2 className="text-muted-foreground/80 text-xs font-semibold uppercase tracking-wider mb-4">Tools</h2>
           )}
           <div className="space-y-1.5">
             {TOOLS.map(tool => {

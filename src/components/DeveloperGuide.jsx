@@ -13,7 +13,7 @@ function CopyBtn({ text }) {
     <button
       onClick={handle}
       className={`flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-lg font-semibold transition-all ${
-        copied ? 'bg-primary/20 text-primary' : 'bg-muted text-foreground/90/40 hover:bg-secondary hover:text-foreground'
+        copied ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground'
       }`}
     >
       {copied ? <Check size={12} /> : <Copy size={12} />}

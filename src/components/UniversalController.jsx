@@ -423,13 +423,13 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div>
             <h2 className="font-bold text-lg">Add Tool</h2>
             {step === 'config' && (
-              <button onClick={() => setStep('category')} className="text-xs text-foreground/90/40 hover:text-foreground mt-0.5 transition-colors">
+              <button onClick={() => setStep('category')} className="text-xs text-muted-foreground hover:text-foreground mt-0.5 transition-colors">
                 ← Back to categories
               </button>
             )}
@@ -465,7 +465,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                             </div>
                             <div>
                               <p className="font-semibold text-sm text-foreground">{item.label}</p>
-                              <p className="text-[11px] text-foreground/90/40 mt-0.5 leading-relaxed">{item.desc}</p>
+                              <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</p>
                             </div>
                           </button>
                         );
@@ -478,7 +478,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-foreground/90/40 block mb-1">Widget Name</label>
+                <label className="text-xs text-muted-foreground block mb-1">Widget Name</label>
                 <input
                   className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.name}
@@ -514,7 +514,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               </div>
 
               <div>
-                <label className="text-xs text-foreground/90/40 block mb-1">MQTT Topic</label>
+                <label className="text-xs text-muted-foreground block mb-1">MQTT Topic</label>
                 <input
                   className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.topic}
@@ -525,12 +525,12 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               {selectedItem.type === 'gauge' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-foreground/90/40 block mb-1">Unit</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Unit</label>
                     <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                       value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} placeholder="°C" />
                   </div>
                   <div>
-                    <label className="text-xs text-foreground/90/40 block mb-1">Max Value</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Max Value</label>
                     <input type="number" className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                       value={form.maxVal} onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))} />
                   </div>
@@ -539,24 +539,24 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               {selectedItem.type === 'numericInput' && (
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-2">
-                    <div><label className="text-xs text-foreground/90/40 block mb-1">Min</label>
+                    <div><label className="text-xs text-muted-foreground block mb-1">Min</label>
                       <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.minVal} onChange={e => setForm(f => ({ ...f, minVal: e.target.value }))} /></div>
-                    <div><label className="text-xs text-foreground/90/40 block mb-1">Max</label>
+                    <div><label className="text-xs text-muted-foreground block mb-1">Max</label>
                       <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.maxVal} onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))} /></div>
-                    <div><label className="text-xs text-foreground/90/40 block mb-1">Step</label>
+                    <div><label className="text-xs text-muted-foreground block mb-1">Step</label>
                       <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.step} onChange={e => setForm(f => ({ ...f, step: e.target.value }))} /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <div><label className="text-xs text-foreground/90/40 block mb-1">Default Value</label>
+                    <div><label className="text-xs text-muted-foreground block mb-1">Default Value</label>
                       <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.defaultVal} onChange={e => setForm(f => ({ ...f, defaultVal: e.target.value }))} /></div>
-                    <div><label className="text-xs text-foreground/90/40 block mb-1">Unit</label>
+                    <div><label className="text-xs text-muted-foreground block mb-1">Unit</label>
                       <input className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} placeholder="°C" /></div>
                   </div>
                 </div>
               )}
               {selectedItem.type === 'dropdown' && (
                 <div>
-                  <label className="text-xs text-foreground/90/40 block mb-1">Options (comma separated)</label>
+                  <label className="text-xs text-muted-foreground block mb-1">Options (comma separated)</label>
                   <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50"
                     value={form.options} onChange={e => setForm(f => ({ ...f, options: e.target.value }))} placeholder="Auto,Manual,Test,Off" />
                   <p className="text-[10px] text-muted-foreground mt-1">أدخل الخيارات مفصولة بفاصلة</p>
@@ -564,7 +564,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               )}
               {selectedItem.type === 'momentary' && (
                 <div>
-                  <label className="text-xs text-foreground/90/40 block mb-1">Payload عند الضغط</label>
+                  <label className="text-xs text-muted-foreground block mb-1">Payload عند الضغط</label>
                   <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50"
                     value={form.payload} onChange={e => setForm(f => ({ ...f, payload: e.target.value }))} placeholder="TRIGGER" />
                 </div>
@@ -579,14 +579,14 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               )}
               {selectedItem.type === 'oled' && (
                 <div>
-                  <label className="text-xs text-foreground/90/40 block mb-1">Max Characters</label>
+                  <label className="text-xs text-muted-foreground block mb-1">Max Characters</label>
                   <input type="number" className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50"
                     value={form.maxChars} onChange={e => setForm(f => ({ ...f, maxChars: e.target.value }))} min={8} max={128} />
                 </div>
               )}
               {selectedItem.type === 'irrigation' && (
                 <div>
-                  <label className="text-xs text-foreground/90/40 block mb-1">حد الري التلقائي (رطوبة %)</label>
+                  <label className="text-xs text-muted-foreground block mb-1">حد الري التلقائي (رطوبة %)</label>
                   <input type="number" className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50"
                     value={form.threshold} onChange={e => setForm(f => ({ ...f, threshold: e.target.value }))} min={10} max={80} />
                 </div>
@@ -633,7 +633,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-[#13151a] border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div>
@@ -650,7 +650,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
         {/* Body */}
         <div className="p-6 space-y-4 overflow-y-auto flex-1 scrollbar-thin">
           <div>
-            <label className="text-xs text-foreground/90/40 block mb-1">Widget Name</label>
+            <label className="text-xs text-muted-foreground block mb-1">Widget Name</label>
             <input
               className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
               value={form.name}
@@ -683,7 +683,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           </div>
 
           <div>
-            <label className="text-xs text-foreground/90/40 block mb-1">MQTT Topic</label>
+            <label className="text-xs text-muted-foreground block mb-1">MQTT Topic</label>
             <input
               className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50 transition-colors"
               value={form.topic}
@@ -695,7 +695,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           {widget.type === 'gauge' && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-foreground/90/40 block mb-1">Unit</label>
+                <label className="text-xs text-muted-foreground block mb-1">Unit</label>
                 <input
                   className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.unit}
@@ -704,7 +704,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
                 />
               </div>
               <div>
-                <label className="text-xs text-foreground/90/40 block mb-1">Max Value</label>
+                <label className="text-xs text-muted-foreground block mb-1">Max Value</label>
                 <input
                   type="number"
                   className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
@@ -2703,19 +2703,19 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
   };
 
   return (
-    <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-row relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)]">
-      {/* ── LEFT edge drag handle ── */}
-      <div
-        className="drag-handle w-4 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none flex-shrink-0 group-hover:bg-primary/5 transition-colors rounded-l-2xl"
-        title="اسحب من الحافة لتحريك الأداة"
-      >
-        <GripVertical size={12} className="text-muted-foreground/20 group-hover:text-muted-foreground/50 transition-colors" />
-      </div>
+    <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)] p-3">
+      {/* Header row with Drag Handle (Left) and Action Buttons (Right) */}
+      <div className="flex justify-between items-center mb-1 flex-shrink-0" dir="ltr">
+        {/* Left side: Drag Handle */}
+        <div
+          className="drag-handle cursor-grab active:cursor-grabbing p-1 rounded-md border border-border bg-muted/40 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors flex items-center justify-center"
+          title="اسحب من هنا لتحريك الأداة"
+        >
+          <Move size={12} />
+        </div>
 
-      {/* ── Widget content (not draggable) ── */}
-      <div className="no-drag flex-1 flex flex-col min-h-0 overflow-hidden py-3 pr-3 pl-1">
-        {/* Action buttons row */}
-        <div className="flex justify-end gap-0.5 mb-1 flex-shrink-0">
+        {/* Right side: Action Buttons */}
+        <div className="flex gap-0.5">
           <button
             onClick={() => onEdit(widget)}
             className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-muted-foreground dark:text-white/30 p-1"
@@ -2731,17 +2731,11 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
             <Trash2 size={12} />
           </button>
         </div>
-        <div className="flex-1 min-h-0 overflow-hidden">
-          {renderContent()}
-        </div>
       </div>
 
-      {/* ── RIGHT edge drag handle ── */}
-      <div
-        className="drag-handle w-4 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none flex-shrink-0 group-hover:bg-primary/5 transition-colors rounded-r-2xl"
-        title="اسحب من الحافة لتحريك الأداة"
-      >
-        <GripVertical size={12} className="text-muted-foreground/20 group-hover:text-muted-foreground/50 transition-colors" />
+      {/* Widget content (not draggable) */}
+      <div className="no-drag flex-1 min-h-0 overflow-hidden">
+        {renderContent()}
       </div>
     </div>
   );

@@ -4,48 +4,45 @@
 
 /* ── Design Tokens: Light Mode (60/30/10 Rule) ── */
 :root {
-  /* 60% Dominant Color (Background & Page Foundations) */
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  /* ── 60%: Light blue-white page canvas ── */
+  --background: #f0f4ff;
+  --foreground: #06091a;
 
-  /* 30% Secondary Colors (Cards, Fills, Borders, Sidebars, Inputs) */
+  /* ── 30%: Light surfaces, borders, fills ── */
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #334155;
-  --sidebar-border: #e2e8f0;
-  --border: #e2e8f0;
-  --input: #f1f5f9;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #334155;
+  --card-foreground: #06091a;
+  --sidebar: #f8faff;
+  --sidebar-foreground: #1e2a4a;
+  --sidebar-border: #dde3f5;
+  --border: #dde3f5;
+  --input: #eef1fb;
+  --muted: #eef1fb;
+  --muted-foreground: #5b6a99;
+  --secondary: #eef1fb;
+  --secondary-foreground: #1e2a4a;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #06091a;
 
-  /* 10% Accent Colors (Buttons, Active navigation, Highlight indicator) */
-  --primary: #f59e0b; /* Premium Amber */
-  --primary-foreground: #000000;
-  --ring: #f59e0b;
-  
-  --accent: #fef3c7; /* Soft Amber highlight */
-  --accent-foreground: #b45309;
-  
-  --sidebar-accent: #fef3c7;
-  --sidebar-accent-foreground: #b45309;
-  --sidebar-primary: #f59e0b;
+  /* ── 10%: Electric Blue accent ── */
+  --primary: #1a6dff;
+  --primary-foreground: #ffffff;
+  --ring: #1a6dff;
+  --accent: #dde8ff;
+  --accent-foreground: #1a4fc4;
+  --sidebar-accent: #dde8ff;
+  --sidebar-accent-foreground: #1a4fc4;
+  --sidebar-primary: #1a6dff;
   --sidebar-primary-foreground: #ffffff;
-  
+  --sidebar-ring: #1a6dff;
+
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --sidebar-ring: #f59e0b;
-
-  --chart-1: #f59e0b;
-  --chart-2: #d97706;
-  --chart-3: #b45309;
-  --chart-4: #92400e;
-  --chart-5: #78350f;
+  --chart-1: #1a6dff;
+  --chart-2: #4d8eff;
+  --chart-3: #0047cc;
+  --chart-4: #6b9eff;
+  --chart-5: #002fa3;
 
   --radius: 0.5rem;
   --spacing: 0.25rem;
@@ -54,58 +51,56 @@
   --font-serif: Source Serif 4, serif;
 
   --shadow-blur: 8px;
-  --shadow-color: hsl(0 0% 0%);
+  --shadow-color: hsl(220 80% 10%);
   --shadow-spread: -1px;
   --letter-spacing: 0em;
-  --shadow-opacity: 0.05;
+  --shadow-opacity: 0.08;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 4px;
 }
 
 /* ── Design Tokens: Dark Mode (60/30/10 Rule) ── */
+/* 🎨 Inspired by: pure black canvas + electric blue accent */
 .dark {
-  /* 60% Dominant Color (Background & Main Canvas) */
-  --background: #080b11; /* Premium deep space-navy */
-  --foreground: #f8fafc; /* Crisp slate white */
+  /* ── 60%: True black — main page canvas ── */
+  --background: #000000;
+  --foreground: #f0f4ff;
 
-  /* 30% Secondary Colors (Cards, Sidebars, Borders, Modals, Inputs, Fills) */
-  --card: #111622; /* Slate card background */
-  --card-foreground: #f8fafc;
-  --sidebar: #0b0f17; /* Slate sidebar background */
-  --sidebar-foreground: #cbd5e1;
-  --sidebar-border: #1e293b;
-  --border: #1e293b; /* Slate border lines */
-  --input: #171e2e;
-  --muted: #171e2e;
-  --muted-foreground: #94a3b8; /* Slate-400 */
-  --secondary: #171e2e;
-  --secondary-foreground: #cbd5e1;
-  --popover: #111622;
-  --popover-foreground: #f8fafc;
+  /* ── 30%: Pure black surfaces (cards, sidebar, inputs, borders) ── */
+  --card: #0a0a0a;
+  --card-foreground: #f0f4ff;
+  --sidebar: #060606;
+  --sidebar-foreground: #b8c8f0;
+  --sidebar-border: #1a1a1a;
+  --border: #1a1a1a;
+  --input: #0f0f0f;
+  --muted: #0f0f0f;
+  --muted-foreground: #7b90c4;
+  --secondary: #0f0f0f;
+  --secondary-foreground: #b8c8f0;
+  --popover: #0a0a0a;
+  --popover-foreground: #f0f4ff;
 
-  /* 10% Accent Colors (Interactive controls, highlights, active status) */
-  --primary: #ff9f0a; /* Glow neon Amber */
-  --primary-foreground: #000000;
-  --ring: #ff9f0a;
+  /* ── 10%: Electric Blue — the hero accent color ── */
+  --primary: #1a6dff;
+  --primary-foreground: #ffffff;
+  --ring: #1a6dff;
+  --accent: #0f1e45;
+  --accent-foreground: #6aabff;
+  --sidebar-accent: #111828;
+  --sidebar-accent-foreground: #1a6dff;
+  --sidebar-primary: #1a6dff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-ring: #1a6dff;
 
-  --accent: #92400e; /* Deep amber warm glow */
-  --accent-foreground: #fde68a;
-
-  --sidebar-accent: #171e2e;
-  --sidebar-accent-foreground: #ff9f0a;
-  --sidebar-primary: #ff9f0a;
-  --sidebar-primary-foreground: #000000;
-  
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --sidebar-ring: #ff9f0a;
-
-  --chart-1: #ff9f0a;
-  --chart-2: #d97706;
-  --chart-3: #92400e;
-  --chart-4: #b45309;
-  --chart-5: #92400e;
+  --chart-1: #1a6dff;
+  --chart-2: #4d8eff;
+  --chart-3: #0047cc;
+  --chart-4: #6b9eff;
+  --chart-5: #002fa3;
 }
 
 /* ── @theme inline: expose all CSS vars to Tailwind 4 utilities ── */
@@ -179,6 +174,7 @@
 }
 
 @layer utilities {
+
   /* ── Arabic RTL text block ── */
   .rtl-text {
     direction: rtl;
@@ -201,21 +197,28 @@
   }
 
   /* ── Isolate inline foreign words so punctuation stays correct ── */
-  bdi, .bdi {
+  bdi,
+  .bdi {
     unicode-bidi: isolate;
   }
 }
 
 @layer utilities {
+
   /* ── D-Pad button glow pulse — uses --primary (amber) ── */
   .dpad-glow {
     animation: dpadPulse 0.6s ease-in-out infinite alternate;
   }
 
   @keyframes dpadPulse {
-    from { box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 60%, transparent); }
-    to   { box-shadow: 0 0 28px color-mix(in srgb, var(--primary) 95%, transparent),
-                       0 0 60px color-mix(in srgb, var(--primary) 40%, transparent); }
+    from {
+      box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 60%, transparent);
+    }
+
+    to {
+      box-shadow: 0 0 28px color-mix(in srgb, var(--primary) 95%, transparent),
+        0 0 60px color-mix(in srgb, var(--primary) 40%, transparent);
+    }
   }
 
   /* Modal fade-in */
@@ -224,8 +227,15 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.96) translateY(8px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
 
   /* React-grid-layout overrides — uses --primary */
@@ -240,9 +250,11 @@
     opacity: 0;
     transition: opacity 0.2s;
   }
+
   .react-grid-item:hover .react-resizable-handle {
     opacity: 0.4;
   }
+
   .react-resizable-handle::after {
     border-color: color-mix(in srgb, var(--primary) 60%, transparent) !important;
   }
@@ -254,21 +266,25 @@
     color: var(--primary);
     stroke: var(--primary);
   }
+
   /* Muted icon: subdued foreground */
   .icon-muted {
     color: var(--muted-foreground);
     stroke: var(--muted-foreground);
   }
+
   /* Accent icon: warm amber glow */
   .icon-accent {
     color: var(--accent-foreground);
     stroke: var(--accent-foreground);
   }
+
   /* Secondary icon: olive */
   .icon-secondary {
     color: var(--secondary);
     stroke: var(--secondary);
   }
+
   /* Destructive icon: orange */
   .icon-destructive {
     color: var(--destructive);
@@ -294,11 +310,13 @@
     transition: color 0.15s, background 0.15s, border-color 0.15s;
     cursor: pointer;
   }
+
   .icon-btn:hover {
     color: var(--primary);
     border-color: var(--primary);
     background: color-mix(in srgb, var(--primary) 8%, var(--card));
   }
+
   .icon-btn.active {
     color: var(--primary);
     border-color: var(--primary);
@@ -316,6 +334,7 @@
     color: var(--muted-foreground);
     transition: color 0.15s;
   }
+
   .nav-icon.active {
     color: var(--primary);
   }
@@ -326,36 +345,44 @@
   background: var(--background) !important;
   font-family: inherit;
 }
+
 .leaflet-tile-pane {
   opacity: 0.92;
 }
+
 .leaflet-control-attribution {
   display: none !important;
 }
+
 .leaflet-control-zoom {
   display: none !important;
 }
+
 .leaflet-popup-content-wrapper {
   background: color-mix(in srgb, var(--card) 95%, transparent) !important;
   border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent) !important;
   border-radius: 0 !important;
   color: var(--foreground) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6),
-              0 0 16px color-mix(in srgb, var(--primary) 15%, transparent) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 16px color-mix(in srgb, var(--primary) 15%, transparent) !important;
   backdrop-filter: blur(12px);
 }
+
 .leaflet-popup-tip {
   background: var(--card) !important;
 }
+
 .leaflet-popup-content {
   margin: 10px 14px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   color: var(--foreground) !important;
 }
+
 .leaflet-popup-close-button {
   color: var(--muted-foreground) !important;
 }
+
 .leaflet-popup-close-button:hover {
   color: var(--primary) !important;
 }

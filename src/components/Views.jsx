@@ -240,7 +240,7 @@ export const OfficeView = () => (
             <span className="text-2xl font-bold text-foreground">14 People</span>
           </div>
         </div>
-        <p className="text-xs text-foreground/90/50 mt-4">Meeting Room A: Occupied</p>
+        <p className="text-xs text-muted-foreground mt-4">Meeting Room A: Occupied</p>
       </Card>
 
       <Card>
@@ -258,7 +258,7 @@ export const OfficeView = () => (
 
       <Card className="md:col-span-2">
         <div className="flex items-center gap-2 mb-6">
-          <Briefcase className="text-foreground/90/40" size={20} />
+          <Briefcase className="text-muted-foreground" size={20} />
           <h3 className="text-foreground/80 font-medium">Desk Bookings</h3>
         </div>
         <div className="grid grid-cols-4 gap-2">

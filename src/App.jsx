@@ -85,12 +85,8 @@ function HubLayout({ children, user, logout }) {
 
         {/* Logo + nav links */}
         <div className="flex items-center gap-6">
-          <button onClick={() => navigate('/hub')} className="flex items-center gap-2.5 cursor-pointer">
-            <img src="/robot_logo.svg" alt="IOT365" className="w-8 h-8 object-contain drop-shadow-[0_0_5px_rgba(245,158,11,0.4)]" />
-            <span className="text-sm font-extrabold tracking-tight">
-              <span className="text-foreground">IOT</span>
-              <span className="text-primary">365</span>
-            </span>
+          <button onClick={() => navigate('/hub')} className="flex items-center cursor-pointer">
+            <img src="/logo_horizontal.svg" alt="IOT365" className="w-24 h-6 object-contain" />
           </button>
 
           {/* Nav links */}
@@ -115,7 +111,7 @@ function HubLayout({ children, user, logout }) {
         {/* Middle: Centered branding text (only on /hub) */}
         {location.pathname === '/hub' && (
           <div className="hidden lg:flex flex-col items-center text-center absolute left-1/2 -translate-x-1/2 select-none pointer-events-none">
-            <h1 className="text-sm font-black text-white leading-tight">
+            <h1 className="text-sm font-black text-foreground leading-tight">
               منصة <span className="text-primary">IOT365</span>
             </h1>
             <p className="text-[10px] text-muted-foreground truncate max-w-md mt-0.5">

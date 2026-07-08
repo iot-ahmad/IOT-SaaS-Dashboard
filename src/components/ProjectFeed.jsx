@@ -9,13 +9,13 @@ import {
 
 // ─── Category config (icon + label + filter keyword) ──────────────────────────
 const CATEGORIES = [
-  { id: 'all',        label: 'الكل',            icon: LayoutGrid,   color: 'text-amber-400',  bg: 'bg-amber-400/10',  activeBg: 'bg-amber-400',  keywords: [] },
+  { id: 'all',        label: 'الكل',            icon: LayoutGrid,   color: 'text-blue-500',  bg: 'bg-blue-500/10',  activeBg: 'bg-blue-500',  keywords: [] },
   { id: 'home',       label: 'أتمتة منزلية',    icon: Home,         color: 'text-sky-400',    bg: 'bg-sky-400/10',    activeBg: 'bg-sky-400',    keywords: ['relay','smart home','مبدل','منزلي','إضاءة','lighting'] },
   { id: 'farm',       label: 'زراعة ذكية',       icon: Leaf,         color: 'text-emerald-400',bg: 'bg-emerald-400/10',activeBg: 'bg-emerald-400',keywords: ['soil','humidity','moisture','irrigation','farm','زراعة','تربة','ري'] },
   { id: 'robot',      label: 'روبوتات',          icon: Bot,          color: 'text-violet-400', bg: 'bg-violet-400/10', activeBg: 'bg-violet-400', keywords: ['motor','servo','robot','روبوت','محرك'] },
   { id: 'iot',        label: 'إنترنت الأشياء',   icon: Wifi,         color: 'text-cyan-400',   bg: 'bg-cyan-400/10',   activeBg: 'bg-cyan-400',   keywords: ['esp32','esp8266','wifi','mqtt','iot'] },
   { id: 'sensor',     label: 'حساسات',           icon: Thermometer,  color: 'text-rose-400',   bg: 'bg-rose-400/10',   activeBg: 'bg-rose-400',   keywords: ['dht11','dht22','sensor','temperature','حرارة','حساس'] },
-  { id: 'energy',     label: 'طاقة',             icon: Zap,          color: 'text-yellow-400', bg: 'bg-yellow-400/10', activeBg: 'bg-yellow-400', keywords: ['solar','battery','power','energy','طاقة','شمسية'] },
+  { id: 'energy',     label: 'طاقة',             icon: Zap,          color: 'text-blue-500', bg: 'bg-blue-500/10', activeBg: 'bg-blue-500', keywords: ['solar','battery','power','energy','طاقة','شمسية'] },
 ];
 
 // ─── Sort options ─────────────────────────────────────────────────────────────
@@ -71,8 +71,8 @@ function ProjectCard({ proj, onClick, onAuthorClick }) {
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex flex-col items-center justify-center gap-2">
-            <div className="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Cpu className="text-amber-400" size={22} />
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Cpu className="text-blue-500" size={22} />
             </div>
             <span className="text-[10px] text-zinc-600 font-mono">No preview</span>
           </div>
@@ -98,7 +98,7 @@ function ProjectCard({ proj, onClick, onAuthorClick }) {
       {/* ── Card Body ── */}
       <div className="p-4 flex flex-col gap-2.5 flex-1">
         {/* Title */}
-        <h3 className="text-sm font-extrabold text-white group-hover:text-amber-400 transition-colors text-right leading-snug line-clamp-1">
+        <h3 className="text-sm font-extrabold text-white group-hover:text-blue-500 transition-colors text-right leading-snug line-clamp-1">
           {proj.title}
         </h3>
 
@@ -113,7 +113,7 @@ function ProjectCard({ proj, onClick, onAuthorClick }) {
             {proj.componentsList.slice(0, 3).map((tag, i) => (
               <span
                 key={i}
-                className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-400/8 border border-amber-400/15 text-amber-400/70 group-hover:border-amber-400/30 group-hover:text-amber-400 transition-colors whitespace-nowrap"
+                className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-blue-500/8 border border-blue-500/15 text-blue-500/70 group-hover:border-blue-500/30 group-hover:text-blue-500 transition-colors whitespace-nowrap"
               >
                 {tag}
               </span>
@@ -128,7 +128,7 @@ function ProjectCard({ proj, onClick, onAuthorClick }) {
         <div className="flex items-center justify-between pt-2 mt-auto border-t border-white/[0.05]">
           {/* Metrics */}
           <div className="flex items-center gap-3 text-[10px] text-zinc-600 font-mono">
-            <div className="flex items-center gap-1 hover:text-amber-400 transition-colors" title="مشاهدات">
+            <div className="flex items-center gap-1 hover:text-blue-500 transition-colors" title="مشاهدات">
               <Eye size={11} />
               <span>{proj.metrics?.views || 0}</span>
             </div>
@@ -150,7 +150,7 @@ function ProjectCard({ proj, onClick, onAuthorClick }) {
             <span className="text-[11px] text-zinc-500 group-hover/author:text-white transition-colors font-medium">
               @{proj.ownerUsername}
             </span>
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500/30 to-amber-700/30 border border-amber-400/20 flex items-center justify-center text-[9px] font-bold text-amber-400 uppercase shadow-sm group-hover/author:border-amber-400/50 transition-colors">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-600/30 to-blue-700/30 border border-blue-500/20 flex items-center justify-center text-[9px] font-bold text-blue-500 uppercase shadow-sm group-hover/author:border-blue-500/50 transition-colors">
               {(proj.ownerName || proj.ownerUsername || 'U').charAt(0)}
             </div>
           </button>
@@ -172,6 +172,8 @@ export default function ProjectFeed({ user }) {
   const [sortBy, setSortBy] = useState('newest');
   const [allComponentTags, setAllComponentTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState('');
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const lastClickRef = useRef(0);
 
   // ── Fetch public projects ─────────────────────────────────────────────────
   useEffect(() => {
@@ -210,6 +212,18 @@ export default function ProjectFeed({ user }) {
   };
 
   const handleAuthorClick = (username) => navigate(`/${username}`);
+
+  // ── Double-click on "الكل" shows category picker ────────────────────────────
+  const handleAllClick = () => {
+    const now = Date.now();
+    if (now - lastClickRef.current < 400) {
+      setShowCategoryPicker(true);
+    } else {
+      setSelectedCategory('all');
+      setSelectedTag('');
+    }
+    lastClickRef.current = now;
+  };
 
   // ── Filter + sort ─────────────────────────────────────────────────────────
   const filtered = projects.filter(proj => {
@@ -258,8 +272,8 @@ export default function ProjectFeed({ user }) {
           position: relative;
         }
         .hub-card:hover {
-          border-color: rgba(245,158,11,.35);
-          box-shadow: 0 12px 40px rgba(0,0,0,.45), 0 0 0 0.5px rgba(245,158,11,.15);
+          border-color: rgba(26,109,255,.35);
+          box-shadow: 0 12px 40px rgba(0,0,0,.45), 0 0 0 0.5px rgba(26,109,255,.15);
           transform: translateY(-2px);
         }
         .hub-card-img-wrap {
@@ -282,34 +296,141 @@ export default function ProjectFeed({ user }) {
       <div className="space-y-5 pb-10" dir="rtl">
 
 
+
+
         {/* ══════════════════════════════════════════════════════════════════
-            CATEGORY FILTER BAR
+            CATEGORY PICKER OVERLAY (double-click on الكل)
         ══════════════════════════════════════════════════════════════════ */}
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
-          {CATEGORIES.map(cat => {
-            const Icon = cat.icon;
-            const isActive = selectedCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => { setSelectedCategory(cat.id); setSelectedTag(''); }}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition-all duration-200 cursor-pointer shrink-0 ${
-                  isActive
-                    ? `${cat.activeBg} text-black border-transparent shadow-md`
-                    : `bg-white/[0.03] border-white/[0.07] text-zinc-500 hover:text-white hover:border-white/15 ${cat.bg}`
-                }`}
-              >
-                <Icon size={13} className={isActive ? 'text-black' : cat.color} />
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
+        {showCategoryPicker && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(10px)' }}
+            onClick={() => setShowCategoryPicker(false)}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{
+                background: 'rgba(10,10,20,0.97)',
+                border: '1px solid rgba(26,109,255,0.2)',
+                borderRadius: 24,
+                padding: '28px 24px',
+                maxWidth: 520,
+                width: '92%',
+                boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(26,109,255,0.1)',
+                animation: 'catPickerIn 0.22s cubic-bezier(.34,1.56,.64,1) both',
+              }}
+            >
+              <style>{`
+                @keyframes catPickerIn {
+                  from { opacity:0; transform: scale(0.88) translateY(16px); }
+                  to   { opacity:1; transform: scale(1) translateY(0); }
+                }
+                @keyframes catCardIn {
+                  from { opacity:0; transform: translateY(20px) scale(0.92); }
+                  to   { opacity:1; transform: translateY(0) scale(1); }
+                }
+              `}</style>
+
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6" dir="rtl">
+                <div>
+                  <h2 className="text-white font-black text-base">اختر فئة</h2>
+                  <p className="text-zinc-500 text-[11px] mt-0.5">اضغط على الفئة للتصفية</p>
+                </div>
+                <button
+                  onClick={() => setShowCategoryPicker(false)}
+                  style={{ color: '#71717a', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '5px 10px', cursor: 'pointer', fontSize: 13 }}
+                >✕</button>
+              </div>
+
+              {/* Category Grid */}
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3" dir="rtl">
+                {CATEGORIES.map((cat, i) => {
+                  const Icon = cat.icon;
+                  const isActive = selectedCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        setSelectedCategory(cat.id);
+                        setSelectedTag('');
+                        setShowCategoryPicker(false);
+                      }}
+                      style={{
+                        animationDelay: `${i * 45}ms`,
+                        animationFillMode: 'both',
+                        animation: `catCardIn 0.3s cubic-bezier(.34,1.4,.64,1) ${i * 45}ms both`,
+                        background: isActive
+                          ? `rgba(26,109,255,0.18)`
+                          : 'rgba(255,255,255,0.03)',
+                        border: isActive
+                          ? '1.5px solid rgba(26,109,255,0.55)'
+                          : '1px solid rgba(255,255,255,0.07)',
+                        borderRadius: 16,
+                        padding: '16px 8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.18s',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 10,
+                      }}
+                    >
+                      {/* Icon circle */}
+                      <div style={{
+                        width: 44, height: 44,
+                        borderRadius: '50%',
+                        background: isActive ? 'rgba(26,109,255,0.2)' : 'rgba(255,255,255,0.05)',
+                        border: isActive ? '1.5px solid rgba(26,109,255,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: isActive ? '0 0 16px rgba(26,109,255,0.3)' : 'none',
+                        transition: 'all 0.18s',
+                      }}>
+                        <Icon size={20} style={{ color: isActive ? '#1a6dff' : '#52525b' }} />
+                      </div>
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: isActive ? '#ffffff' : '#71717a',
+                        textAlign: 'center',
+                        lineHeight: 1.3,
+                        transition: 'color 0.18s',
+                      }}>{cat.label}</span>
+                      {isActive && (
+                        <span style={{ fontSize: 9, color: '#1a6dff', fontWeight: 800, marginTop: -4 }}>✓ محدد</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ══════════════════════════════════════════════════════════════════
             SEARCH + SORT ROW
         ══════════════════════════════════════════════════════════════════ */}
         <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+          {/* زر الكل */}
+          <button
+            onClick={handleAllClick}
+            onDoubleClick={() => setShowCategoryPicker(true)}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all duration-200 cursor-pointer shrink-0 flex items-center gap-1.5 ${
+              selectedCategory === 'all'
+                ? 'bg-blue-500 text-black border-transparent shadow-md'
+                : 'bg-white/[0.03] border-white/[0.07] text-zinc-500 hover:text-white hover:border-white/15'
+            }`}
+            title="اضغط مرتين لاختيار الفئة"
+          >
+            <LayoutGrid size={13} />
+            <span>الكل</span>
+            {selectedCategory !== 'all' && (
+              <span className="text-[10px] bg-white/10 text-white px-1.5 py-0.5 rounded font-medium">
+                {CATEGORIES.find(c => c.id === selectedCategory)?.label}
+              </span>
+            )}
+          </button>
+
           {/* Search box */}
           <div className="flex-1 relative">
             <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-600 pointer-events-none" size={14} />
@@ -320,7 +441,7 @@ export default function ProjectFeed({ user }) {
               placeholder="ابحث بالاسم، الوصف، أو القطعة (ESP32, DHT11...)"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl py-2.5 pr-10 pl-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400/40 transition-colors"
+              className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl py-2.5 pr-10 pl-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/40 transition-colors"
             />
           </div>
 
@@ -335,7 +456,7 @@ export default function ProjectFeed({ user }) {
                   onClick={() => setSortBy(opt.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-amber-400 text-black shadow-sm'
+                      ? 'bg-blue-500 text-black shadow-sm'
                       : 'text-zinc-500 hover:text-white'
                   }`}
                 >
@@ -379,8 +500,8 @@ export default function ProjectFeed({ user }) {
                 onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}
                 className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   selectedTag === tag
-                    ? 'bg-amber-400/15 border-amber-400/40 text-amber-400'
-                    : 'bg-transparent border-white/[0.07] text-zinc-600 hover:border-amber-400/20 hover:text-zinc-400'
+                    ? 'bg-blue-500/15 border-blue-500/40 text-blue-500'
+                    : 'bg-transparent border-white/[0.07] text-zinc-600 hover:border-blue-500/20 hover:text-zinc-400'
                 }`}
               >
                 {tag}
@@ -431,7 +552,7 @@ export default function ProjectFeed({ user }) {
             {!hasFilters && (
               <button
                 onClick={() => navigate(user ? '/hub/new' : '/login')}
-                className="mt-5 inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-black text-xs font-black px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-400/20 cursor-pointer"
+                className="mt-5 inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-400 text-black text-xs font-black px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 cursor-pointer"
               >
                 <Plus size={14} />
                 أنشر أول مشروع
@@ -454,3 +575,4 @@ export default function ProjectFeed({ user }) {
     </>
   );
 }
+

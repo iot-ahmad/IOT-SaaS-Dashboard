@@ -82,7 +82,7 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
 
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">{title}</h1>
-          <p className="text-muted-foreground text-xs md:text-sm mt-0.5">{subtitle}</p>
+          <p className="text-xs md:text-sm mt-0.5 text-zinc-500 dark:text-zinc-400">{subtitle}</p>
         </div>
       </div>
 
@@ -101,8 +101,8 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
 
         {/* MQTT Status */}
         <div style={isConnected
-          ? { background: 'color-mix(in srgb, var(--accent) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)', color: 'var(--accent)' }
-          : { background: 'color-mix(in srgb, var(--primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 30%, transparent)', color: 'var(--primary)' }
+          ? { background: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.35)', color: '#22c55e' }
+          : { background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.35)', color: '#ef4444' }
         } className="hidden lg:flex items-center gap-2 px-3 py-2 text-xs font-medium">
           {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
           <span className="hidden xl:inline">{isConnected ? 'MQTT Connected' : 'Disconnected'}</span>
