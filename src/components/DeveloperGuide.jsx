@@ -188,6 +188,9 @@ export default function DeveloperGuide({ userUID }) {
 - UID المستخدم الحالي: ${userUID || 'YOUR_UID'}
 - MQTT Broker: broker.hivemq.com — المنفذ: 1883
 - بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
+خبرتك تشمل أيضاً:
+- تشخيص العتاد الفيزيائي (Hardware Diagnostics) وتحليل أعطال الأجهزة مثل المضخات والحساسات والبطاريات والدوائر الكهربائية.
+- اقتراح سيناريوهات أتمتة ذكية وحلول هندسية عملية لمشاكل ESP32.
 قواعد الإجابة:
 - أجب دائماً باللغة العربية.
 - عند كتابة أكواد ESP32/C++ اكتب كوداً نظيفاً ومتكاملاً وخالياً من الأخطاء.
@@ -223,7 +226,22 @@ export default function DeveloperGuide({ userUID }) {
       );
       setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botText }]);
     } catch (err) {
-      console.warn('Groq failed, using static fallback:', err);
+      console.warn('Groq failed, trying NVIDIA API:', err);
+      // Secondary fallback: NVIDIA API
+      const nvidiaKey = import.meta.env.VITE_NVIDIA_API_KEY;
+      if (nvidiaKey && !nvidiaKey.startsWith('your_')) {
+        try {
+          const botText = await tryApi(
+            'https://integrate.api.nvidia.com/v1/chat/completions',
+            nvidiaKey,
+            'nvidia/llama-3.1-nemotron-51b-instruct'
+          );
+          setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botText }]);
+          return;
+        } catch (nvidiaErr) {
+          console.warn('NVIDIA API also failed, using static fallback:', nvidiaErr);
+        }
+      }
       // Last resort: static keyword-based response
       setMessages(prev => [...prev, {
         id: Date.now() + 1,

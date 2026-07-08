@@ -562,8 +562,7 @@ export const AutomationsToolView = ({ publish, userUID }) => {
         </button>
       </div>
 
-      {/* Cosmos3 Physical AI Hardware Diagnostics Hub */}
-      <CosmosPhysicalDiagnostics userUID={userUID} />
+
 
       {loading ? (
         <div className="text-muted-foreground text-sm">Loading...</div>
@@ -778,8 +777,7 @@ export const AlertsView = ({ userUID }) => {
         </div>
       </div>
 
-      {/* Cosmos3 Physical AI & Hardware Reasoning Hub */}
-      <CosmosPhysicalDiagnostics userUID={userUID} />
+
 
       {loading ? (
         <div className="text-muted-foreground text-sm">Loading alerts...</div>
