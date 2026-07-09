@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, storage } from '../firebase';
+import { db } from '../firebase';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { uploadToCloudinary } from '../lib/cloudinaryUpload';
 import { Globe, Edit3, Camera, FileText, Cpu, Eye, ThumbsUp, Copy, Check, AlertCircle, X, Sparkles, FolderCode } from 'lucide-react';
 
 // Inline SVG icons for brands not available in this lucide-react version
@@ -187,30 +187,14 @@ export default function UserProfile({ currentUser }) {
     setModalSuccess('');
 
     try {
-      // Compress avatar image
       const compressedFile = await compressAvatar(file);
-      const storagePath = `users/${currentUser.uid}/avatar_${Date.now()}.jpg`;
-      const fileRef = ref(storage, storagePath);
-
-      const uploadTask = uploadBytesResumable(fileRef, compressedFile);
-
-      uploadTask.on('state_changed',
-        null,
-        (err) => {
-          console.error("Avatar upload failed:", err);
-          setModalError('فشل رفع الصورة الشخصية.');
-          setAvatarUploading(false);
-        },
-        async () => {
-          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-          setEditAvatarUrl(downloadUrl);
-          setAvatarUploading(false);
-          setModalSuccess('تم تحديث المعاينة بنجاح. يرجى الضغط على حفظ.');
-        }
-      );
+      const url = await uploadToCloudinary(compressedFile, null, `users/${currentUser.uid}`);
+      setEditAvatarUrl(url);
+      setAvatarUploading(false);
+      setModalSuccess('تم تحديث المعاينة بنجاح. يرجى الضغط على حفظ.');
     } catch (err) {
       console.error(err);
-      setModalError('حدث خطأ أثناء معالجة الصورة.');
+      setModalError('فشل رفع الصورة الشخصية.');
       setAvatarUploading(false);
     }
   };

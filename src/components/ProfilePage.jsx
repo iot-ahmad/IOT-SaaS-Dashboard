@@ -12,8 +12,8 @@ import {
 import {
   collection, doc, query, where, getDocs, getDoc, setDoc,
 } from 'firebase/firestore';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { auth, db, storage } from '../firebase';
+import { auth, db } from '../firebase';
+import { uploadToCloudinary } from '../lib/cloudinaryUpload';
 import { Button } from './ui/neon-button';
 
 // ─── Inline SVG brand icons (not available in this lucide-react version) ────
@@ -177,17 +177,15 @@ export default function ProfilePage({ user, userUID, logout }) {
     setProfileError('');
     try {
       const compressed = await compressAvatar(file);
-      const storagePath = `users/${userUID}/avatar_${Date.now()}.jpg`;
-      const uploadTask = uploadBytesResumable(ref(storage, storagePath), compressed);
-      uploadTask.on('state_changed', null,
-        () => { showToast('فشل رفع الصورة الشخصية.', 'error'); setAvatarUploading(false); },
-        async () => {
-          setEditAvatarUrl(await getDownloadURL(uploadTask.snapshot.ref));
-          setAvatarUploading(false);
-          showToast('تم رفع الصورة — اضغط حفظ لتأكيد التغييرات.');
-        },
-      );
-    } catch { showToast('حدث خطأ أثناء معالجة الصورة.', 'error'); setAvatarUploading(false); }
+      const url = await uploadToCloudinary(compressed, null, `users/${userUID}`);
+      setEditAvatarUrl(url);
+      setAvatarUploading(false);
+      showToast('تم رفع الصورة — اضغط حفظ لتأكيد التغييرات.');
+    } catch (err) {
+      console.error(err);
+      showToast('فشل رفع الصورة الشخصية.', 'error');
+      setAvatarUploading(false);
+    }
   };
 
   // ─── Save public profile ─────────────────────────────────────────────────

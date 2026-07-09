@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ArrowLeft, Loader2, LayoutDashboard, Cpu, Zap, BellRing } from 'lucide-react';
 import { WaveBackground } from './ui/WaveBackground';
@@ -15,6 +16,7 @@ const GoogleIcon = () => (
 
 /* ─── Main Component ─────────────────────────────────────────────────── */
 export default function AuthPage({ loginWithGoogle, error, setError }) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
@@ -154,13 +156,21 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   {' '}بكل سهولة وبدون تعقيدات.
                 </p>
 
-                {/* Glowing Pill Button */}
-                <button
-                  onClick={() => setShowLogin(true)}
-                  className="px-10 py-4 bg-white text-black font-extrabold rounded-full hover:bg-neutral-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.55)] active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
-                >
-                  ابدأ الآن · GET STARTED
-                </button>
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  <button
+                    onClick={() => setShowLogin(true)}
+                    className="px-8 py-3.5 bg-white text-black font-extrabold rounded-full hover:bg-neutral-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.55)] active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
+                  >
+                    ابدأ الآن · GET STARTED
+                  </button>
+                  <button
+                    onClick={() => navigate('/hub')}
+                    className="px-8 py-3.5 bg-transparent text-white border border-white/20 font-extrabold rounded-full hover:bg-white/10 hover:border-white/40 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
+                  >
+                    تصفح المشاريع · BROWSE PROJECTS
+                  </button>
+                </div>
               </div>
 
               {/* Features Section */}
