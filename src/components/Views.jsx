@@ -186,8 +186,10 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)' }} className="border p-6 w-full max-w-sm relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
+          <div style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)' }} className="border p-6 w-full max-w-sm relative z-10">
             <button onClick={() => setShowAddModal(false)} style={{ color: 'var(--muted-foreground)' }} className="absolute top-4 right-4 hover:text-primary transition-colors">
               <X size={20} />
             </button>

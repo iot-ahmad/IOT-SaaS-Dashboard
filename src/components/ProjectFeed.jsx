@@ -302,12 +302,11 @@ export default function ProjectFeed({ user }) {
             CATEGORY PICKER OVERLAY (double-click on الكل)
         ══════════════════════════════════════════════════════════════════ */}
         {showCategoryPicker && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center"
-            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(10px)' }}
-            onClick={() => setShowCategoryPicker(false)}
-          >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
+            <div className="absolute inset-0 bg-black/75 backdrop-blur-md" onClick={() => setShowCategoryPicker(false)} />
             <div
+              className="relative"
               onClick={e => e.stopPropagation()}
               style={{
                 background: 'rgba(10,10,20,0.97)',

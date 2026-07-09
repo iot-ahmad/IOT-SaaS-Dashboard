@@ -289,7 +289,9 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div className="bg-[#0d0e10] border border-border rounded-2xl w-full max-w-md relative shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border">

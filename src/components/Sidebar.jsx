@@ -255,7 +255,9 @@ export default function Sidebar({
 
       {/* Add Workspace Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
           <div className="bg-card dark:bg-[#0a0b0d] border border-border p-6 rounded-2xl w-full max-w-sm relative text-foreground shadow-2xl">
             <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground dark:text-white/40 hover:text-foreground">
               <X size={20} />

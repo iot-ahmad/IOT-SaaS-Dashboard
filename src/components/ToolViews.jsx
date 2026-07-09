@@ -613,9 +613,10 @@ export const AutomationsToolView = ({ publish, userUID }) => {
           ))}
         </div>
       )}
-
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
+          <div className="absolute inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
           <div className="bg-card dark:bg-[#0a0b0d] border border-border p-6 rounded-2xl w-full max-w-md relative text-foreground">
             <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
               <X size={20} />
@@ -855,9 +856,10 @@ export const AlertsView = ({ userUID }) => {
           )}
         </div>
       )}
-
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
+          <div className="absolute inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
           <div className="bg-card dark:bg-[#0a0b0d] border border-border p-6 rounded-2xl w-full max-w-md relative text-foreground">
             <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
               <X size={20} />

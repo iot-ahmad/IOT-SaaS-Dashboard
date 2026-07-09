@@ -386,3 +386,55 @@
 .leaflet-popup-close-button:hover {
   color: var(--primary) !important;
 }
+
+/* ─── Mobile Fallbacks and Hardware Acceleration for Backdrop Blur ─── */
+
+/* 1. Hardware acceleration for backdrop-blur elements on desktop to prevent artifacts */
+@media (min-width: 769px) {
+  [class*="backdrop-blur"],
+  .leaflet-popup-content-wrapper {
+    transform: translateZ(0);
+  }
+}
+
+/* 2. Disable backdrop filter on mobile to prevent rendering glitches and touch bugs */
+@media (max-width: 768px) {
+  [class*="backdrop-blur"],
+  .leaflet-popup-content-wrapper {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Increase opacities of transparent/blurred classes on mobile for readability when blur is disabled */
+  .bg-card\/\[0\.01\], 
+  .bg-card\/\[0\.02\] {
+    background-color: color-mix(in srgb, var(--card) 6%, transparent) !important;
+  }
+  
+  .bg-card\/10,
+  .bg-card\/50 {
+    background-color: color-mix(in srgb, var(--card) 85%, transparent) !important;
+  }
+
+  .bg-background\/40,
+  .bg-background\/50,
+  .bg-background\/60 {
+    background-color: color-mix(in srgb, var(--background) 90%, transparent) !important;
+  }
+
+  .bg-black\/50,
+  .bg-black\/60,
+  .bg-black\/70,
+  .bg-black\/75 {
+    background-color: rgba(0, 0, 0, 0.85) !important;
+  }
+
+  .bg-slate-900\/40 {
+    background-color: rgba(15, 23, 42, 0.8) !important;
+  }
+
+  header.sticky {
+    background-color: var(--card) !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+}
