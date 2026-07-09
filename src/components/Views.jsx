@@ -144,11 +144,11 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
       <ESP32Model />
       <div className="relative z-10 space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Your Projects</h2>
+          <h2 className="text-2xl font-bold text-foreground">Your Projects</h2>
           <button
             onClick={() => setShowAddModal(true)}
             style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-            className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] font-bold hover:opacity-90 transition-opacity shadow-lg rounded-xl"
+            className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg"
           >
             <Plus size={18} />
             <span>Add Project</span>
@@ -158,22 +158,22 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
         {customWorkspaces.length === 0 ? (
           <OnboardingWizard />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {customWorkspaces.map(ws => (
               <button
                 key={ws.id}
                 onClick={() => setActiveWorkspace(ws.id)}
                 style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--card-foreground)' }}
-                className="text-left border p-5 backdrop-blur-md hover:opacity-90 transition-all duration-300 group hover:[border-color:var(--primary)] rounded-2xl min-h-[100px] flex flex-col justify-between"
+                className="text-left border p-6 backdrop-blur-md hover:opacity-90 transition-all duration-300 group hover:[border-color:var(--primary)]"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <div style={{ background: 'color-mix(in srgb, var(--primary) 12%, transparent)', color: 'var(--primary)' }} className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                    <div style={{ background: 'color-mix(in srgb, var(--primary) 12%, transparent)', color: 'var(--primary)' }} className="w-10 h-10 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Gamepad2 size={20} />
                     </div>
                     <div>
-                      <h3 style={{ color: 'var(--foreground)' }} className="text-base md:text-lg font-bold group-hover:text-primary transition-colors">{ws.name}</h3>
-                      <p style={{ color: 'var(--muted-foreground)' }} className="text-xs mt-0.5">
+                      <h3 style={{ color: 'var(--foreground)' }} className="text-lg font-bold group-hover:text-primary transition-colors">{ws.name}</h3>
+                      <p style={{ color: 'var(--muted-foreground)' }} className="text-xs mt-1">
                         {ws.esp32Prefix ? `Target: ${ws.esp32Prefix}` : 'Universal Control'}
                       </p>
                     </div>
