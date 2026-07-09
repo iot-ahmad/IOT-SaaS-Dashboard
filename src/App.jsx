@@ -24,6 +24,19 @@ import ProjectDetail from './components/ProjectDetail';
 import UserProfile from './components/UserProfile';
 import ProfilePage from './components/ProfilePage';
 
+// Custom hook to detect mobile viewport (screen width <= 768px)
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px)');
+    const listener = (e) => setIsMobile(e.matches);
+    setIsMobile(media.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, []);
+  return isMobile;
+}
+
 /**
  * Standalone layout wrapper for the public Hub section.
  * Renders a top nav with branding, theme toggle, and optional user actions.
@@ -32,6 +45,7 @@ import ProfilePage from './components/ProfilePage';
  * @param {{ children: React.ReactNode, user: object|null, logout: function }} props
  */
 function HubLayout({ children, user, logout }) {
+  const isMobile = useIsMobile();
   const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,10 +89,14 @@ function HubLayout({ children, user, logout }) {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30 overflow-x-hidden">
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
+      {!isMobile ? (
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
+          <FloatingPaths position={1} />
+          <FloatingPaths position={-1} />
+        </div>
+      ) : (
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/[0.04] via-transparent to-transparent opacity-40 dark:opacity-25" />
+      )}
 
       {/* ─── Top Navbar ─── */}
       <header className="relative z-40 flex items-center justify-between py-3 px-6 md:px-12 border-b border-border bg-card/60 bg-background/60 backdrop-blur-md sticky top-0">
@@ -346,6 +364,7 @@ function App() {
  * @param {{ user: object, logout: function }} props
  */
 function Dashboard({ user, logout }) {
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeWorkspace, setActiveWorkspace] = useState('home');
@@ -646,10 +665,14 @@ function Dashboard({ user, logout }) {
 
   return (
      <div className="relative h-screen bg-background text-foreground flex selection:bg-primary/30 overflow-hidden">
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
+      {!isMobile ? (
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
+          <FloatingPaths position={1} />
+          <FloatingPaths position={-1} />
+        </div>
+      ) : (
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/[0.04] via-transparent to-transparent opacity-40 dark:opacity-25" />
+      )}
 
       {isMobileMenuOpen && (
         <div 
@@ -688,7 +711,7 @@ function Dashboard({ user, logout }) {
 
         />
         
-        <div className={`flex-1 ${activeTool === 'developer' ? 'flex flex-col px-6 md:px-8 pb-6 pt-4 min-h-0' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>
+        <div className={`flex-1 ${activeTool === 'developer' ? 'flex flex-col px-6 md:px-8 pb-6 pt-4 min-h-0' : 'p-4 md:p-8 pb-safe overflow-y-auto'}`}>
           <div className={activeTool !== 'developer' ? 'max-w-7xl mx-auto space-y-6' : ''}>
             <Routes>
               <Route path="/" element={renderContent()} />
@@ -696,7 +719,7 @@ function Dashboard({ user, logout }) {
           </div>
         </div>
 
-        <LiveTerminal messages={messages} isConnected={isConnected} />
+        <LiveTerminal messages={messages} isConnected={isConnected} isSidebarCollapsed={isSidebarCollapsed} />
       </main>
     </div>
   );

@@ -9,7 +9,7 @@ const iconMap = {
 };
 
 const navBtnClass =
-  'mx-0 w-full flex items-center justify-start gap-3 rounded-xl text-sm font-medium';
+  'mx-0 w-full flex items-center justify-start gap-3 rounded-xl text-sm font-medium min-h-[44px]';
 
 export default function Sidebar({
   workspaces,
@@ -86,7 +86,7 @@ export default function Sidebar({
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Add workspace"
             >
               <Plus size={16} />
@@ -134,17 +134,17 @@ export default function Sidebar({
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-1 flex-shrink-0">
                           <button
                             onClick={e => { e.stopPropagation(); startRename(ws); }}
-                            className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-slate-700 dark:hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-slate-700 dark:hover:text-white transition-colors min-w-[32px] min-h-[32px] flex items-center justify-center"
                             title="Rename"
                           >
-                            <Pencil size={11} />
+                            <Pencil size={12} />
                           </button>
                           <button
                             onClick={e => { e.stopPropagation(); onDeleteWorkspace(ws.id); }}
-                            className="p-1 rounded-md hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors min-w-[32px] min-h-[32px] flex items-center justify-center"
                             title="Delete"
                           >
-                            <Trash2 size={11} />
+                            <Trash2 size={12} />
                           </button>
                         </div>
                       )}
