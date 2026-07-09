@@ -910,7 +910,7 @@ export const AlertsView = ({ userUID }) => {
 
 
 // ==================== LIVE TERMINAL ====================
-export const LiveTerminal = ({ messages, isConnected }) => {
+export const LiveTerminal = ({ messages, isConnected, isSidebarCollapsed }) => {
   const scrollRef = useRef(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -927,11 +927,13 @@ export const LiveTerminal = ({ messages, isConnected }) => {
     error: 'text-red-400',
   };
 
+  const leftClass = isSidebarCollapsed ? 'md:left-16' : 'md:left-64';
+
   return (
-    <div className={`fixed bottom-0 left-0 md:left-64 right-0 z-40 bg-[#0a0b0d]/95 backdrop-blur-md border-t border-border transition-all duration-300 ${isExpanded ? 'h-36' : 'h-10'}`}>
+    <div className={`fixed bottom-0 left-0 ${leftClass} right-0 z-40 bg-[#0a0b0d]/95 backdrop-blur-md border-t border-border transition-all duration-300 flex flex-col pb-[env(safe-area-inset-bottom,0px)] ${isExpanded ? 'h-32 md:h-36' : 'h-9 md:h-10'}`}>
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-4 py-2 hover:bg-card/5 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2 hover:bg-card/5 transition-colors flex-shrink-0"
       >
         <div className="flex items-center gap-2">
           <Terminal size={14} className="text-primary" />
@@ -950,7 +952,7 @@ export const LiveTerminal = ({ messages, isConnected }) => {
       </button>
 
       {isExpanded && (
-        <div ref={scrollRef} className="h-24 overflow-y-auto px-4 py-2 font-mono text-[11px] space-y-0.5 border-t border-border">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-2 font-mono text-[11px] space-y-0.5 border-t border-border">
           {messages.length === 0 && (
             <p className="text-muted-foreground/60 italic">Waiting for MQTT messages from ESP32...</p>
           )}

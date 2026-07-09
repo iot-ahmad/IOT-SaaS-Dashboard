@@ -2127,7 +2127,7 @@ function DPadWidget({ widget, publish }) {
         </span>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center gap-1.5 my-1">
+      <div className="flex-1 flex flex-col items-center justify-center gap-1.5 my-1 touch-none select-none">
         <DPadDirButton cmd="FORWARD" icon={ChevronUp} activeCmd={active} onPress={press} onRelease={release} />
         <div className="flex gap-1.5">
           <DPadDirButton cmd="LEFT" icon={ChevronLeft} activeCmd={active} onPress={press} onRelease={release} />
@@ -2232,7 +2232,7 @@ function JoystickWidget({ widget, publish }) {
       <div className="flex-1 flex flex-col items-center justify-center min-h-0 gap-2 relative">
         <div
           ref={rootRef}
-          className="relative w-36 h-36 rounded-full border border-amber-400/20 bg-gradient-to-b from-amber-950/10 to-black/40 touch-none select-none cursor-grab active:cursor-grabbing shadow-[inset_0_2px_12px_rgba(0,0,0,0.6)] flex items-center justify-center"
+          className="relative w-36 h-36 md:w-40 md:h-40 rounded-full border border-amber-400/20 bg-gradient-to-b from-amber-950/10 to-black/40 touch-none select-none cursor-grab active:cursor-grabbing shadow-[inset_0_2px_12px_rgba(0,0,0,0.6)] flex items-center justify-center"
           onPointerDown={(e) => {
             e.currentTarget.setPointerCapture(e.pointerId);
             applyPointer(e.clientX, e.clientY);
@@ -2710,29 +2710,29 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
     <div className="h-full bg-card/[0.01] dark:bg-[#07080b]/75 border border-border rounded-2xl backdrop-blur-md hover:bg-card/[0.025] hover:border-slate-300 dark:hover:border-border transition-all duration-300 group flex flex-col relative overflow-hidden shadow-lg shadow-black/10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.015)] p-3">
       {/* Header row with Drag Handle (Left) and Action Buttons (Right) */}
       <div className="flex justify-between items-center mb-1 flex-shrink-0" dir="ltr">
-        {/* Left side: Drag Handle */}
+        {/* Left side: Drag Handle (Desktop only) */}
         <div
-          className="drag-handle cursor-grab active:cursor-grabbing p-1 rounded-md border border-border bg-muted/40 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors flex items-center justify-center"
+          className="drag-handle cursor-grab active:cursor-grabbing p-2 rounded-lg border border-border bg-muted/40 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors items-center justify-center hidden md:flex"
           title="اسحب من هنا لتحريك الأداة"
         >
-          <Move size={12} />
+          <Move size={14} />
         </div>
 
         {/* Right side: Action Buttons */}
-        <div className="flex gap-0.5">
+        <div className="flex gap-1">
           <button
             onClick={() => onEdit(widget)}
-            className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-muted-foreground dark:text-white/30 p-1"
+            className="opacity-70 md:opacity-0 md:group-hover:opacity-60 hover:!opacity-100 hover:text-cyan-400 transition-all text-muted-foreground dark:text-white/30 p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-card/20"
             title="Edit Tool"
           >
-            <SlidersHorizontal size={12} />
+            <SlidersHorizontal size={14} />
           </button>
           <button
             onClick={() => onRemove(widget.id)}
-            className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground dark:text-white/30 p-1"
+            className="opacity-70 md:opacity-0 md:group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground dark:text-white/30 p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-card/20"
             title="Remove Tool"
           >
-            <Trash2 size={12} />
+            <Trash2 size={14} />
           </button>
         </div>
       </div>
@@ -2745,8 +2745,22 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
   );
 }
 
+// Custom hook to detect mobile viewport (screen width <= 768px)
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px)');
+    const listener = (e) => setIsMobile(e.matches);
+    setIsMobile(media.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, []);
+  return isMobile;
+}
+
 // ─── Main Controller View ─────────────────────────────────────────────────────
 export default function UniversalController({ deviceStates, publish, storageScopeId, esp32Prefix, userUID }) {
+  const isMobile = useIsMobile();
   const { width, containerRef, mounted } = useContainerWidth();
   const { loaded, savedWidgets, savedLayouts, save } = useControllerFirestore(userUID, storageScopeId);
 
@@ -2860,10 +2874,10 @@ export default function UniversalController({ deviceStates, publish, storageScop
   return (
     <div className="relative" ref={containerRef}>
       {/* Header bar */}
-      <div className="flex justify-between items-center gap-4 mb-6">
-        <div>
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-4 md:mb-6">
+        <div className="flex-1 min-w-0">
           {esp32Prefix && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Target ESP32: {esp32Prefix}
             </div>
@@ -2873,7 +2887,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
           type="button"
           onClick={() => setShowModal(true)}
           style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-          className="flex items-center gap-2 px-4 py-2.5 font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-95"
+          className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-95 rounded-xl flex-shrink-0"
         >
           <Plus size={18} />
           Add Tool
@@ -2894,14 +2908,14 @@ export default function UniversalController({ deviceStates, publish, storageScop
             width={width}
             breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
             cols={COLS_BY_BP}
-            rowHeight={80}
+            rowHeight={isMobile ? 70 : 80}
             draggableHandle=".drag-handle"
             draggableCancel=".no-drag"
-            isDraggable
-            isResizable
+            isDraggable={!isMobile}
+            isResizable={!isMobile}
             compactType="vertical"
             onLayoutChange={onLayoutChange}
-            margin={[16, 16]}
+            margin={isMobile ? [10, 10] : [16, 16]}
             useCSSTransforms
           >
             {widgets.map(widget => (

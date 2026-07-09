@@ -64,7 +64,7 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
         <button
           onClick={toggleMobileMenu}
           style={{ color: 'var(--foreground)' }}
-          className="md:hidden hover:text-primary p-1 transition-colors"
+          className="md:hidden hover:text-primary transition-colors w-12 h-12 flex items-center justify-center rounded-xl hover:bg-card/25"
           title="Open menu"
         >
           <Menu size={22} />
@@ -93,7 +93,7 @@ export default function Header({ activeWorkspace, activeTool, isConnected, toggl
         <button
           onClick={toggleTheme}
           style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
-          className="p-2 hover:text-primary transition-colors"
+          className="w-12 h-12 flex items-center justify-center hover:text-primary transition-colors rounded-xl"
           title="Toggle Theme"
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}

@@ -5,7 +5,7 @@ import { SOIL_MOISTURE_DATA, AUTOMATIONS } from '../data/mockData';
 
 const Card = ({ children, className = '' }) => (
   <div style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--card-foreground)' }}
-    className={`border p-6 backdrop-blur-md hover:opacity-90 transition-all duration-300 group ${className}`}>
+    className={`border p-4 md:p-6 rounded-2xl backdrop-blur-md hover:opacity-90 transition-all duration-300 group h-full flex flex-col ${className}`}>
     {children}
   </div>
 );
@@ -74,9 +74,10 @@ export const IrrigationValveCard = ({ deviceStates, publish }) => {
         <button
           onClick={handleToggle}
           style={{ background: currentState ? 'var(--primary)' : 'var(--muted)', transition: 'background 0.3s' }}
-          className="w-14 h-8 p-1"
+          className="w-14 h-8 p-1 rounded-full min-w-[48px] min-h-[44px] flex items-center"
+          aria-label={currentState ? 'Close valve' : 'Open valve'}
         >
-          <div style={{ background: 'var(--primary-foreground)' }} className={`w-6 h-6 transition-transform duration-300 ${currentState ? 'translate-x-6' : 'translate-x-0'}`} />
+          <div style={{ background: 'var(--primary-foreground)' }} className={`w-6 h-6 rounded-full transition-transform duration-300 ${currentState ? 'translate-x-6' : 'translate-x-0'}`} />
         </button>
       </div>
       <div style={{ background: 'var(--muted)', border: '1px solid var(--border)' }} className="mt-4 p-3">
