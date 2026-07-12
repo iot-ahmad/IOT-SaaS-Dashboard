@@ -24,6 +24,7 @@ export default function Sidebar({
   onDeleteWorkspace,
   isCollapsed,
   onToggleCollapse,
+  isDark = true,
 }) {
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
@@ -67,7 +68,7 @@ export default function Sidebar({
       {/* Brand Logo */}
       <div className={`pt-4 pb-4 border-b border-border flex items-center transition-all duration-300 ${isCollapsed ? 'px-2 justify-center' : 'px-4 justify-start'}`}>
         <img 
-          src={isCollapsed ? "/logo_icon.svg" : "/logo_horizontal.svg"} 
+          src={isCollapsed ? (isDark ? "/logo_icon.svg" : "/logo_icon_light.svg") : (isDark ? "/logo_horizontal.svg" : "/logo_horizontal_light.svg")} 
           alt="IOT365 Logo" 
           className={`object-contain flex-shrink-0 transition-all duration-300 ${
             isCollapsed ? 'w-6 h-6' : 'w-28 h-7'

@@ -548,7 +548,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
       {/* Empty state */}
       {filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center bg-background dark:bg-card/[0.02] border border-border rounded-2xl">
-          <CircuitBoard size={40} className="text-slate-300 dark:text-white/10 mb-4" />
+          <CircuitBoard size={40} className="text-muted-foreground dark:text-white/10 mb-4" />
           <h3 className="text-lg font-bold text-muted-foreground dark:text-white/40">
             {search ? 'No devices match your search' : 'No Devices Yet'}
           </h3>

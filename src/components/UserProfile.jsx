@@ -310,7 +310,7 @@ export default function UserProfile({ currentUser }) {
           </div>
         </div>
 
-        <h2 className="text-2xl font-black text-white mb-2">
+        <h2 className="text-2xl font-black text-foreground mb-2">
           مرحباً، {currentUser.displayName?.split(' ')[0] || 'مطور'} 👋
         </h2>
         <p className="text-sm text-muted-foreground mb-2">
@@ -440,7 +440,7 @@ export default function UserProfile({ currentUser }) {
     return (
       <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
         <AlertCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-white">الملف الشخصي غير متاح</h3>
+        <h3 className="text-xl font-bold text-foreground">الملف الشخصي غير متاح</h3>
         <p className="text-sm text-muted-foreground mt-3">{error || 'لم يتم العثور على هذا المستخدم.'}</p>
         <button
           onClick={() => navigate('/hub')}
@@ -476,7 +476,7 @@ export default function UserProfile({ currentUser }) {
                 localStorage.setItem('active_tool_fallback', 'profile');
                 window.location.href = '/?tool=profile';
               }}
-              className="bg-card/5 hover:bg-card/10 border border-white/15 hover:border-white/30 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
+              className="bg-card/5 hover:bg-card/10 border border-border text-foreground font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
             >
               <Edit3 size={14} />
               تعديل بروفايل المطور
@@ -499,10 +499,10 @@ export default function UserProfile({ currentUser }) {
 
             {/* User credentials */}
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-white">{profileUser.displayName}</h2>
+              <h2 className="text-2xl font-black text-foreground">{profileUser.displayName}</h2>
               <p className="text-xs text-primary font-mono font-bold">@{profileUser.username}</p>
               {profileUser.headline ? (
-                <p className="text-sm font-semibold text-slate-300">{profileUser.headline}</p>
+                <p className="text-sm font-semibold text-muted-foreground">{profileUser.headline}</p>
               ) : (
                 <p className="text-xs text-muted-foreground italic">مطور IoT هاوٍ</p>
               )}
@@ -541,7 +541,7 @@ export default function UserProfile({ currentUser }) {
 
       {/* Projects Grid Heading */}
       <div className="space-y-4">
-        <h3 className="text-lg font-black text-white text-right flex items-center justify-end gap-2">
+        <h3 className="text-lg font-black text-foreground text-right flex items-center justify-end gap-2">
           مشاريع المطور العامة ({projects.length})
           <FolderCode size={18} className="text-primary" />
         </h3>
@@ -573,7 +573,7 @@ export default function UserProfile({ currentUser }) {
                       </div>
                     )}
                   </div>
-                  <h3 className="text-base font-extrabold text-white group-hover:text-primary transition-colors text-right line-clamp-1">
+                  <h3 className="text-base font-extrabold text-foreground group-hover:text-primary transition-colors text-right line-clamp-1">
                     {proj.title}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-2 text-right leading-relaxed line-clamp-3">

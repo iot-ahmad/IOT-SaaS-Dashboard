@@ -73,7 +73,7 @@ export const MarkdownPreview = ({ text }) => {
 
   const formatText = (t) => {
     let s = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-extrabold text-white">$1</strong>');
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-extrabold text-foreground">$1</strong>');
     s = s.replace(/`([^`]+)`/g, '<code class="bg-zinc-900 border border-border px-1.5 py-0.5 rounded font-mono text-pink-400 text-xs">$1</code>');
     s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">$1</a>');
     return s;
@@ -82,21 +82,21 @@ export const MarkdownPreview = ({ text }) => {
   const parsedElements = parseMarkdown(text);
 
   return (
-    <div className="space-y-4 font-sans text-slate-300 leading-relaxed text-right rtl-text">
+    <div className="space-y-4 font-sans text-foreground/90 leading-relaxed text-right rtl-text">
       {parsedElements.map((el, idx) => {
         if (el.type === 'h1') return (
-          <h1 key={idx} className="text-2xl font-extrabold text-white mt-6 mb-3 border-b border-border pb-2">
+          <h1 key={idx} className="text-2xl font-extrabold text-foreground mt-6 mb-3 border-b border-border pb-2">
             <span dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
           </h1>
         );
         if (el.type === 'h2') return (
-          <h2 key={idx} className="text-xl font-bold text-white mt-5 mb-2 flex items-center gap-2">
+          <h2 key={idx} className="text-xl font-bold text-foreground mt-5 mb-2 flex items-center gap-2">
             <span className="w-1.5 h-6 bg-primary rounded-full shrink-0" />
             <span dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
           </h2>
         );
         if (el.type === 'h3') return (
-          <h3 key={idx} className="text-lg font-bold text-white/95 mt-4 mb-2">
+          <h3 key={idx} className="text-lg font-bold text-foreground mt-4 mb-2">
             <span dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
           </h3>
         );
@@ -207,7 +207,7 @@ function ComponentCard({ comp, onChange, onRemove }) {
             placeholder="اسم القطعة / الجهاز (مثال: ESP32 DevKit)"
             value={comp.name}
             onChange={(e) => onChange({ ...comp, name: e.target.value })}
-            className="w-full bg-[#030406] border border-border rounded-xl py-2.5 px-3.5 focus:outline-none focus:border-primary/60 text-sm text-right text-white placeholder:text-muted-foreground transition-colors"
+            className="w-full bg-card dark:bg-[#030406] border border-border rounded-xl py-2.5 px-3.5 focus:outline-none focus:border-primary/60 text-sm text-right text-foreground placeholder:text-muted-foreground transition-colors"
             dir="rtl"
           />
           <textarea
@@ -215,7 +215,7 @@ function ComponentCard({ comp, onChange, onRemove }) {
             placeholder="وظيفة هذه القطعة في المشروع..."
             value={comp.function}
             onChange={(e) => onChange({ ...comp, function: e.target.value })}
-            className="w-full bg-[#030406] border border-border rounded-xl py-2.5 px-3.5 focus:outline-none focus:border-primary/60 text-sm text-right text-slate-300 placeholder:text-muted-foreground resize-none transition-colors"
+            className="w-full bg-card dark:bg-[#030406] border border-border rounded-xl py-2.5 px-3.5 focus:outline-none focus:border-primary/60 text-sm text-right text-foreground placeholder:text-muted-foreground resize-none transition-colors"
             dir="rtl"
           />
         </div>
@@ -427,7 +427,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h2 className="text-2xl font-black text-white flex items-center gap-2">
+          <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
             <Sparkles className="text-primary w-6 h-6 animate-pulse" />
             أنشئ مشروع IoT جديد
           </h2>
@@ -473,7 +473,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
       {/* ─── STEP 1: Basic Info ──────────────────────────── */}
       {step === 1 && (
         <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-border pb-2">
+          <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border pb-2">
             <FileText size={18} className="text-primary" /> الخطوة 1: البيانات الأساسية
           </h3>
           <div className="space-y-4">
@@ -482,12 +482,12 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                 <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">عنوان المشروع *</label>
                 <input required type="text" placeholder="مثال: محطة طقس ذكية تدعم التنبيهات الفورية"
                   value={title} onChange={(e) => setTitle(e.target.value)} dir="rtl"
-                  className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-white transition-colors" />
+                  className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground transition-colors" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">الخصوصية</label>
                 <select value={visibility} onChange={(e) => setVisibility(e.target.value)}
-                  className="w-full bg-[#0d0e12] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-white">
+                  className="w-full bg-card dark:bg-[#0d0e12] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground transition-colors">
                   <option value="public">عام (Public)</option>
                   <option value="private">خاص (Private)</option>
                 </select>
@@ -498,7 +498,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">الوصف المختصر *</label>
               <textarea required rows={3} placeholder="صف الفكرة والهدف من مشروعك باختصار..."
                 value={summary} onChange={(e) => setSummary(e.target.value)} dir="rtl"
-                className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-white resize-none transition-colors" />
+                className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground resize-none transition-colors" />
             </div>
 
             <div>
@@ -507,7 +507,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               </label>
               <input type="text" placeholder="اضغط Enter لإضافة وسم (ESP32, IoT, Arduino...)"
                 value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyDown={handleAddTag}
-                className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-white transition-colors" dir="rtl" />
+                className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground transition-colors" dir="rtl" />
               <div className="flex flex-wrap gap-2 mt-3">
                 {tagsList.map((tag, idx) => (
                   <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
@@ -531,7 +531,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-lg shadow-primary/20">
               <Plus size={14} /> إضافة جهاز / قطعة
             </button>
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
               <Cpu size={18} className="text-primary" /> الخطوة 2: الأجهزة والقطع
             </h3>
           </div>
@@ -570,12 +570,12 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
           {/* Editor Panel */}
           <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[680px]">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-border pb-2 shrink-0">
+            <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
               <Code size={16} className="text-primary animate-pulse" /> الخطوة 3: التوثيق التقني
             </h3>
 
             {/* Tabs */}
-            <div className="flex gap-1.5 bg-[#0d0e12] border border-border p-1 rounded-xl shrink-0" dir="rtl">
+            <div className="flex gap-1.5 bg-muted dark:bg-[#0d0e12] border border-border p-1 rounded-xl shrink-0" dir="rtl">
               {[
                 { id: 'overview', label: '📄 نظرة عامة' },
                 { id: 'code', label: '💻 الكود' },
@@ -585,7 +585,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                   className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-bold transition-all text-center cursor-pointer ${
                     docTab === t.id
                       ? 'bg-primary text-black shadow-md'
-                      : 'text-muted-foreground hover:text-white hover:bg-card/10'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-card/10'
                   }`}>
                   {t.label}
                 </button>
@@ -597,19 +597,19 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               {docTab === 'overview' && (
                 <textarea value={secOverview} onChange={(e) => setSecOverview(e.target.value)}
                   placeholder="اكتب هنا نظرة عامة عن المشروع وهدفه الأساسي..."
-                  className="flex-1 w-full bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors"
+                  className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors"
                   dir="rtl" />
               )}
               {docTab === 'code' && (
                 <textarea value={secCode} onChange={(e) => setSecCode(e.target.value)}
                   placeholder="// اكتب كود Arduino / ESP32 هنا"
-                  className="flex-1 w-full bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-left leading-relaxed transition-colors"
+                  className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-left leading-relaxed transition-colors"
                   dir="ltr" />
               )}
               {docTab === 'challenges' && (
                 <textarea value={secChallenges} onChange={(e) => setSecChallenges(e.target.value)}
                   placeholder="اكتب الصعوبات والتحديات التي واجهتها والحلول التي وجدتها..."
-                  className="flex-1 w-full bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors"
+                  className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors"
                   dir="rtl" />
               )}
             </div>
@@ -617,7 +617,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
           {/* Live Preview Panel */}
           <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[680px] overflow-hidden">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-border pb-2 shrink-0">
+            <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
               <Eye size={16} className="text-primary" /> معاينة حية للمستند
             </h3>
             <div className="flex-1 overflow-y-auto scrollbar-thin pr-1">
@@ -630,14 +630,14 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
       {/* ─── STEP 4: Wiring Diagram ───────────────────────── */}
       {step === 4 && (
         <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-6 backdrop-blur-xl">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-border pb-2">
+          <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border pb-2">
             <Zap size={18} className="text-primary" /> الخطوة 4: التوصيل الكهربائي النهائي
           </h3>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Upload Zone */}
             <div className="space-y-4">
-              <label className="block text-sm font-bold text-white text-right">صورة مخطط التوصيل (Wiring Diagram)</label>
+              <label className="block text-sm font-bold text-foreground text-right">صورة مخطط التوصيل (Wiring Diagram)</label>
 
               <input type="file" ref={wiringFileRef} accept="image/*" className="hidden" onChange={handleWiringUpload} />
 
@@ -665,7 +665,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                   ) : (
                     <>
                       <ImagePlus className="w-12 h-12 text-muted-foreground group-hover:text-primary transition-colors mb-3" />
-                      <span className="text-sm font-bold text-slate-300">اسحب صورة مخطط التوصيل أو اضغط للتصفح</span>
+                      <span className="text-sm font-bold text-foreground/90">اسحب صورة مخطط التوصيل أو اضغط للتصفح</span>
                       <span className="text-[11px] text-muted-foreground mt-1">يدعم Fritzing diagrams أو صور التوصيل الفعلية</span>
                     </>
                   )}
@@ -675,11 +675,11 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
             {/* Wiring Description */}
             <div className="space-y-3">
-              <label className="block text-sm font-bold text-white text-right">شرح التوصيل (اختياري)</label>
+              <label className="block text-sm font-bold text-foreground text-right">شرح التوصيل (اختياري)</label>
               <textarea rows={8}
                 placeholder="اشرح هنا طريقة التوصيل خطوة بخطوة:&#10;&#10;1. وصّل VCC الحساس بـ 3.3V على لوحة ESP32&#10;2. وصّل GND بـ GND&#10;3. وصّل منفذ البيانات (DATA) بـ GPIO25..."
                 value={wiringDescription} onChange={(e) => setWiringDescription(e.target.value)} dir="rtl"
-                className="w-full bg-[#030406] border border-border rounded-2xl p-4 text-sm font-mono text-slate-300 focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors h-full" />
+                className="w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-sm font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors h-full" />
             </div>
           </div>
 
@@ -689,12 +689,12 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               <p className="text-xs text-muted-foreground text-right mb-3">ملخص الأجهزة المُدخلة ({componentsList.filter(c => c.name).length} قطعة):</p>
               <div className="flex flex-wrap gap-3">
                 {componentsList.filter(c => c.name).map((c) => (
-                  <div key={c.id} className="flex items-center gap-2 bg-[#0d0e12] border border-border rounded-xl px-3 py-2">
+                  <div key={c.id} className="flex items-center gap-2 bg-card dark:bg-[#0d0e12] border border-border rounded-xl px-3 py-2">
                     {c.imageUrl && (
                       <img src={c.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover border border-border" />
                     )}
                     {!c.imageUrl && <Cpu size={14} className="text-primary" />}
-                    <span className="text-xs font-semibold text-white">{c.name}</span>
+                    <span className="text-xs font-semibold text-foreground">{c.name}</span>
                   </div>
                 ))}
               </div>
@@ -727,7 +727,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
         <div>
           {step > 1 && (
             <button type="button" onClick={() => { setError(''); setStep(step - 1); }}
-              className="bg-card/5 text-slate-300 border border-border px-6 py-2.5 rounded-xl hover:bg-card/10 transition-colors flex items-center gap-2 cursor-pointer">
+              className="bg-card/5 text-foreground border border-border px-6 py-2.5 rounded-xl hover:bg-card/10 transition-colors flex items-center gap-2 cursor-pointer">
               <ArrowLeft size={16} /> الخطوة السابقة
             </button>
           )}

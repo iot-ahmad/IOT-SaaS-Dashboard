@@ -3,28 +3,42 @@ import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen } from 'l
 import { TOOLS } from '../data/mockData';
 import { useLocation } from 'react-router-dom';
 
-export default function Header({ activeWorkspace, activeTool, isConnected, toggleMobileMenu, customWorkspaces, isSidebarCollapsed, onToggleSidebar }) {
-  const [isDark, setIsDark] = useState(true);
-  const location = useLocation();
+export default function Header({ 
+  activeWorkspace, 
+  activeTool, 
+  isConnected, 
+  toggleMobileMenu, 
+  customWorkspaces, 
+  isSidebarCollapsed, 
+  onToggleSidebar,
+  isDark: propIsDark,
+  onToggleTheme
+}) {
+  const [localIsDark, setLocalIsDark] = useState(true);
+  const isDark = propIsDark !== undefined ? propIsDark : localIsDark;
 
   useEffect(() => {
-    const isDarkTheme = document.documentElement.classList.contains('dark') || 
-                        localStorage.theme === 'dark' || 
-                        (!('theme' in localStorage) && true);
-    setIsDark(isDarkTheme);
+    const isDarkTheme = localStorage.theme ? localStorage.theme === 'dark' : true;
+    if (propIsDark === undefined) {
+      setLocalIsDark(isDarkTheme);
+    }
     if (isDarkTheme) document.documentElement.classList.add('dark');
     else document.documentElement.classList.remove('dark');
-  }, []);
+  }, [propIsDark]);
 
   const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
+    if (onToggleTheme) {
+      onToggleTheme();
     } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
+      const newTheme = !localIsDark;
+      setLocalIsDark(newTheme);
+      if (newTheme) {
+        document.documentElement.classList.add('dark');
+        localStorage.theme = 'dark';
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.theme = 'light';
+      }
     }
   };
 

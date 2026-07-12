@@ -741,8 +741,7 @@ function GaugeWidget({ widget, value, history = [] }) {
     ? Math.min(100, Math.max(0, (num / widget.maxVal) * 100))
     : 0;
   // Vibrantly colored neon theme colors
-  const color = pct > 80 ? '#ff4b5c' : pct > 60 ? '#ffb300' : '#00e5ff';
-  const glowColor = pct > 80 ? 'rgba(255, 75, 92, 0.4)' : pct > 60 ? 'rgba(255, 179, 0, 0.4)' : 'rgba(0, 229, 255, 0.4)';
+  const color = pct > 80 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#0066cc';
 
   const chartData = history.map((y, i) => ({ i, v: y }));
 
@@ -774,11 +773,10 @@ function GaugeWidget({ widget, value, history = [] }) {
                   strokeDasharray="301.6" 
                   strokeDashoffset={301.6 - (301.6 * pct) / 100}
                   strokeLinecap="round"
-                  style={{ filter: `drop-shadow(0 0 5px ${color})` }}
                 />
               </svg>
               <div className="absolute flex flex-col items-center">
-                <div className="text-2xl font-black tracking-tight" style={{ color, textShadow: `0 0 10px ${glowColor}` }}>
+                <div className="text-2xl font-black tracking-tight" style={{ color }}>
                   {num.toFixed(1)}
                 </div>
                 <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">{widget.unit || ''}</span>
@@ -840,7 +838,7 @@ function SwitchWidget({ widget, value, publish }) {
       <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
         {/* Pulsing indicator light */}
         <div className="absolute top-0 right-2 flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full ${isOn ? 'bg-amber-400' : 'bg-slate-400'}`} style={{ boxShadow: isOn ? '0 0 10px #f59e0b, 0 0 20px #f59e0b' : 'none' }} />
+          <span className={`h-2 w-2 rounded-full ${isOn ? 'bg-amber-400' : 'bg-slate-400'}`} />
           <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-amber-500' : 'text-muted-foreground/60'}`}>
             {isOn ? 'ACTIVE' : 'IDLE'}
           </span>
@@ -850,13 +848,13 @@ function SwitchWidget({ widget, value, publish }) {
         <div
           className={`w-18 h-18 rounded-3xl flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
             isOn
-              ? 'bg-amber-500/10 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)] scale-95'
+              ? 'bg-amber-500/10 border-amber-400 scale-95'
               : 'bg-background dark:bg-card/5 border-border hover:border-slate-400 dark:hover:border-white/30'
           }`}
           onClick={toggle}
           title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
         >
-          <Zap size={32} className={isOn ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'text-muted-foreground/60'} />
+          <Zap size={32} className={isOn ? 'text-amber-400' : 'text-muted-foreground/60'} />
         </div>
       </div>
     </div>
@@ -875,7 +873,7 @@ function SliderWidget({ widget, publish }) {
   };
 
   const color = widget.type === 'speed' ? '#f59e0b' : '#ffb300';
-  const glowColor = widget.type === 'speed' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(255, 179, 0, 0.4)';
+
   const label = widget.type === 'speed' ? 'Speed' : 'Angle';
   const Icon = widget.type === 'speed' ? Car : SlidersHorizontal;
   const accentClass = widget.type === 'speed' ? 'text-amber-400 animate-pulse' : 'text-amber-500';
@@ -894,7 +892,7 @@ function SliderWidget({ widget, publish }) {
 
       <div className="flex-1 flex flex-col justify-center gap-4 px-1">
         <div className="flex justify-between items-baseline">
-          <span className="text-3xl font-black font-mono tracking-tight" style={{ color, textShadow: `0 0 10px ${glowColor}` }}>{val}</span>
+          <span className="text-3xl font-black font-mono tracking-tight" style={{ color }}>{val}</span>
           <span className="text-[10px] font-bold text-muted-foreground dark:text-white/30 uppercase tracking-widest">{label} / {max}</span>
         </div>
         
@@ -938,8 +936,7 @@ function RelayWidget({ widget, value, publish }) {
   }[widget.type] || { icon: Power,    label: 'Relay',       colorClass: 'text-violet-400', accentHex: '#8b5cf6', rgbStr: '139,92,246' };
 
   const IconComponent = config.icon;
-  const shadowStyle = isOn ? `0 0 10px ${config.accentHex}, 0 0 20px ${config.accentHex}` : 'none';
-  const glowShadowClass = isOn ? `shadow-[0_0_24px_rgba(${config.rgbStr},0.35)]` : '';
+
 
   return (
     <div className="flex flex-col h-full gap-2 text-left">
@@ -955,7 +952,7 @@ function RelayWidget({ widget, value, publish }) {
       <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
         <div className="absolute top-0 right-2 flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full transition-all bg-current"
-            style={{ color: isOn ? config.accentHex : '#475569', boxShadow: shadowStyle }} />
+            style={{ color: isOn ? config.accentHex : '#475569' }} />
           <span className={`text-[9px] font-extrabold uppercase ${isOn ? config.colorClass : 'text-muted-foreground/60'}`}>
             {isOn ? 'ACTIVE' : 'IDLE'}
           </span>
@@ -963,13 +960,13 @@ function RelayWidget({ widget, value, publish }) {
         <div
           className={`w-16 h-16 rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
             isOn
-              ? `bg-muted/15 border-current ${glowShadowClass} scale-95`
+              ? 'bg-muted/15 border-current scale-95'
               : 'bg-background dark:bg-card/5 border-border hover:border-current/40'
           }`}
           style={{ color: isOn ? config.accentHex : undefined }}
           onClick={toggle}
         >
-          <IconComponent size={28} className={isOn ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]' : 'text-muted-foreground/50'} />
+          <IconComponent size={28} className={isOn ? '' : 'text-muted-foreground/50'} />
         </div>
         <span className={`text-[10px] font-bold px-3 py-0.5 rounded-full border ${
           isOn ? 'bg-muted/10 border-current/30 text-current' : 'bg-muted border-border text-muted-foreground/50'
@@ -1001,7 +998,7 @@ function DimmerWidget({ widget, publish }) {
   }[widget.type] || { icon: Lightbulb, label: 'Level', colorClass: 'text-yellow-400', accentHex: '#f59e0b' };
 
   const IconComponent = config.icon;
-  const shadowStyle = pct > 0 ? `0 0 12px ${config.accentHex}80` : 'none';
+
 
   return (
     <div className="flex flex-col h-full gap-2 text-left">
@@ -1029,7 +1026,7 @@ function DimmerWidget({ widget, publish }) {
           </div>
         </div>
         <div className="flex justify-between items-baseline">
-          <span className={`text-3xl font-black font-mono tracking-tight ${config.colorClass}`} style={{ textShadow: shadowStyle }}>
+          <span className={`text-3xl font-black font-mono tracking-tight ${config.colorClass}`}>
             {pct}%
           </span>
           <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{config.label}</span>
@@ -1268,7 +1265,7 @@ function ServoWidget({ widget, publish }) {
           </svg>
         </div>
         <div className="flex justify-between items-baseline">
-          <span className="text-2xl font-black font-mono text-emerald-400" style={{ textShadow: '0 0 10px rgba(52,211,153,0.4)' }}>{angle}°</span>
+          <span className="text-2xl font-black font-mono text-emerald-400">{angle}°</span>
           <span className="text-[10px] text-muted-foreground">0° — 180°</span>
         </div>
         <input type="range" min="0" max="180" value={angle} onChange={handleChange}
@@ -1550,8 +1547,8 @@ function DoorLockWidget({ widget, value, publish }) {
           onClick={toggle}
           className={`w-16 h-16 rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
             isLocked
-              ? 'bg-red-500/10 border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
-              : 'bg-green-500/10 border-green-400 shadow-[0_0_20px_rgba(34,197,94,0.3)]'
+              ? 'bg-red-500/10 border-red-400'
+              : 'bg-green-500/10 border-green-400'
           }`}
         >
           <Lock size={28} className={isLocked ? 'text-red-400' : 'text-green-400'} />
@@ -1603,7 +1600,7 @@ function BuzzerWidget({ widget, publish }) {
             onClick={trigger}
             className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-150 border-2 select-none active:scale-90 ${
               active
-                ? 'bg-red-500/30 border-red-400 shadow-[0_0_30px_rgba(239,68,68,0.6)] scale-95'
+                ? 'bg-red-500/30 border-red-400 scale-95'
                 : 'bg-background dark:bg-card/5 border-border hover:border-red-400/50 hover:bg-red-500/5'
             }`}
           >
@@ -1717,10 +1714,10 @@ function PumpWidget({ widget, value, publish }) {
       <div className="flex-1 flex flex-col items-center justify-center gap-3">
         <div onClick={toggle} className={`w-16 h-16 rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
           isOn
-            ? 'bg-blue-500/15 border-blue-400 shadow-[0_0_24px_rgba(59,130,246,0.4)] scale-95'
+            ? 'bg-blue-500/15 border-blue-400 scale-95'
             : 'bg-background dark:bg-card/5 border-border hover:border-blue-400/40'
         }`}>
-          <Droplets size={28} className={isOn ? 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'text-muted-foreground/50'} />
+          <Droplets size={28} className={isOn ? 'text-blue-400' : 'text-muted-foreground/50'} />
         </div>
         <span className={`text-xs font-black px-3 py-1 rounded-full border ${
           isOn ? 'bg-blue-500/10 border-blue-400/30 text-blue-400' : 'bg-muted border-border text-muted-foreground'
@@ -1761,7 +1758,7 @@ function ValveWidget({ widget, value, publish }) {
         <button onClick={toggle}
           className={`px-4 py-1.5 rounded-xl text-xs font-black border-2 transition-all active:scale-95 ${
             isOpen
-              ? 'bg-green-500/15 border-green-400 text-green-400 shadow-[0_0_16px_rgba(34,197,94,0.3)]'
+              ? 'bg-green-500/15 border-green-400 text-green-400'
               : 'bg-red-500/10 border-red-400 text-red-400'
           }`}>
           {isOpen ? '✅ مفتوح — إغلاق' : '❌ مغلق — فتح'}
@@ -1851,7 +1848,7 @@ function IrrigationWidget({ widget, value, publish }) {
           <button
             onClick={() => { setPumpOn(v => !v); publish(widget.topic, pumpOn ? 'OFF' : 'ON'); }}
             className={`w-full py-2 rounded-xl text-xs font-black border-2 transition-all active:scale-95 ${
-              pumpOn ? 'bg-blue-500/15 border-blue-400 text-blue-400 shadow-[0_0_16px_rgba(59,130,246,0.3)]' : 'bg-muted border-border text-muted-foreground'
+              pumpOn ? 'bg-blue-500/15 border-blue-400 text-blue-400' : 'bg-muted border-border text-muted-foreground'
             }`}>
             {pumpOn ? '💧 إيقاف الري' : '💧 تشغيل الري'}
           </button>
@@ -1894,8 +1891,8 @@ function OLEDWidget({ widget, publish }) {
       </div>
       <div className="flex-1 flex flex-col justify-center gap-3">
         {/* OLED preview */}
-        <div className="bg-black rounded-xl border border-green-400/30 p-3 min-h-[52px] flex items-center justify-center" style={{ boxShadow: '0 0 12px rgba(74,222,128,0.1)' }}>
-          <p className="font-mono text-green-400 text-sm text-center break-all" style={{ textShadow: '0 0 6px rgba(74,222,128,0.6)' }}>
+        <div className="bg-black rounded-xl border border-green-400/30 p-3 min-h-[52px] flex items-center justify-center">
+          <p className="font-mono text-green-400 text-sm text-center break-all">
             {sent || <span className="opacity-30">OLED Display...</span>}
           </p>
         </div>
@@ -1952,7 +1949,7 @@ function NumericInputWidget({ widget, publish }) {
       </div>
       <div className="flex-1 flex flex-col justify-center gap-3 px-1">
         <div className="text-center">
-          <span className="text-4xl font-black font-mono text-sky-400" style={{ textShadow: '0 0 12px rgba(56,189,248,0.3)' }}>{val}</span>
+          <span className="text-4xl font-black font-mono text-sky-400">{val}</span>
           <span className="text-[10px] text-muted-foreground ml-1">{widget.unit || ''}</span>
         </div>
         <div className="flex gap-2">
@@ -2054,7 +2051,7 @@ function MomentaryWidget({ widget, publish }) {
           onClick={trigger}
           className={`relative w-20 h-20 rounded-full border-4 flex items-center justify-center transition-all duration-150 select-none active:scale-90 font-black text-sm ${
             pressed
-              ? 'bg-sky-500/30 border-sky-400 shadow-[0_0_30px_rgba(56,189,248,0.6),inset_0_2px_0_rgba(255,255,255,0.1)] scale-95 text-sky-300'
+              ? 'bg-sky-500/30 border-sky-400 scale-95 text-sky-300'
               : 'bg-background dark:bg-card/10 border-border hover:border-sky-400/50 hover:bg-sky-500/5 text-foreground'
           }`}
         >
@@ -2072,7 +2069,7 @@ const DP_BTN_BASE =
   'flex items-center justify-center w-12 h-12 rounded-2xl border-2 transition-all duration-150 cursor-pointer select-none active:scale-95';
 const DP_BTN_IDLE = 'bg-background dark:bg-card/5 border-border text-foreground/90/50 hover:bg-amber-400/10 dark:hover:bg-amber-400/10 hover:border-amber-400/40 dark:hover:border-amber-400/40 hover:text-amber-500 dark:hover:text-amber-400';
 const DP_BTN_GLOW =
-  'bg-amber-400 border-amber-300 text-black shadow-[0_0_20px_rgba(251,191,36,0.7)] ring-1 ring-amber-300/60';
+  'bg-amber-400 border-amber-300 text-black ring-1 ring-amber-300/60';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
@@ -2134,7 +2131,7 @@ function DPadWidget({ widget, publish }) {
           <button
             type="button"
             onClick={sendStop}
-            className={`${DP_BTN_BASE} ${active === 'STOP' ? 'bg-red-600 border-red-400 text-white shadow-[0_0_20px_rgba(239,68,68,0.6)]' : DP_BTN_IDLE}`}
+            className={`${DP_BTN_BASE} ${active === 'STOP' ? 'bg-red-600 border-red-400 text-white' : DP_BTN_IDLE}`}
             title="Send STOP"
           >
             <span className="text-[9px] font-black tracking-tighter">STOP</span>
@@ -2254,7 +2251,7 @@ function JoystickWidget({ widget, publish }) {
           <div
             className={`absolute w-12 h-12 rounded-full border-2 transition-all duration-75 flex items-center justify-center shadow-md ${
               knobLit
-                ? 'bg-amber-400/40 border-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.7)] scale-95'
+                ? 'bg-amber-400/40 border-amber-300 scale-95'
                 : 'bg-card/10 dark:bg-card/5 border-border dark:border-white/20'
             }`}
             style={{
@@ -2335,10 +2332,10 @@ function RobotArmWidget({ widget, publish }) {
             {/* Forearm */}
             <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#f59e0b" strokeWidth="3" strokeLinecap="round"/>
             {/* Joints */}
-            <circle cx={x0} cy={y0} r="5" fill="#06b6d4" filter="url(#glow)"/>
+            <circle cx={x0} cy={y0} r="5" fill="#06b6d4"/>
             <circle cx={x1} cy={y1} r="4" fill="#8b5cf6"/>
             <circle cx={x2} cy={y2} r="3" fill="#f59e0b"/>
-            <defs><filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+
           </svg>
         </div>
         {/* Joint sliders */}
@@ -2513,7 +2510,7 @@ function OmniDriveWidget({ widget, publish }) {
           <div className="absolute inset-[18%] rounded-full border border-dashed border-cyan-400/15 pointer-events-none" />
           <div
             className={`absolute w-11 h-11 rounded-full border-2 transition-all duration-75 flex items-center justify-center ${
-              knobLit ? 'bg-cyan-400/40 border-cyan-300 shadow-[0_0_16px_rgba(34,211,238,0.7)] scale-95' : 'bg-card/10 border-border'
+              knobLit ? 'bg-cyan-400/40 border-cyan-300 scale-95' : 'bg-card/10 border-border'
             }`}
             style={{ left: `calc(50% + ${knob.x}px)`, top: `calc(50% + ${knob.y}px)`, transform: 'translate(-50%,-50%)' }}
           >
@@ -2528,7 +2525,7 @@ function OmniDriveWidget({ widget, publish }) {
         <div className="flex flex-col gap-2">
           <button onClick={() => setRotateCmd(1)}
             className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center text-xs font-black transition-all active:scale-90 ${
-              rotate > 0 ? 'bg-cyan-400/20 border-cyan-400 text-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.4)]' : 'bg-muted border-border text-muted-foreground hover:border-cyan-400/40'
+              rotate > 0 ? 'bg-cyan-400/20 border-cyan-400 text-cyan-400' : 'bg-muted border-border text-muted-foreground hover:border-cyan-400/40'
             }`}>
             ↻
           </button>
@@ -2538,7 +2535,7 @@ function OmniDriveWidget({ widget, publish }) {
           </button>
           <button onClick={() => setRotateCmd(-1)}
             className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center text-xs font-black transition-all active:scale-90 ${
-              rotate < 0 ? 'bg-cyan-400/20 border-cyan-400 text-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.4)]' : 'bg-muted border-border text-muted-foreground hover:border-cyan-400/40'
+              rotate < 0 ? 'bg-cyan-400/20 border-cyan-400 text-cyan-400' : 'bg-muted border-border text-muted-foreground hover:border-cyan-400/40'
             }`}>
             ↺
           </button>
@@ -2882,7 +2879,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
 
       {widgets.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Gamepad2 size={48} className="text-slate-300 dark:text-white/10 mb-4" />
+          <Gamepad2 size={48} className="text-muted-foreground dark:text-white/10 mb-4" />
           <p className="text-muted-foreground dark:text-white/30 text-lg font-medium">No tools yet</p>
           <p className="text-muted-foreground/60 text-sm mt-1">Use Add Tool to place sensors, actuators, or RC controls</p>
         </div>

@@ -480,7 +480,7 @@ export default function ProfilePage({ user, userUID, logout }) {
           {activeTab === 'account' && (
             <>
               {/* Device UID */}
-              <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-amber-500/5 to-transparent p-6 shadow-[0_0_40px_rgba(245,158,11,0.12)]">
+              <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-amber-500/5 to-transparent p-6">
                 <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
                 <div className="flex items-center gap-2 mb-1">
                   <Cpu size={16} className="text-primary" />

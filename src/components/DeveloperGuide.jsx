@@ -321,7 +321,7 @@ export default function DeveloperGuide({ userUID }) {
       {/* ── Chat Header ────────────────────────────────────────────── */}
       <div className="bg-card bg-background border-b border-border px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
         <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.2)] shrink-0 overflow-hidden">
+          <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
             <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain p-0.5" />
           </div>
           <div className="text-left">

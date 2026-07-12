@@ -38,7 +38,7 @@ export default function ESP32Model() {
 
           {/* Antenna Trace Area (Gold/Copper) */}
           <div className="absolute top-[15px] left-1/2 -translate-x-1/2 w-32 h-10 flex flex-col gap-1 items-center justify-center">
-             <div className="w-full h-[3px] bg-amber-500/60 shadow-[0_0_2px_rgba(245,158,11,0.5)]" />
+             <div className="w-full h-[3px] bg-amber-500/60" />
              <div className="w-[85%] h-[3px] bg-amber-500/60 self-start" />
              <div className="w-full h-[3px] bg-amber-500/60" />
              <div className="w-[85%] h-[3px] bg-amber-500/60 self-end" />
@@ -86,14 +86,13 @@ export default function ESP32Model() {
 
           {/* Status LEDs (Small glowing points) */}
           <div className="absolute bottom-[100px] left-1/2 -translate-x-1/2 flex gap-4">
-             <div className="w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_8px_red] opacity-80" />
-             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_blue] opacity-80" />
+             <div className="w-1.5 h-1.5 bg-red-500 rounded-full opacity-80" />
+             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full opacity-80" />
           </div>
 
         </div>
 
-        {/* Huge glowing aura to make it "pop" */}
-        <div className="absolute inset-0 bg-blue-500/10 blur-[180px] -z-10 rounded-full translate-y-32" />
+
       </motion.div>
     </div>
   );

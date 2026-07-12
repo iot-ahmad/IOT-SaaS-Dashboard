@@ -1,115 +1,109 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 @custom-variant dark (&:is(.dark *));
 
-/* ── Design Tokens: Light Mode (60/30/10 Rule) ── */
+/* ── Design Tokens: Light Mode (Apple Design Guidelines) ── */
 :root {
-  /* ── 60%: Light blue-white page canvas ── */
-  --background: #f0f4ff;
-  --foreground: #06091a;
+  --background: #f0f4f8; /* canvas (soft off-white with blue-gray tint, not pure/bright white) */
+  --foreground: #000000; /* ink (black) */
 
-  /* ── 30%: Light surfaces, borders, fills ── */
-  --card: #ffffff;
-  --card-foreground: #06091a;
-  --sidebar: #f8faff;
-  --sidebar-foreground: #1e2a4a;
-  --sidebar-border: #dde3f5;
-  --border: #dde3f5;
-  --input: #eef1fb;
-  --muted: #eef1fb;
-  --muted-foreground: #5b6a99;
-  --secondary: #eef1fb;
-  --secondary-foreground: #1e2a4a;
-  --popover: #ffffff;
-  --popover-foreground: #06091a;
+  --card: #f8fafc; /* canvas card (off-white) */
+  --card-foreground: #000000; /* ink (black) */
+  --sidebar: #eef2f6; /* surface-pearl */
+  --sidebar-foreground: #000000; /* ink-muted-80 (black) */
+  --sidebar-border: #000000; /* divider-soft (black) */
+  --border: #000000; /* hairline (black) */
+  --input: #f8fafc;
+  --muted: #e2e8f0; /* canvas-parchment */
+  --muted-foreground: #000000; /* ink-muted-48 (black) */
+  --secondary: #eef2f6; /* surface-pearl */
+  --secondary-foreground: #000000;
+  --popover: #f8fafc;
+  --popover-foreground: #000000;
 
-  /* ── 10%: Electric Blue accent ── */
-  --primary: #1a6dff;
+  /* Accent: Action Blue */
+  --primary: #0066cc; /* Action Blue */
   --primary-foreground: #ffffff;
-  --ring: #1a6dff;
-  --accent: #dde8ff;
-  --accent-foreground: #1a4fc4;
-  --sidebar-accent: #dde8ff;
-  --sidebar-accent-foreground: #1a4fc4;
-  --sidebar-primary: #1a6dff;
+  --ring: #0071e3; /* primary-focus */
+  --accent: #f5f5f7; /* canvas-parchment */
+  --accent-foreground: #0066cc;
+  
+  --sidebar-accent: #f5f5f7;
+  --sidebar-accent-foreground: #0066cc;
+  --sidebar-primary: #0066cc;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #1a6dff;
+  --sidebar-ring: #0071e3;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --chart-1: #1a6dff;
-  --chart-2: #4d8eff;
-  --chart-3: #0047cc;
-  --chart-4: #6b9eff;
-  --chart-5: #002fa3;
+  --chart-1: #0066cc;
+  --chart-2: #2997ff;
+  --chart-3: #5b6a99;
+  --chart-4: #a1a1a6;
+  --chart-5: #1d1d1f;
 
-  --radius: 0.5rem;
+  --radius: 18px; /* {rounded.lg} */
   --spacing: 0.25rem;
   --font-mono: "JetBrains Mono", monospace;
-  --font-sans: "Oxanium", sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   --font-serif: Source Serif 4, serif;
 
-  --shadow-blur: 8px;
-  --shadow-color: hsl(220 80% 10%);
-  --shadow-spread: -1px;
-  --letter-spacing: 0em;
-  --shadow-opacity: 0.08;
+  --shadow-blur: 0px;
+  --shadow-color: rgba(0, 0, 0, 0);
+  --shadow-spread: 0px;
+  --letter-spacing: -0.011em; /* SF Pro style tight tracking */
+  --shadow-opacity: 0;
   --shadow-offset-x: 0px;
-  --shadow-offset-y: 4px;
+  --shadow-offset-y: 0px;
+
+  /* Signature drop-shadow under product imagery */
+  --product-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
 }
 
-/* ── Design Tokens: Dark Mode (60/30/10 Rule) ── */
-/* 🎨 Inspired by: pure black canvas + electric blue accent */
+/* ── Design Tokens: Dark Mode (Apple Design Guidelines) ── */
 .dark {
-  /* ── 60%: True black — main page canvas ── */
-  --background: #000000;
-  --foreground: #f0f4ff;
+  --background: #000000; /* surface-black */
+  --foreground: #ffffff; /* body-on-dark */
 
-  /* ── 30%: Pure black surfaces (cards, sidebar, inputs, borders) ── */
-  --card: #0a0a0a;
-  --card-foreground: #f0f4ff;
-  --sidebar: #060606;
-  --sidebar-foreground: #b8c8f0;
-  --sidebar-border: #1a1a1a;
-  --border: #1a1a1a;
-  --input: #0f0f0f;
-  --muted: #0f0f0f;
-  --muted-foreground: #7b90c4;
-  --secondary: #0f0f0f;
-  --secondary-foreground: #b8c8f0;
-  --popover: #0a0a0a;
-  --popover-foreground: #f0f4ff;
+  --card: #272729; /* surface-tile-1 */
+  --card-foreground: #ffffff;
+  --sidebar: #252527; /* surface-tile-3 */
+  --sidebar-foreground: #cccccc; /* body-muted */
+  --sidebar-border: #2a2a2c; /* surface-tile-2 */
+  --border: #333333; /* hairline on dark */
+  --input: #252527;
+  --muted: #2a2a2c; /* surface-tile-2 */
+  --muted-foreground: #7a7a7a;
+  --secondary: #2a2a2c;
+  --secondary-foreground: #ffffff;
+  --popover: #272729;
+  --popover-foreground: #ffffff;
 
-  /* ── 10%: Electric Blue — the hero accent color ── */
-  --primary: #1a6dff;
+  /* Accent: Sky Link Blue for dark tiles */
+  --primary: #2997ff; /* Sky Link Blue */
   --primary-foreground: #ffffff;
-  --ring: #1a6dff;
-  --accent: #0f1e45;
-  --accent-foreground: #6aabff;
-  --sidebar-accent: #111828;
-  --sidebar-accent-foreground: #1a6dff;
-  --sidebar-primary: #1a6dff;
+  --ring: #0071e3;
+  --accent: #2a2a2c;
+  --accent-foreground: #2997ff;
+  --sidebar-accent: #2a2a2c;
+  --sidebar-accent-foreground: #2997ff;
+  --sidebar-primary: #2997ff;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #1a6dff;
+  --sidebar-ring: #0071e3;
 
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-
-  --chart-1: #1a6dff;
-  --chart-2: #4d8eff;
-  --chart-3: #0047cc;
-  --chart-4: #6b9eff;
-  --chart-5: #002fa3;
+  --chart-1: #2997ff;
+  --chart-2: #0066cc;
+  --chart-3: #7a7a7a;
+  --chart-4: #333333;
+  --chart-5: #ffffff;
 }
 
 /* ── @theme inline: expose all CSS vars to Tailwind 4 utilities ── */
 @theme inline {
-  /* ── 60% Dominant ── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* ── 30% Secondary ── */
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-sidebar: var(--sidebar);
@@ -124,7 +118,6 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
-  /* ── 10% Accent ── */
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-ring: var(--ring);
@@ -138,21 +131,18 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
-  /* ── Charts ── */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* ── Typography & Spacing ── */
   --color-radius: var(--radius);
   --color-spacing: var(--spacing);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 
-  /* ── Shadows ── */
   --color-shadow-blur: var(--shadow-blur);
   --color-shadow-color: var(--shadow-color);
   --color-shadow-spread: var(--shadow-spread);
@@ -205,20 +195,9 @@
 
 @layer utilities {
 
-  /* ── D-Pad button glow pulse — uses --primary (amber) ── */
+  /* D-Pad button — no glow, clean active state */
   .dpad-glow {
-    animation: dpadPulse 0.6s ease-in-out infinite alternate;
-  }
-
-  @keyframes dpadPulse {
-    from {
-      box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 60%, transparent);
-    }
-
-    to {
-      box-shadow: 0 0 28px color-mix(in srgb, var(--primary) 95%, transparent),
-        0 0 60px color-mix(in srgb, var(--primary) 40%, transparent);
-    }
+    /* glow removed */
   }
 
   /* Modal fade-in */
