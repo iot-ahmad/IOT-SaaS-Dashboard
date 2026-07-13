@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ArrowLeft, Loader2, LayoutDashboard, Cpu, Zap, BellRing } from 'lucide-react';
 import { WaveBackground } from './ui/WaveBackground';
+import SupportModal from './SupportModal';
 
 /* ─── White-toned Google G icon ─────────────────────────────────────── */
 const GoogleIcon = () => (
@@ -19,6 +20,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const handleGoogleLogin = async () => {
     setError(null);
@@ -91,7 +93,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
         <div dir="rtl" className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-white/40">
           <a href="#features" onClick={handleNavToFeatures} className="hover:text-white transition-colors">المميزات</a>
           <a href="#docs" className="hover:text-white transition-colors">التوثيق</a>
-          <a href="#support" className="hover:text-white transition-colors">الدعم الفني</a>
+          <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0 text-[11px] font-bold tracking-widest uppercase">الدعم الفني</button>
         </div>
 
         {/* Right: Toggle Button */}
@@ -293,6 +295,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
           BASED ON MQTT & ESP32 · SECURE PORTAL
         </div>
       </footer>
+      <SupportModal isOpen={showSupport} onClose={() => setShowSupport(false)} />
     </div>
   );
 }

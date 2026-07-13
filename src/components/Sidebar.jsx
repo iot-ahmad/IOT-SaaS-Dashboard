@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Globe } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Globe, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
+import SupportModal from './SupportModal';
 
 const iconMap = {
   Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard, Globe
@@ -28,6 +29,7 @@ export default function Sidebar({
 }) {
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEsp32, setNewEsp32] = useState('');
   const [renamingId, setRenamingId] = useState(null);
@@ -242,6 +244,18 @@ export default function Sidebar({
 
           <Button
             type="button"
+            onClick={() => setShowSupport(true)}
+            variant="ghost"
+            neon={false}
+            className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
+            title={isCollapsed ? 'الدعم الفني' : ''}
+          >
+            <HelpCircle size={16} />
+            {!isCollapsed && <span>الدعم الفني</span>}
+          </Button>
+
+          <Button
+            type="button"
             onClick={logout}
             variant="ghost"
             neon={false}
@@ -293,6 +307,7 @@ export default function Sidebar({
           </div>
         </div>
       )}
+      <SupportModal isOpen={showSupport} onClose={() => setShowSupport(false)} />
     </aside>
   );
 }

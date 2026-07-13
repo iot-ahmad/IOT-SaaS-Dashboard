@@ -23,6 +23,7 @@ import ProjectPublisher from './components/ProjectPublisher';
 import ProjectDetail from './components/ProjectDetail';
 import UserProfile from './components/UserProfile';
 import ProfilePage from './components/ProfilePage';
+import SupportModal from './components/SupportModal';
 
 /**
  * Standalone layout wrapper for the public Hub section.
@@ -36,6 +37,7 @@ function HubLayout({ children, user, logout }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -230,9 +232,11 @@ function HubLayout({ children, user, logout }) {
             ) : (
               <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">انضم للمجتمع 🚀</button>
             )}
+            <button onClick={() => setShowSupport(true)} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">الدعم الفني</button>
           </div>
         </div>
       </footer>
+      <SupportModal isOpen={showSupport} onClose={() => setShowSupport(false)} />
     </div>
   );
 }
