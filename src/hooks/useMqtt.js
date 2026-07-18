@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import mqtt from 'mqtt';
 
-// NOTE: ESP32 uses port 1883 (TCP), but browsers MUST use port 8884 (WSS)
-const BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt';
+// NOTE: ESP32 uses port 1883 (TCP), but browsers MUST use WSS.
+// For a private broker, set VITE_MQTT_BROKER_URL in your .env file.
+// Example for a private broker: wss://your-broker.example.com:8884/mqtt
+const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL || 'wss://broker.hivemq.com:8884/mqtt';
 
 export function useMqtt(userUID = 'ahmad2004') {
   const [isConnected, setIsConnected] = useState(false);

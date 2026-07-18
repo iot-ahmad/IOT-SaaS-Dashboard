@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Users collection: public reading but owner-only writing
+    match /users/{userId} {
+      // Anyone can read profile details (displayName, username, etc.) to view profiles
+      // or look up usernames. Private emails are removed from this document in codebase.
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+
+      // User's private settings (workspaces, preferences, alerts, devices, etc.) are restricted to the owner only.
+      match /settings/{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // 2. Projects collection: public reading for public projects, owner-only write
+    match /projects/{projectId} {
+      allow read: if resource == null 
+                  || resource.data.visibility == 'public' 
+                  || (request.auth != null && request.auth.uid == resource.data.ownerId);
+      
+      allow create: if request.auth != null && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.ownerId == request.auth.uid;
+    }
+  }
+}

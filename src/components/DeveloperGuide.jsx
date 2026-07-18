@@ -171,17 +171,6 @@ export default function DeveloperGuide({ userUID }) {
     if (!textToSend) setInputVal('');
     setIsTyping(true);
 
-    const groqKey  = import.meta.env.VITE_GROQ_API_KEY;
-
-    // If no valid key → use static fallback responses
-    if (!groqKey || groqKey.startsWith('your_')) {
-      setTimeout(() => {
-        setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: getBotResponse(query, userUID) }]);
-        setIsTyping(false);
-      }, 600);
-      return;
-    }
-
     const systemPrompt = `أنت مساعد ذكي متخصص لمنصة IOT365. مهمتك مساعدة الطلاب والمطورين في مشاريع إنترنت الأشياء والـ ESP32 وبرمجة Arduino C++ وبروتوكول MQTT.
 معلومات المنصة:
 - مطور ومصمم منصة IOT365 بالكامل هو: المطور أحمد البطاينة (Ahmad Al-Batayneh) 💻✨.
@@ -189,59 +178,34 @@ export default function DeveloperGuide({ userUID }) {
 - MQTT Broker: broker.hivemq.com — المنفذ: 1883
 - بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
 خبرتك تشمل أيضاً:
-- تشخيص العتاد الفيزيائي (Hardware Diagnostics) وتحليل أعطال الأجهزة مثل المضخات والحساسات والبطاريات والدوائر الكهربائية.
+- تشخيص العتاد الفيزيائي (Hardware Diagnostics) وتحليل أعطال الأجهزة مثل المضخات والحساسات والدوائر الكهربائية.
 - اقتراح سيناريوهات أتمتة ذكية وحلول هندسية عملية لمشاكل ESP32.
 قواعد الإجابة:
 - أجب دائماً باللغة العربية.
 - عند كتابة أكواد ESP32/C++ اكتب كوداً نظيفاً ومتكاملاً وخالياً من الأخطاء.
 - اجعل إجاباتك دقيقة وعملية ومركّزة.`;
 
-    const tryApi = async (url, key, modelName, bodyOverride = {}) => {
+    try {
       const contextMessages = updatedMessages.slice(-10).map(m => ({
         role: m.sender === 'user' ? 'user' : 'assistant',
         content: m.text
       }));
-      const res = await fetch(url, {
+
+      const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: modelName,
-          messages: [{ role: 'system', content: systemPrompt }, ...contextMessages],
-          temperature: 0.7,
-          max_tokens: 2048,
-          ...bodyOverride
+          messages: [{ role: 'system', content: systemPrompt }, ...contextMessages]
         })
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      return data.choices[0].message.content;
-    };
 
-    try {
-      // Primary: Groq (supports browser CORS natively)
-      const botText = await tryApi(
-        'https://api.groq.com/openai/v1/chat/completions',
-        groqKey,
-        'llama-3.3-70b-versatile'
-      );
-      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botText }]);
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: data.content }]);
     } catch (err) {
-      console.warn('Groq failed, trying NVIDIA API:', err);
-      // Secondary fallback: NVIDIA API
-      const nvidiaKey = import.meta.env.VITE_NVIDIA_API_KEY;
-      if (nvidiaKey && !nvidiaKey.startsWith('your_')) {
-        try {
-          const botText = await tryApi(
-            'https://integrate.api.nvidia.com/v1/chat/completions',
-            nvidiaKey,
-            'nvidia/llama-3.1-nemotron-51b-instruct'
-          );
-          setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botText }]);
-          return;
-        } catch (nvidiaErr) {
-          console.warn('NVIDIA API also failed, using static fallback:', nvidiaErr);
-        }
-      }
+      console.warn('AI proxy failed, using static fallback:', err);
       // Last resort: static keyword-based response
       setMessages(prev => [...prev, {
         id: Date.now() + 1,

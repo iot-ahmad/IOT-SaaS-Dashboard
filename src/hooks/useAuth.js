@@ -113,7 +113,6 @@ export function useAuth() {
       await updateProfile(userCredential.user, { displayName });
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         displayName,
-        email,
         plan: 'Free',
         createdAt: new Date().toISOString(),
       });
@@ -139,7 +138,6 @@ export function useAuth() {
         doc(db, 'users', gUser.uid),
         {
           displayName: gUser.displayName || 'User',
-          email: gUser.email,
           photoURL: gUser.photoURL || null,
           plan: 'Free',
           createdAt: new Date().toISOString(),
