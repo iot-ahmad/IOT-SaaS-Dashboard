@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen, Globe } from 'lucide-react';
 import { TOOLS } from '../data/mockData';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Header({ 
   activeWorkspace, 
@@ -14,6 +14,8 @@ export default function Header({
   isDark: propIsDark,
   onToggleTheme
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [localIsDark, setLocalIsDark] = useState(true);
   const isDark = propIsDark !== undefined ? propIsDark : localIsDark;
 
@@ -103,11 +105,22 @@ export default function Header({
       <div className="flex items-center gap-2 sm:gap-3">
 
 
+        {/* Projects Community Button */}
+        <button
+          onClick={() => navigate('/hub')}
+          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
+          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-primary transition-colors cursor-pointer"
+          title="مجتمع المشاريع"
+        >
+          <Globe size={18} />
+          <span className="hidden sm:inline">مجتمع المشاريع</span>
+        </button>
+
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
           style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
-          className="p-2 hover:text-primary transition-colors"
+          className="p-2 hover:text-primary transition-colors cursor-pointer"
           title="Toggle Theme"
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}

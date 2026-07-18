@@ -496,9 +496,8 @@ function Dashboard({ user, logout }) {
   // Dynamically inject the Jordan Community workspace under the Home workspace
   const displayWorkspaces = (() => {
     const homeItem = customWorkspaces.find(ws => ws.id === 'home') || { id: 'home', name: 'Home', icon: 'Home' };
-    const hubItem = { id: 'hub', name: 'مجتمع المشاريع', icon: 'Globe' };
     const others = customWorkspaces.filter(ws => ws.id !== 'home' && ws.id !== 'hub');
-    return [homeItem, hubItem, ...others];
+    return [homeItem, ...others];
   })();
 
   // Use Firebase UID as the MQTT topic prefix - unique per user

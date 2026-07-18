@@ -4,7 +4,7 @@ import mqtt from 'mqtt';
 // NOTE: ESP32 uses port 1883 (TCP), but browsers MUST use port 8884 (WSS)
 const BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt';
 
-export function useMqtt(userUID = 'demo_user_001') {
+export function useMqtt(userUID = 'ahmad2004') {
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [deviceStates, setDeviceStates] = useState({});
