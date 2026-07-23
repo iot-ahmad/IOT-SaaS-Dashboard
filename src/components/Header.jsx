@@ -62,9 +62,14 @@ export default function Header({
     title = 'Developer Profile';
     subtitle = 'Developer vanity portfolio and published IoT projects';
   } else if (activeTool) {
-    const tool = TOOLS.find(t => t.id === activeTool);
-    title = tool ? tool.name : 'Tools';
-    subtitle = `Manage your ${title.toLowerCase()}`;
+    if (activeTool === 'simulator') {
+      title = 'المحاكي السريع & الداشبورد (Wokwi)';
+      subtitle = 'تجزئة الشاشة في نفس الصفحة بين محاكي الدوائر التفاعلي ولوحة التحكم والأجهزة الحية';
+    } else {
+      const tool = TOOLS.find(t => t.id === activeTool);
+      title = tool ? tool.name : 'Tools';
+      subtitle = `Manage your ${title.toLowerCase()}`;
+    }
   } else if (activeWorkspace) {
     // Resolve custom workspace names from the passed list
     const ws = customWorkspaces?.find(w => w.id === activeWorkspace);

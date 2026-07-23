@@ -8,7 +8,7 @@ export default {
     extend: {
       colors: {
         background: '#0F1115',
-        primary: '#3b82f6',
+        primary: '#9ca3af', // رمادي بدل الأزرق (#3b82f6)
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

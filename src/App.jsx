@@ -9,6 +9,7 @@ import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, LiveTerminal } from './components/ToolViews';
 import NewDevicesView from './components/DevicesView';
 import DeveloperGuide from './components/DeveloperGuide';
+import SimulatorView from './components/SimulatorView';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
 import { Loader2, Sun, Moon } from 'lucide-react';
@@ -603,7 +604,8 @@ function Dashboard({ user, logout }) {
   const renderContent = () => {
     if (activeTool) {
       switch (activeTool) {
-        case 'devices':    return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
+        case 'simulator':   return <SimulatorView deviceStates={deviceStates} publish={publish} messages={messages} userUID={userUID} lastSeen={lastSeen} />;
+        case 'devices':     return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
         case 'alerts':     return <AlertsView userUID={userUID} />;
         case 'profile':    return <ProfilePage user={user} userUID={userUID} logout={logout} />;
@@ -708,8 +710,8 @@ function Dashboard({ user, logout }) {
           onToggleTheme={toggleTheme}
         />
         
-        <div className={`flex-1 ${activeTool === 'developer' ? 'flex flex-col px-6 md:px-8 pb-6 pt-4 min-h-0' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>
-          <div className={activeTool !== 'developer' ? 'max-w-7xl mx-auto space-y-6' : ''}>
+        <div className={`flex-1 ${activeTool === 'developer' || activeTool === 'simulator' ? 'flex flex-col px-4 md:px-6 pb-4 pt-3 min-h-0 h-full overflow-hidden' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>
+          <div className={activeTool !== 'developer' && activeTool !== 'simulator' ? 'max-w-7xl mx-auto space-y-6' : 'h-full flex flex-col'}>
             <Routes>
               <Route path="/" element={renderContent()} />
             </Routes>
