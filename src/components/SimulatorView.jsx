@@ -60,6 +60,15 @@ export default function SimulatorView({
 
   // Copy code snippet state
   const [copied, setCopied] = useState(false);
+  const [copiedUid, setCopiedUid] = useState(false);
+
+  const copyUid = () => {
+    if (userUID) {
+      navigator.clipboard.writeText(userUID);
+      setCopiedUid(true);
+      setTimeout(() => setCopiedUid(false), 2000);
+    }
+  };
 
   const handleApplyUrl = (e) => {
     e?.preventDefault();
@@ -132,8 +141,10 @@ void loop() {
     <div className="flex flex-col h-full min-h-0 w-full gap-3 overflow-hidden">
       
       {/* ── Control Header Toolbar ── */}
-      <div className="bg-card/70 backdrop-blur-md border border-border rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shrink-0 shadow-lg">
-        
+      <div className="bg-card/70 backdrop-blur-md border border-border rounded-2xl p-3 sm:p-4 flex flex-col gap-2 shrink-0 shadow-lg">
+        {/* Row 1: URL + reload controls */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
+
         {/* Left: Preset & URL input */}
         <form onSubmit={handleApplyUrl} className="flex flex-1 items-center gap-2 min-w-0">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold shrink-0">
@@ -183,9 +194,39 @@ void loop() {
             <RefreshCw size={14} />
           </button>
         </form>
+        </div> {/* /Row 1 */}
 
-        {/* Right: Layout Toggle Buttons */}
-        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 border-t md:border-t-0 pt-2 md:pt-0 border-border">
+
+        {/* UID Notice Banner — Row 2 */}
+        {userUID && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-blue-500/10 border border-blue-500/25 rounded-xl px-4 py-2.5 text-xs w-full">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shrink-0" />
+              <span className="font-bold text-blue-300">⚠ مهم:</span>
+              <span className="text-blue-200/80">لربط المحاكي بحسابك، غيّر الـ UID في كود Wokwi إلى:</span>
+            </div>
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <code className="flex-1 bg-blue-900/40 border border-blue-500/30 text-blue-200 font-mono text-[11px] px-3 py-1 rounded-lg truncate select-all cursor-text">
+                {userUID}
+              </code>
+              <button
+                onClick={copyUid}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-semibold text-[11px] shrink-0 transition-all ${
+                  copiedUid
+                    ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
+                    : 'bg-blue-500/20 border border-blue-500/40 text-blue-200 hover:bg-blue-500/30'
+                }`}
+              >
+                {copiedUid ? <Check size={12} /> : <Copy size={12} />}
+                {copiedUid ? 'تم النسخ!' : 'انسخ UID'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Row 3: Layout Toggle Buttons */}
+        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+
           
           {/* Mode Switcher */}
           <div className="flex items-center bg-muted/80 p-1 rounded-xl border border-border">
