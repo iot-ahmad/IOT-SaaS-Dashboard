@@ -305,11 +305,33 @@ void loop() {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>محاكي الدوائر Wokwi</span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-                  {activeWokwiUrl.includes('468717878078638081') ? 'ESP32 Default Project' : 'Custom Project'}
+                  {activeWokwiUrl.includes('468717878078638081') ? '🎮 مشروع تجريبي — Demo' : 'Custom Project'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-muted-foreground hidden sm:inline">اضغط Play داخل المحاكي لتشغيل الدائرة</span>
+                <a
+                  href={activeWokwiUrl.includes('http') ? activeWokwiUrl : `https://wokwi.com/projects/${activeWokwiUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] text-primary/80 hover:text-primary underline hidden sm:inline"
+                >
+                  فتح في Wokwi ↗
+                </a>
+              </div>
+            </div>
+
+            {/* ⚡ Play Hint Banner */}
+            <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-500/10 border-b border-amber-500/25 shrink-0">
+              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-amber-400/20 border border-amber-400/40 shrink-0 animate-pulse">
+                <Play size={13} className="text-amber-400 fill-amber-400 ml-0.5" />
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-amber-300 font-bold text-xs leading-snug">
+                  ▶ اضغط الزر الأخضر "Play" داخل المحاكي أولاً لتشغيل الدائرة
+                </p>
+                <p className="text-amber-400/70 text-[10px] leading-tight mt-0.5">
+                  بعد الضغط على Play ستبدأ البيانات تظهر تلقائياً في الداشبورد والأجهزة على اليمين
+                </p>
               </div>
             </div>
 
@@ -390,12 +412,39 @@ void loop() {
                 />
               )}
 
+              {/* Show hint banner at the top of controller panel if no data */}
+              {activePanel === 'controller' && Object.keys(deviceStates || {}).length === 0 && (
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 mb-3 -mt-1">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-400/20 border border-amber-400/30 shrink-0 animate-pulse">
+                    <Play size={14} className="text-amber-400 fill-amber-400 ml-0.5" />
+                  </span>
+                  <div>
+                    <p className="text-amber-300 font-bold text-xs">في انتظار بيانات المحاكي...</p>
+                    <p className="text-amber-400/70 text-[10px] mt-0.5">اضغط ▶ Play داخل المحاكي على اليسار — ستظهر القراءات الحية هنا فور التشغيل</p>
+                  </div>
+                </div>
+              )}
+
               {activePanel === 'devices' && (
-                <NewDevicesView 
-                  userUID={userUID} 
-                  lastSeen={lastSeen} 
-                  deviceStates={deviceStates} 
-                />
+                <div className="space-y-3">
+                  {/* Notice if no deviceStates received yet */}
+                  {Object.keys(deviceStates || {}).length === 0 && (
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-400/20 border border-amber-400/30 shrink-0 animate-pulse">
+                        <Play size={14} className="text-amber-400 fill-amber-400 ml-0.5" />
+                      </span>
+                      <div>
+                        <p className="text-amber-300 font-bold text-xs">في انتظار تشغيل المحاكي...</p>
+                        <p className="text-amber-400/70 text-[10px] mt-0.5">اضغط على الزر الأخضر ▶ داخل محاكي Wokwi على اليسار لترى البيانات هنا</p>
+                      </div>
+                    </div>
+                  )}
+                  <NewDevicesView
+                    userUID={userUID}
+                    lastSeen={lastSeen}
+                    deviceStates={deviceStates}
+                  />
+                </div>
               )}
 
               {activePanel === 'terminal' && (
