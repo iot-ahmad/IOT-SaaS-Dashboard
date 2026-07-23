@@ -8,6 +8,8 @@ import {
   sendEmailVerification,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -128,6 +130,31 @@ export function useAuth() {
     }
   };
 
+  useEffect(() => {
+    // Process redirect result if coming back from Google redirect login
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          const gUser = result.user;
+          setDoc(
+            doc(db, 'users', gUser.uid),
+            {
+              displayName: gUser.displayName || 'User',
+              photoURL: gUser.photoURL || null,
+              plan: 'Free',
+              createdAt: new Date().toISOString(),
+            },
+            { merge: true },
+          ).catch(() => {});
+        }
+      })
+      .catch((err) => {
+        if (err.code !== 'auth/popup-closed-by-user') {
+          setError(err.message.replace('Firebase: ', ''));
+        }
+      });
+  }, []);
+
   const loginWithGoogle = async () => {
     setError(null);
     try {
@@ -145,6 +172,18 @@ export function useAuth() {
         { merge: true },
       );
     } catch (err) {
+      // If popup fails, is blocked, or returns invalid action, fallback to redirect mode
+      if (
+        err.code === 'auth/popup-blocked' ||
+        err.code === 'auth/cancelled-popup-request' ||
+        err.code === 'auth/internal-error' ||
+        err.message?.includes('invalid') ||
+        err.message?.includes('action')
+      ) {
+        console.warn('Google Auth popup failed, falling back to redirect flow...', err);
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
       if (err.code !== 'auth/popup-closed-by-user') {
         setError(err.message.replace('Firebase: ', ''));
       }
