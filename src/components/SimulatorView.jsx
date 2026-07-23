@@ -129,7 +129,7 @@ void loop() {
   const embedUrl = getWokwiEmbedUrl(activeWokwiUrl);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] min-h-[600px] w-full gap-3 overflow-hidden">
+    <div className="flex flex-col h-full min-h-0 w-full gap-3 overflow-hidden">
       
       {/* ── Control Header Toolbar ── */}
       <div className="bg-card/70 backdrop-blur-md border border-border rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shrink-0 shadow-lg">

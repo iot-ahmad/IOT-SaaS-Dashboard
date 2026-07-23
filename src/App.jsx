@@ -718,7 +718,9 @@ function Dashboard({ user, logout }) {
           </div>
         </div>
 
-        <LiveTerminal messages={messages} isConnected={isConnected} />
+        {activeTool !== 'simulator' && (
+          <LiveTerminal messages={messages} isConnected={isConnected} />
+        )}
       </main>
     </div>
   );
