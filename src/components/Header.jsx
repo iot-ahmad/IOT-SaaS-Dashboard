@@ -78,8 +78,12 @@ export default function Header({
     else if (ws?.isCustom) subtitle = 'Drag, resize, and control sensors, actuators, or an RC car. Layout saved to your account automatically.';
   }
 
+  const isSimulator = activeTool === 'simulator';
+
   return (
-    <header className="flex items-center justify-between py-4 px-6 md:px-8 border-b border-border bg-card/50 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
+    <header className={`flex items-center justify-between border-b border-border bg-card/50 bg-background/50 backdrop-blur-sm sticky top-0 z-10 transition-all ${
+      isSimulator ? 'py-2 px-4 md:px-6' : 'py-4 px-6 md:px-8'
+    }`}>
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
         <button
@@ -102,8 +106,12 @@ export default function Header({
         </button>
 
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">{title}</h1>
-          <p className="text-xs md:text-sm mt-0.5 text-zinc-500 dark:text-zinc-400">{subtitle}</p>
+          <h1 className={`${isSimulator ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'} font-bold text-foreground tracking-tight leading-tight`}>
+            {title}
+          </h1>
+          {!isSimulator && (
+            <p className="text-xs md:text-sm mt-0.5 text-zinc-500 dark:text-zinc-400">{subtitle}</p>
+          )}
         </div>
       </div>
 

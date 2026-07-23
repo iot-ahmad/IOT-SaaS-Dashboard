@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Columns, LayoutGrid, Cpu, ExternalLink, RefreshCw, 
   Terminal, Gamepad2, Settings, HelpCircle, Code, Copy, Check, 
-  Maximize2, Minimize2, Rows, PanelRightClose, PanelLeftClose, Play, Shield
+  Maximize2, Minimize2, Rows, PanelRightClose, PanelLeftClose, Play, Shield, ChevronUp, ChevronDown, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 import UniversalController from './UniversalController';
@@ -45,6 +45,7 @@ export default function SimulatorView({
   lastSeen, 
   initialWokwiUrl = 'https://wokwi.com/projects/468717878078638081' 
 }) {
+  const containerRef = useRef(null);
   const [wokwiUrlInput, setWokwiUrlInput] = useState(initialWokwiUrl);
   const [activeWokwiUrl, setActiveWokwiUrl] = useState(initialWokwiUrl);
   const [iframeKey, setIframeKey] = useState(0);
@@ -58,9 +59,44 @@ export default function SimulatorView({
   // Right panel view: 'controller' | 'devices' | 'terminal' | 'guide'
   const [activePanel, setActivePanel] = useState('controller');
 
+  // Full Screen & UI compact states
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showUidBanner, setShowUidBanner] = useState(false);
+  const [showPlayHint, setShowPlayHint] = useState(true);
+
   // Copy code snippet state
   const [copied, setCopied] = useState(false);
   const [copiedUid, setCopiedUid] = useState(false);
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullScreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
+  const toggleFullScreen = async () => {
+    if (!isFullScreen) {
+      try {
+        if (containerRef.current?.requestFullscreen) {
+          await containerRef.current.requestFullscreen();
+        }
+      } catch (err) {
+        console.warn('Native fullscreen request failed, using CSS full screen:', err);
+      }
+      setIsFullScreen(true);
+    } else {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        }
+      } catch (err) {
+        console.warn('Native exit fullscreen failed:', err);
+      }
+      setIsFullScreen(false);
+    }
+  };
 
   const copyUid = () => {
     if (userUID) {
@@ -138,192 +174,230 @@ void loop() {
   const embedUrl = getWokwiEmbedUrl(activeWokwiUrl);
 
   return (
-    <div className="flex flex-col h-full min-h-0 w-full gap-3 overflow-hidden">
+    <div 
+      ref={containerRef}
+      className={`flex flex-col w-full overflow-hidden transition-all duration-300 ${
+        isFullScreen 
+          ? 'fixed inset-0 z-[9999] bg-slate-950 p-2 h-screen w-screen' 
+          : 'h-full min-h-0 gap-2'
+      }`}
+    >
       
-      {/* ── Control Header Toolbar ── */}
-      <div className="bg-card/70 backdrop-blur-md border border-border rounded-2xl p-3 sm:p-4 flex flex-col gap-2 shrink-0 shadow-lg">
-        {/* Row 1: URL + reload controls */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
+      {/* ── Compact Control Header Toolbar ── */}
+      <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl p-2 sm:p-2.5 flex flex-col gap-2 shrink-0 shadow-md">
+        
+        {/* Main Toolbar Line */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
 
-        {/* Left: Preset & URL input */}
-        <form onSubmit={handleApplyUrl} className="flex flex-1 items-center gap-2 min-w-0">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold shrink-0">
-            <Cpu size={16} />
-            <span className="hidden sm:inline">مشروع المحاكي:</span>
-          </div>
+          {/* URL Form & Actions */}
+          <form onSubmit={handleApplyUrl} className="flex flex-1 items-center gap-1.5 min-w-[260px]">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-bold shrink-0">
+              <Cpu size={14} />
+              <span className="hidden sm:inline">رابط المحاكي:</span>
+            </div>
 
-          <input 
-            type="text"
-            value={wokwiUrlInput}
-            onChange={(e) => setWokwiUrlInput(e.target.value)}
-            placeholder="أدخل رابط Wokwi أو Project ID..."
-            className="flex-1 bg-muted/60 border border-border focus:border-primary/50 text-xs sm:text-sm rounded-xl px-3 py-1.5 outline-none font-mono text-foreground truncate min-w-[150px]"
-          />
+            <input 
+              type="text"
+              value={wokwiUrlInput}
+              onChange={(e) => setWokwiUrlInput(e.target.value)}
+              placeholder="أدخل رابط Wokwi أو Project ID..."
+              className="flex-1 bg-muted/70 border border-border focus:border-primary/50 text-xs rounded-lg px-2.5 py-1 outline-none font-mono text-foreground truncate min-w-[110px]"
+            />
 
-          <Button type="submit" size="sm" className="shrink-0 text-xs px-3 py-1.5 h-auto">
-            تحديث
-          </Button>
+            <Button type="submit" size="sm" className="shrink-0 text-xs px-2.5 py-1 h-auto font-semibold">
+              تحديث
+            </Button>
 
-          {activeWokwiUrl !== 'https://wokwi.com/projects/468717878078638081' && (
+            {activeWokwiUrl !== 'https://wokwi.com/projects/468717878078638081' && (
+              <button
+                type="button"
+                onClick={handleResetDefault}
+                className="text-[11px] text-muted-foreground hover:text-primary underline px-1 shrink-0"
+                title="إعادة للمشروع الافتراضي"
+              >
+                الافتراضي
+              </button>
+            )}
+
+            <a 
+              href={activeWokwiUrl.includes('http') ? activeWokwiUrl : `https://wokwi.com/projects/${activeWokwiUrl}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-primary transition-colors shrink-0"
+              title="فتح في Wokwi بتبويب جديد"
+            >
+              <ExternalLink size={13} />
+            </a>
+
             <button
               type="button"
-              onClick={handleResetDefault}
-              className="text-[11px] text-muted-foreground hover:text-primary underline px-1 shrink-0"
-              title="إعادة للمشروع الافتراضي"
+              onClick={handleReloadIframe}
+              className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-primary transition-colors shrink-0"
+              title="إعادة تحميل المحاكي"
             >
-              الافتراضي
+              <RefreshCw size={13} />
             </button>
-          )}
+          </form>
 
-          <a 
-            href={activeWokwiUrl.includes('http') ? activeWokwiUrl : `https://wokwi.com/projects/${activeWokwiUrl}`} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="p-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-primary transition-colors shrink-0"
-            title="فتح في Wokwi بتبويب جديد"
-          >
-            <ExternalLink size={14} />
-          </a>
+          {/* Controls & Full Screen Button */}
+          <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
 
-          <button
-            type="button"
-            onClick={handleReloadIframe}
-            className="p-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-primary transition-colors shrink-0"
-            title="إعادة تحميل المحاكي"
-          >
-            <RefreshCw size={14} />
-          </button>
-        </form>
-        </div> {/* /Row 1 */}
+            {/* View Mode Switcher */}
+            <div className="flex items-center bg-muted/80 p-0.5 rounded-lg border border-border">
+              <button
+                onClick={() => setViewMode('split')}
+                className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === 'split' 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="تجزئة الشاشة"
+              >
+                <Columns size={13} />
+                <span className="hidden md:inline">تجزئة</span>
+              </button>
 
+              <button
+                onClick={() => setViewMode('circuit')}
+                className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === 'circuit' 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="المحاكي فقط"
+              >
+                <Cpu size={13} />
+                <span className="hidden sm:inline">المحاكي</span>
+              </button>
 
-        {/* UID Notice Banner — Row 2 */}
-        {userUID && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-blue-500/10 border border-blue-500/25 rounded-xl px-4 py-2.5 text-xs w-full">
-            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setViewMode('dashboard')}
+                className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === 'dashboard' 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="اللوحة فقط"
+              >
+                <Gamepad2 size={13} />
+                <span className="hidden sm:inline">اللوحة</span>
+              </button>
+            </div>
+
+            {/* Orientation switch if split */}
+            {viewMode === 'split' && (
+              <button
+                onClick={() => setOrientation(o => o === 'vertical' ? 'horizontal' : 'vertical')}
+                className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-primary transition-colors"
+                title={orientation === 'vertical' ? 'تبديل للتقسيم الأفقي' : 'تبديل للتقسيم العمودي'}
+              >
+                {orientation === 'vertical' ? <Rows size={14} /> : <Columns size={14} />}
+              </button>
+            )}
+
+            {/* Right Panel Switcher */}
+            {viewMode !== 'circuit' && (
+              <div className="flex items-center bg-muted/80 p-0.5 rounded-lg border border-border">
+                <button
+                  onClick={() => setActivePanel('controller')}
+                  className={`p-1 rounded-md transition-all ${
+                    activePanel === 'controller' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                  title="لوحة التحكم"
+                >
+                  <Gamepad2 size={14} />
+                </button>
+                <button
+                  onClick={() => setActivePanel('devices')}
+                  className={`p-1 rounded-md transition-all ${
+                    activePanel === 'devices' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                  title="الأجهزة"
+                >
+                  <Cpu size={14} />
+                </button>
+                <button
+                  onClick={() => setActivePanel('terminal')}
+                  className={`p-1 rounded-md transition-all ${
+                    activePanel === 'terminal' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                  title="سجل الإشارات (Terminal)"
+                >
+                  <Terminal size={14} />
+                </button>
+                <button
+                  onClick={() => setActivePanel('guide')}
+                  className={`p-1 rounded-md transition-all ${
+                    activePanel === 'guide' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                  title="كود Wokwi MQTT"
+                >
+                  <Code size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* Full Screen Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleFullScreen}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-xs transition-all shrink-0 border ${
+                isFullScreen
+                  ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 hover:bg-amber-500/30 shadow-sm'
+                  : 'bg-primary text-primary-foreground border-primary hover:opacity-90 shadow-md'
+              }`}
+              title={isFullScreen ? 'الخروج من ملء الشاشة' : 'توسيع الشاشة بالكامل (Full Screen)'}
+            >
+              {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              <span>{isFullScreen ? 'خروج' : 'ملء الشاشة ⛶'}</span>
+            </button>
+
+            {/* UID Info Toggle */}
+            {userUID && (
+              <button
+                type="button"
+                onClick={() => setShowUidBanner(v => !v)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs font-medium transition-colors ${
+                  showUidBanner 
+                    ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' 
+                    : 'bg-muted border-border text-muted-foreground hover:text-foreground'
+                }`}
+                title="إظهار/إخفاء UID الحساب"
+              >
+                <span>UID</span>
+                {showUidBanner ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              </button>
+            )}
+
+          </div>
+        </div>
+
+        {/* UID Notice Banner — Collapsible to save space */}
+        {userUID && showUidBanner && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-blue-500/10 border border-blue-500/25 rounded-lg px-3 py-1.5 text-xs w-full">
+            <div className="flex items-center gap-1.5 shrink-0">
               <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shrink-0" />
-              <span className="font-bold text-blue-300">⚠ مهم:</span>
-              <span className="text-blue-200/80">لربط المحاكي بحسابك، غيّر الـ UID في كود Wokwi إلى:</span>
+              <span className="font-bold text-blue-300">UID الحساب:</span>
             </div>
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <code className="flex-1 bg-blue-900/40 border border-blue-500/30 text-blue-200 font-mono text-[11px] px-3 py-1 rounded-lg truncate select-all cursor-text">
+              <code className="flex-1 bg-blue-900/40 border border-blue-500/30 text-blue-200 font-mono text-[11px] px-2 py-0.5 rounded truncate select-all">
                 {userUID}
               </code>
               <button
                 onClick={copyUid}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-semibold text-[11px] shrink-0 transition-all ${
+                className={`flex items-center gap-1 px-2 py-0.5 rounded font-semibold text-[11px] shrink-0 transition-all ${
                   copiedUid
                     ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
                     : 'bg-blue-500/20 border border-blue-500/40 text-blue-200 hover:bg-blue-500/30'
                 }`}
               >
-                {copiedUid ? <Check size={12} /> : <Copy size={12} />}
-                {copiedUid ? 'تم النسخ!' : 'انسخ UID'}
+                {copiedUid ? <Check size={11} /> : <Copy size={11} />}
+                {copiedUid ? 'تم النسخ' : 'نسخ'}
               </button>
             </div>
           </div>
         )}
 
-        {/* Row 3: Layout Toggle Buttons */}
-        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
-
-          
-          {/* Mode Switcher */}
-          <div className="flex items-center bg-muted/80 p-1 rounded-xl border border-border">
-            <button
-              onClick={() => setViewMode('split')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === 'split' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title="تجزئة الشاشة"
-            >
-              <Columns size={14} />
-              <span>تجزئة الشاشة</span>
-            </button>
-
-            <button
-              onClick={() => setViewMode('circuit')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === 'circuit' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title="المحاكي فقط"
-            >
-              <Cpu size={14} />
-              <span className="hidden sm:inline">المحاكي</span>
-            </button>
-
-            <button
-              onClick={() => setViewMode('dashboard')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                viewMode === 'dashboard' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title="اللوحة فقط"
-            >
-              <Gamepad2 size={14} />
-              <span className="hidden sm:inline">اللوحة</span>
-            </button>
-          </div>
-
-          {/* Orientation switch if split */}
-          {viewMode === 'split' && (
-            <button
-              onClick={() => setOrientation(o => o === 'vertical' ? 'horizontal' : 'vertical')}
-              className="p-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-primary transition-colors"
-              title={orientation === 'vertical' ? 'تبديل للتقسيم الأفقي' : 'تبديل للتقسيم العمودي'}
-            >
-              {orientation === 'vertical' ? <Rows size={15} /> : <Columns size={15} />}
-            </button>
-          )}
-
-          {/* Right Panel View Switcher (when split or dashboard view) */}
-          {viewMode !== 'circuit' && (
-            <div className="flex items-center bg-muted/80 p-1 rounded-xl border border-border">
-              <button
-                onClick={() => setActivePanel('controller')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  activePanel === 'controller' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="لوحة التحكم"
-              >
-                <Gamepad2 size={15} />
-              </button>
-              <button
-                onClick={() => setActivePanel('devices')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  activePanel === 'devices' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="الأجهزة"
-              >
-                <Cpu size={15} />
-              </button>
-              <button
-                onClick={() => setActivePanel('terminal')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  activePanel === 'terminal' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="سجل الإشارات (Terminal)"
-              >
-                <Terminal size={15} />
-              </button>
-              <button
-                onClick={() => setActivePanel('guide')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  activePanel === 'guide' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="كود Wokwi MQTT"
-              >
-                <Code size={15} />
-              </button>
-            </div>
-          )}
-
-        </div>
       </div>
 
       {/* ── Main Split View Container ── */}
@@ -331,21 +405,21 @@ void loop() {
         viewMode === 'split' 
           ? (orientation === 'vertical' ? 'flex-col lg:flex-row' : 'flex-col') 
           : 'flex-col'
-      } gap-3 relative overflow-hidden`}>
+      } gap-2 relative overflow-hidden`}>
         
         {/* Pane 1: Wokwi Circuit Simulator */}
         {(viewMode === 'split' || viewMode === 'circuit') && (
-          <div className={`relative flex flex-col bg-card/80 backdrop-blur-md border border-border rounded-2xl overflow-hidden shadow-xl ${
+          <div className={`relative flex flex-col bg-card/90 backdrop-blur-md border border-border rounded-xl overflow-hidden shadow-xl ${
             viewMode === 'circuit' 
               ? 'w-full h-full' 
               : (orientation === 'vertical' ? 'w-full lg:w-1/2 h-1/2 lg:h-full' : 'w-full h-1/2')
           }`}>
             {/* Header info badge inside pane */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/40 text-xs shrink-0">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/40 text-xs shrink-0">
               <div className="flex items-center gap-2 text-foreground font-semibold">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>محاكي الدوائر Wokwi</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
                   {activeWokwiUrl.includes('468717878078638081') ? '🎮 مشروع تجريبي — Demo' : 'Custom Project'}
                 </span>
               </div>
@@ -361,20 +435,26 @@ void loop() {
               </div>
             </div>
 
-            {/* ⚡ Play Hint Banner */}
-            <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-500/10 border-b border-amber-500/25 shrink-0">
-              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-amber-400/20 border border-amber-400/40 shrink-0 animate-pulse">
-                <Play size={13} className="text-amber-400 fill-amber-400 ml-0.5" />
-              </span>
-              <div className="flex-1 min-w-0">
-                <p className="text-amber-300 font-bold text-xs leading-snug">
-                  ▶ اضغط الزر الأخضر "Play" داخل المحاكي أولاً لتشغيل الدائرة
-                </p>
-                <p className="text-amber-400/70 text-[10px] leading-tight mt-0.5">
-                  بعد الضغط على Play ستبدأ البيانات تظهر تلقائياً في الداشبورد والأجهزة على اليمين
-                </p>
+            {/* ⚡ Play Hint Banner (Dismissible) */}
+            {showPlayHint && (
+              <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-amber-500/10 border-b border-amber-500/25 shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-amber-400/20 border border-amber-400/40 shrink-0 animate-pulse">
+                    <Play size={11} className="text-amber-400 fill-amber-400 ml-0.5" />
+                  </span>
+                  <p className="text-amber-300 font-bold text-xs truncate">
+                    ▶ اضغط "Play" الأخضر داخل المحاكي لبدء البث المباشر
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setShowPlayHint(false)}
+                  className="text-amber-400/60 hover:text-amber-300 p-0.5 shrink-0"
+                  title="إغلاق التنبيه"
+                >
+                  <X size={13} />
+                </button>
               </div>
-            </div>
+            )}
 
             {/* Embed iframe */}
             <div className="flex-1 w-full h-full bg-black/90 relative">

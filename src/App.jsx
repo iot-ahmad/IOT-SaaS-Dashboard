@@ -710,7 +710,7 @@ function Dashboard({ user, logout }) {
           onToggleTheme={toggleTheme}
         />
         
-        <div className={`flex-1 ${activeTool === 'developer' || activeTool === 'simulator' ? 'flex flex-col px-4 md:px-6 pb-4 pt-3 min-h-0 h-full overflow-hidden' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>
+        <div className={`flex-1 ${activeTool === 'developer' || activeTool === 'simulator' ? 'flex flex-col px-2 md:px-3 pb-2 pt-2 min-h-0 h-full overflow-hidden' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>
           <div className={activeTool !== 'developer' && activeTool !== 'simulator' ? 'max-w-7xl mx-auto space-y-6' : 'h-full flex flex-col'}>
             <Routes>
               <Route path="/" element={renderContent()} />
