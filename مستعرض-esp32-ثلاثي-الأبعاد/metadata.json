@@ -1,6 +1,0 @@
-{
-  "name": "مستعرض ESP32 ثلاثي الأبعاد",
-  "description": "تطبيق تفاعلي لعرض متحكم ESP32 بشكل ثلاثي الأبعاد مع معلومات عن الأطراف والمواصفات.",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
-}

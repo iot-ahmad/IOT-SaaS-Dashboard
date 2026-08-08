@@ -63,7 +63,7 @@ export default function Header({
     subtitle = 'Developer vanity portfolio and published IoT projects';
   } else if (activeTool) {
     if (activeTool === 'simulator') {
-      title = 'المحاكي السريع & الداشبورد (Wokwi)';
+      title = 'المحاكي السريع & الداشبورد ';
       subtitle = 'تجزئة الشاشة في نفس الصفحة بين محاكي الدوائر التفاعلي ولوحة التحكم والأجهزة الحية';
     } else {
       const tool = TOOLS.find(t => t.id === activeTool);

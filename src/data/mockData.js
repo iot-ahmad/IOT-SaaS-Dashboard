@@ -5,7 +5,7 @@ export const WORKSPACES = [
 ];
 
 export const TOOLS = [
-  { id: 'simulator', name: 'المحاكي (Wokwi)', icon: 'Columns' },
+  { id: 'simulator', name: '(Wokwi)', icon: 'Columns' },
   { id: 'devices', name: 'Devices', icon: 'Cpu' },
   { id: 'automations', name: 'Automations', icon: 'Zap' },
   { id: 'alerts', name: 'Alerts', icon: 'Bell' },

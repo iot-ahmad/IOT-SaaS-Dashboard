@@ -571,7 +571,7 @@ void loop() {
               {activePanel === 'terminal' && (
                 <div className="h-full flex flex-col gap-2">
                   <div className="p-3 bg-muted/40 border border-border rounded-xl text-xs text-muted-foreground">
-                    ⚡ تعرض هذه الشاشة جميع الإشارات المتبادلة بين لوحة التحكم ومحاكي Wokwi في الوقت الفعلي عبر بروتوكول MQTT.
+                    ⚡ تعرض هذه الشاشة جميع الإشارات المتبادلة بين لوحة التحكم ومحاكي  في الوقت الفعلي عبر بروتوكول MQTT.
                   </div>
                   <div className="flex-1 min-h-[300px]">
                     <LiveTerminal messages={messages} isConnected={true} />

@@ -195,10 +195,6 @@
 
 @layer utilities {
 
-  /* D-Pad button — no glow, clean active state */
-  .dpad-glow {
-    /* glow removed */
-  }
 
   /* Modal fade-in */
   .animate-fadeIn {
