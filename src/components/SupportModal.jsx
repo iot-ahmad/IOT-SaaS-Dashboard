@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, LifeBuoy } from 'lucide-react';
+import { X, ExternalLink, LifeBuoy, Users } from 'lucide-react';
 
 const InstagramIcon = ({ size = 20, className = '' }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -104,6 +104,25 @@ export default function SupportModal({ isOpen, onClose }) {
                   </div>
                 </div>
                 <ExternalLink size={16} className="text-muted-foreground group-hover:text-blue-400 group-hover:translate-x-[-2px] transition-all" />
+              </a>
+
+              {/* Team Website Link */}
+              <a
+                href="https://team-iot365.netlify.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 hover:from-emerald-500/10 hover:to-cyan-500/10 border border-emerald-500/15 hover:border-emerald-500/30 transition-all duration-300 group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/10">
+                    <Users size={20} />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-foreground group-hover:text-emerald-400 transition-colors">فريق العمل (Our Team)</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">team-iot365.netlify.app</p>
+                  </div>
+                </div>
+                <ExternalLink size={16} className="text-muted-foreground group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-all" />
               </a>
             </div>
 
