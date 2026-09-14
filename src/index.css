@@ -25,7 +25,7 @@
   /* Primary: Muted Corporate Slate Blue */
   --primary: #0666b9;
   --primary-foreground: #ffffff;
-  --ring: #0c5596;
+  --ring: #0666b9;
   --accent: #f3f4f6;
   --accent-foreground: #0666b9;
   
@@ -42,10 +42,10 @@
   --status-off: #b85c5c;
 
   --chart-1: #0666b9;
-  --chart-2: #416486;
-  --chart-3: #829ab1;
-  --chart-4: #9fb3c8;
-  --chart-5: #bcccdc;
+  --chart-2: #0666b9;
+  --chart-3: #0666b9;
+  --chart-4: #0666b9;
+  --chart-5: #0666b9;
 
   --radius: 12px;
   --spacing: 0.25rem;
@@ -95,10 +95,10 @@
   --status-off: #b85c5c;
 
   --chart-1: #0666b9;
-  --chart-2: #416486;
-  --chart-3: #829ab1;
-  --chart-4: #9ca3af;
-  --chart-5: #e8e9eb;
+  --chart-2: #0666b9;
+  --chart-3: #0666b9;
+  --chart-4: #0666b9;
+  --chart-5: #0666b9;
 }
 
 /* ── @theme inline: expose all CSS vars to Tailwind 4 utilities ── */
