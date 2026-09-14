@@ -465,7 +465,7 @@ export default function SimulatorView({
                   onClick={() => setShowProjectsModal(true)}
                   className="text-[11px] text-primary hover:underline font-bold"
                 >
-                  عرض الكود والتوصيل ⚡
+                  عرض الكود والتوصيل
                 </button>
                 <a
                   href={activeWokwiUrl.includes('http') ? activeWokwiUrl : `https://wokwi.com/projects/${activeWokwiUrl}`}
@@ -486,7 +486,7 @@ export default function SimulatorView({
                     <Play size={11} className="text-primary fill-primary ml-0.5" />
                   </span>
                   <p className="text-foreground/70 font-bold text-xs truncate">
-                    ▶ اضغط "Play" الأخضر داخل المحاكي لتشغيل الحساسات وبث القراءات فورياً
+                    اضغط "Play" الأخضر داخل المحاكي لتشغيل الحساسات وبث القراءات فورياً
                   </p>
                 </div>
                 <button 
