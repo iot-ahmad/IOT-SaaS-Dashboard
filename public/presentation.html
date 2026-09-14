@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IoT SaaS Dashboard — العرض التقديمي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #040810;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(99,179,237,0.15);
+      --accent: #63b3ed;
+      --accent2: #7c3aed;
+      --accent3: #10b981;
+      --text: #e2e8f0;
+      --muted: #718096;
+      --danger: #f56565;
+      --warn: #ed8936;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(99,179,237,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(124,58,237,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 35% at 50% 50%, rgba(16,185,129,0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px 32px;
+      background: rgba(4,8,16,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent3);
+      box-shadow: 0 0 10px var(--accent3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .header-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.03em;
+    }
+
+    .header-badge {
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(99,179,237,0.1);
+      border: 1px solid rgba(99,179,237,0.25);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hint svg {
+      opacity: 0.6;
+    }
+
+    /* ── Container ── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Cards ── */
+    .slide-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      cursor: grab;
+      user-select: none;
+      position: relative;
+    }
+
+    .slide-card:hover {
+      border-color: rgba(99,179,237,0.3);
+      box-shadow: 0 0 30px rgba(99,179,237,0.08);
+    }
+
+    .slide-card.dragging {
+      cursor: grabbing;
+      transform: scale(1.02) rotate(0.5deg);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(99,179,237,0.12);
+      border-color: var(--accent);
+      z-index: 999;
+      opacity: 0.95;
+    }
+
+    .slide-card.drag-over {
+      border-color: var(--accent2);
+      box-shadow: 0 0 20px rgba(124,58,237,0.2);
+    }
+
+    /* Card Header */
+    .card-header {
+      padding: 18px 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .drag-handle {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+      cursor: grab;
+    }
+
+    .slide-card:hover .drag-handle { opacity: 0.9; }
+
+    .drag-handle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .card-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: monospace;
+      transition: all 0.3s ease;
+    }
+
+    .card-icon {
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .card-title {
+      flex: 1;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .card-subtitle {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .card-tag {
+      font-size: 0.65rem;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* Card Body */
+    .card-body {
+      padding: 20px 24px 24px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    th {
+      background: rgba(99,179,237,0.08);
+      color: var(--accent);
+      padding: 8px 14px;
+      text-align: right;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+    }
+
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Highlight rows */
+    .hl-red { color: var(--danger) !important; font-weight: 600; }
+    .hl-blue { color: var(--accent) !important; font-weight: 600; }
+    .hl-green { color: var(--accent3) !important; font-weight: 600; }
+    .hl-purple { color: #a78bfa !important; font-weight: 600; }
+    .hl-orange { color: var(--warn) !important; font-weight: 600; }
+
+    /* Pillars */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .pillar {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .pillar:hover { border-color: rgba(99,179,237,0.25); }
+
+    .pillar-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .pillar-title { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .pillar-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+    /* Tech grid */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .tech-chip {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .tech-chip:hover {
+      border-color: rgba(99,179,237,0.3);
+      background: rgba(99,179,237,0.05);
+      transform: translateY(-2px);
+    }
+
+    .tech-name { font-size: 0.8rem; font-weight: 700; color: var(--text); }
+    .tech-role { font-size: 0.68rem; color: var(--muted); }
+
+    /* Demo steps */
+    .demo-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .demo-minute {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 14px 18px;
+      border-right: 3px solid var(--accent);
+    }
+
+    .demo-minute:nth-child(2) { border-right-color: var(--accent2); }
+    .demo-minute:nth-child(3) { border-right-color: var(--accent3); }
+
+    .demo-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .demo-title { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .demo-steps-list { list-style: none; }
+    .demo-steps-list li { font-size: 0.8rem; color: var(--muted); padding: 3px 0; padding-right: 16px; position: relative; line-height: 1.5; }
+    .demo-steps-list li::before { content: '→'; position: absolute; right: 0; color: var(--accent); font-size: 0.75rem; }
+    .wow-point { margin-top: 8px; font-size: 0.78rem; color: var(--accent3); font-weight: 600; }
+
+    /* Results metrics */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .metric-card:hover { border-color: rgba(99,179,237,0.25); transform: translateY(-2px); }
+    .metric-value { font-size: 1.4rem; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 6px; }
+    .metric-label { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+
+    /* Closing statement */
+    .closing {
+      background: linear-gradient(135deg, rgba(99,179,237,0.08), rgba(124,58,237,0.08));
+      border: 1px solid rgba(99,179,237,0.2);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .closing p:first-child { font-size: 1rem; color: var(--muted); margin-bottom: 8px; }
+    .closing p:last-child { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+
+    /* Checklist */
+    .checklist { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .checklist li { font-size: 0.82rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+    .checklist li::before { content: '✅'; font-size: 0.9rem; }
+
+    /* Description text */
+    .desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+    .desc strong { color: var(--text); }
+
+    /* Order indicator */
+    .order-bar {
+      position: sticky;
+      bottom: 20px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .order-pill {
+      background: rgba(4,8,16,0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .order-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .order-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .order-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* Divider */
+    .section-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+
+    /* Architecture diagram */
+    .arch {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 20px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.8;
+      white-space: pre;
+      overflow-x: auto;
+      direction: ltr;
+    }
+
+    .arch .layer { color: var(--accent); font-weight: bold; }
+    .arch .tech { color: var(--accent3); }
+    .arch .arrow { color: var(--warn); }
+    .arch .hw { color: #f687b3; }
+
+    /* Toggles / Tabs for Evaluation */
+    .tab-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 10px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+      text-align: center;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .tab-btn:hover {
+      background: rgba(99,179,237,0.06);
+      border-color: rgba(99,179,237,0.15);
+      color: var(--text);
+    }
+    .tab-btn.active {
+      background: rgba(99,179,237,0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 10px rgba(99,179,237,0.1);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: tabFadeIn 0.3s ease;
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Additional formatting for criteria list */
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .doc-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .doc-item strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .doc-item span.status-badge {
+      font-size: 0.65rem;
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent3);
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    @media (max-width: 600px) {
+      .pillars { grid-template-columns: 1fr; }
+      .tech-grid { grid-template-columns: repeat(2, 1fr); }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .checklist { grid-template-columns: 1fr; }
+      header { padding: 12px 16px; }
+      .container { padding: 20px 12px 60px; }
+      .hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-logo">
+    <div class="logo-dot"></div>
+    <span class="header-title">IoT SaaS Dashboard</span>
+    <span class="header-badge">العرض التقديمي</span>
+  </div>
+  <div class="hint">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/>
+    </svg>
+    اسحب الأقسام لإعادة ترتيبها
+  </div>
+</header>
+
+<!-- Cards Container -->
+<div class="container" id="slideContainer">
+
+  <!-- ❶ المشكلة -->
+  <div class="slide-card" draggable="true" data-id="problem">
+    <div class="card-header">
+      <div class="drag-handle"><span></span><span></span><span></span></div>
+      <div class="card-num">1</div>
+      <div class="card-icon">⚡</div>
+      <div>
+        <div class="card-title">المشكلة</div>
+        <div class="card-subtitle">The Problem</div>
+      </div>
+      <span class="card-tag" style="background:rgba(245,101,101,0.12);color:#f56565;border:1px solid rgba(245,101,101,0.2)">مشكلة</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">يعاني مطورو إنترنت الأشياء في الأردن من ثلاث عقبات جوهرية تُبطّئ ابتكارهم:</p>
+      <table>
+        <thead>
+          <tr><th>#</th><th>المشكلة</th><th>التأثير الفعلي</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="hl-red">1</td>
+            <td><strong>بطء بروتوكول HTTP</strong> عند التحكم بالأجهزة الفيزيائية</td>
+            <td>تأخر مرئي — لا يصلح للروبوتات والمنازل الذكية</td>
+          </tr>
+          <tr>
+            <td class="hl-red">2</td>
+            <td><strong>جمود واجهات التحكم الجاهزة</strong> — لا تناسب كل مشروع</td>
+            <td>المطور يبني واجهة من الصفر مع كل مشروع</td>
+          </tr>
+          <tr>
+            <td class="hl-red">3</td>
+            <td><strong>فجوة تقنية</strong> بين الكود البرمجي والأجهزة (ESP32)</td>
+            <td>أسابيع من الضياع قبل أول إشارة حقيقية</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ❷ الحل المقترح -->
+  <div class="slide-card" draggable="true" data-id="solution">
+    <div class="card-header">
+      <div class="drag-handle"><span></span><span></span><span></span></div>
+      <div class="card-num">2</div>
+      <div class="card-icon">🚀</div>
+      <div>
+        <div class="card-title">الحل المقترح</div>
+        <div class="card-subtitle">Proposed Solution</div>
+      </div>
+      <span class="card-tag" style="background:rgba(99,179,237,0.12);color:#63b3ed;border:1px solid rgba(99,179,237,0.2)">حل</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">منصة سحابية متكاملة <strong>(SaaS)</strong> تجمع ثلاثة عوالم في واجهة واحدة: المتصفح + السحاب + الأجهزة الفيزيائية.</p>
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-icon">🔌</div>
+          <div class="pillar-title">MQTT الخفيف</div>
+          <div class="pillar-desc">اتصال ثنائي الاتجاه مستمر — أوامر تصل في أقل من <strong style="color:var(--accent3)">100ms</strong></div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">🎛️</div>
+          <div class="pillar-title">Universal Grid</div>
+          <div class="pillar-desc">شبكة تحكم قابلة للسحب والإفلات — واجهة واحدة لمئات المشاريع</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">📖</div>
+          <div class="pillar-title">مولّد الكود</div>
+          <div class="pillar-desc">كود C++ جاهز للـ ESP32 يُولَّد تلقائياً في ثوانٍ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ❸ الميزات الرئيسية -->
+  <div class="slide-card" draggable="true" data-id="features">
+    <div class="card-header">
+      <div class="drag-handle"><span></span><span></span><span></span></div>
+      <div class="card-num">3</div>
+      <div class="card-icon">🎮</div>
+      <div>
+        <div class="card-title">الميزات الرئيسية</div>
+        <div class="card-subtitle">Main Features</div>
+      </div>
+      <span class="card-tag" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.2)">ميزات</span>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr><th>الأداة</th><th>الوصف</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>🕹️ <span class="hl-blue">Joystick تناظري</span></td><td>يحسب الزاوية والسرعة رياضياً ويبث القيم فورياً عبر MQTT</td></tr>
+          <tr><td>🔲 <span class="hl-purple">D-Pad للروبوتات</span></td><td>أوامر مستمرة + إشارة STOP فورية عند إفلات الزر لحماية الأجهزة</td></tr>
+          <tr><td>⚡ <span class="hl-green">Gauge للحساسات</span></td><td>قراءات لحظية + Sparkline Chart لآخر 35 عينة</td></tr>
+          <tr><td>🗺️ <span class="hl-orange">خريطة GPS حية</span></td><td>تتبع إحداثيات الأجهزة المتحركة على خريطة تفاعلية</td></tr>
+          <tr><td>🔀 <span class="hl-red">مفاتيح Switch</span></td><td>تحديث تفاؤلي فوري — الواجهة تستجيب قبل تأكيد السحاب</td></tr>
+          <tr><td>🌐 <span class="hl-blue">IOT365 Hub</span></td><td>مجتمع مطورين أردنيين لمشاركة وتقييم المشاريع الذكية</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ❹ التقنيات المستخدمة -->
+  <div class="slide-card" draggable="true" data-id="tech">
+    <div class="card-header">
+      <div class="drag-handle"><span></span><span></span><span></span></div>
+      <div class="card-num">4</div>
+      <div class="card-icon">⚙️</div>
+      <div>
+        <div class="card-title">التقنيات المستخدمة</div>
+        <div class="card-subtitle">Tech Stack</div>
+      </div>
+      <span class="card-tag" style="background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.2)">تقنية</span>
+    </div>
+    <div class="card-body">
+      <div class="arch"><span class="layer">┌─ FRONTEND ──────────────────────────────────────┐</span>
+<span class="tech">│  React 19 + Vite  │  Tailwind CSS  │  Framer Motion  │</span>
+<span class="tech">│  Three.js / R3F   │  React Grid Layout  │  Recharts  │</span>
+<span class="layer">├─ REAL-TIME ─────────────────────────────────────┤</span>
+<span class="arrow">│    MQTT (mqtt.js)  ←  WebSocket Secure  →         │</span>
+<span class="arrow">│              HiveMQ Cloud Broker                  │</span>
+<span class="layer">├─ CLOUD DATA ────────────────────────────────────┤</span>
+<span class="tech">│    Firebase Authentication  +  Cloud Firestore    │</span>
+<span class="layer">├─ HARDWARE ──────────────────────────────────────┤</span>
+<span class="hw">│    ESP32 Microcontroller  ←  Sensors/Actuators    │</span>
+<span class="layer">└─────────────────────────────────────────────────┘</span></div>
+      <div class="tech-grid" style="margin-top:14px">
+        <div class="tech-chip"><div class="tech-name">React 19 + Vite</div><div class="tech-role">واجهة فائقة السرعة</div></div>
+        <div class="tech-chip"><div class="tech-name">Three.js / R3F</div><div class="tech-role">رسوميات ثلاثية الأبعاد</div></div>
+        <div class="tech-chip"><div class="tech-name">MQTT.js (WSS)</div><div class="tech-role">اتصال لحظي &lt;100ms</div></div>
+        <div class="tech-chip"><div class="tech-name">HiveMQ Cloud</div><div class="tech-role">وسيط آمن وموثوق</div></div>
+        <div class="tech-chip"><div class="tech-name">Firebase Auth</div><div class="tech-role">مصادقة آمنة</div></div>
+        <div class="tech-chip"><div class="tech-name">Cloud Firestore</div><div class="tech-role">حفظ إعدادات سحابي</div></div>
+        <div class="tech-chip"><div class="tech-name">Framer Motion</div><div class="tech-role">انتقالات سلسة</div></div>
+        <div class="tech-chip"><div class="tech-name">React Leaflet</div><div class="tech-role">خرائط GPS تفاعلية</div></div>
+        <div class="tech-chip"><div class="tech-name">Tailwind CSS</div><div class="tech-role">نظام تصميم متسق</div></div>
+        <div class="tech-chip"><div class="tech-name">ESP32</div><div class="tech-role">الميكروكنترولر الهدف</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ❺ العرض التوضيحي -->
+  <div class="slide-card" draggable="true" data-id="demo">
+    <div class="card-header">
+      <div class="drag-handle"><span></span><span></span><span></span></div>
+      <div class="card-num">5</div>
+      <div class="card-icon">🎬</div>
+      <div>
+        <div class="card-title">عرض توضيحي مباشر</div>
+        <div class="card-subtitle">Live Demonstration</div>
+      </div>
+      <span class="card-tag" style="background:rgba(237,137,54,0.12);color:#ed8936;border:1px solid rgba(237,137,54,0.2)">مباشر</span>
+    </div>
+    <div class="card-body">
+      <div class="demo-steps">
+        <div class="demo-minute">
+          <div class="demo-label">الدقيقة الأولى</div>
+          <div class="demo-title">⚡ اختبار السرعة (Real-time Test)</div>
+          <ul class="demo-steps-list">
+            <li>فتح لوحة التحكم بعد تسجيل الدخول</li>
+            <li>فتح نافذة <strong>Live Terminal</strong> في أسفل الشاشة</li>
+            <li>تحريك Joystick أو الضغط على D-Pad</li>
+          </ul>
+          <div class="wow-point">✅ الأوامر تصل قبل أن ترفع إصبعك عن الماوس</div>
+        </div>
+        <div class="demo-minute">
+          <div class="demo-label">الدقيقة الثانية</div>
+          <div class="demo-title">🎛️ اختبار المرونة (Customization Test)</div>
+          <ul class="demo-steps-list">
+            <li>إنشاء مشروع جديد ← اضغط <strong>Add Tool</strong></li>
+            <li>أضف Gauge + Joystick + Switch</li>
+            <li>اسحب الأدوات وغيّر أحجامها</li>
+          </ul>
+          <div class="wow-point" style="color:var(--accent2)">✅ لوحة مخصصة بالكامل في 30 ثانية</div>
+        </div>
+        <div class="demo-minute">
+          <div class="demo-label">الدقيقة الثالثة</div>
+          <div class="demo-title">🌌 تجربة غامرة (Wow Factor)</div>
+          <ul class="demo-steps-list">
+            <li>تفاعل مع الخلفية الجزيئية — حرك الماوس ببطء ثم بسرعة</li>
+            <li>دوّر نموذج <strong>ESP32 ثلاثي الأبعاد</strong> بالماوس</li>
+            <li>افتح <code>/hub</code> لعرض مجتمع المطورين</li>
+          </ul>
+          <div class="wow-point" style="color:var(--accent3)">✅ منتج متكامل جاهز للسوق — ليس مجرد مشروع</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ❻ النتائج -->
+  <div class="slide-card" draggable="true" data-id="results">
+    <div class="card-header">
+      <div class="drag-handle"><span></span><span></span><span></span></div>
+      <div class="card-num">6</div>
+      <div class="card-icon">🏆</div>
+      <div>
+        <div class="card-title">النتائج والأثر</div>
+        <div class="card-subtitle">Results & Impact</div>
+      </div>
+      <span class="card-tag" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.2)">نتائج</span>
+    </div>
+    <div class="card-body">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value">&lt;100ms</div>
+          <div class="metric-label">زمن الاستجابة (Latency) مقارنة بـ 1000ms في HTTP</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">~20B</div>
+          <div class="metric-label">حجم رسالة MQTT — مقارنة بـ 300+ byte في HTTP</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">دقائق</div>
+          <div class="metric-label">وقت ربط جهاز جديد — مقارنة بأيام بدون المنصة</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">35</div>
+          <div class="metric-label">عينة حساس محتجزة بدون تخزين خارجي (ذاكرة المتصفح)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">5+</div>
+          <div class="metric-label">أنواع أدوات تحكم متخصصة في منصة واحدة</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">∞</div>
+          <div class="metric-label">مشاريع تدعمها الواجهة (منزل، روبوت، محطة، ري...)</div>
+        </div>
+      </div>
+      <div class="closing">
+        <p>نحن لم نبنِ مجرد مشروع تخرج...</p>
+        <p>🚀 بنينا منتجاً حقيقياً جاهزاً للنشر والتوسع</p>
+      </div>
+      <ul class="checklist">
+        <li>كود مفتوح المصدر وموثق بالكامل</li>
+        <li>قابل للنشر فورياً (Vercel / Render)</li>
+        <li>يدعم آلاف المستخدمين المتزامنين</li>
+        <li>واجهة عربية مع دعم RTL كامل</li>
+        <li>تصميم يناسب الأسواق العالمية</li>
+        <li>بنية سحابية قابلة للتوسع</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ❼ معايير التقييم والتوثيق -->
+  <div class="slide-card" draggable="true" data-id="criteria">
+    <div class="card-header">
+      <div class="drag-handle"><span></span><span></span><span></span></div>
+      <div class="card-num">7</div>
+      <div class="card-icon">⚖️</div>
+      <div>
+        <div class="card-title">معايير التقييم والتوثيق</div>
+        <div class="card-subtitle">Evaluation & Documentation Rubrics</div>
+      </div>
+      <span class="card-tag" style="background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.2)">معايير التقييم</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">كيف تلبّي منصة <strong>IoT365</strong> كافة متطلبات التحكيم وتوثيق المشاريع الرسمية:</p>
+      
+      <div class="tab-container">
+        <button class="tab-btn active" data-tab="hw-criteria" draggable="false">مشاريع العتاد والـ IoT</button>
+        <button class="tab-btn" data-tab="sw-criteria" draggable="false">مشاريع البرمجيات</button>
+        <button class="tab-btn" data-tab="doc-requirements" draggable="false">متطلبات التوثيق (11 قسماً)</button>
+      </div>
+
+      <!-- Tab 1: Hardware Criteria -->
+      <div class="tab-content active" data-tab-content="hw-criteria">
+        <table>
+          <thead>
+            <tr><th>معيار التقييم (Hardware / IoT)</th><th style="width: 15%">النقاط</th><th>كيف نحققه في IoT365</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>فاعلية النموذج الأولي (Prototype Functionality)</strong><br><span style="font-size:0.75rem;color:var(--muted)">عمل العتاد بشكل صحيح وتحقيقه للغرض المطلوب</span></td>
+              <td class="hl-orange" style="font-size: 1.1rem; text-align: center;">30</td>
+              <td>توصيل فيزيائي حقيقي مع قراءة حساسات لحظية، بالإضافة إلى بيئة محاكاة Wokwi افتراضية متكاملة لربط الأجهزة عن بعد.</td>
+            </tr>
+            <tr>
+              <td><strong>جودة التنفيذ (Implementation Quality)</strong><br><span style="font-size:0.75rem;color:var(--muted)">جودة التجميع البرمجي والفيزيائي والموثوقية الهندسية</span></td>
+              <td class="hl-orange" style="font-size: 1.1rem; text-align: center;">20</td>
+              <td>تصميم عتادي دقيق، معالجة استباقية للتماس الكهربائي، وبنية برمجية معيارية للـ ESP32 تدعم الاسترداد التلقائي للاتصال.</td>
+            </tr>
+            <tr>
+              <td><strong>تكامل العتاد والبرمجيات (Hardware-Software Integration)</strong><br><span style="font-size:0.75rem;color:var(--muted)">الاتصال السلس والتكامل الفوري بين البرمجيات والأجهزة</span></td>
+              <td class="hl-orange" style="font-size: 1.1rem; text-align: center;">20</td>
+              <td>تخاطب ثنائي الاتجاه فوري عبر MQTT WSS بزمن استجابة &lt;100ms، مع شاشة Live Terminal لمراقبة البيانات لحظياً.</td>
+            </tr>
+            <tr>
+              <td><strong>التوثيق ودليل التركيب (Documentation)</strong><br><span style="font-size:0.75rem;color:var(--muted)">شرح كود الأجهزة وتوصيل الأسلاك بالتفصيل</span></td>
+              <td class="hl-orange" style="font-size: 1.1rem; text-align: center;">15</td>
+              <td>توثيق شامل ومفتوح المصدر لكافة أكواد Arduino/C++ مع مولد كود تلقائي بالذكاء الاصطناعي لتسهيل عملية الربط.</td>
+            </tr>
+            <tr>
+              <td><strong>فيديو العرض التقديمي (Presentation Video)</strong><br><span style="font-size:0.75rem;color:var(--muted)">جودة شرح وبث فاعلية الجهاز والمنصة</span></td>
+              <td class="hl-orange" style="font-size: 1.1rem; text-align: center;">15</td>
+              <td>سيناريو مسجل وتفاعلي يوضح حركة الروبوت واستجابة المؤشرات الرسومية في الشاشة في نفس الوقت.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab 2: Software Criteria -->
+      <div class="tab-content" data-tab-content="sw-criteria">
+        <table>
+          <thead>
+            <tr><th>معيار التقييم (Software Projects)</th><th style="width: 15%">النقاط</th><th>كيف نحققه في IoT365</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>اكتمال المشروع (Project Completion)</strong><br><span style="font-size:0.75rem;color:var(--muted)">مدى جاهزية وتنفيذ الحل المقترح بالكامل</span></td>
+              <td class="hl-purple" style="font-size: 1.1rem; text-align: center;">25</td>
+              <td>منصة SaaS متكاملة وجاهزة للنشر والتشغيل الفوري مع نظام مصادقة مستخدمين، حفظ إعدادات سحابي، ومجتمع مشاريع تفاعلي.</td>
+            </tr>
+            <tr>
+              <td><strong>فاعلية واستقرار النظام (Functionality)</strong><br><span style="font-size:0.75rem;color:var(--muted)">خلو النظام من الأخطاء وثبات أدائه وموثوقيته</span></td>
+              <td class="hl-purple" style="font-size: 1.1rem; text-align: center;">20</td>
+              <td>نظام معزول يعتمد على اتصالات Websockets مشفرة مع استمرارية كاملة عبر خوادم HiveMQ وسيرفرات AI متعددة بدعم Failover.</td>
+            </tr>
+            <tr>
+              <td><strong>تجربة المستخدم والتصميم (UI/UX)</strong><br><span style="font-size:0.75rem;color:var(--muted)">جمالية الواجهات، سهولة الاستخدام وسهولة الوصول</span></td>
+              <td class="hl-purple" style="font-size: 1.1rem; text-align: center;">15</td>
+              <td>واجهات نيون زجاجية (Glassmorphic CSS) تفاعلية، نموذج ESP32 ثلاثي الأبعاد، ودعم كامل للغات وRTL.</td>
+            </tr>
+            <tr>
+              <td><strong>الجودة التقنية والأداء (Technical Quality)</strong><br><span style="font-size:0.75rem;color:var(--muted)">هيكلية الكود وسرعة الأداء واختيار التقنيات</span></td>
+              <td class="hl-purple" style="font-size: 1.1rem; text-align: center;">15</td>
+              <td>React 19 + Vite لبناء خفيف وسريع، معالجة telemetry بالمتصفح، وتقليل أحجام الحزم المرسلة لزيادة سرعة التحميل.</td>
+            </tr>
+            <tr>
+              <td><strong>التوثيق البرمجي (Documentation)</strong><br><span style="font-size:0.75rem;color:var(--muted)">دليل تثبيت البرمجيات ووضوح الكود المصدري</span></td>
+              <td class="hl-purple" style="font-size: 1.1rem; text-align: center;">10</td>
+              <td>توثيق هندسي متكامل للملفات وربط قاعدة البيانات Firestore، بالإضافة إلى تعليقات واضحة ومنظمة بكامل الكود.</td>
+            </tr>
+            <tr>
+              <td><strong>فيديو العرض التقديمي (Presentation Video)</strong><br><span style="font-size:0.75rem;color:var(--muted)">وضوح وتنظيم جودة العرض العملي</span></td>
+              <td class="hl-purple" style="font-size: 1.1rem; text-align: center;">15</td>
+              <td>شرح هندسي مرتب يوضح المشكلة وتدفق البيانات مع استعراض حي لكيفية بناء لوحة تحكم بسحب وإفلات الأدوات.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab 3: Documentation Requirements -->
+      <div class="tab-content" data-tab-content="doc-requirements">
+        <p class="desc" style="margin-bottom: 8px;">يحتوي المستند الرسمي <a href="file:///c:/Users/user/OneDrive/Desktop/IOT/docs/FINAL_COMPETITION_DOCUMENTATION.md" class="hl-blue" style="text-decoration: underline;">FINAL_COMPETITION_DOCUMENTATION.md</a> على توثيق شامل ومفصل يغطي الأقسام الـ 11 المطلوبة بالكامل (3–8 صفحات):</p>
+        
+        <div class="doc-grid">
+          <div class="doc-item">
+            <strong>1. نظرة عامة على المشروع <span class="status-badge">مكتمل</span></strong>
+            مقدمة مفصلة عن منصة IoT365 والأعمدة الأساسية لبنية المنصة والمختبر الأكاديمي.
+          </div>
+          <div class="doc-item">
+            <strong>2. شرح المشكلة <span class="status-badge">مكتمل</span></strong>
+            تحليل العقبات الأربعة: مختبرات البعد، تكاليف احتراق الأجهزة، بطء بروتوكولات HTTP، وصعوبة grading.
+          </div>
+          <div class="doc-item">
+            <strong>3. الحل المقترح <span class="status-badge">مكتمل</span></strong>
+            كيف تحل المنصة هذه المشاكل ببيئة Wokwi التفاعلية، والاتصال الفوري &lt;100ms، ومساعد الـ AI.
+          </div>
+          <div class="doc-item">
+            <strong>4. أهداف المشروع <span class="status-badge">مكتمل</span></strong>
+            الأهداف الخمسة لتمكين التعلم العملي الآمن عالي السرعة وبكلفة صفرية.
+          </div>
+          <div class="doc-item">
+            <strong>5. معمارية النظام <span class="status-badge">مكتمل</span></strong>
+            مخطط تدفق البيانات ثنائي الاتجاه وعلاقة الويب بالسحاب والمحاكي والعتاد (باستخدام Mermaid).
+          </div>
+          <div class="doc-item">
+            <strong>6. التقنيات المستخدمة <span class="status-badge">مكتمل</span></strong>
+            تفصيل كامل لكافة إصدارات المكتبات البرمجية (React 19, Vite, MQTT, Firebase, Three.js) ودورها.
+          </div>
+          <div class="doc-item">
+            <strong>7. تكامل الذكاء الاصطناعي <span class="status-badge">مكتمل</span></strong>
+            مساعد التعليم الافتراضي لتوليد كود C++ بدعم failover، وميزات widgets التفاعلية.
+          </div>
+          <div class="doc-item">
+            <strong>8. تصميم قواعد البيانات <span class="status-badge">مكتمل</span></strong>
+            تفصيل هيكلية NoSQL لـ Cloud Firestore وقواعد الحماية والصلاحيات للمستخدمين والمشاريع.
+          </div>
+          <div class="doc-item">
+            <strong>9. الواجهات البرمجية <span class="status-badge">مكتمل</span></strong>
+            تكامل الخدمات الخارجية: HiveMQ Cloud, Firebase APIs, Groq/NVIDIA LLMs, OpenStreetMap.
+          </div>
+          <div class="doc-item">
+            <strong>10. التحديات والصعوبات <span class="status-badge">مكتمل</span></strong>
+            جدول التحديات الهندسية الأربعة الكبرى والحلول المطبقة لكل منها (كجمود الشبكة وثقل استعلامات DB).
+          </div>
+          <div class="doc-item" style="grid-column: span 2;">
+            <strong>11. التحسينات المستقبلية <span class="status-badge">مكتمل</span></strong>
+            خطة العمل القادمة: التصحيح والتفتيش التلقائي للأكواد، المختبرات التفاعلية الجماعية، ودعم بروتوكولات LoRaWAN الصناعية.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Order indicator -->
+<div class="order-bar">
+  <div class="order-pill">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3"/></svg>
+    الترتيب الحالي
+    <div class="order-dots" id="orderDots"></div>
+  </div>
+</div>
+
+<script>
+  const container = document.getElementById('slideContainer');
+  const COLORS = ['#63b3ed','#7c3aed','#10b981','#a78bfa','#ed8936','#f687b3'];
+  let dragged = null;
+  let draggedOver = null;
+
+  function updateNumbers() {
+    const cards = container.querySelectorAll('.slide-card');
+    const dots = document.getElementById('orderDots');
+    dots.innerHTML = '';
+    cards.forEach((card, i) => {
+      card.querySelector('.card-num').textContent = i + 1;
+      const dot = document.createElement('div');
+      dot.className = 'order-dot active';
+      dot.style.background = COLORS[i % COLORS.length];
+      dot.style.boxShadow = `0 0 6px ${COLORS[i % COLORS.length]}`;
+      dots.appendChild(dot);
+    });
+  }
+
+  function setupCard(card) {
+    card.addEventListener('dragstart', (e) => {
+      if (e.target.closest('.tab-btn') || e.target.closest('a')) {
+        e.preventDefault();
+        return;
+      }
+      dragged = card;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      container.querySelectorAll('.slide-card').forEach(c => c.classList.remove('drag-over'));
+      dragged = null;
+      draggedOver = null;
+      updateNumbers();
+    });
+
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (card !== dragged) {
+        container.querySelectorAll('.slide-card').forEach(c => c.classList.remove('drag-over'));
+        card.classList.add('drag-over');
+        draggedOver = card;
+      }
+    });
+
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (dragged && card !== dragged) {
+        const cards = [...container.querySelectorAll('.slide-card')];
+        const draggedIdx = cards.indexOf(dragged);
+        const targetIdx = cards.indexOf(card);
+
+        if (draggedIdx < targetIdx) {
+          container.insertBefore(dragged, card.nextSibling);
+        } else {
+          container.insertBefore(dragged, card);
+        }
+
+        // Flash animation on drop
+        dragged.style.transition = 'box-shadow 0.4s ease';
+        dragged.style.boxShadow = '0 0 40px rgba(99,179,237,0.4)';
+        setTimeout(() => {
+          dragged.style.boxShadow = '';
+        }, 500);
+      }
+      card.classList.remove('drag-over');
+    });
+  }
+
+  // Init
+  container.querySelectorAll('.slide-card').forEach(setupCard);
+  updateNumbers();
+
+  // Tabs switcher functionality
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = btn.closest('.slide-card');
+      const tabId = btn.getAttribute('data-tab');
+      
+      card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      card.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      card.querySelector(`.tab-content[data-tab-content="${tabId}"]`).classList.add('active');
+    });
+  });
+
+  // Touch support
+  let touchStartY = 0;
+  let touchCard = null;
+  let clone = null;
+
+  container.querySelectorAll('.slide-card').forEach(card => {
+    card.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.tab-btn') || e.target.closest('a')) {
+        return;
+      }
+      touchCard = card;
+      touchStartY = e.touches[0].clientY;
+      card.classList.add('dragging');
+
+      clone = card.cloneNode(true);
+      clone.style.position = 'fixed';
+      clone.style.width = card.offsetWidth + 'px';
+      clone.style.opacity = '0.8';
+      clone.style.zIndex = '9999';
+      clone.style.pointerEvents = 'none';
+      clone.style.left = card.getBoundingClientRect().left + 'px';
+      clone.style.top = card.getBoundingClientRect().top + 'px';
+      clone.style.transform = 'scale(1.02)';
+      document.body.appendChild(clone);
+    }, { passive: true });
+
+    card.addEventListener('touchmove', (e) => {
+      if (!touchCard || !clone) return;
+      const touch = e.touches[0];
+      const dy = touch.clientY - touchStartY;
+      clone.style.top = (card.getBoundingClientRect().top + dy) + 'px';
+
+      const els = document.elementsFromPoint(touch.clientX, touch.clientY);
+      const target = els.find(el => el.classList.contains('slide-card') && el !== touchCard);
+      if (target) {
+        container.querySelectorAll('.slide-card').forEach(c => c.classList.remove('drag-over'));
+        target.classList.add('drag-over');
+        draggedOver = target;
+      }
+    }, { passive: true });
+
+    card.addEventListener('touchend', () => {
+      if (!touchCard) return;
+      touchCard.classList.remove('dragging');
+      if (clone) { clone.remove(); clone = null; }
+
+      if (draggedOver && draggedOver !== touchCard) {
+        const cards = [...container.querySelectorAll('.slide-card')];
+        const draggedIdx = cards.indexOf(touchCard);
+        const targetIdx = cards.indexOf(draggedOver);
+        if (draggedIdx < targetIdx) container.insertBefore(touchCard, draggedOver.nextSibling);
+        else container.insertBefore(touchCard, draggedOver);
+        draggedOver.classList.remove('drag-over');
+      }
+
+      touchCard = null;
+      draggedOver = null;
+      updateNumbers();
+    });
+  });
+</script>
+</body>
+</html>

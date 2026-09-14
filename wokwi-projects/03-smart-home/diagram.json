@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "author": "IOT365 Platform",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir", "top": -160, "left": -120, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 120, "left": -160, "attrs": {} },
+    { "type": "wokwi-servo", "id": "lock", "top": -120, "left": 180, "attrs": { "label": "LOCK" } },
+    { "type": "wokwi-buzzer", "id": "buzzer", "top": 40, "left": 200, "attrs": { "volume": "0.3" } },
+    { "type": "wokwi-led", "id": "light", "top": 160, "left": 200, "attrs": { "color": "yellow", "label": "LIGHT" } },
+    { "type": "wokwi-resistor", "id": "r_light", "top": 200, "left": 170, "attrs": { "resistance": "220" } }
+  ],
+  "connections": [
+    [ "esp:GND.1", "pir:GND", "black", [ "v0" ] ],
+    [ "esp:3V3", "pir:VCC", "red", [ "v0" ] ],
+    [ "esp:D19", "pir:OUT", "green", [ "v0" ] ],
+
+    [ "esp:GND.1", "ldr:GND", "black", [ "v0" ] ],
+    [ "esp:3V3", "ldr:VCC", "red", [ "v0" ] ],
+    [ "esp:D35", "ldr:AO", "cyan", [ "v0" ] ],
+
+    [ "esp:GND.2", "lock:GND", "black", [ "v0" ] ],
+    [ "esp:VIN", "lock:V+", "red", [ "v0" ] ],
+    [ "esp:D13", "lock:PWM", "orange", [ "v0" ] ],
+
+    [ "esp:GND.2", "buzzer:1", "black", [ "v0" ] ],
+    [ "esp:D12", "buzzer:2", "purple", [ "v0" ] ],
+
+    [ "esp:D2", "r_light:1", "yellow", [ "v0" ] ],
+    [ "r_light:2", "light:A", "yellow", [ "v0" ] ],
+    [ "light:C", "esp:GND.2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
