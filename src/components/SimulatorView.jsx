@@ -835,19 +835,19 @@ export default function SimulatorView({
       {showProjectsModal && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-5">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowProjectsModal(false)} />
-          <div className="relative bg-card border border-border rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-fadeIn">
+          <div className="relative bg-card border border-border rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-fadeIn text-white">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-muted/40 shrink-0">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-muted/40 shrink-0 text-white">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold">
                   <Sparkles size={16} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm sm:text-base text-foreground">
+                  <h3 className="font-bold text-sm sm:text-base text-white">
                     مكتبة مشاريع المحاكي — الكود والتوصيل الإلكتروني
                   </h3>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-white/70">
                     مشاريع جاهزة ومكتملة من الأكواد والتوصيلات لنسخها فوراً إلى Wokwi
                   </p>
                 </div>
@@ -879,12 +879,12 @@ export default function SimulatorView({
             </div>
 
             {/* Modal Tabs Header */}
-            <div className="flex items-center justify-between px-5 py-2 border-b border-border bg-card text-xs shrink-0">
+            <div className="flex items-center justify-between px-5 py-2 border-b border-border bg-card text-xs shrink-0 text-white">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setModalTab('code')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'code' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-muted-foreground hover:text-foreground'
+                    modalTab === 'code' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
                   }`}
                 >
                   <FileCode size={14} />
@@ -893,7 +893,7 @@ export default function SimulatorView({
                 <button
                   onClick={() => setModalTab('wiring')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'wiring' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-muted-foreground hover:text-foreground'
+                    modalTab === 'wiring' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
                   }`}
                 >
                   <Cpu size={14} />
@@ -902,7 +902,7 @@ export default function SimulatorView({
                 <button
                   onClick={() => setModalTab('libraries')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'libraries' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-muted-foreground hover:text-foreground'
+                    modalTab === 'libraries' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
                   }`}
                 >
                   <Layers size={14} />
@@ -911,7 +911,7 @@ export default function SimulatorView({
                 <button
                   onClick={() => setModalTab('guide')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'guide' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-muted-foreground hover:text-foreground'
+                    modalTab === 'guide' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
                   }`}
                 >
                   <BookOpen size={14} />
@@ -938,7 +938,7 @@ export default function SimulatorView({
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 overflow-y-auto flex-1 space-y-4 text-xs scrollbar-thin">
+            <div className="p-5 overflow-y-auto flex-1 space-y-4 text-xs scrollbar-thin text-white">
               
               {/* TAB 1: Code */}
               {modalTab === 'code' && (

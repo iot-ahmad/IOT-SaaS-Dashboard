@@ -98,7 +98,6 @@ export default function Sidebar({
 
           <div className="space-y-1.5">
             {workspaces?.map(ws => {
-              const Icon = iconMap[ws.icon];
               const isActive = activeWorkspace === ws.id;
               const isRenaming = renamingId === ws.id;
 
@@ -129,7 +128,6 @@ export default function Sidebar({
                       className={`${navBtnClass} ${isCollapsed ? 'justify-center px-2' : ''} pr-2`}
                       title={isCollapsed ? ws.name : ''}
                     >
-                      {Icon ? <Icon size={18} className="shrink-0" /> : <Gamepad2 size={18} className="shrink-0" />}
                       {!isCollapsed && <span className="truncate flex-1 text-left">{ws.name}</span>}
 
                       {/* Rename + Delete — only on custom workspaces, only when not collapsed */}
@@ -166,7 +164,6 @@ export default function Sidebar({
           )}
           <div className="space-y-1.5">
             {TOOLS.map(tool => {
-              const Icon = iconMap[tool.icon];
               const isActive = activeTool === tool.id;
               return (
                 <Button
@@ -184,7 +181,6 @@ export default function Sidebar({
                   className={`${navBtnClass} ${isCollapsed ? 'justify-center px-2' : ''}`}
                   title={isCollapsed ? tool.name : ''}
                 >
-                  <Icon size={18} className="shrink-0" />
                   {!isCollapsed && <span>{tool.name}</span>}
                 </Button>
               );
@@ -250,7 +246,6 @@ export default function Sidebar({
             className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
             title={isCollapsed ? 'الدعم الفني' : ''}
           >
-            <HelpCircle size={16} />
             {!isCollapsed && <span>الدعم الفني</span>}
           </Button>
 
@@ -262,7 +257,6 @@ export default function Sidebar({
             className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
             title={isCollapsed ? 'Sign Out' : ''}
           >
-            <LogOut size={16} />
             {!isCollapsed && <span>Sign Out</span>}
           </Button>
         </div>

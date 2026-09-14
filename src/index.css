@@ -47,7 +47,7 @@
   --chart-4: #0666b9;
   --chart-5: #0666b9;
 
-  --radius: 12px;
+  --radius: 0.1px;
   --spacing: 0.25rem;
   --font-sans: "IBM Plex Sans Arabic", "Cairo", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", monospace; /* للأرقام/الكود - يبقى إنجليزي */
