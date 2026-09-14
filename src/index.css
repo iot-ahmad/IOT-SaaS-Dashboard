@@ -53,15 +53,8 @@
   --font-mono: "JetBrains Mono", monospace; /* للأرقام/الكود - يبقى إنجليزي */
   --font-display: "Almarai", "Cairo", sans-serif; /* للعناوين الكبيرة */
 
-  --shadow-blur: 0px;
-  --shadow-color: rgba(0, 0, 0, 0);
-  --shadow-spread: 0px;
-  --letter-spacing: -0.011em;
-  --shadow-opacity: 0;
-  --shadow-offset-x: 0px;
-  --shadow-offset-y: 0px;
+ 
 
-  --product-shadow: rgba(0, 0, 0, 0.06) 0px 2px 12px 0px;
 }
 
 /* ── Design Tokens: Dark Mode (Muted / Corporate — Stripe/Linear/Notion) ── */
@@ -152,12 +145,6 @@
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 
-  --color-shadow-blur: var(--shadow-blur);
-  --color-shadow-color: var(--shadow-color);
-  --color-shadow-spread: var(--shadow-spread);
-  --color-shadow-opacity: var(--shadow-opacity);
-  --color-shadow-offset-x: var(--shadow-offset-x);
-  --color-shadow-offset-y: var(--shadow-offset-y);
   --color-letter-spacing: var(--letter-spacing);
 }
 

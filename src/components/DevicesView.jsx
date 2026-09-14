@@ -116,9 +116,9 @@ const GPIO_OPTIONS = [
 ];
 
 const DEVICE_TYPES = [
-  { value: 'Sensor',   label: '📡 Sensor',        desc: 'Reads data from environment (temperature, moisture…)' },
-  { value: 'Actuator', label: '⚡ Actuator',       desc: 'Receives commands to control hardware (relay, motor…)' },
-  { value: 'Motor',    label: '🔧 Motor / Servo',  desc: 'Controls movement (servo, stepper, DC motor…)' },
+  { value: 'Sensor',   label: ' Sensor',        desc: 'Reads data from environment (temperature, moisture…)' },
+  { value: 'Actuator', label: ' Actuator',       desc: 'Receives commands to control hardware (relay, motor…)' },
+  { value: 'Motor',    label: ' Motor / Servo',  desc: 'Controls movement (servo, stepper, DC motor…)' },
 ];
 
 const CHART_COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
