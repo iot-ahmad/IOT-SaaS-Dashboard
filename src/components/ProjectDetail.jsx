@@ -138,7 +138,7 @@ export default function ProjectDetail({ currentUser }) {
                 : 'bg-card/5 border-border text-muted-foreground hover:border-white/20 hover:text-white'
             }`}>
             <ThumbsUp size={14} className={liked ? 'fill-current' : ''} />
-            <span>{liked ? 'أعجبني ❤️' : 'إعجاب'}</span>
+            <span>{liked ? 'أعجبني ' : 'إعجاب'}</span>
             <span className="bg-black/20 px-1.5 py-0.5 rounded-md text-[10px] font-mono">{project.metrics?.likes || 0}</span>
           </button>
 
@@ -180,7 +180,7 @@ export default function ProjectDetail({ currentUser }) {
                   ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                   : 'bg-orange-500/10 border-orange-500/20 text-orange-400'
               }`}>
-                {project.visibility === 'public' ? '🌐 عام' : '🔒 خاص'}
+                {project.visibility === 'public' ? ' عام' : ' خاص'}
               </span>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
                 <Calendar size={11} />

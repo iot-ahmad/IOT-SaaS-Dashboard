@@ -157,6 +157,13 @@
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: var(--letter-spacing);
   }
+
+  [class*="shadow"],
+  [class*="bg-card"],
+  [class*="rounded-2xl"],
+  [class*="rounded-3xl"] {
+    box-shadow: none !important;
+  }
 }
 
 @layer utilities {
