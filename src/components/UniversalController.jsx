@@ -2743,7 +2743,7 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
 }
 
 // ─── Main Controller View ─────────────────────────────────────────────────────
-export default function UniversalController({ deviceStates, publish, storageScopeId, esp32Prefix, userUID }) {
+export default function UniversalController({ deviceStates, publish, storageScopeId, esp32Prefix, userUID, initialWidgets, initialLayouts, customTitle }) {
   const { width, containerRef, mounted } = useContainerWidth();
   const { loaded, savedWidgets, savedLayouts, save } = useControllerFirestore(userUID, storageScopeId);
 
@@ -2764,28 +2764,53 @@ export default function UniversalController({ deviceStates, publish, storageScop
     { i: 'demo4', x: 0, y: 3, w: 3, h: 2 },
   ]);
 
+  const effectiveDefaultWidgets = (initialWidgets && initialWidgets.length > 0) ? initialWidgets : defaultWidgets;
+  const effectiveDefaultLayouts = initialLayouts || layoutsFromLg(effectiveDefaultWidgets.map((w, idx) => ({
+    i: w.id,
+    x: (idx * 3) % 12,
+    y: Math.floor((idx * 3) / 12) * 3,
+    w: w.w || 3,
+    h: w.h || 3,
+  })));
+
   // Initialize state from Firestore data once loaded
   const [widgets, setWidgets] = useState(null);
   const [layouts, setLayouts] = useState(null);
 
   useEffect(() => {
     if (!loaded) return;
-    if (savedWidgets) {
-      setWidgets(savedWidgets);
+    if (savedWidgets && savedWidgets.length > 0) {
+      // Check if savedWidgets is just the generic demo array or empty
+      const isGenericDemo = savedWidgets.length <= 4 && savedWidgets.every(w => w.id && (w.id.startsWith('demo') || w.id.startsWith('actuator')));
+      if (isGenericDemo && initialWidgets && initialWidgets.length > 0) {
+        setWidgets(effectiveDefaultWidgets);
+        setLayouts(effectiveDefaultLayouts);
+        save(effectiveDefaultWidgets, effectiveDefaultLayouts);
+      } else {
+        setWidgets(savedWidgets);
+      }
     } else {
-      setWidgets(defaultWidgets);
+      setWidgets(effectiveDefaultWidgets);
+      setLayouts(effectiveDefaultLayouts);
+      save(effectiveDefaultWidgets, effectiveDefaultLayouts);
     }
 
-    if (savedLayouts?.lg) {
+    if (savedLayouts?.lg && savedLayouts.lg.length > 0) {
       if (!savedLayouts.md || !savedLayouts.sm) {
         setLayouts(layoutsFromLg(savedLayouts.lg));
       } else {
         setLayouts(savedLayouts);
       }
     } else {
-      setLayouts(defaultLayouts);
+      setLayouts(effectiveDefaultLayouts);
     }
-  }, [loaded, savedWidgets, savedLayouts]);
+  }, [loaded, savedWidgets, savedLayouts, storageScopeId]);
+
+  const resetToProjectPreset = useCallback(() => {
+    setWidgets(effectiveDefaultWidgets);
+    setLayouts(effectiveDefaultLayouts);
+    save(effectiveDefaultWidgets, effectiveDefaultLayouts);
+  }, [effectiveDefaultWidgets, effectiveDefaultLayouts, save]);
 
   const [gaugeHistory, setGaugeHistory] = useState({});
 
@@ -2857,24 +2882,42 @@ export default function UniversalController({ deviceStates, publish, storageScop
   return (
     <div className="relative" ref={containerRef}>
       {/* Header bar */}
-      <div className="flex justify-between items-center gap-4 mb-6">
-        <div>
+      <div className="flex justify-between items-center gap-4 mb-6 flex-wrap">
+        <div className="flex items-center gap-2">
           {esp32Prefix && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Target ESP32: {esp32Prefix}
             </div>
           )}
+          {customTitle && (
+            <span className="text-xs font-bold text-muted-foreground hidden sm:inline">
+              {customTitle}
+            </span>
+          )}
         </div>
-        <button
-          type="button"
-          onClick={() => setShowModal(true)}
-          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-          className="flex items-center gap-2 px-4 py-2.5 font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-95"
-        >
-          <Plus size={18} />
-          Add Tool
-        </button>
+        <div className="flex items-center gap-2">
+          {initialWidgets && initialWidgets.length > 0 && (
+            <button
+              type="button"
+              onClick={resetToProjectPreset}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs transition-all shadow-sm active:scale-95"
+              title="استعادة أو تحميل جميع أدوات وحساسات هذا المشروع الجاهزة فوراً"
+            >
+              <RotateCcw size={13} />
+              <span>أدوات المشروع الجاهزة ({initialWidgets.length})</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+            className="flex items-center gap-2 px-4 py-2 font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-95 rounded-xl"
+          >
+            <Plus size={16} />
+            Add Tool
+          </button>
+        </div>
       </div>
 
       {widgets.length === 0 ? (

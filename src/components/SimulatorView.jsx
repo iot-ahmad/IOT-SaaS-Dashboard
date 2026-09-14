@@ -564,15 +564,33 @@ export default function SimulatorView({
               </div>
             </div>
 
+            {/* Live Telemetry Sensor Bar */}
+            {Object.keys(deviceStates || {}).length > 0 && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border-b border-emerald-500/20 text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
+                <span className="flex items-center gap-1.5 text-emerald-400 font-bold shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  بث الحساسات الحي:
+                </span>
+                {Object.entries(deviceStates).map(([top, val]) => (
+                  <span key={top} className="px-2 py-0.5 rounded-md bg-background/80 border border-emerald-500/30 text-emerald-300 shrink-0 shadow-sm">
+                    <span className="text-muted-foreground">{top.split('/').pop()}: </span>
+                    <span className="font-bold">{val}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* Pane Content */}
             <div className="flex-1 w-full h-full overflow-y-auto p-3 sm:p-4">
               {activePanel === 'controller' && (
                 <UniversalController
+                  key={`ctrl_${selectedProjectId}`}
                   deviceStates={deviceStates}
                   publish={publish}
-                  storageScopeId={`${userUID}_wokwi_split`}
+                  storageScopeId={`${userUID || 'guest'}_wokwi_${selectedProjectId}`}
                   userUID={userUID}
-                  customTitle="لوحة التحكم المجزأة"
+                  initialWidgets={activeProject.widgets}
+                  customTitle={`لوحة مشروع: ${activeProject.title.split('(')[0]}`}
                 />
               )}
 
@@ -583,25 +601,104 @@ export default function SimulatorView({
                     <Play size={14} className="text-amber-400 fill-amber-400 ml-0.5" />
                   </span>
                   <div>
-                    <p className="text-amber-300 font-bold text-xs">في انتظار بيانات المحاكي...</p>
-                    <p className="text-amber-400/70 text-[10px] mt-0.5">اضغط ▶ Play داخل المحاكي على اليسار — ستظهر القراءات الحية هنا فور التشغيل</p>
+                    <p className="text-amber-300 font-bold text-xs">في انتظار تشغيل المحاكي وبث الحساسات...</p>
+                    <p className="text-amber-400/70 text-[10px] mt-0.5">اضغط ▶ Play الأخضر داخل المحاكي على اليسار — ستظهر القراءات الحية في هذه اللوحة فوراً</p>
                   </div>
                 </div>
               )}
 
               {activePanel === 'devices' && (
-                <div className="space-y-3">
-                  {Object.keys(deviceStates || {}).length === 0 && (
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
-                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-400/20 border border-amber-400/30 shrink-0 animate-pulse">
-                        <Play size={14} className="text-amber-400 fill-amber-400 ml-0.5" />
-                      </span>
-                      <div>
-                        <p className="text-amber-300 font-bold text-xs">في انتظار تشغيل المحاكي...</p>
-                        <p className="text-amber-400/70 text-[10px] mt-0.5">اضغط على الزر الأخضر ▶ داخل محاكي Wokwi على اليسار لترى البيانات هنا</p>
+                <div className="space-y-4">
+                  {/* Active Project Preset Devices Live Monitor */}
+                  <div className="bg-card/60 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+                    <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border/60 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <Cpu className="text-primary" size={16} />
+                        <h4 className="text-xs sm:text-sm font-extrabold text-foreground">
+                          أجهزة وحساسات مشروع: {activeProject.title.split('(')[0]}
+                        </h4>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                          {activeProject.presetDevices?.length || 0} أجهزة
+                        </span>
                       </div>
+                      <span className="text-[10px] text-muted-foreground hidden sm:inline">
+                        قراءات حية واختبار مباشر عبر MQTT
+                      </span>
                     </div>
-                  )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                      {(activeProject.presetDevices || []).map(dev => {
+                        const liveVal = deviceStates?.[dev.topic];
+                        const hasVal = liveVal !== undefined && liveVal !== null && liveVal !== '';
+                        const isActuator = dev.type === 'Actuator';
+                        
+                        return (
+                          <div 
+                            key={dev.id} 
+                            className={`p-2.5 rounded-xl border transition-all ${
+                              hasVal 
+                                ? 'bg-primary/5 border-primary/30 shadow-sm' 
+                                : 'bg-muted/40 border-border'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2 mb-1.5">
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`w-2 h-2 rounded-full shrink-0 ${hasVal ? 'bg-emerald-400 animate-pulse' : 'bg-muted-foreground/40'}`} />
+                                  <h5 className="font-bold text-xs text-foreground truncate" title={dev.name}>{dev.name}</h5>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
+                                  <span className="bg-background/80 px-1.5 py-0.5 rounded border border-border/50">{dev.pin}</span>
+                                  <span className="truncate" title={dev.topic}>{dev.topic}</span>
+                                </div>
+                              </div>
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                                dev.type === 'Sensor' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
+                                dev.type === 'Actuator' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                                'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                              }`}>
+                                {dev.type}
+                              </span>
+                            </div>
+
+                            {/* Value display */}
+                            <div className="mt-2 pt-1.5 border-t border-border/40 flex items-center justify-between gap-2">
+                              <span className="text-[10px] text-muted-foreground">القيمة الحالية:</span>
+                              {hasVal ? (
+                                <span className="font-mono font-bold text-sm text-primary">
+                                  {liveVal} {dev.unit && dev.unit !== 'State' ? dev.unit : ''}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-muted-foreground/60 italic">في انتظار البيانات...</span>
+                              )}
+                            </div>
+
+                            {/* Quick Action Button for Actuators */}
+                            {isActuator && (
+                              <div className="mt-2 flex gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => publish(dev.topic, 'ON')}
+                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all active:scale-95"
+                                >
+                                  تشغيل ON
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => publish(dev.topic, 'OFF')}
+                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all active:scale-95"
+                                >
+                                  إطفاء OFF
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* User's custom saved devices view */}
                   <NewDevicesView
                     userUID={userUID}
                     lastSeen={lastSeen}
