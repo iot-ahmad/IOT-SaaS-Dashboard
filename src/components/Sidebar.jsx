@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { LogOut, Plus, X, ChevronLeft, ChevronRight, Pencil, Trash2, Check, HelpCircle } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Globe, HelpCircle, Columns } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
 import SupportModal from './SupportModal';
+
+const iconMap = {
+  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard, Globe, Columns
+};
 
 const navBtnClass =
   'mx-0 w-full flex items-center justify-start gap-3 rounded-xl text-sm font-medium';
@@ -94,6 +98,7 @@ export default function Sidebar({
 
           <div className="space-y-1.5">
             {workspaces?.map(ws => {
+              const Icon = iconMap[ws.icon];
               const isActive = activeWorkspace === ws.id;
               const isRenaming = renamingId === ws.id;
 
@@ -124,6 +129,7 @@ export default function Sidebar({
                       className={`${navBtnClass} ${isCollapsed ? 'justify-center px-2' : ''} pr-2`}
                       title={isCollapsed ? ws.name : ''}
                     >
+                      {Icon ? <Icon size={18} className="shrink-0" /> : <Gamepad2 size={18} className="shrink-0" />}
                       {!isCollapsed && <span className="truncate flex-1 text-left">{ws.name}</span>}
 
                       {/* Rename + Delete — only on custom workspaces, only when not collapsed */}
@@ -160,6 +166,7 @@ export default function Sidebar({
           )}
           <div className="space-y-1.5">
             {TOOLS.map(tool => {
+              const Icon = iconMap[tool.icon];
               const isActive = activeTool === tool.id;
               return (
                 <Button
@@ -177,6 +184,7 @@ export default function Sidebar({
                   className={`${navBtnClass} ${isCollapsed ? 'justify-center px-2' : ''}`}
                   title={isCollapsed ? tool.name : ''}
                 >
+                  <Icon size={18} className="shrink-0" />
                   {!isCollapsed && <span>{tool.name}</span>}
                 </Button>
               );
