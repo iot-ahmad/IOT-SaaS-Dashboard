@@ -160,7 +160,6 @@ export default function Sidebar({
           )}
           <div className="space-y-1.5">
             {TOOLS.map(tool => {
-              const Icon = iconMap[tool.icon];
               const isActive = activeTool === tool.id;
               return (
                 <Button
