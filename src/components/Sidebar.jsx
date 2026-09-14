@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Globe, HelpCircle, Columns } from 'lucide-react';
+import { LogOut, Plus, X, ChevronLeft, ChevronRight, Pencil, Trash2, Check, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
 import SupportModal from './SupportModal';
-
-const iconMap = {
-  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard, Globe, Columns
-};
 
 const navBtnClass =
   'mx-0 w-full flex items-center justify-start gap-3 rounded-xl text-sm font-medium';
@@ -164,6 +160,7 @@ export default function Sidebar({
           )}
           <div className="space-y-1.5">
             {TOOLS.map(tool => {
+              const Icon = iconMap[tool.icon];
               const isActive = activeTool === tool.id;
               return (
                 <Button
@@ -246,6 +243,7 @@ export default function Sidebar({
             className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
             title={isCollapsed ? 'الدعم الفني' : ''}
           >
+            <HelpCircle size={16} />
             {!isCollapsed && <span>الدعم الفني</span>}
           </Button>
 
@@ -257,6 +255,7 @@ export default function Sidebar({
             className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
             title={isCollapsed ? 'Sign Out' : ''}
           >
+            <LogOut size={16} />
             {!isCollapsed && <span>Sign Out</span>}
           </Button>
         </div>
