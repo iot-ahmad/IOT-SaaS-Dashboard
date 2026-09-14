@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 if (!firebaseConfig.apiKey) {
   console.warn(
-    "⚠️ Warning: Firebase API Key is missing. Make sure to set VITE_FIREBASE_API_KEY in your environment variables (both locally in .env and in your hosting provider's dashboard)."
+    "[Warning] Firebase API Key is missing. Make sure to set VITE_FIREBASE_API_KEY in your environment variables (both locally in .env and in your hosting provider's dashboard)."
   );
 }
 

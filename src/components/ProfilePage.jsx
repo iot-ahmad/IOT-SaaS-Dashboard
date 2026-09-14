@@ -238,10 +238,10 @@ export default function ProfilePage({ user, userUID, logout }) {
       }
 
       setFirestoreProfile(prev => ({ ...(prev || {}), ...updatedFields }));
-      showToast('تم حفظ الملف الشخصي بنجاح! ✅');
+      showToast('تم حفظ الملف الشخصي بنجاح!');
     } catch (err) {
       if (err?.code === 'permission-denied') {
-        setProfileError('⛔ خطأ صلاحيات Firestore — راجع قواعد الأمان في Firebase Console.');
+        setProfileError('خطأ صلاحيات Firestore — راجع قواعد الأمان في Firebase Console.');
       } else {
         setProfileError(`فشل الحفظ: ${err?.code || err?.message || 'خطأ غير معروف'}`);
       }

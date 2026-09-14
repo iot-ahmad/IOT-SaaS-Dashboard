@@ -105,7 +105,7 @@ export default function Sidebar({
               return (
                 <div key={ws.id} className="group relative">
                   {isRenaming ? (
-                    <div className="flex items-center gap-1 bg-muted border border-primary/40 rounded-xl px-2 py-1.5">
+                    <div className="flex items-center gap-1 bg-muted border border-border rounded-xl px-2 py-1.5">
                       <input
                         autoFocus
                         value={renameValue}
@@ -208,9 +208,9 @@ export default function Sidebar({
                   }
                 }
               }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted border border-border hover:border-primary/40 cursor-pointer transition-colors"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/60 border border-border hover:bg-muted cursor-pointer transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center flex-shrink-0">
                 <span className="text-foreground font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
@@ -234,7 +234,7 @@ export default function Sidebar({
               }}
               className="flex justify-center cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center" title={user?.displayName || 'User'}>
+              <div className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center" title={user?.displayName || 'User'}>
                 <span className="text-foreground font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
@@ -271,13 +271,12 @@ export default function Sidebar({
       {/* Add Workspace Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
-          <div className="bg-card dark:bg-[#0a0b0d] border border-border p-6 rounded-2xl w-full max-w-sm relative text-foreground shadow-2xl">
-            <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground dark:text-white/40 hover:text-foreground">
-              <X size={20} />
+          <div className="bg-card border border-border p-6 rounded-xl w-full max-w-sm relative text-foreground shadow-xl">
+            <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer">
+              <X size={18} />
             </button>
-            <h3 className="text-xl font-bold mb-4">New Dashboard</h3>
+            <h3 className="text-lg font-bold mb-4">New Dashboard</h3>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Dashboard Name</label>
@@ -287,7 +286,7 @@ export default function Sidebar({
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
                   placeholder="e.g. Living Room, Garage..."
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary/50 text-sm text-foreground"
+                  className="w-full bg-input border border-border rounded-xl py-2 px-3 focus:outline-none text-sm text-foreground"
                 />
               </div>
               <div>
@@ -296,7 +295,7 @@ export default function Sidebar({
                   value={newEsp32}
                   onChange={e => setNewEsp32(e.target.value)}
                   placeholder="e.g. ESP_A1B2C3"
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary/50 text-sm text-foreground"
+                  className="w-full bg-input border border-border rounded-xl py-2 px-3 focus:outline-none text-sm text-foreground"
                 />
                 <p className="text-[10px] text-muted-foreground mt-1">If provided, widgets in this dashboard will automatically target this specific ESP32.</p>
               </div>

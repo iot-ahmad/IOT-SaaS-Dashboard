@@ -209,14 +209,14 @@ export default function SimulatorView({
                 title={proj.description}
               >
                 <span>{proj.title.split('(')[0]}</span>
-                {selectedProjectId === proj.id && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
+                {selectedProjectId === proj.id && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
               </button>
             ))}
           </div>
 
           <button
             onClick={() => setShowProjectsModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:opacity-90 transition-opacity shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-primary text-primary-foreground shadow-md hover:opacity-90 transition-opacity shrink-0"
           >
             <Sparkles size={13} />
             <span>الكود ومخطط التوصيل (Wiring)</span>
@@ -380,7 +380,7 @@ export default function SimulatorView({
               onClick={toggleFullScreen}
               className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-xs transition-all shrink-0 border ${
                 isFullScreen
-                  ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 hover:bg-amber-500/30 shadow-sm'
+                  ? 'bg-muted border-border text-foreground/70 hover:bg-muted/80 shadow-sm'
                   : 'bg-primary text-primary-foreground border-primary hover:opacity-90 shadow-md'
               }`}
               title={isFullScreen ? 'الخروج من ملء الشاشة' : 'توسيع الشاشة بالكامل (Full Screen)'}
@@ -396,7 +396,7 @@ export default function SimulatorView({
                 onClick={() => setShowUidBanner(v => !v)}
                 className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs font-medium transition-colors ${
                   showUidBanner 
-                    ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' 
+                    ? 'bg-primary/15 border-primary/30 text-primary' 
                     : 'bg-muted border-border text-muted-foreground hover:text-foreground'
                 }`}
                 title="إظهار/إخفاء UID الحساب"
@@ -411,21 +411,21 @@ export default function SimulatorView({
 
         {/* UID Notice Banner */}
         {userUID && showUidBanner && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-blue-500/10 border border-blue-500/25 rounded-lg px-3 py-1.5 text-xs w-full animate-fadeIn">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-primary/8 border border-primary/20 rounded-lg px-3 py-1.5 text-xs w-full animate-fadeIn">
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shrink-0" />
-              <span className="font-bold text-blue-300">UID الحساب:</span>
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+              <span className="font-bold text-primary">UID الحساب:</span>
             </div>
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <code className="flex-1 bg-blue-900/40 border border-blue-500/30 text-blue-200 font-mono text-[11px] px-2 py-0.5 rounded truncate select-all">
+              <code className="flex-1 bg-muted border border-border text-foreground font-mono text-[11px] px-2 py-0.5 rounded truncate select-all">
                 {userUID}
               </code>
               <button
                 onClick={copyUid}
                 className={`flex items-center gap-1 px-2 py-0.5 rounded font-semibold text-[11px] shrink-0 transition-all ${
                   copiedUid
-                    ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
-                    : 'bg-blue-500/20 border border-blue-500/40 text-blue-200 hover:bg-blue-500/30'
+                    ? 'bg-white/10 border border-white/20 text-white/70'
+                    : 'bg-muted border border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {copiedUid ? <Check size={11} /> : <Copy size={11} />}
@@ -454,7 +454,7 @@ export default function SimulatorView({
             {/* Header info badge inside pane */}
             <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/40 text-xs shrink-0">
               <div className="flex items-center gap-2 text-foreground font-semibold truncate">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
                 <span className="truncate">محاكي Wokwi: {activeProject.title.split('(')[0]}</span>
                 <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 shrink-0">
                   {activeProject.badge}
@@ -480,18 +480,18 @@ export default function SimulatorView({
 
             {/* ⚡ Play Hint Banner */}
             {showPlayHint && (
-              <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-amber-500/10 border-b border-amber-500/25 shrink-0">
+              <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-muted/60 border-b border-border shrink-0">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-amber-400/20 border border-amber-400/40 shrink-0 animate-pulse">
-                    <Play size={11} className="text-amber-400 fill-amber-400 ml-0.5" />
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/15 border border-primary/30 shrink-0 animate-pulse">
+                    <Play size={11} className="text-primary fill-primary ml-0.5" />
                   </span>
-                  <p className="text-amber-300 font-bold text-xs truncate">
+                  <p className="text-foreground/70 font-bold text-xs truncate">
                     ▶ اضغط "Play" الأخضر داخل المحاكي لتشغيل الحساسات وبث القراءات فورياً
                   </p>
                 </div>
                 <button 
                   onClick={() => setShowPlayHint(false)}
-                  className="text-amber-400/60 hover:text-amber-300 p-0.5 shrink-0"
+                  className="text-muted-foreground hover:text-foreground p-0.5 shrink-0"
                   title="إغلاق التنبيه"
                 >
                   <X size={13} />
@@ -566,13 +566,13 @@ export default function SimulatorView({
 
             {/* Live Telemetry Sensor Bar */}
             {Object.keys(deviceStates || {}).length > 0 && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border-b border-emerald-500/20 text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
-                <span className="flex items-center gap-1.5 text-emerald-400 font-bold shrink-0">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border-b border-primary/15 text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
+                <span className="flex items-center gap-1.5 text-primary font-bold shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                   بث الحساسات الحي:
                 </span>
                 {Object.entries(deviceStates).map(([top, val]) => (
-                  <span key={top} className="px-2 py-0.5 rounded-md bg-background/80 border border-emerald-500/30 text-emerald-300 shrink-0 shadow-sm">
+                  <span key={top} className="px-2 py-0.5 rounded-md bg-background/80 border border-border text-foreground/70 shrink-0 shadow-sm">
                     <span className="text-muted-foreground">{top.split('/').pop()}: </span>
                     <span className="font-bold">{val}</span>
                   </span>
@@ -596,13 +596,13 @@ export default function SimulatorView({
 
               {/* Show hint banner at the top of controller panel if no data */}
               {activePanel === 'controller' && Object.keys(deviceStates || {}).length === 0 && (
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 mb-3 -mt-1">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-400/20 border border-amber-400/30 shrink-0 animate-pulse">
-                    <Play size={14} className="text-amber-400 fill-amber-400 ml-0.5" />
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border mb-3 -mt-1">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/15 border border-primary/25 shrink-0 animate-pulse">
+                    <Play size={14} className="text-primary fill-primary ml-0.5" />
                   </span>
                   <div>
-                    <p className="text-amber-300 font-bold text-xs">في انتظار تشغيل المحاكي وبث الحساسات...</p>
-                    <p className="text-amber-400/70 text-[10px] mt-0.5">اضغط ▶ Play الأخضر داخل المحاكي على اليسار — ستظهر القراءات الحية في هذه اللوحة فوراً</p>
+                    <p className="text-foreground/70 font-bold text-xs">في انتظار تشغيل المحاكي وبث الحساسات...</p>
+                    <p className="text-muted-foreground text-[10px] mt-0.5">اضغط ▶ Play الأخضر داخل المحاكي على اليسار — ستظهر القراءات الحية في هذه اللوحة فوراً</p>
                   </div>
                 </div>
               )}
@@ -644,7 +644,7 @@ export default function SimulatorView({
                             <div className="flex items-start justify-between gap-2 mb-1.5">
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <span className={`w-2 h-2 rounded-full shrink-0 ${hasVal ? 'bg-emerald-400 animate-pulse' : 'bg-muted-foreground/40'}`} />
+                                  <span className={`w-2 h-2 rounded-full shrink-0 ${hasVal ? 'bg-primary animate-pulse' : 'bg-muted-foreground/40'}`} />
                                   <h5 className="font-bold text-xs text-foreground truncate" title={dev.name}>{dev.name}</h5>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
@@ -652,11 +652,7 @@ export default function SimulatorView({
                                   <span className="truncate" title={dev.topic}>{dev.topic}</span>
                                 </div>
                               </div>
-                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
-                                dev.type === 'Sensor' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
-                                dev.type === 'Actuator' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                                'bg-purple-500/10 text-purple-400 border border-purple-500/20'
-                              }`}>
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 bg-white/[0.06] text-white/50 border border-white/[0.08]">
                                 {dev.type}
                               </span>
                             </div>
@@ -679,14 +675,14 @@ export default function SimulatorView({
                                 <button
                                   type="button"
                                   onClick={() => publish(dev.topic, 'ON')}
-                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all active:scale-95"
+                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25 transition-all active:scale-95"
                                 >
                                   تشغيل ON
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => publish(dev.topic, 'OFF')}
-                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all active:scale-95"
+                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-muted hover:bg-muted/80 text-muted-foreground border border-border transition-all active:scale-95"
                                 >
                                   إطفاء OFF
                                 </button>
@@ -817,7 +813,7 @@ export default function SimulatorView({
                             <tr key={idx} className="hover:bg-muted/30">
                               <td className="p-2 font-sans font-medium text-foreground">{po.component}</td>
                               <td className="p-2 text-primary font-bold">{po.pin}</td>
-                              <td className="p-2 text-cyan-400">{po.topic}</td>
+                              <td className="p-2 text-primary/80">{po.topic}</td>
                               <td className="p-2 font-sans text-muted-foreground">{po.note}</td>
                             </tr>
                           ))}
@@ -931,7 +927,7 @@ export default function SimulatorView({
                     onClick={() => setUseAccountUid(v => !v)}
                     className={`px-2 py-1 rounded-md text-[11px] font-semibold border transition-all ${
                       useAccountUid
-                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                        ? 'bg-primary/15 text-primary border-primary/30'
                         : 'bg-muted text-muted-foreground border-border hover:text-foreground'
                     }`}
                   >
@@ -981,9 +977,9 @@ export default function SimulatorView({
               {/* TAB 2: Wiring & Diagram JSON */}
               {modalTab === 'wiring' && (
                 <div className="space-y-4">
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
-                      <h4 className="font-bold text-emerald-300 text-sm">مخطط التوصيل الكامل (Wokwi Diagram JSON)</h4>
+                      <h4 className="font-bold text-foreground text-sm">مخطط التوصيل الكامل (Wokwi Diagram JSON)</h4>
                       <p className="text-muted-foreground text-[11px] mt-0.5">
                         انسخ هذا الكود والصقه في تبويب <code>diagram.json</code> داخل Wokwi لتظهر جميع القطع والأسلاك موصولة بدقة تلقائياً!
                       </p>
@@ -991,7 +987,7 @@ export default function SimulatorView({
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={copyDiagram}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary hover:opacity-90 text-primary-foreground font-bold shadow"
                       >
                         {copiedDiagram ? <Check size={13} /> : <Copy size={13} />}
                         {copiedDiagram ? 'تم نسخ diagram.json!' : 'نسخ diagram.json'}
@@ -1026,7 +1022,7 @@ export default function SimulatorView({
                               <td className="p-2.5 font-sans font-medium text-foreground">{po.component}</td>
                               <td className="p-2.5 text-primary font-bold">{po.pin}</td>
                               <td className="p-2.5 font-sans text-muted-foreground">{po.type}</td>
-                              <td className="p-2.5 text-cyan-400">{po.topic}</td>
+                              <td className="p-2.5 text-primary/80">{po.topic}</td>
                               <td className="p-2.5 font-sans text-muted-foreground">{po.note}</td>
                             </tr>
                           ))}

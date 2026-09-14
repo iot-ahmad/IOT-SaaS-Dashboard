@@ -11,7 +11,7 @@ export const SIMULATOR_PROJECTS = [
   {
     id: 'all-in-one',
     title: 'المحطة الشاملة لاختبار المنصة (Mega All-In-One Station)',
-    badge: '🌟 موصى به للاختبار الشامل',
+    badge: 'موصى به للاختبار الشامل',
     description: 'مشروع ESP32 ضخم وشامل يجمع 5 حساسات و 8 مشغلات للتحقق من جميع أدوات لوحة التحكم والتيرمنال وقراءات الحساسات في وقت واحد.',
     wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
     accentColor: 'from-blue-600 to-indigo-600',
@@ -141,7 +141,7 @@ ESP32Servo`,
 }`,
     sketchCode: (uidPlaceholder = '') => `/*
  * ==================================================================================
- * 🌐 IOT365 PLATFORM — ALL-IN-ONE SIMULATOR TEST STATION
+ * IOT365 PLATFORM — ALL-IN-ONE SIMULATOR TEST STATION
  * ==================================================================================
  * مشروع محاكاة متكامل لاختبار جميع وظائف المنصة:
  * - الحساسات: DHT22 (حرارة ورطوبة), HC-SR04 (مسافة), LDR (ضوء), Potentiometer (رطوبة تربة), PIR (حركة)
@@ -161,7 +161,7 @@ ESP32Servo`,
 #include <Adafruit_SSD1306.h>
 
 // ==================================================================================
-// 🔑 USER CONFIGURATION — إعدادات المستخدم
+// USER CONFIGURATION — إعدادات المستخدم
 // اترك USER_UID فارغاً "" لاستبداله لاحقاً، أو الصق UID حسابك من المنصة مباشرة:
 // ==================================================================================
 const char* USER_UID = "${uidPlaceholder}"; 
@@ -363,7 +363,7 @@ void reconnectMQTT() {
 void setup() {
   Serial.begin(115200);
   Serial.println("\\n====================================");
-  Serial.println("🚀 Starting IOT365 All-In-One ESP32 Station");
+  Serial.println("Starting IOT365 All-In-One ESP32 Station");
   Serial.println("====================================");
 
   // Initialize Pin Modes
@@ -460,7 +460,7 @@ void loop() {
   {
     id: 'smart-farm',
     title: 'المزرعة الذكية والري التلقائي (Smart Farm & Irrigation)',
-    badge: '🌱 مشاريع زراعية و STEM',
+    badge: 'مشاريع زراعية و STEM',
     description: 'مشروع متخصص للمزارع الذكية والبيوت المحمية: قياس رطوبة التربة عبر Potentiometer، حرارة ورطوبة الجو عبر DHT22، والتحكم بمضخة المياه وصمام الري.',
     wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
     accentColor: 'from-emerald-600 to-teal-600',
@@ -529,7 +529,7 @@ ESP32Servo`,
   "dependencies": {}
 }`,
     sketchCode: (uidPlaceholder = '') => `/*
- * 🌿 IOT365 — SMART FARM & IRRIGATION CONTROLLER
+ * IOT365 — SMART FARM & IRRIGATION CONTROLLER
  * نظام الري والزراعة الذكية
  */
 #include <WiFi.h>
@@ -618,7 +618,7 @@ void loop() {
   {
     id: 'smart-home',
     title: 'المنزل الذكي ونظام الحماية (Smart Home & Security)',
-    badge: '🔒 أمن وسلامة وأتمتة',
+    badge: 'أمن وسلامة وأتمتة',
     description: 'نظام حماية منزلي يشتمل على حساس حركة PIR، قفل باب إلكتروني (Servo)، صفارة إنذار (Buzzer)، وإضاءة ذكية قابلة للتعتيم.',
     wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
     accentColor: 'from-amber-600 to-red-600',
@@ -682,7 +682,7 @@ ESP32Servo`,
   "dependencies": {}
 }`,
     sketchCode: (uidPlaceholder = '') => `/*
- * 🔒 IOT365 — SMART HOME & SECURITY
+ * IOT365 — SMART HOME & SECURITY
  * نظام المنزل الذكي والإنذار
  */
 #include <WiFi.h>
@@ -769,7 +769,7 @@ void loop() {
   {
     id: 'rc-car',
     title: 'الروبوت والسيارة الذكية (Robotics & RC Smart Car)',
-    badge: '🏎️ روبوتكس وتحكم D-Pad',
+    badge: 'روبوتكس وتحكم D-Pad',
     description: 'سيارة ذكية مدعومة بحساس مسافة لمكافحة الاصطدام، تحكم كامل بالاتجاهات D-Pad وسلايدر السرعة ومصابيح أمامية وبوق صوتي.',
     wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
     accentColor: 'from-purple-600 to-pink-600',
@@ -829,7 +829,7 @@ void loop() {
   "dependencies": {}
 }`,
     sketchCode: (uidPlaceholder = '') => `/*
- * 🏎️ IOT365 — SMART RC CAR CONTROLLER
+ * IOT365 — SMART RC CAR CONTROLLER
  * تحكم كامل بالسيارة الذكية وحساس المسافة
  */
 #include <WiFi.h>

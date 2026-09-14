@@ -2,48 +2,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 @custom-variant dark (&:is(.dark *));
 
-/* ── Design Tokens: Light Mode (Apple Design Guidelines) ── */
+/* ── Design Tokens: Light Mode (Muted / Corporate) ── */
 :root {
-  --background: #f0f4f8; /* canvas (soft off-white with blue-gray tint, not pure/bright white) */
-  --foreground: #000000; /* ink (black) */
+  --background: #f4f5f7;
+  --foreground: #14161a;
 
-  --card: #f8fafc; /* canvas card (off-white) */
-  --card-foreground: #000000; /* ink (black) */
-  --sidebar: #eef2f6; /* surface-pearl */
-  --sidebar-foreground: #000000; /* ink-muted-80 (black) */
-  --sidebar-border: #000000; /* divider-soft (black) */
-  --border: #000000; /* hairline (black) */
-  --input: #f8fafc;
-  --muted: #e2e8f0; /* canvas-parchment */
-  --muted-foreground: #000000; /* ink-muted-48 (black) */
-  --secondary: #eef2f6; /* surface-pearl */
-  --secondary-foreground: #000000;
-  --popover: #f8fafc;
-  --popover-foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #14161a;
+  --sidebar: #ebedf0;
+  --sidebar-foreground: #14161a;
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --border: rgba(0, 0, 0, 0.08);
+  --input: #ffffff;
+  --muted: #e5e7eb;
+  --muted-foreground: #6b7280;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #14161a;
+  --popover: #ffffff;
+  --popover-foreground: #14161a;
 
-  /* Accent: Action Blue */
-  --primary: #0066cc; /* Action Blue */
+  /* Primary: Muted Corporate Slate Blue */
+  --primary: #4a6d8c;
   --primary-foreground: #ffffff;
-  --ring: #0071e3; /* primary-focus */
-  --accent: #f5f5f7; /* canvas-parchment */
-  --accent-foreground: #0066cc;
+  --ring: #4a6d8c;
+  --accent: #f3f4f6;
+  --accent-foreground: #4a6d8c;
   
-  --sidebar-accent: #f5f5f7;
-  --sidebar-accent-foreground: #0066cc;
-  --sidebar-primary: #0066cc;
+  --sidebar-accent: #f3f4f6;
+  --sidebar-accent-foreground: #4a6d8c;
+  --sidebar-primary: #4a6d8c;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #0071e3;
+  --sidebar-ring: #4a6d8c;
 
-  --destructive: #ef4444;
+  /* Semantic status: Muted */
+  --destructive: #b85c5c;
   --destructive-foreground: #ffffff;
+  --status-on: #5b8c6e;
+  --status-off: #b85c5c;
 
-  --chart-1: #0066cc;
-  --chart-2: #2997ff;
-  --chart-3: #5b6a99;
-  --chart-4: #a1a1a6;
-  --chart-5: #1d1d1f;
+  --chart-1: #4a6d8c;
+  --chart-2: #627d98;
+  --chart-3: #829ab1;
+  --chart-4: #9fb3c8;
+  --chart-5: #bcccdc;
 
-  --radius: 18px; /* {rounded.lg} */
+  --radius: 12px;
   --spacing: 0.25rem;
   --font-mono: "JetBrains Mono", monospace;
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
@@ -52,51 +55,56 @@
   --shadow-blur: 0px;
   --shadow-color: rgba(0, 0, 0, 0);
   --shadow-spread: 0px;
-  --letter-spacing: -0.011em; /* SF Pro style tight tracking */
+  --letter-spacing: -0.011em;
   --shadow-opacity: 0;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 0px;
 
-  /* Signature drop-shadow under product imagery */
-  --product-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+  --product-shadow: rgba(0, 0, 0, 0.06) 0px 2px 12px 0px;
 }
 
-/* ── Design Tokens: Dark Mode (Apple Design Guidelines) ── */
+/* ── Design Tokens: Dark Mode (Muted / Corporate — Stripe/Linear/Notion) ── */
 .dark {
-  --background: #000000; /* surface-black */
-  --foreground: #ffffff; /* body-on-dark */
+  --background: #14161a; /* Solid dark gray-navy canvas */
+  --foreground: #e8e9eb; /* Off-white for headings */
 
-  --card: #272729; /* surface-tile-1 */
-  --card-foreground: #ffffff;
-  --sidebar: #252527; /* surface-tile-3 */
-  --sidebar-foreground: #cccccc; /* body-muted */
-  --sidebar-border: #2a2a2c; /* surface-tile-2 */
-  --border: #333333; /* hairline on dark */
-  --input: #252527;
-  --muted: #2a2a2c; /* surface-tile-2 */
-  --muted-foreground: #7a7a7a;
-  --secondary: #2a2a2c;
-  --secondary-foreground: #ffffff;
-  --popover: #272729;
-  --popover-foreground: #ffffff;
+  --card: #1a1d23; /* Quiet surface tile */
+  --card-foreground: #e8e9eb;
+  --sidebar: #16181d;
+  --sidebar-foreground: #e8e9eb;
+  --sidebar-border: rgba(255, 255, 255, 0.08); /* Single neutral border */
+  --border: rgba(255, 255, 255, 0.08); /* Single neutral border */
+  --input: #1a1d23;
+  --muted: #1e2229;
+  --muted-foreground: #9ca3af; /* Medium gray for secondary text */
+  --secondary: #1e2229;
+  --secondary-foreground: #e8e9eb;
+  --popover: #1a1d23;
+  --popover-foreground: #e8e9eb;
 
-  /* Accent: Sky Link Blue for dark tiles */
-  --primary: #2997ff; /* Sky Link Blue */
-  --primary-foreground: #ffffff;
-  --ring: #0071e3;
-  --accent: #2a2a2c;
-  --accent-foreground: #2997ff;
-  --sidebar-accent: #2a2a2c;
-  --sidebar-accent-foreground: #2997ff;
-  --sidebar-primary: #2997ff;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #0071e3;
+  /* Primary: Muted Corporate Slate Blue */
+  --primary: #4a6d8c;
+  --primary-foreground: #e8e9eb;
+  --ring: #4a6d8c;
+  --accent: #1e2229;
+  --accent-foreground: #e8e9eb;
+  --sidebar-accent: #1e2229;
+  --sidebar-accent-foreground: #e8e9eb;
+  --sidebar-primary: #4a6d8c;
+  --sidebar-primary-foreground: #e8e9eb;
+  --sidebar-ring: #4a6d8c;
 
-  --chart-1: #2997ff;
-  --chart-2: #0066cc;
-  --chart-3: #7a7a7a;
-  --chart-4: #333333;
-  --chart-5: #ffffff;
+  /* Semantic status: Muted */
+  --destructive: #b85c5c;
+  --destructive-foreground: #e8e9eb;
+  --status-on: #5b8c6e;
+  --status-off: #b85c5c;
+
+  --chart-1: #4a6d8c;
+  --chart-2: #627d98;
+  --chart-3: #829ab1;
+  --chart-4: #9ca3af;
+  --chart-5: #e8e9eb;
 }
 
 /* ── @theme inline: expose all CSS vars to Tailwind 4 utilities ── */
@@ -234,46 +242,41 @@
     border-color: color-mix(in srgb, var(--primary) 60%, transparent) !important;
   }
 
-  /* ── Icon utilities — matches 60/30/10 design palette ── */
+  /* ── Icon utilities — Monochromatic Muted (Corporate) ── */
 
-  /* Primary icon: amber */
   .icon-primary {
-    color: var(--primary);
-    stroke: var(--primary);
+    color: var(--muted-foreground);
+    stroke: var(--muted-foreground);
   }
 
-  /* Muted icon: subdued foreground */
   .icon-muted {
     color: var(--muted-foreground);
     stroke: var(--muted-foreground);
   }
 
-  /* Accent icon: warm amber glow */
   .icon-accent {
-    color: var(--accent-foreground);
-    stroke: var(--accent-foreground);
+    color: var(--muted-foreground);
+    stroke: var(--muted-foreground);
   }
 
-  /* Secondary icon: olive */
   .icon-secondary {
-    color: var(--secondary);
-    stroke: var(--secondary);
+    color: var(--muted-foreground);
+    stroke: var(--muted-foreground);
   }
 
-  /* Destructive icon: orange */
   .icon-destructive {
     color: var(--destructive);
     stroke: var(--destructive);
   }
 
-  /* Icon inside an active nav button gets primary tint */
+  /* Icon inside an active nav button gets foreground tint */
   [data-active="true"] svg,
   .btn-active svg {
-    color: var(--primary);
-    stroke: var(--primary);
+    color: var(--foreground);
+    stroke: var(--foreground);
   }
 
-  /* Icon button container — square, no rounding (radius:0) */
+  /* Icon button container — unified radius, neutral border */
   .icon-btn {
     display: inline-flex;
     align-items: center;
@@ -281,21 +284,20 @@
     border: 1px solid var(--border);
     background: var(--card);
     color: var(--muted-foreground);
+    border-radius: var(--radius);
     padding: 0.4rem;
-    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    transition: color 0.15s, background 0.15s;
     cursor: pointer;
   }
 
   .icon-btn:hover {
-    color: var(--primary);
-    border-color: var(--primary);
-    background: color-mix(in srgb, var(--primary) 8%, var(--card));
+    color: var(--foreground);
+    background: var(--muted);
   }
 
   .icon-btn.active {
-    color: var(--primary);
-    border-color: var(--primary);
-    background: color-mix(in srgb, var(--primary) 15%, var(--card));
+    color: var(--foreground);
+    background: var(--muted);
   }
 
   /* Sidebar nav icon wrapper */

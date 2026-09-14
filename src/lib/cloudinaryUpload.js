@@ -1,7 +1,7 @@
 // ============================================================
 // Cloudinary Upload Helper
 // Cloud Name: mfsjx1oc
-// ⚠️ IMPORTANT: Replace UPLOAD_PRESET below with your actual
+// IMPORTANT: Replace UPLOAD_PRESET below with your actual
 //    Unsigned Upload Preset name from:
 //    Cloudinary Dashboard → Settings → Upload → Upload Presets
 // ============================================================

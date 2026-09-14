@@ -43,7 +43,7 @@ export default function SupportModal({ isOpen, onClose }) {
           >
             {/* Subtle neon glowing accent dots */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
 
             {/* Close button */}
             <button
@@ -92,18 +92,18 @@ export default function SupportModal({ isOpen, onClose }) {
                 href="https://www.linkedin.com/in/ahmad-al-batayneh"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-blue-600/5 to-cyan-500/5 hover:from-blue-600/10 hover:to-cyan-500/10 border border-blue-600/15 hover:border-blue-600/30 transition-all duration-300 group cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border hover:border-white/15 transition-all duration-300 group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/10">
+                  <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-sm">
                     <LinkedinIcon size={20} />
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-foreground group-hover:text-blue-400 transition-colors">لينكد إن (LinkedIn)</p>
+                    <p className="text-sm font-bold text-foreground">لينكد إين (LinkedIn)</p>
                     <p className="text-[11px] text-muted-foreground">م. أحمد البطاينة</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-blue-400 group-hover:translate-x-[-2px] transition-all" />
+                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[-2px] transition-all" />
               </a>
 
               {/* Team Website Link */}
@@ -111,18 +111,18 @@ export default function SupportModal({ isOpen, onClose }) {
                 href="https://team-iot365.netlify.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 hover:from-emerald-500/10 hover:to-cyan-500/10 border border-emerald-500/15 hover:border-emerald-500/30 transition-all duration-300 group cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border hover:border-white/15 transition-all duration-300 group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/10">
+                  <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-sm">
                     <Users size={20} />
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-foreground group-hover:text-emerald-400 transition-colors">فريق العمل (Our Team)</p>
+                    <p className="text-sm font-bold text-foreground">فريق العمل (Our Team)</p>
                     <p className="text-[11px] text-muted-foreground font-mono">team-iot365.netlify.app</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-emerald-400 group-hover:translate-x-[-2px] transition-all" />
+                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[-2px] transition-all" />
               </a>
             </div>
 

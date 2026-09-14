@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { uploadToCloudinary } from '../lib/cloudinaryUpload';
-import { Globe, Edit3, Camera, FileText, Cpu, Eye, ThumbsUp, Copy, Check, AlertCircle, X, Sparkles, FolderCode } from 'lucide-react';
+import { Globe, Edit3, Camera, FileText, Cpu, Eye, ThumbsUp, Copy, Check, AlertCircle, X, Sparkles, FolderCode, Link2, Package } from 'lucide-react';
 
 // Inline SVG icons for brands not available in this lucide-react version
 const GithubIcon = ({ size = 18, className = '' }) => (
@@ -268,12 +268,12 @@ export default function UserProfile({ currentUser }) {
       }, 800);
 
     } catch (err) {
-      console.error("❌ Firestore write error:", err?.code, err?.message);
+      console.error("Firestore write error:", err?.code, err?.message);
       // Detect Firebase permission errors
       if (err?.code === 'permission-denied' || err?.message?.includes('Missing or insufficient permissions')) {
-        setModalError('⛔ خطأ صلاحيات Firestore — يرجى تطبيق قواعد الأمان من Firebase Console → Firestore → Rules');
+        setModalError('خطأ صلاحيات Firestore — يرجى تطبيق قواعد الأمان من Firebase Console → Firestore → Rules');
       } else if (err?.code === 'unavailable' || err?.code === 'network-request-failed') {
-        setModalError('📡 لا يوجد اتصال بالإنترنت. تحقق من اتصالك وأعد المحاولة.');
+        setModalError('لا يوجد اتصال بالإنترنت. تحقق من اتصالك وأعد المحاولة.');
       } else {
         setModalError(`فشل الحفظ: ${err?.code || err?.message || 'خطأ غير معروف'}`);
       }
@@ -311,7 +311,7 @@ export default function UserProfile({ currentUser }) {
         </div>
 
         <h2 className="text-2xl font-black text-foreground mb-2">
-          مرحباً، {currentUser.displayName?.split(' ')[0] || 'مطور'} 👋
+          مرحباً، {currentUser.displayName?.split(' ')[0] || 'مطور'}
         </h2>
         <p className="text-sm text-muted-foreground mb-2">
           أنت على وشك إنشاء ملفك الشخصي في <span className="text-primary font-bold">IOT365 Hub</span>
@@ -323,15 +323,18 @@ export default function UserProfile({ currentUser }) {
         {/* Feature highlights */}
         <div className="grid grid-cols-3 gap-3 mb-8 text-center">
           {[
-            { icon: '🔗', label: 'رابط شخصي' },
-            { icon: '📦', label: 'نشر مشاريع' },
-            { icon: '🌍', label: 'مجتمع عالمي' },
-          ].map((f) => (
-            <div key={f.label} className="bg-card/[0.03] border border-border rounded-2xl p-3">
-              <span className="text-2xl">{f.icon}</span>
-              <p className="text-[10px] text-muted-foreground mt-1 font-semibold">{f.label}</p>
-            </div>
-          ))}
+            { icon: Link2, label: 'رابط شخصي' },
+            { icon: Package, label: 'نشر مشاريع' },
+            { icon: Globe, label: 'مجتمع عالمي' },
+          ].map((f) => {
+            const IconComp = f.icon;
+            return (
+              <div key={f.label} className="bg-card/[0.03] border border-border rounded-2xl p-3 flex flex-col items-center justify-center">
+                <IconComp className="text-primary mb-1" size={22} />
+                <p className="text-[10px] text-muted-foreground font-semibold">{f.label}</p>
+              </div>
+            );
+          })}
         </div>
 
         <button
@@ -369,7 +372,7 @@ export default function UserProfile({ currentUser }) {
                 </div>
               )}
               {modalSuccess && (
-                <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-xl flex items-center gap-2 text-xs mb-4">
+                <div className="bg-primary/10 border border-primary/20 text-primary p-3 rounded-xl flex items-center gap-2 text-xs mb-4">
                   <Check size={16} />
                   <p>{modalSuccess}</p>
                 </div>

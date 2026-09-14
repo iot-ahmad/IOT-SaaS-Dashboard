@@ -231,7 +231,7 @@ function HubLayout({ children, user, logout }) {
             {user ? (
               <button onClick={() => navigate('/hub/new')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">نشر مشروع</button>
             ) : (
-              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">انضم للمجتمع 🚀</button>
+              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">انضم للمجتمع</button>
             )}
             <button onClick={() => setShowSupport(true)} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">الدعم الفني</button>
           </div>
@@ -567,7 +567,7 @@ function Dashboard({ user, logout }) {
             payload = parts[1];
           }
 
-          console.log(`⚡ Automation triggered: ${rule.name}. Publishing "${payload}" to "${actionTopic}"`);
+          console.log(`[Automation] Automation triggered: ${rule.name}. Publishing "${payload}" to "${actionTopic}"`);
           publish(actionTopic, payload);
 
           // Update lastRan in Firestore

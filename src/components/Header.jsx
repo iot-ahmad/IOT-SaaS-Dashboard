@@ -121,28 +121,28 @@ export default function Header({
         {/* Projects Community Button */}
         <button
           onClick={() => navigate('/hub')}
-          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
-          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-primary transition-colors cursor-pointer"
+          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
+          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-foreground transition-colors cursor-pointer"
           title="مجتمع المشاريع"
         >
-          <Globe size={18} />
+          <Globe size={16} />
           <span className="hidden sm:inline">مجتمع المشاريع</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
-          className="p-2 hover:text-primary transition-colors cursor-pointer"
+          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
+          className="p-2 hover:text-foreground transition-colors cursor-pointer"
           title="Toggle Theme"
         >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          {isDark ? <Sun size={16} /> : <Moon size={16} />}
         </button>
 
         {/* MQTT Status */}
         <div style={isConnected
-          ? { background: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.35)', color: '#22c55e' }
-          : { background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.35)', color: '#ef4444' }
+          ? { background: 'rgba(91, 140, 110, 0.12)', border: '1px solid var(--border)', color: '#5B8C6E', borderRadius: 'var(--radius)' }
+          : { background: 'rgba(184, 92, 92, 0.12)', border: '1px solid var(--border)', color: '#B85C5C', borderRadius: 'var(--radius)' }
         } className="hidden lg:flex items-center gap-2 px-3 py-2 text-xs font-medium">
           {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
           <span className="hidden xl:inline">{isConnected ? 'MQTT Connected' : 'Disconnected'}</span>

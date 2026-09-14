@@ -27,7 +27,7 @@ const CopyTopicButton = ({ topic, userUID }) => {
     <button 
       onClick={handleCopy}
       title={`Copy: ${fullTopic}`}
-      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-blue-500/20 text-blue-400' : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground/70'}`}
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground/70'}`}
     >
       {copied ? <Check size={10} /> : <Copy size={10} />}
       {copied ? 'Copied!' : fullTopic}
@@ -54,8 +54,8 @@ const LastSeenBadge = ({ lastSeenTimestamp }) => {
   else label = `${Math.floor(diffSec / 3600)}h ago`;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${isOffline ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${isOffline ? 'bg-red-400' : 'bg-blue-400 animate-pulse'}`}></span>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${isOffline ? 'bg-red-500/10 text-red-400' : 'bg-primary/10 text-primary'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${isOffline ? 'bg-red-400' : 'bg-primary animate-pulse'}`}></span>
       {isOffline ? 'Offline' : label}
     </span>
   );
@@ -343,7 +343,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       if (part.type === 'code') {
         return (
           <div key={idx} className="my-3 font-mono text-left" dir="ltr">
-            <pre className="bg-[#030406] border border-border dark:border-white/[0.07] rounded-xl p-4 overflow-x-auto text-[11px] leading-relaxed font-mono text-emerald-400 dark:text-emerald-400/90 scrollbar-thin text-left ltr-text">
+            <pre className="bg-[#030406] border border-border dark:border-white/[0.07] rounded-xl p-4 overflow-x-auto text-[11px] leading-relaxed font-mono text-slate-300 dark:text-slate-400 scrollbar-thin text-left ltr-text">
               <code>{part.code}</code>
             </pre>
           </div>
@@ -353,7 +353,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       let line = part.content;
       if (line.trim() === '') return <div key={idx} className="h-1.5" />;
 
-      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-muted bg-background/40 border border-border px-1.5 py-0.5 rounded font-mono text-amber-500 dark:text-amber-300 text-[10px]">$1</code></bdi>');
+      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-muted bg-background/40 border border-border px-1.5 py-0.5 rounded font-mono text-white/70 dark:text-white/60 text-[10px]">$1</code></bdi>');
       html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
       
       if (/^\*(?!\*)/.test(line.trim())) {
@@ -753,8 +753,8 @@ export const AlertsView = ({ userUID }) => {
     switch (type) {
       case 'critical': return { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-400/10' };
       case 'warning': return { icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-400/10' };
-      case 'success': return { icon: CheckCircle2, color: 'text-blue-400', bg: 'bg-blue-400/10' };
-      default: return { icon: Info, color: 'text-blue-400', bg: 'bg-blue-400/10' };
+      case 'success': return { icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/10' };
+      default: return { icon: Info, color: 'text-primary', bg: 'bg-primary/10' };
     }
   };
 
@@ -921,9 +921,9 @@ export const LiveTerminal = ({ messages, isConnected }) => {
   }, [messages, isExpanded]);
 
   const colorMap = {
-    incoming: 'text-blue-400',
-    outgoing: 'text-blue-400',
-    system: 'text-yellow-400',
+    incoming: 'text-primary/80',
+    outgoing: 'text-primary/80',
+    system: 'text-white/50',
     error: 'text-red-400',
   };
 
@@ -936,7 +936,7 @@ export const LiveTerminal = ({ messages, isConnected }) => {
         <div className="flex items-center gap-2">
           <Terminal size={14} className="text-primary" />
           <span className="text-xs font-bold text-foreground/60">Live Terminal</span>
-          <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-blue-400 animate-pulse' : 'bg-red-400'}`}></span>
+          <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-primary animate-pulse' : 'bg-red-400'}`}></span>
           <span className="text-[10px] text-muted-foreground/50 hidden sm:inline">▶ MQTT publishes</span>
         </div>
         <div className="flex items-center gap-4">

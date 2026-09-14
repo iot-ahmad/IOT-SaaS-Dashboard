@@ -134,7 +134,7 @@ function CopyBtn({ text }) {
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
       className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all max-w-[260px] truncate
-        ${copied ? 'bg-blue-500/20 text-blue-400' : 'bg-card/5 text-white/40 hover:bg-card/10 hover:text-white/70'}`}
+        ${copied ? 'bg-primary/20 text-primary' : 'bg-card/5 text-white/40 hover:bg-card/10 hover:text-white/70'}`}
     >
       {copied ? <Check size={10} /> : <Copy size={10} />}
       <span className="truncate">{text}</span>
@@ -153,7 +153,7 @@ function StatusBadge({ ts, isLive }) {
   const label = isLive ? 'Online' : diff < 5 ? 'Just now' : diff < 60 ? `${diff}s ago` : diff < 3600 ? `${Math.floor(diff/60)}m ago` : `${Math.floor(diff/3600)}h ago`;
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
-      ${offline ? 'bg-red-500/10 text-red-500 dark:text-red-400' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold'}`}>
+      ${offline ? 'bg-red-500/10 text-red-500 dark:text-red-400' : 'bg-primary/10 text-primary font-bold'}`}>
       {offline ? <WifiOff size={10} /> : <Wifi size={10} className="animate-pulse" />}
       {offline ? 'Offline' : label}
     </span>
@@ -432,7 +432,7 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
                   ))}
                 </select>
                 {pin && (
-                  <p className={`text-[11px] mt-1.5 ${GPIO_OPTIONS.find(g => g.value === pin)?.type === 'adc' ? 'text-amber-400' : 'text-blue-400'}`}>
+                  <p className="text-[11px] mt-1.5 text-white/50">
                     {GPIO_OPTIONS.find(g => g.value === pin)?.type === 'adc'
                       ? '⚠ ADC pin — suitable for analog sensors (0–4095 range)'
                       : '✓ Digital pin — suitable for relays, DHT, digital sensors'}
@@ -557,14 +557,14 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
                 <div 
                   key={i} 
                   className={`p-3 rounded-xl border flex items-center justify-between gap-2 transition-all ${
-                    isAdded ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-muted/30 border-border'
+                    isAdded ? 'bg-white/[0.03] border-white/15' : 'bg-muted/30 border-border'
                   }`}
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="font-bold text-xs text-foreground truncate">{dev.name}</span>
                       {isAdded && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400">مضاف ✓</span>
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-white/60">مضاف ✓</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
@@ -572,11 +572,7 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
                       <span className="truncate text-primary">{dev.topic}</span>
                     </div>
                   </div>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded shrink-0 ${
-                    dev.type === 'Sensor' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
-                    dev.type === 'Actuator' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                    'bg-purple-500/10 text-purple-400 border border-purple-500/20'
-                  }`}>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded shrink-0 bg-white/[0.06] text-white/50 border border-white/[0.08]">
                     {dev.type}
                   </span>
                 </div>
@@ -596,7 +592,7 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
                 const allDevs = PROJECT_DEVICE_PRESETS.flatMap(p => p.devices);
                 onImport(allDevs);
               }}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs hover:opacity-90 shadow-md active:scale-95 flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow-md active:scale-95 flex items-center gap-1.5"
             >
               <Sparkles size={14} />
               استيراد كافة المشاريع معاً
@@ -724,9 +720,9 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
   };
 
   const typeIcon = (type) => {
-    if (type === 'Sensor') return <Thermometer size={14} className="text-blue-400" />;
-    if (type === 'Actuator') return <Zap size={14} className="text-amber-400" />;
-    return <CircuitBoard size={14} className="text-purple-400" />;
+    if (type === 'Sensor') return <Thermometer size={14} className="text-white/50" />;
+    if (type === 'Actuator') return <Zap size={14} className="text-white/50" />;
+    return <CircuitBoard size={14} className="text-white/50" />;
   };
 
   const existingTopicsSet = new Set(devices.map(d => d.topic));
@@ -771,7 +767,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
 
       {/* Quick Presets Banner if user has few devices */}
       {devices.length <= 2 && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 via-primary/5 to-transparent border border-primary/25 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
               <Sparkles size={20} className="text-primary" />

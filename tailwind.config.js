@@ -7,11 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0F1115',
-        primary: '#9ca3af', // رمادي بدل الأزرق (#3b82f6)
+        background: '#14161A',
+        primary: '#4A6D8C',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       }
     },
   },
