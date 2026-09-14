@@ -22,17 +22,17 @@
   --popover-foreground: #14161a;
 
   /* Primary: Muted Corporate Slate Blue */
-  --primary: #4a6d8c;
+  --primary: #0666b9;
   --primary-foreground: #ffffff;
-  --ring: #4a6d8c;
+  --ring: #0c5596;
   --accent: #f3f4f6;
-  --accent-foreground: #4a6d8c;
+  --accent-foreground: #0666b9;
   
   --sidebar-accent: #f3f4f6;
-  --sidebar-accent-foreground: #4a6d8c;
-  --sidebar-primary: #4a6d8c;
+  --sidebar-accent-foreground: #0666b9;
+  --sidebar-primary: #0666b9;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #4a6d8c;
+  --sidebar-ring: #0666b9;
 
   /* Semantic status: Muted */
   --destructive: #b85c5c;
@@ -40,8 +40,8 @@
   --status-on: #5b8c6e;
   --status-off: #b85c5c;
 
-  --chart-1: #4a6d8c;
-  --chart-2: #627d98;
+  --chart-1: #0666b9;
+  --chart-2: #416486;
   --chart-3: #829ab1;
   --chart-4: #9fb3c8;
   --chart-5: #bcccdc;
