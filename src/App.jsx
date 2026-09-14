@@ -139,10 +139,6 @@ function HubLayout({ children, user, logout }) {
                 onClick={() => navigate('/')}
                 className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 rounded-xl border border-border hover:border-primary/40 bg-card/50 dark:bg-card/5 cursor-pointer"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
                 لوحة التحكم
               </button>
 
@@ -159,20 +155,6 @@ function HubLayout({ children, user, logout }) {
                       {(user.displayName || user.email || 'U').charAt(0)}
                     </div>
                   )}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={`text-muted-foreground transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
-                  >
-                    <path d="m6 9 6 6 6-6"/>
-                  </svg>
                 </button>
                 {/* Dropdown */}
                 <div className={`absolute top-full right-0 mt-2 w-44 bg-card dark:bg-[#0b0c10] border border-border rounded-2xl shadow-xl shadow-black/20 transition-all duration-200 overflow-hidden z-50 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
