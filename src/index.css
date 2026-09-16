@@ -5,7 +5,7 @@
 
 /* ── Design Tokens: Light Mode (Muted / Corporate) ── */
 :root {
-  --background: #f4f5f7;
+  --background: #ffffffe3;
   --foreground: #14161a;
 
   --card: #ffffff;
@@ -19,7 +19,7 @@
   --muted-foreground: #6b7280;
   --secondary: #f3f4f6;
   --secondary-foreground: #14161a;
-  --popover: #ffffff;
+  --popover: #ececec;
   --popover-foreground: #14161a;
 
   /* Primary: Muted Corporate Slate Blue */
@@ -36,10 +36,10 @@
   --sidebar-ring: #0666b9;
 
   /* Semantic status: Muted */
-  --destructive: #b85c5c;
+  --destructive: #a53636;
   --destructive-foreground: #ffffff;
-  --status-on: #75bb90;
-  --status-off: #b85c5c;
+  --status-on: #2db160;
+  --status-off: #992929;
 
   --chart-1: #0666b9;
   --chart-2: #0666b9;
@@ -89,10 +89,10 @@
   --sidebar-ring: #0666b9;
 
   /* Semantic status: Muted */
-  --destructive: #b85c5c;
+  --destructive: #cf2b2b;
   --destructive-foreground: #e8e9eb;
-  --status-on: #5b8c6e;
-  --status-off: #b85c5c;
+  --status-on: #34a860;
+  --status-off: #a82424;
 
   --chart-1: #0666b9;
   --chart-2: #0666b9;
