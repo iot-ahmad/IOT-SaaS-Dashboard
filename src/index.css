@@ -64,13 +64,13 @@
 
   --card: #1a1d23; /* Quiet surface tile */
   --card-foreground: #e8e9eb;
-  --sidebar: #16181d;
-  --sidebar-foreground: #e8e9eb;
+  --sidebar: #191a1b;
+  --sidebar-foreground: #f7f4f4;
   --sidebar-border: rgba(255, 255, 255, 0.08); /* Single neutral border */
-  --border: rgba(255, 255, 255, 0.582); /* Single neutral border */
+  --border: rgba(44, 43, 43, 0.08); /* Single neutral border */
   --input: #1a1d23;
   --muted: #1e2229;
-  --muted-foreground: #9ca3af; /* Medium gray for secondary text */
+  --muted-foreground: #ffffff; /* Medium gray for secondary text */
   --secondary: #1e2229;
   --secondary-foreground: #e8e9eb;
   --popover: #1a1d23;
@@ -80,7 +80,7 @@
   --primary: #0666b9;
   --primary-foreground: #e8e9eb;
   --ring: #0c5596;
-  --accent: #1e2229;
+  --accent: #19191a;
   --accent-foreground: #e8e9eb;
   --sidebar-accent: #1e2229;
   --sidebar-accent-foreground: #e8e9eb;
