@@ -6,21 +6,21 @@
 /* ── Design Tokens: Light Mode (Muted / Corporate) ── */
 :root {
   --background: #f4f5f7;
-  --foreground: #14161a;
+  --foreground: #0f0f0f;
 
   --card: #ffffff;
-  --card-foreground: #14161a;
+  --card-foreground: #0f0f0f;
   --sidebar: #ebedf0;
-  --sidebar-foreground: #14161a;
+  --sidebar-foreground: #0f0f0f;
   --sidebar-border: rgba(0, 0, 0, 0.08);
   --border: rgba(0, 0, 0, 0.08);
   --input: #ffffff;
   --muted: #e5e7eb;
-  --muted-foreground: #6b7280;
+  --muted-foreground: #0f0f0f;
   --secondary: #f3f4f6;
-  --secondary-foreground: #14161a;
+  --secondary-foreground: #0f0f0f;
   --popover: #ffffff;
-  --popover-foreground: #14161a;
+  --popover-foreground: #0f0f0f;
 
   /* Primary: Muted Corporate Slate Blue */
   --primary: #0666b9;
@@ -59,21 +59,21 @@
 
 /* ── Design Tokens: Dark Mode (Muted / Corporate — Stripe/Linear/Notion) ── */
 .dark {
-  --background: #14161a; /* Solid dark gray-navy canvas */
+  --background: #0f0f0f; /* Solid dark gray-navy canvas */
   --foreground: #e8e9eb; /* Off-white for headings */
 
-  --card: #1a1d23; /* Quiet surface tile */
+  --card: #0f0f0f; /* Quiet surface tile */
   --card-foreground: #e8e9eb;
-  --sidebar: #16181d;
+  --sidebar: #0f0f0f;
   --sidebar-foreground: #e8e9eb;
-  --sidebar-border: rgba(255, 255, 255, 0.08); /* Single neutral border */
-  --border: rgba(255, 255, 255, 0.08); /* Single neutral border */
-  --input: #1a1d23;
-  --muted: #1e2229;
-  --muted-foreground: #9ca3af; /* Medium gray for secondary text */
-  --secondary: #1e2229;
+  --sidebar-border: rgb(20, 20, 20); /* Single neutral border */
+  --border: rgb(19, 17, 17); /* Single neutral border */
+  --input: #0f0f0f;
+  --muted: #0f0f0f;
+  --muted-foreground: #0f0f0f; /* Medium gray for secondary text */
+  --secondary: #0f0f0f;
   --secondary-foreground: #e8e9eb;
-  --popover: #1a1d23;
+  --popover: #0f0f0f;
   --popover-foreground: #e8e9eb;
 
   /* Primary: Muted Corporate Slate Blue */
