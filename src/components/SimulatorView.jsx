@@ -15,11 +15,11 @@ import { SIMULATOR_PROJECTS } from '../data/simulatorProjects';
  * Normalizes Wokwi project URL or ID into a clean embeddable iframe URL.
  */
 function getWokwiEmbedUrl(rawUrl) {
-  if (!rawUrl) return 'https://wokwi.com/projects/468717878078638081?embed=1';
+  if (!rawUrl) return 'https://wokwi.com';
   let trimmed = rawUrl.trim();
   
   if (/^\d+$/.test(trimmed)) {
-    return `https://wokwi.com/projects/${trimmed}?embed=1`;
+    return `https://wokwi.com${trimmed}?embed=1`;
   }
   
   if (trimmed.includes('embed=1')) {
@@ -38,7 +38,7 @@ export default function SimulatorView({
   messages, 
   userUID, 
   lastSeen, 
-  initialWokwiUrl = 'https://wokwi.com/projects/468717878078638081' 
+  initialWokwiUrl = 'https://wokwi.com' 
 }) {
   const containerRef = useRef(null);
   
@@ -446,7 +446,7 @@ export default function SimulatorView({
         
         {/* Pane 1: Wokwi Circuit Simulator */}
         {(viewMode === 'split' || viewMode === 'circuit') && (
-          <div className={`relative flex flex-col bg-card/90 backdrop-blur-md border border-border rounded-xl overflow-hidden shadow-xl ${
+          <div className={`relative flex flex-col bg-card text-card-foreground backdrop-blur-md border border-border rounded-xl overflow-hidden shadow-xl ${
             viewMode === 'circuit' 
               ? 'w-full h-full' 
               : (orientation === 'vertical' ? 'w-full lg:w-1/2 h-1/2 lg:h-full' : 'w-full h-1/2')
@@ -514,7 +514,7 @@ export default function SimulatorView({
 
         {/* Pane 2: IoT Dashboard / Devices / Terminal Pane */}
         {(viewMode === 'split' || viewMode === 'dashboard') && (
-          <div className={`relative flex flex-col bg-card/80 backdrop-blur-md border border-border rounded-2xl overflow-hidden shadow-xl ${
+          <div className={`relative flex flex-col bg-card text-card-foreground backdrop-blur-md border border-border rounded-2xl overflow-hidden shadow-xl ${
             viewMode === 'dashboard' 
               ? 'w-full h-full' 
               : (orientation === 'vertical' ? 'w-full lg:w-1/2 h-1/2 lg:h-full' : 'w-full h-1/2')
