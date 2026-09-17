@@ -271,12 +271,12 @@ export default function SimulatorView({
               تحديث
             </Button>
 
-            {activeWokwiUrl !== 'https://wokwi.com/projects/468717878078638081' && (
+            {activeWokwiUrl !== (isCustomProject ? blankWokwiUrl : (activeProject?.wokwiUrl || blankWokwiUrl)) && (
               <button
                 type="button"
                 onClick={handleResetDefault}
                 className="text-[11px] text-muted-foreground hover:text-primary underline px-1 shrink-0"
-                title="إعادة للمشروع الافتراضي"
+                title="إعادة لرابط المشروع الأصلي"
               >
                 الافتراضي
               </button>

@@ -10,7 +10,7 @@
 export const SIMULATOR_PROJECTS = [
   {
     id: 'all-in-one',
-    title: 'المحطة الشاملة لاختبار المنصة (Mega All-In-One Station)',
+    title: 'مشروع الطقس والمحطة الشاملة (Weather & All-In-One Station)',
     badge: 'موصى به للاختبار الشامل',
     description: 'مشروع ESP32 ضخم وشامل يجمع 5 حساسات و 8 مشغلات للتحقق من جميع أدوات لوحة التحكم والتيرمنال وقراءات الحساسات في وقت واحد.',
     wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
@@ -462,7 +462,7 @@ void loop() {
     title: 'المزرعة الذكية والري التلقائي (Smart Farm & Irrigation)',
     badge: 'مشاريع زراعية و STEM',
     description: 'مشروع متخصص للمزارع الذكية والبيوت المحمية: قياس رطوبة التربة عبر Potentiometer، حرارة ورطوبة الجو عبر DHT22، والتحكم بمضخة المياه وصمام الري.',
-    wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
+    wokwiUrl: 'https://wokwi.com/projects/475438726717854721',
     accentColor: 'from-emerald-600 to-teal-600',
     stats: { sensors: 2, actuators: 3, wires: 12 },
     pinouts: [
@@ -620,7 +620,7 @@ void loop() {
     title: 'المنزل الذكي ونظام الحماية (Smart Home & Security)',
     badge: 'أمن وسلامة وأتمتة',
     description: 'نظام حماية منزلي يشتمل على حساس حركة PIR، قفل باب إلكتروني (Servo)، صفارة إنذار (Buzzer)، وإضاءة ذكية قابلة للتعتيم.',
-    wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
+    wokwiUrl: 'https://wokwi.com/projects/475438918066225153',
     accentColor: 'from-amber-600 to-red-600',
     stats: { sensors: 2, actuators: 4, wires: 16 },
     pinouts: [
@@ -771,7 +771,7 @@ void loop() {
     title: 'الروبوت والسيارة الذكية (Robotics & RC Smart Car)',
     badge: 'روبوتكس وتحكم D-Pad',
     description: 'سيارة ذكية مدعومة بحساس مسافة لمكافحة الاصطدام، تحكم كامل بالاتجاهات D-Pad وسلايدر السرعة ومصابيح أمامية وبوق صوتي.',
-    wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
+    wokwiUrl: 'https://wokwi.com/projects/475439028329251841',
     accentColor: 'from-purple-600 to-pink-600',
     stats: { sensors: 1, actuators: 5, wires: 14 },
     pinouts: [
