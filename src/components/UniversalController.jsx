@@ -736,8 +736,8 @@ function GaugeWidget({ widget, value, history = [] }) {
   const pct = hasData
     ? Math.min(100, Math.max(0, (num / widget.maxVal) * 100))
     : 0;
-  // Subtle visual accent color for gauge progress ring only
-  const ringColor = pct > 80 ? '#B85C5C' : '#5B8C6E';
+  // Bright eye-catching colors for gauge ring
+  const ringColor = pct > 80 ? '#EF4444' : '#38BDF8';
 
   const chartData = history.map((y, i) => ({ i, v: y }));
 
@@ -786,12 +786,12 @@ function GaugeWidget({ widget, value, history = [] }) {
                   <AreaChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id={`grad_${widget.id}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={ringColor} stopOpacity={0.15}/>
+                        <stop offset="0%" stopColor={ringColor} stopOpacity={0.25}/>
                         <stop offset="100%" stopColor={ringColor} stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <YAxis domain={['auto', 'auto']} hide width={0} />
-                    <Area type="monotone" dataKey="v" stroke={ringColor} strokeWidth={1.5} fill={`url(#grad_${widget.id})`} dot={false} isAnimationActive={false} />
+                    <Area type="monotone" dataKey="v" stroke={ringColor} strokeWidth={2} fill={`url(#grad_${widget.id})`} dot={false} isAnimationActive={false} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -833,8 +833,8 @@ function SwitchWidget({ widget, value, publish }) {
       <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
         {/* Status indicator */}
         <div className="absolute top-0 right-2 flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full ${isOn ? 'bg-[#5B8C6E]' : 'bg-[#B85C5C]'}`} />
-          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-[#5B8C6E]' : 'text-muted-foreground/70'}`}>
+          <span className={`h-2 w-2 rounded-full ${isOn ? 'bg-[#22C55E] shadow-sm shadow-[#22C55E]' : 'bg-[#EF4444]'}`} />
+          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-[#22C55E]' : 'text-muted-foreground/70'}`}>
             {isOn ? 'ACTIVE' : 'IDLE'}
           </span>
         </div>
@@ -843,13 +843,13 @@ function SwitchWidget({ widget, value, publish }) {
         <div
           className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
             isOn
-              ? 'bg-[#5B8C6E]/15 border-border scale-95 text-[#5B8C6E]'
+              ? 'bg-[#22C55E]/20 border-[#22C55E]/40 scale-95 text-[#22C55E] shadow-lg shadow-[#22C55E]/20'
               : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
           }`}
           onClick={toggle}
           title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
         >
-          <Zap size={28} className={isOn ? 'text-[#5B8C6E]' : 'text-muted-foreground/60'} />
+          <Zap size={28} className={isOn ? 'text-[#22C55E]' : 'text-muted-foreground/60'} />
         </div>
       </div>
     </div>
@@ -867,7 +867,7 @@ function SliderWidget({ widget, publish }) {
     publish(widget.topic, String(v));
   };
 
-  const color = '#4A6D8C';
+  const color = '#38BDF8';
   const label = widget.type === 'speed' ? 'Speed' : 'Angle';
   const Icon = widget.type === 'speed' ? Car : SlidersHorizontal;
 
@@ -942,23 +942,23 @@ function RelayWidget({ widget, value, publish }) {
       </div>
       <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
         <div className="absolute top-0 right-2 flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full transition-all ${isOn ? 'bg-[#5B8C6E]' : 'bg-[#B85C5C]'}`} />
-          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-[#5B8C6E]' : 'text-muted-foreground/70'}`}>
+          <span className={`h-2 w-2 rounded-full transition-all ${isOn ? 'bg-[#22C55E] shadow-sm shadow-[#22C55E]' : 'bg-[#EF4444]'}`} />
+          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-[#22C55E]' : 'text-muted-foreground/70'}`}>
             {isOn ? 'ACTIVE' : 'IDLE'}
           </span>
         </div>
         <div
           className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
             isOn
-              ? 'bg-[#5B8C6E]/12 border-border scale-95 text-[#5B8C6E]'
+              ? 'bg-[#22C55E]/15 border-[#22C55E]/40 scale-95 text-[#22C55E] shadow-lg shadow-[#22C55E]/20'
               : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
           }`}
           onClick={toggle}
         >
-          <IconComponent size={28} className={isOn ? 'text-[#5B8C6E]' : 'text-muted-foreground/60'} />
+          <IconComponent size={28} className={isOn ? 'text-[#22C55E]' : 'text-muted-foreground/60'} />
         </div>
-        <span className={`text-[10px] font-bold px-3 py-0.5 rounded-full border border-border ${
-          isOn ? 'bg-[#5B8C6E]/10 text-[#5B8C6E]' : 'bg-muted text-muted-foreground/70'
+        <span className={`text-[10px] font-bold px-3 py-0.5 rounded-full border ${
+          isOn ? 'bg-[#22C55E]/15 text-[#22C55E] border-[#22C55E]/30' : 'bg-muted text-muted-foreground/70 border-border'
         }`}>{isOn ? `${config.label.toUpperCase()} CLOSED` : `${config.label.toUpperCase()} OPEN`}</span>
       </div>
     </div>
@@ -986,7 +986,7 @@ function DimmerWidget({ widget, publish }) {
   }[widget.type] || { icon: Lightbulb, label: 'Level' };
 
   const IconComponent = config.icon;
-  const accentHex = '#4A6D8C';
+  const accentHex = '#38BDF8';
 
   return (
     <div className="flex flex-col h-full gap-2 text-left">
@@ -1002,7 +1002,7 @@ function DimmerWidget({ widget, publish }) {
       <div className="flex-1 flex flex-col justify-center gap-3 px-1">
         <div className="flex items-center justify-center">
           <div className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-muted/40 border border-border">
-            <IconComponent size={24} className={pct > 0 ? 'text-foreground' : 'text-muted-foreground/40'} />
+            <IconComponent size={24} className={pct > 0 ? 'text-[#38BDF8]' : 'text-muted-foreground/40'} />
           </div>
         </div>
         <div className="flex justify-between items-baseline">
@@ -1023,7 +1023,7 @@ function DimmerWidget({ widget, publish }) {
 
 // ─── RGB Strip Widget ─────────────────────────────────────────────────────────
 function RGBWidget({ widget, publish }) {
-  const [color, setColor] = useState('#4A6D8C');
+  const [color, setColor] = useState('#38BDF8');
   const [brightness, setBrightness] = useState(100);
 
   const hexToRgb = (hex) => {
@@ -1048,7 +1048,7 @@ function RGBWidget({ widget, publish }) {
     publish(widget.topic, `${Math.round(r*scale)},${Math.round(g*scale)},${Math.round(b*scale)}`);
   };
 
-  const presets = ['#4A6D8C','#5B8C6E','#8C7A5B','#B85C5C','#6E5B8C','#5B7D8C','#8C8C8C','#D1D5DB'];
+  const presets = ['#38BDF8','#22C55E','#F59E0B','#EF4444','#A855F7','#EC4899','#06B6D4','#F8FAFC'];
 
   return (
     <div className="flex flex-col h-full gap-2 text-left">
@@ -1063,7 +1063,7 @@ function RGBWidget({ widget, publish }) {
       </div>
       <div className="flex-1 flex flex-col justify-center gap-2.5 min-h-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl border border-border overflow-hidden flex-shrink-0"
+          <div className="w-10 h-10 rounded-xl border border-border overflow-hidden flex-shrink-0 shadow-sm"
             style={{ background: color }}>
             <input type="color" value={color} onChange={handleColorChange}
               className="w-full h-full opacity-0 cursor-pointer" />
@@ -1076,7 +1076,7 @@ function RGBWidget({ widget, publish }) {
         <div className="flex gap-1.5 flex-wrap">
           {presets.map(c => (
             <button key={c} onClick={() => { setColor(c); handleColorChange({ target: { value: c } }); }}
-              className={`w-6 h-6 rounded-lg border transition-all ${ color === c ? 'border-foreground scale-110' : 'border-border hover:scale-105'}`}
+              className={`w-6 h-6 rounded-lg border transition-all ${ color === c ? 'border-foreground scale-110 shadow-md' : 'border-border hover:scale-105'}`}
               style={{ background: c }} />
           ))}
         </div>
@@ -1087,7 +1087,7 @@ function RGBWidget({ widget, publish }) {
           </div>
           <input type="range" min="0" max="100" value={brightness} onChange={handleBrightness}
             className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-            style={{ accentColor: '#4A6D8C' }} />
+            style={{ accentColor: '#38BDF8' }} />
         </div>
       </div>
     </div>
@@ -1126,7 +1126,7 @@ function SceneWidget({ widget, publish }) {
             onClick={() => handleScene(scene)}
             className={`w-full py-2.5 px-3 rounded-xl border text-xs font-bold transition-all ${
               active === scene.key
-                ? 'bg-muted border-border text-foreground font-extrabold'
+                ? 'bg-muted border-border text-foreground font-extrabold shadow-sm'
                 : 'bg-muted/20 border-border text-muted-foreground hover:text-foreground hover:bg-muted/50'
             }`}
           >
@@ -1170,24 +1170,24 @@ function SchedulerWidget({ widget, publish }) {
         </div>
         <button
           onClick={() => setEnabled(v => !v)}
-          className={`w-10 h-5 rounded-full p-0.5 transition-colors duration-300 ${ enabled ? 'bg-[#5B8C6E]' : 'bg-muted' }`}
+          className={`w-10 h-5 rounded-full p-0.5 transition-colors duration-300 ${ enabled ? 'bg-[#22C55E]' : 'bg-muted' }`}
         >
           <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-300 ${ enabled ? 'translate-x-5' : 'translate-x-0' }`} />
         </button>
       </div>
       <div className="flex-1 flex flex-col justify-center gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] w-12 text-[#5B8C6E] font-bold">ON:</span>
+          <span className="text-[10px] w-12 text-[#22C55E] font-bold">ON:</span>
           <input type="time" value={onTime} onChange={e => setOnTime(e.target.value)}
             className="flex-1 bg-muted border border-border rounded-lg px-2 py-1.5 text-sm font-mono focus:outline-none focus:border-border text-foreground" />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] w-12 text-[#B85C5C] font-bold">OFF:</span>
+          <span className="text-[10px] w-12 text-[#EF4444] font-bold">OFF:</span>
           <input type="time" value={offTime} onChange={e => setOffTime(e.target.value)}
             className="flex-1 bg-muted border border-border rounded-lg px-2 py-1.5 text-sm font-mono focus:outline-none focus:border-border text-foreground" />
         </div>
         <div className={`text-[10px] text-center py-1.5 rounded-lg font-bold border border-border ${
-          enabled ? 'bg-muted text-foreground' : 'bg-muted/40 text-muted-foreground'
+          enabled ? 'bg-[#22C55E]/15 text-[#22C55E] border-[#22C55E]/30' : 'bg-muted/40 text-muted-foreground'
         }`}>
           {enabled ? 'الجدولة نشطة' : 'الجدولة متوقفة'}
         </div>
@@ -1228,9 +1228,9 @@ function ServoWidget({ widget, publish }) {
         {/* Arm visual */}
         <div className="flex justify-center">
           <svg width="80" height="60" viewBox="0 0 100 70">
-            <circle cx="50" cy="55" r="12" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
-            <circle cx="50" cy="55" r="5" fill="#4A6D8C" />
-            <line x1="50" y1="55" x2={armX} y2={armY + 5} stroke="#4A6D8C" strokeWidth="3" strokeLinecap="round" />
+            <circle cx="50" cy="55" r="12" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <circle cx="50" cy="55" r="5" fill="#38BDF8" />
+            <line x1="50" y1="55" x2={armX} y2={armY + 5} stroke="#38BDF8" strokeWidth="3" strokeLinecap="round" />
             <circle cx={armX} cy={armY + 5} r="4" fill="#9CA3AF" />
           </svg>
         </div>
@@ -1240,7 +1240,7 @@ function ServoWidget({ widget, publish }) {
         </div>
         <input type="range" min="0" max="180" value={angle} onChange={handleChange}
           className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#4A6D8C' }} />
+          style={{ accentColor: '#38BDF8' }} />
         <div className="flex justify-between text-[9px] text-muted-foreground/60">
           <span>0°</span><span>90°</span><span>180°</span>
         </div>
@@ -1264,7 +1264,7 @@ function DCMotorWidget({ widget, publish }) {
     <div className="flex flex-col h-full gap-2 text-left">
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2 text-foreground">
-          <RotateCw size={16} className={speed > 0 ? 'animate-spin' : ''} style={{ animationDuration: speed > 0 ? `${1 - speed/300}s` : '1s' }} />
+          <RotateCw size={16} className={speed > 0 ? 'animate-spin text-[#38BDF8]' : ''} style={{ animationDuration: speed > 0 ? `${1 - speed/300}s` : '1s' }} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
         <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
@@ -1276,13 +1276,13 @@ function DCMotorWidget({ widget, publish }) {
         <div className="flex gap-2">
           <button onClick={() => { setForward(true); publish(widget.topic, `F,${speed}`); }}
             className={`flex-1 py-1.5 rounded-xl text-xs font-bold border transition-all ${
-              forward ? 'bg-muted border-border text-foreground font-black' : 'bg-muted/30 border-border text-muted-foreground'
+              forward ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
             }`}>
             ▶ Forward
           </button>
           <button onClick={() => { setForward(false); publish(widget.topic, `R,${speed}`); }}
             className={`flex-1 py-1.5 rounded-xl text-xs font-bold border transition-all ${
-              !forward ? 'bg-muted border-border text-foreground font-black' : 'bg-muted/30 border-border text-muted-foreground'
+              !forward ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
             }`}>
             ◀ Reverse
           </button>
@@ -1293,9 +1293,9 @@ function DCMotorWidget({ widget, publish }) {
         </div>
         <input type="range" min="0" max="255" value={speed} onChange={handleSpeed}
           className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#4A6D8C' }} />
+          style={{ accentColor: '#38BDF8' }} />
         <button onClick={() => { setSpeed(0); publish(widget.topic, 'STOP'); }}
-          className="w-full py-1.5 rounded-xl text-xs font-bold bg-[#B85C5C]/15 border border-border text-[#B85C5C] hover:bg-[#B85C5C]/25 transition-all">
+          className="w-full py-1.5 rounded-xl text-xs font-bold bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#EF4444] hover:bg-[#EF4444]/25 transition-all">
           STOP
         </button>
       </div>
@@ -1342,7 +1342,7 @@ function StepperWidget({ widget, publish }) {
           </div>
           <input type="range" min="1" max="200" value={speed} onChange={e => setSpeed(Number(e.target.value))}
             className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-            style={{ accentColor: '#4A6D8C' }} />
+            style={{ accentColor: '#38BDF8' }} />
         </div>
         <div className="flex gap-2">
           <button onClick={() => sendCmd('CW')}
@@ -1370,13 +1370,13 @@ function PWMFanWidget({ widget, value, publish }) {
     publish(widget.topic, String(v));
   };
 
-  const tempColor = temp !== null ? (temp > 40 ? '#B85C5C' : '#4A6D8C') : '#6b7280';
+  const tempColor = temp !== null ? (temp > 40 ? '#EF4444' : '#38BDF8') : '#6b7280';
 
   return (
     <div className="flex flex-col h-full gap-2 text-left">
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2 text-foreground">
-          <Wind size={16} className={fanSpeed > 0 ? 'animate-spin' : ''} style={{ animationDuration: fanSpeed > 0 ? `${2 - fanSpeed/140}s` : '2s' }} />
+          <Wind size={16} className={fanSpeed > 0 ? 'animate-spin text-[#38BDF8]' : ''} style={{ animationDuration: fanSpeed > 0 ? `${2 - fanSpeed/140}s` : '2s' }} />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
         <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
@@ -1397,12 +1397,12 @@ function PWMFanWidget({ widget, value, publish }) {
         </div>
         <input type="range" min="0" max="255" value={fanSpeed} onChange={handleFan}
           className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#4A6D8C' }} />
+          style={{ accentColor: '#38BDF8' }} />
         <div className="flex gap-1.5">
           {[0, 64, 128, 192, 255].map(v => (
             <button key={v} onClick={() => { setFanSpeed(v); publish(widget.topic, String(v)); }}
               className={`flex-1 py-1 rounded-lg text-[9px] font-bold border transition-all ${
-                fanSpeed === v ? 'bg-muted border-border text-foreground font-black' : 'bg-muted/30 border-border text-muted-foreground hover:bg-muted'
+                fanSpeed === v ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black' : 'bg-muted/30 border-border text-muted-foreground hover:bg-muted'
               }`}>{v === 0 ? 'OFF' : v === 255 ? 'MAX' : `${Math.round(v/255*100)}%`}</button>
           ))}
         </div>
@@ -1441,10 +1441,10 @@ function CurtainWidget({ widget, publish }) {
             <div className="w-full h-0.5 bg-border" />
           </div>
           {/* Left curtain */}
-          <div className="absolute top-0 left-0 h-full bg-muted/80 border-r border-border transition-all duration-500"
+          <div className="absolute top-0 left-0 h-full bg-[#38BDF8]/20 border-r border-[#38BDF8]/40 transition-all duration-500"
             style={{ width: `${(100 - openPct) / 2}%` }} />
           {/* Right curtain */}
-          <div className="absolute top-0 right-0 h-full bg-muted/80 border-l border-border transition-all duration-500"
+          <div className="absolute top-0 right-0 h-full bg-[#38BDF8]/20 border-l border-[#38BDF8]/40 transition-all duration-500"
             style={{ width: `${(100 - openPct) / 2}%` }} />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-[10px] font-bold text-foreground">{openPct}% Open</span>
@@ -1452,7 +1452,7 @@ function CurtainWidget({ widget, publish }) {
         </div>
         <input type="range" min="0" max="100" value={openPct} onChange={handleChange}
           className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#4A6D8C' }} />
+          style={{ accentColor: '#38BDF8' }} />
         <div className="flex gap-2">
           <button onClick={() => goTo(0)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">مغلق</button>
           <button onClick={() => goTo(50)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">نصف</button>
@@ -1509,19 +1509,19 @@ function DoorLockWidget({ widget, value, publish }) {
           onClick={toggle}
           className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
             isLocked
-              ? 'bg-[#B85C5C]/12 border-border text-[#B85C5C]'
-              : 'bg-[#5B8C6E]/12 border-border text-[#5B8C6E]'
+              ? 'bg-[#EF4444]/15 border-[#EF4444]/40 text-[#EF4444] shadow-lg shadow-[#EF4444]/15'
+              : 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E] shadow-lg shadow-[#22C55E]/15'
           }`}
         >
-          <Lock size={28} className={isLocked ? 'text-[#B85C5C]' : 'text-[#5B8C6E]'} />
+          <Lock size={28} className={isLocked ? 'text-[#EF4444]' : 'text-[#22C55E]'} />
         </div>
-        <span className={`text-xs font-bold px-3 py-1 rounded-full border border-border ${
+        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
           isLocked
-            ? 'bg-[#B85C5C]/10 text-[#B85C5C]'
-            : 'bg-[#5B8C6E]/10 text-[#5B8C6E]'
+            ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#EF4444]'
+            : 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]'
         }`}>{isLocked ? 'مقفل' : 'مفتوح'}</span>
         {countdown !== null && (
-          <span className="text-[10px] text-muted-foreground">Auto-lock في {countdown}s</span>
+          <span className="text-[10px] text-muted-foreground font-mono">Auto-lock في {countdown}s</span>
         )}
       </div>
     </div>
@@ -1555,11 +1555,11 @@ function BuzzerWidget({ widget, publish }) {
             onClick={trigger}
             className={`relative w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-150 border select-none active:scale-90 ${
               active
-                ? 'bg-[#B85C5C]/20 border-border text-[#B85C5C]'
+                ? 'bg-[#EF4444]/25 border-[#EF4444]/50 text-[#EF4444] shadow-lg shadow-[#EF4444]/25'
                 : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
             }`}
           >
-            <Bell size={28} className={active ? 'text-[#B85C5C]' : 'text-muted-foreground/60'} />
+            <Bell size={28} className={active ? 'text-[#EF4444]' : 'text-muted-foreground/60'} />
           </button>
         </div>
         <span className="text-[10px] text-muted-foreground">اضغط لإرسال BEEP</span>
@@ -1602,10 +1602,10 @@ function PanTiltWidget({ widget, publish }) {
         {/* Visual indicator */}
         <div className="flex justify-center">
           <div className="relative w-14 h-14 bg-muted border border-border rounded-full flex items-center justify-center">
-            <Camera size={16} className="text-foreground" style={{
+            <Camera size={16} className="text-[#38BDF8]" style={{
               transform: `rotateX(${(tilt-90)*0.3}deg) rotateY(${(pan-90)*0.3}deg)`
             }} />
-            <div className="absolute inset-1.5 rounded-full border border-dashed border-border" />
+            <div className="absolute inset-1.5 rounded-full border border-dashed border-[#38BDF8]/40" />
           </div>
         </div>
         <div>
@@ -1614,7 +1614,7 @@ function PanTiltWidget({ widget, publish }) {
             <span className="text-[10px] font-mono font-bold text-foreground">{pan}°</span>
           </div>
           <input type="range" min="0" max="180" value={pan} onChange={handlePan}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }} />
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
         </div>
         <div>
           <div className="flex justify-between mb-1">
@@ -1622,7 +1622,7 @@ function PanTiltWidget({ widget, publish }) {
             <span className="text-[10px] font-mono font-bold text-foreground">{tilt}°</span>
           </div>
           <input type="range" min="0" max="180" value={tilt} onChange={handleTilt}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }} />
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
         </div>
         <button onClick={center} className="w-full py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">
           توسيط الكاميرا (90°, 90°)
@@ -1669,13 +1669,13 @@ function PumpWidget({ widget, value, publish }) {
       <div className="flex-1 flex flex-col items-center justify-center gap-3">
         <div onClick={toggle} className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
           isOn
-            ? 'bg-[#5B8C6E]/15 border-border scale-95 text-[#5B8C6E]'
+            ? 'bg-[#22C55E]/15 border-[#22C55E]/40 scale-95 text-[#22C55E] shadow-lg shadow-[#22C55E]/20'
             : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
         }`}>
-          <Droplets size={28} className={isOn ? 'text-[#5B8C6E]' : 'text-muted-foreground/60'} />
+          <Droplets size={28} className={isOn ? 'text-[#22C55E]' : 'text-muted-foreground/60'} />
         </div>
-        <span className={`text-xs font-bold px-3 py-1 rounded-full border border-border ${
-          isOn ? 'bg-[#5B8C6E]/10 text-[#5B8C6E]' : 'bg-muted text-muted-foreground'
+        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
+          isOn ? 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]' : 'bg-muted text-muted-foreground border-border'
         }`}>{isOn ? 'تشغيل' : 'إيقاف'}</span>
         {isOn && <span className="text-[10px] font-mono text-muted-foreground">{fmt(runtime)}</span>}
       </div>
@@ -1703,18 +1703,18 @@ function ValveWidget({ widget, value, publish }) {
         {/* Valve visual */}
         <div className="relative w-14 h-14">
           <svg viewBox="0 0 64 64" className="w-full h-full">
-            <rect x="4" y="28" width="56" height="8" rx="4" fill="rgba(255,255,255,0.06)" stroke={isOpen ? '#5B8C6E' : '#B85C5C'} strokeWidth="1.5" />
-            <circle cx="32" cy="32" r="10" fill="rgba(255,255,255,0.08)" stroke={isOpen ? '#5B8C6E' : '#B85C5C'} strokeWidth="1.5" />
-            <line x1="32" y1="22" x2="32" y2="14" stroke={isOpen ? '#5B8C6E' : '#B85C5C'} strokeWidth="2" strokeLinecap="round" />
-            <rect x="26" y="10" width="12" height="5" rx="2" fill={isOpen ? '#5B8C6E' : '#B85C5C'}
+            <rect x="4" y="28" width="56" height="8" rx="4" fill="rgba(255,255,255,0.06)" stroke={isOpen ? '#22C55E' : '#EF4444'} strokeWidth="1.5" />
+            <circle cx="32" cy="32" r="10" fill="rgba(255,255,255,0.08)" stroke={isOpen ? '#22C55E' : '#EF4444'} strokeWidth="1.5" />
+            <line x1="32" y1="22" x2="32" y2="14" stroke={isOpen ? '#22C55E' : '#EF4444'} strokeWidth="2" strokeLinecap="round" />
+            <rect x="26" y="10" width="12" height="5" rx="2" fill={isOpen ? '#22C55E' : '#EF4444'}
               transform={isOpen ? 'rotate(90 32 12.5)' : ''} style={{ transition: 'all 0.3s' }} />
           </svg>
         </div>
         <button onClick={toggle}
-          className={`px-4 py-1.5 rounded-xl text-xs font-bold border border-border transition-all active:scale-95 ${
+          className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
             isOpen
-              ? 'bg-[#5B8C6E]/15 text-[#5B8C6E]'
-              : 'bg-[#B85C5C]/15 text-[#B85C5C]'
+              ? 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E]'
+              : 'bg-[#EF4444]/15 border-[#EF4444]/40 text-[#EF4444]'
           }`}>
           {isOpen ? 'مفتوح — إغلاق' : 'مغلق — فتح'}
         </button>
@@ -1743,7 +1743,7 @@ function IrrigationWidget({ widget, value, publish }) {
   }, [moisture, threshold, mode]);
 
   const moistureColor = moisture !== null
-    ? (moisture < threshold ? '#B85C5C' : '#5B8C6E')
+    ? (moisture < threshold ? '#EF4444' : '#22C55E')
     : '#6b7280';
 
   return (
@@ -1774,7 +1774,7 @@ function IrrigationWidget({ widget, value, publish }) {
           </div>
           {/* Threshold marker */}
           <div className="relative mt-1">
-            <div className="absolute top-0 w-0.5 h-3 bg-muted-foreground -translate-x-1/2" style={{ left: `${threshold}%` }} />
+            <div className="absolute top-0 w-0.5 h-3 bg-[#38BDF8] -translate-x-1/2" style={{ left: `${threshold}%` }} />
             <p className="text-[9px] text-muted-foreground text-right">حد الري: {threshold}%</p>
           </div>
         </div>
@@ -1782,11 +1782,11 @@ function IrrigationWidget({ widget, value, publish }) {
         <div className="flex gap-2">
           <button onClick={() => setMode('manual')}
             className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-              mode === 'manual' ? 'bg-muted border-border text-foreground font-black' : 'bg-muted/30 border-border text-muted-foreground'
+              mode === 'manual' ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
             }`}>يدوي</button>
           <button onClick={() => setMode('auto')}
             className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-              mode === 'auto' ? 'bg-muted border-border text-foreground font-black' : 'bg-muted/30 border-border text-muted-foreground'
+              mode === 'auto' ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
             }`}>تلقائي</button>
         </div>
         {mode === 'auto' && (
@@ -1796,21 +1796,21 @@ function IrrigationWidget({ widget, value, publish }) {
               <span className="text-[10px] font-mono font-bold text-foreground">{threshold}%</span>
             </div>
             <input type="range" min="10" max="80" value={threshold} onChange={e => setThreshold(Number(e.target.value))}
-              className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }} />
+              className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
           </div>
         )}
         {mode === 'manual' && (
           <button
             onClick={() => { setPumpOn(v => !v); publish(widget.topic, pumpOn ? 'OFF' : 'ON'); }}
-            className={`w-full py-2 rounded-xl text-xs font-bold border border-border transition-all active:scale-95 ${
-              pumpOn ? 'bg-[#5B8C6E]/15 text-[#5B8C6E]' : 'bg-muted text-muted-foreground hover:text-foreground'
+            className={`w-full py-2 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
+              pumpOn ? 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E]' : 'bg-muted text-muted-foreground hover:text-foreground border-border'
             }`}>
             {pumpOn ? 'إيقاف الري' : 'تشغيل الري'}
           </button>
         )}
         {mode === 'auto' && (
-          <div className={`text-[10px] text-center py-1 rounded-lg font-bold border border-border ${
-            pumpOn ? 'bg-[#5B8C6E]/10 text-[#5B8C6E]' : 'bg-muted text-muted-foreground'
+          <div className={`text-[10px] text-center py-1 rounded-lg font-bold border ${
+            pumpOn ? 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]' : 'bg-muted text-muted-foreground border-border'
           }`}>{pumpOn ? 'الري يعمل تلقائياً' : 'التربة رطبة كافياً'}</div>
         )}
       </div>
@@ -1919,7 +1919,7 @@ function NumericInputWidget({ widget, publish }) {
             className="flex-1 py-2 rounded-xl text-sm font-black bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95">+</button>
         </div>
         <input type="range" min={min} max={max} step={step} value={val} onChange={e => send(Number(e.target.value))}
-          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }} />
+          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
         <div className="flex justify-between text-[9px] text-muted-foreground/50 font-mono">
           <span>{min}</span><span>{max}</span>
         </div>
@@ -1952,7 +1952,7 @@ function DropdownWidget({ widget, publish }) {
       <div className="flex-1 flex flex-col justify-center gap-2">
         <div className="flex items-center justify-between bg-muted border border-border rounded-xl px-3 py-2 transition-all">
           <span className="text-sm font-bold text-foreground">{selected}</span>
-          <div className="w-2.5 h-2.5 rounded-full bg-[#4A6D8C]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#38BDF8] shadow-sm shadow-[#38BDF8]" />
         </div>
         <div className="space-y-1.5">
           {options.map(opt => (
@@ -1960,7 +1960,7 @@ function DropdownWidget({ widget, publish }) {
               key={opt}
               onClick={() => handleSelect(opt)}
               className={`w-full py-2 px-3 rounded-xl text-xs font-bold border border-border transition-all text-left ${
-                selected === opt ? 'bg-muted text-foreground font-black' : 'bg-muted/20 text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                selected === opt ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/20 text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               {opt}
@@ -1999,7 +1999,7 @@ function MomentaryWidget({ widget, publish }) {
           onClick={trigger}
           className={`relative w-18 h-18 rounded-full border flex items-center justify-center transition-all duration-150 select-none active:scale-90 font-bold text-sm ${
             pressed
-              ? 'bg-muted border-border scale-95 text-foreground'
+              ? 'bg-[#38BDF8]/25 border-[#38BDF8]/50 scale-95 text-[#38BDF8] shadow-lg shadow-[#38BDF8]/20'
               : 'bg-muted/40 border-border hover:bg-muted text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -2017,7 +2017,7 @@ const DP_BTN_BASE =
   'flex items-center justify-center w-12 h-12 rounded-xl border transition-all duration-150 cursor-pointer select-none active:scale-95';
 const DP_BTN_IDLE = 'bg-muted/30 border-border text-foreground hover:bg-muted';
 const DP_BTN_GLOW =
-  'bg-muted border-border text-foreground font-black';
+  'bg-[#38BDF8]/20 border-[#38BDF8]/50 text-[#38BDF8] font-black shadow-md shadow-[#38BDF8]/20';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
@@ -2079,7 +2079,7 @@ function DPadWidget({ widget, publish }) {
           <button
             type="button"
             onClick={sendStop}
-            className={`${DP_BTN_BASE} ${active === 'STOP' ? 'bg-[#B85C5C]/20 border-border text-[#B85C5C]' : DP_BTN_IDLE}`}
+            className={`${DP_BTN_BASE} ${active === 'STOP' ? 'bg-[#EF4444]/20 border-[#EF4444]/40 text-[#EF4444] shadow-md shadow-[#EF4444]/20' : DP_BTN_IDLE}`}
             title="Send STOP"
           >
             <span className="text-[9px] font-black tracking-tighter">STOP</span>
@@ -2088,7 +2088,7 @@ function DPadWidget({ widget, publish }) {
         </div>
         <DPadDirButton cmd="BACK" icon={ChevronDown} activeCmd={active} onPress={press} onRelease={release} />
         <div className="mt-1 flex items-center gap-1.5">
-          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border border-border ${active ? 'bg-muted text-foreground' : 'bg-muted/40 text-muted-foreground'}`}>
+          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border ${active ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8]' : 'bg-muted/40 text-muted-foreground border-border'}`}>
             CMD: {active || 'IDLE'}
           </span>
         </div>
@@ -2193,13 +2193,13 @@ function JoystickWidget({ widget, publish }) {
           onPointerCancel={endPointer}
         >
           {/* Dash ring inside */}
-          <div className="absolute inset-[20%] rounded-full border border-dashed border-border pointer-events-none" />
+          <div className="absolute inset-[20%] rounded-full border border-dashed border-[#38BDF8]/40 pointer-events-none" />
           
           {/* Knob */}
           <div
             className={`absolute w-12 h-12 rounded-full border transition-all duration-75 flex items-center justify-center ${
               knobLit
-                ? 'bg-muted border-border scale-95'
+                ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 scale-95 shadow-lg shadow-[#38BDF8]/30'
                 : 'bg-muted/60 border-border'
             }`}
             style={{
@@ -2208,7 +2208,7 @@ function JoystickWidget({ widget, publish }) {
               transform: 'translate(-50%, -50%)',
             }}
           >
-            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-[#4A6D8C]' : 'bg-muted-foreground/30'}`} />
+            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-[#38BDF8] shadow-sm shadow-[#38BDF8]' : 'bg-muted-foreground/30'}`} />
           </div>
 
           <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] text-muted-foreground font-extrabold uppercase pointer-events-none">F</span>
@@ -2217,7 +2217,7 @@ function JoystickWidget({ widget, publish }) {
           <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground font-extrabold uppercase pointer-events-none">R</span>
         </div>
 
-        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border border-border ${active ? 'bg-muted text-foreground' : 'bg-muted/40 text-muted-foreground'}`}>
+        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border ${active ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8]' : 'bg-muted/40 text-muted-foreground border-border'}`}>
           DIR: {active || 'IDLE'}
         </span>
       </div>
@@ -2274,11 +2274,11 @@ function RobotArmWidget({ widget, publish }) {
         <div className="flex justify-center">
           <svg width="120" height="90" viewBox="0 0 120 90">
             <rect x="44" y="80" width="32" height="6" rx="3" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-            <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#4A6D8C" strokeWidth="4" strokeLinecap="round"/>
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx={x0} cy={y0} r="5" fill="#4A6D8C"/>
-            <circle cx={x1} cy={y1} r="4" fill="#9CA3AF"/>
-            <circle cx={x2} cy={y2} r="3" fill="#E8E9EB"/>
+            <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#38BDF8" strokeWidth="4" strokeLinecap="round"/>
+            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#34D399" strokeWidth="3" strokeLinecap="round"/>
+            <circle cx={x0} cy={y0} r="5" fill="#38BDF8"/>
+            <circle cx={x1} cy={y1} r="4" fill="#34D399"/>
+            <circle cx={x2} cy={y2} r="3" fill="#FACC15"/>
           </svg>
         </div>
         {/* Joint sliders */}
@@ -2287,12 +2287,12 @@ function RobotArmWidget({ widget, publish }) {
             <div key={a.key}>
               <div className="flex justify-between mb-0.5">
                 <label className="text-[9px] font-bold text-muted-foreground">{a.label}</label>
-                <span className="text-[9px] font-mono text-foreground">{joints[a.key]}°</span>
+                <span className="text-[9px] font-mono font-bold text-[#38BDF8]">{joints[a.key]}°</span>
               </div>
               <input type="range" min={a.range[0]} max={a.range[1]} value={joints[a.key]}
                 onChange={e => setJoint(a.key, Number(e.target.value))}
                 className="w-full h-1 rounded-lg appearance-none cursor-pointer bg-secondary"
-                style={{ accentColor: '#4A6D8C' }}
+                style={{ accentColor: '#38BDF8' }}
               />
             </div>
           ))}
@@ -2340,36 +2340,36 @@ function GripperWidget({ widget, publish }) {
         <div className="flex justify-center">
           <svg width="90" height="60" viewBox="0 0 90 60">
             <rect x="30" y="24" width="30" height="16" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
-            <rect x={45 - jawGap / 2 - 14} y="10" width="14" height="14" rx="3" fill="rgba(74,109,140,0.3)" stroke="#4A6D8C" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
-            <rect x={45 + jawGap / 2} y="10" width="14" height="14" rx="3" fill="rgba(74,109,140,0.3)" stroke="#4A6D8C" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
-            <text x="45" y="38" textAnchor="middle" fontSize="8" fill="#9CA3AF" fontWeight="bold">{openPct}%</text>
+            <rect x={45 - jawGap / 2 - 14} y="10" width="14" height="14" rx="3" fill="rgba(56,189,248,0.25)" stroke="#38BDF8" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
+            <rect x={45 + jawGap / 2} y="10" width="14" height="14" rx="3" fill="rgba(56,189,248,0.25)" stroke="#38BDF8" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
+            <text x="45" y="38" textAnchor="middle" fontSize="8" fill="#38BDF8" fontWeight="bold">{openPct}%</text>
           </svg>
         </div>
         {/* Open % */}
         <div>
           <div className="flex justify-between mb-1">
             <label className="text-[10px] text-muted-foreground">انفتاح القابض</label>
-            <span className="text-[10px] font-mono font-bold text-foreground">{openPct}%</span>
+            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{openPct}%</span>
           </div>
           <input type="range" min="0" max="100" value={openPct} onChange={e => handleOpen(Number(e.target.value))}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }}/>
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
         </div>
         {/* Force */}
         <div>
           <div className="flex justify-between mb-1">
             <label className="text-[10px] text-muted-foreground">قوة القبضة</label>
-            <span className="text-[10px] font-mono font-bold text-foreground">{force}%</span>
+            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{force}%</span>
           </div>
           <input type="range" min="10" max="100" value={force} onChange={e => setForce(Number(e.target.value))}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }}/>
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
         </div>
         <div className="flex gap-2">
           <button onClick={() => sendGrip(true)}
-            className="flex-1 py-2 rounded-xl text-xs font-bold bg-muted border border-border text-foreground hover:bg-muted/70 transition-all active:scale-95">
+            className="flex-1 py-2 rounded-xl text-xs font-bold bg-[#38BDF8]/15 border border-[#38BDF8]/40 text-[#38BDF8] hover:bg-[#38BDF8]/25 transition-all active:scale-95 shadow-sm">
             فتح
           </button>
           <button onClick={() => sendGrip(false)}
-            className="flex-1 py-2 rounded-xl text-xs font-bold bg-muted border border-border text-foreground hover:bg-muted/70 transition-all active:scale-95">
+            className="flex-1 py-2 rounded-xl text-xs font-bold bg-[#38BDF8]/15 border border-[#38BDF8]/40 text-[#38BDF8] hover:bg-[#38BDF8]/25 transition-all active:scale-95 shadow-sm">
             إمساك
           </button>
         </div>
@@ -2447,14 +2447,14 @@ function OmniDriveWidget({ widget, publish }) {
           onPointerUp={e => { try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {} endPointer(); }}
           onPointerCancel={endPointer}
         >
-          <div className="absolute inset-[18%] rounded-full border border-dashed border-border pointer-events-none" />
+          <div className="absolute inset-[18%] rounded-full border border-dashed border-[#38BDF8]/40 pointer-events-none" />
           <div
             className={`absolute w-11 h-11 rounded-full border transition-all duration-75 flex items-center justify-center ${
-              knobLit ? 'bg-muted border-border scale-95' : 'bg-muted/60 border-border'
+              knobLit ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 scale-95 shadow-lg shadow-[#38BDF8]/30' : 'bg-muted/60 border-border'
             }`}
             style={{ left: `calc(50% + ${knob.x}px)`, top: `calc(50% + ${knob.y}px)`, transform: 'translate(-50%,-50%)' }}
           >
-            <div className={`w-3 h-3 rounded-full ${knobLit ? 'bg-[#4A6D8C]' : 'bg-muted-foreground/30'}`} />
+            <div className={`w-3 h-3 rounded-full ${knobLit ? 'bg-[#38BDF8] shadow-sm shadow-[#38BDF8]' : 'bg-muted-foreground/30'}`} />
           </div>
           <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">F</span>
           <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">B</span>
@@ -2465,7 +2465,7 @@ function OmniDriveWidget({ widget, publish }) {
         <div className="flex flex-col gap-2">
           <button onClick={() => setRotateCmd(1)}
             className={`w-10 h-10 rounded-xl border border-border flex items-center justify-center text-xs font-bold transition-all active:scale-90 ${
-              rotate > 0 ? 'bg-muted text-foreground' : 'bg-muted/30 text-muted-foreground hover:text-foreground'
+              rotate > 0 ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 text-[#38BDF8] shadow-md shadow-[#38BDF8]/20' : 'bg-muted/30 text-muted-foreground hover:text-foreground'
             }`}>
             ↻
           </button>
@@ -2475,14 +2475,14 @@ function OmniDriveWidget({ widget, publish }) {
           </button>
           <button onClick={() => setRotateCmd(-1)}
             className={`w-10 h-10 rounded-xl border border-border flex items-center justify-center text-xs font-bold transition-all active:scale-90 ${
-              rotate < 0 ? 'bg-muted text-foreground' : 'bg-muted/30 text-muted-foreground hover:text-foreground'
+              rotate < 0 ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 text-[#38BDF8] shadow-md shadow-[#38BDF8]/20' : 'bg-muted/30 text-muted-foreground hover:text-foreground'
             }`}>
             ↺
           </button>
         </div>
       </div>
-      <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border border-border text-center ${
-        active ? 'bg-muted text-foreground' : 'bg-muted/40 text-muted-foreground'
+      <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border text-center ${
+        active ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8]' : 'bg-muted/40 text-muted-foreground border-border'
       }`}>
         {active || 'IDLE'}{rotate !== 0 ? (rotate > 0 ? ' + CW' : ' + CCW') : ''}
       </span>
@@ -2521,21 +2521,21 @@ function RobotSpeedWidget({ widget, publish }) {
         <div>
           <div className="flex justify-between mb-1">
             <label className="text-[10px] text-muted-foreground font-bold">◀ اليسار</label>
-            <span className="text-[10px] font-mono font-bold text-foreground">{left}</span>
+            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{left}</span>
           </div>
           <input type="range" min="-255" max="255" value={left}
             onChange={e => { const v = Number(e.target.value); setLeft(v); send(v, right); }}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }}/>
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
         </div>
         {/* Right motor */}
         <div>
           <div className="flex justify-between mb-1">
             <label className="text-[10px] text-muted-foreground font-bold">اليمين ▶</label>
-            <span className="text-[10px] font-mono font-bold text-foreground">{right}</span>
+            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{right}</span>
           </div>
           <input type="range" min="-255" max="255" value={right}
             onChange={e => { const v = Number(e.target.value); setRight(v); send(left, v); }}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#4A6D8C' }}/>
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
         </div>
         {/* Quick presets */}
         <div className="flex gap-1.5">
@@ -2547,7 +2547,7 @@ function RobotSpeedWidget({ widget, publish }) {
             </button>
           ))}
         </div>
-        <div className="text-[9px] text-center text-muted-foreground font-mono bg-muted rounded-lg py-1 border border-border">
+        <div className="text-[9px] text-center text-[#38BDF8] font-mono bg-muted rounded-lg py-1 border border-border font-bold">
           L{left} / R{right}
         </div>
       </div>

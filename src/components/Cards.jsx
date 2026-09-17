@@ -40,7 +40,7 @@ export const SoilMoistureCard = ({ deviceStates, publish }) => {
               contentStyle={{ backgroundColor: '#1a1d23', borderColor: 'rgba(255,255,255,0.08)', borderRadius: '8px' }}
               itemStyle={{ color: '#e8e9eb' }}
             />
-            <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2} dot={false} activeDot={{ r: 5, fill: 'var(--primary)', stroke: 'var(--background)', strokeWidth: 2 }} />
+            <Line type="monotone" dataKey="value" stroke="#38BDF8" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#38BDF8', stroke: 'var(--background)', strokeWidth: 2 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -67,13 +67,13 @@ export const IrrigationValveCard = ({ deviceStates, publish }) => {
             <Power className="icon-muted" size={20} />
             <h3 style={{ color: 'var(--card-foreground)' }} className="font-medium">Main Valve</h3>
           </div>
-          <span style={{ color: currentState ? 'var(--status-on)' : 'var(--muted-foreground)' }} className="text-2xl font-bold font-mono">
+          <span style={{ color: currentState ? '#22C55E' : '#EF4444' }} className="text-2xl font-bold font-mono">
             {currentState ? 'OPEN' : 'CLOSED'}
           </span>
         </div>
         <button
           onClick={handleToggle}
-          style={{ background: currentState ? 'var(--status-on)' : 'var(--muted)', borderRadius: 'var(--radius)', transition: 'background 0.2s' }}
+          style={{ background: currentState ? '#22C55E' : 'var(--muted)', borderRadius: 'var(--radius)', transition: 'background 0.2s' }}
           className="w-14 h-8 p-1 cursor-pointer border border-border"
         >
           <div style={{ background: '#ffffff', borderRadius: 'calc(var(--radius) - 4px)' }} className={`w-6 h-6 transition-transform duration-200 ${currentState ? 'translate-x-6' : 'translate-x-0'}`} />
@@ -105,7 +105,7 @@ export const WaterTankCard = ({ deviceStates }) => {
           <circle cx="64" cy="64" r="56" stroke="var(--border)" strokeWidth="10" fill="none" />
           <circle
             cx="64" cy="64" r="56"
-            stroke="var(--primary)"
+            stroke="#38BDF8"
             className="transition-all duration-700 ease-out"
             strokeWidth="10" fill="none"
             strokeDasharray="351.8" 
@@ -145,7 +145,7 @@ export const GreenhouseTempCard = ({ deviceStates }) => {
           <span>Max: 32°</span>
         </div>
         <div className="h-2 w-full bg-muted rounded-full overflow-hidden flex border border-border">
-           <div style={{ background: 'var(--primary)', width: '60%' }} className="h-full" />
+           <div style={{ background: 'linear-gradient(90deg, #38BDF8 0%, #22C55E 50%, #EF4444 100%)', width: '60%' }} className="h-full rounded-full" />
         </div>
       </div>
     </Card>
@@ -176,7 +176,7 @@ export const AutomationsCard = ({ publish }) => {
             <p style={{ color: auto.active ? 'var(--foreground)' : 'var(--muted-foreground)' }} className="text-sm">{auto.rule}</p>
             <button
               onClick={() => toggleAuto(auto.id)}
-              style={{ background: auto.active ? 'var(--status-on)' : 'var(--input)', borderRadius: 'var(--radius)', transition: 'background 0.2s' }}
+              style={{ background: auto.active ? '#22C55E' : 'var(--input)', borderRadius: 'var(--radius)', transition: 'background 0.2s', boxShadow: auto.active ? '0 0 8px rgba(34,197,94,0.3)' : 'none' }}
               className="w-10 h-6 p-1 flex-shrink-0 cursor-pointer border border-border"
             >
               <div style={{ background: '#ffffff', borderRadius: 'calc(var(--radius) - 6px)' }} className={`w-4 h-4 transition-transform duration-200 ${auto.active ? 'translate-x-4' : 'translate-x-0'}`} />

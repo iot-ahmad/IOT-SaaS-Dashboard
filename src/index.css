@@ -35,17 +35,17 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-ring: #0666b9;
 
-  /* Semantic status: Muted */
-  --destructive: #a53636;
+  /* Semantic status: Bright & Eye-catching */
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --status-on: #2db160;
-  --status-off: #992929;
+  --status-on: #22c55e;
+  --status-off: #ef4444;
 
-  --chart-1: #0666b9;
-  --chart-2: #0666b9;
-  --chart-3: #0666b9;
-  --chart-4: #0666b9;
-  --chart-5: #0666b9;
+  --chart-1: #38bdf8;
+  --chart-2: #22c55e;
+  --chart-3: #f59e0b;
+  --chart-4: #a855f7;
+  --chart-5: #ec4899;
 
   --radius: 0.1px;
   --spacing: 0.25rem;
@@ -88,17 +88,17 @@
   --sidebar-primary-foreground: #e8e9eb;
   --sidebar-ring: #0666b9;
 
-  /* Semantic status: Muted */
-  --destructive: #cf2b2b;
+  /* Semantic status: Bright & Eye-catching */
+  --destructive: #ef4444;
   --destructive-foreground: #e8e9eb;
-  --status-on: #34a860;
-  --status-off: #a82424;
+  --status-on: #22c55e;
+  --status-off: #ef4444;
 
-  --chart-1: #0666b9;
-  --chart-2: #0666b9;
-  --chart-3: #0666b9;
-  --chart-4: #0666b9;
-  --chart-5: #0666b9;
+  --chart-1: #38bdf8;
+  --chart-2: #22c55e;
+  --chart-3: #f59e0b;
+  --chart-4: #a855f7;
+  --chart-5: #ec4899;
 }
 
 /* ── @theme inline: expose all CSS vars to Tailwind 4 utilities ── */

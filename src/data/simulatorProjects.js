@@ -13,7 +13,7 @@ export const SIMULATOR_PROJECTS = [
     title: 'مشروع الطقس والمحطة الشاملة (Weather & All-In-One Station)',
     badge: 'موصى به للاختبار الشامل',
     description: 'مشروع ESP32 ضخم وشامل يجمع 5 حساسات و 8 مشغلات للتحقق من جميع أدوات لوحة التحكم والتيرمنال وقراءات الحساسات في وقت واحد.',
-    wokwiUrl: 'https://wokwi.com/projects/468717878078638081',
+    wokwiUrl: 'https://wokwi.com/projects/475440992138342401',
     accentColor: 'from-blue-600 to-indigo-600',
     stats: { sensors: 5, actuators: 8, wires: 28 },
     pinouts: [
