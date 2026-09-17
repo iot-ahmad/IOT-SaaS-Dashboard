@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { uploadToCloudinary } from '../lib/cloudinaryUpload';
-import { Globe, Edit3, Camera, FileText, Cpu, Eye, ThumbsUp, Copy, Check, AlertCircle, X, Sparkles, FolderCode, Link2, Package } from 'lucide-react';
+import { Globe, Edit3, Camera, FileText, Cpu, Eye, ThumbsUp, Copy, Check, AlertCircle, X, Sparkles, FolderCode, Link2, Package, MessageSquare } from 'lucide-react';
+import { useMessaging } from '../context/MessagingContext';
 
 // Inline SVG icons for brands not available in this lucide-react version
 const GithubIcon = ({ size = 18, className = '' }) => (
@@ -74,6 +75,7 @@ const compressAvatar = (file, maxWidth = 400, maxHeight = 400, quality = 0.8) =>
 export default function UserProfile({ currentUser }) {
   const { username } = useParams();
   const navigate = useNavigate();
+  const { startConversation } = useMessaging();
 
   // Profile data states
   const [profileUser, setProfileUser] = useState(null);
@@ -466,16 +468,10 @@ export default function UserProfile({ currentUser }) {
 
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between relative z-10">
           
-          {/* Action button: Edit Profile (Redirects to unified ProfilePage in dashboard) */}
-          {isOwnProfile && (
+          {/* Action button: Edit Profile or Message Developer */}
+          {isOwnProfile ? (
             <button
               onClick={() => {
-                navigate('/');
-                // In App.jsx, the activeTool is checked. We want settings/profile to load.
-                // Since navigate('/') goes back to the root Dashboard, we let Sidebar/App state handle it.
-                // We will dispatch a custom event or let App.jsx know, but since the user is navigating to '/',
-                // they can click their avatar. Alternatively, we can let them know to click their avatar.
-                // To make it seamless, we can set localStorage activeTool before navigating.
                 localStorage.setItem('active_tool_fallback', 'profile');
                 window.location.href = '/?tool=profile';
               }}
@@ -483,6 +479,26 @@ export default function UserProfile({ currentUser }) {
             >
               <Edit3 size={14} />
               تعديل بروفايل المطور
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                if (!currentUser) {
+                  navigate('/login');
+                  return;
+                }
+                startConversation({
+                  recipientId: profileUser.uid,
+                  recipientName: profileUser.displayName || profileUser.username,
+                  recipientAvatar: profileUser.avatarUrl || profileUser.photoURL || '',
+                  projectId: null,
+                  projectTitle: null
+                });
+              }}
+              className="bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 text-sky-400 font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center shadow-sm"
+            >
+              <MessageSquare size={14} />
+              مراسلة المطور
             </button>
           )}
 

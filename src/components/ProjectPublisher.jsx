@@ -1,19 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from '../firebase';
 import { doc, collection, setDoc, getDoc } from 'firebase/firestore';
-import { uploadToCloudinary, compressImage } from '../lib/cloudinaryUpload';
 import {
   ArrowLeft, ArrowRight, Upload, X, Cpu, Eye, Code, CheckCircle2,
   AlertCircle, Sparkles, Plus, Trash2, ImagePlus, Zap, FileText,
-  ChevronRight, Info
+  ChevronRight, Info, Flame, Copy, HelpCircle, Layers, Star, MessageSquare
 } from 'lucide-react';
+import ComponentPicker from './ui/ComponentPicker';
+import WiringBuilder, { SchematicSvgViewer } from './ui/WiringBuilder';
+import ProjectLivePreview from './ui/ProjectLivePreview';
+import FeaturedTemplatesModal from './ui/FeaturedTemplatesModal';
+import { FEATURED_TEMPLATES } from '../data/featuredTemplates';
 
 // ─────────────────────────────────────────────────────────────
-// MarkdownPreview – exported so the project view can reuse it
+// MarkdownPreview – exported so other components can reuse it
 // ─────────────────────────────────────────────────────────────
 export const MarkdownPreview = ({ text }) => {
-  if (!text) return <p className="text-muted-foreground dark:text-white/20 text-sm italic">لا يوجد توثيق بعد...</p>;
+  if (!text) return <p className="text-muted-foreground text-sm italic">لا يوجد توثيق بعد...</p>;
 
   const parseMarkdown = (markdownText) => {
     const lines = markdownText.split('\n');
@@ -64,8 +68,8 @@ export const MarkdownPreview = ({ text }) => {
     const comments = /(\/\/.*|\/\*[\s\S]*?\*\/|#.*)/g;
 
     let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    html = html.replace(comments, '<span class="text-muted-foreground dark:text-zinc-500 font-mono">$1</span>');
-    html = html.replace(keywords, (m) => `<span class="text-[#c084fc] dark:text-purple-400 font-bold">${m}</span>`);
+    html = html.replace(comments, '<span class="text-zinc-500 font-mono">$1</span>');
+    html = html.replace(keywords, (m) => `<span class="text-purple-400 font-bold">${m}</span>`);
     html = html.replace(strings, '<span class="text-emerald-400 font-mono">"$2"</span>');
     html = html.replace(numbers, '<span class="text-amber-400 font-mono">$1</span>');
     return html;
@@ -82,7 +86,7 @@ export const MarkdownPreview = ({ text }) => {
   const parsedElements = parseMarkdown(text);
 
   return (
-    <div className="space-y-4 font-sans text-foreground/90 leading-relaxed text-right rtl-text">
+    <div className="space-y-4 font-sans text-foreground/90 leading-relaxed text-right rtl-text" dir="rtl">
       {parsedElements.map((el, idx) => {
         if (el.type === 'h1') return (
           <h1 key={idx} className="text-2xl font-extrabold text-foreground mt-6 mb-3 border-b border-border pb-2">
@@ -137,106 +141,19 @@ export const MarkdownPreview = ({ text }) => {
 };
 
 // ─────────────────────────────────────────────────────────────
-// ComponentCard – individual hardware component editor card
-// ─────────────────────────────────────────────────────────────
-function ComponentCard({ comp, onChange, onRemove }) {
-  const fileRef = useRef();
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [localError, setLocalError] = useState('');
-
-  const handleImagePick = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setLocalError('');
-    setUploading(true);
-    setUploadProgress(0);
-    try {
-      const compressed = await compressImage(file, 900, 900, 0.80);
-      const url = await uploadToCloudinary(compressed, (p) => setUploadProgress(p), 'iot365/components');
-      onChange({ ...comp, imageUrl: url });
-    } catch (err) {
-      setLocalError('فشل رفع الصورة – ' + err.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  return (
-    <div className="bg-[#0d0e12] border border-border rounded-2xl p-5 space-y-4 relative group hover:border-primary/30 transition-colors">
-      {/* Remove Button */}
-      <button type="button" onClick={onRemove}
-        className="absolute top-3 left-3 p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/25 text-red-400 transition-colors cursor-pointer opacity-0 group-hover:opacity-100">
-        <Trash2 size={14} />
-      </button>
-
-      <div className="flex gap-4 items-start">
-        {/* Image Upload Area */}
-        <div className="shrink-0">
-          <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={handleImagePick} />
-          <button type="button" onClick={() => fileRef.current?.click()}
-            className={`w-20 h-20 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center transition-all cursor-pointer overflow-hidden relative ${
-              comp.imageUrl ? 'border-primary/30 hover:border-primary/60' : 'border-border hover:border-primary/50 bg-card/5'
-            }`}>
-            {uploading ? (
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                <span className="text-[9px] text-primary font-bold">{uploadProgress}%</span>
-              </div>
-            ) : comp.imageUrl ? (
-              <>
-                <img src={comp.imageUrl} alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity">
-                  <ImagePlus size={16} className="text-white" />
-                </div>
-              </>
-            ) : (
-              <>
-                <ImagePlus size={18} className="text-muted-foreground mb-1" />
-                <span className="text-[9px] text-muted-foreground leading-tight">أضف<br/>صورة</span>
-              </>
-            )}
-          </button>
-          {localError && <p className="text-[9px] text-red-400 mt-1 max-w-[80px] text-center leading-tight">{localError}</p>}
-        </div>
-
-        {/* Name + Function */}
-        <div className="flex-1 space-y-3">
-          <input
-            type="text"
-            placeholder="اسم القطعة / الجهاز (مثال: ESP32 DevKit)"
-            value={comp.name}
-            onChange={(e) => onChange({ ...comp, name: e.target.value })}
-            className="w-full bg-card dark:bg-[#030406] border border-border rounded-xl py-2.5 px-3.5 focus:outline-none focus:border-primary/60 text-sm text-right text-foreground placeholder:text-muted-foreground transition-colors"
-            dir="rtl"
-          />
-          <textarea
-            rows={2}
-            placeholder="وظيفة هذه القطعة في المشروع..."
-            value={comp.function}
-            onChange={(e) => onChange({ ...comp, function: e.target.value })}
-            className="w-full bg-card dark:bg-[#030406] border border-border rounded-xl py-2.5 px-3.5 focus:outline-none focus:border-primary/60 text-sm text-right text-foreground placeholder:text-muted-foreground resize-none transition-colors"
-            dir="rtl"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// Main Component: ProjectPublisher
+// Wizard Steps Configuration
 // ─────────────────────────────────────────────────────────────
 const STEPS = [
   { num: 1, label: 'البيانات الأساسية', icon: FileText },
   { num: 2, label: 'الأجهزة والقطع', icon: Cpu },
   { num: 3, label: 'التوثيق التقني', icon: Code },
   { num: 4, label: 'التوصيل الكهربائي', icon: Zap },
+  { num: 5, label: 'المعاينة والنشر', icon: Eye },
 ];
 
 export default function ProjectPublisher({ user }) {
   const navigate = useNavigate();
-  const wiringFileRef = useRef();
+  const [searchParams] = useSearchParams();
 
   const [projectId] = useState(() => doc(collection(db, 'projects')).id);
   const [step, setStep] = useState(1);
@@ -245,31 +162,55 @@ export default function ProjectPublisher({ user }) {
   const [hasUsername, setHasUsername] = useState(true);
   const [checkingUser, setCheckingUser] = useState(true);
 
-  // Step 1
+  // Template Modal State
+  const [templatesModalOpen, setTemplatesModalOpen] = useState(false);
+  const [activeTemplateOrigin, setActiveTemplateOrigin] = useState(null);
+
+  // Mobile Live Preview Drawer
+  const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
+
+  // Step 1: Basic Info
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
+  const [difficulty, setDifficulty] = useState('مبتدئ');
   const [visibility, setVisibility] = useState('public');
   const [tagInput, setTagInput] = useState('');
-  const [tagsList, setTagsList] = useState([]);
+  const [tagsList, setTagsList] = useState(['ESP32', 'IoT']);
 
-  // Step 2 – Components (each with name, function, imageUrl)
+  // Step 2: Components List (visual card based)
   const [componentsList, setComponentsList] = useState([
-    { id: Date.now(), name: '', function: '', imageUrl: '' }
+    {
+      id: 'default-mcu',
+      name: 'ESP32 NodeMCU DevKit V1',
+      category: 'MCU',
+      function: 'وحدة المعالجة المركزية والاتصال السحابي',
+      imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80'
+    },
+    {
+      id: 'default-sensor',
+      name: 'DHT22 / AM2302',
+      category: 'SENSOR',
+      function: 'قياس درجات الحرارة والرطوبة',
+      imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80'
+    }
   ]);
 
-  // Step 3 – Technical Documentation
+  // Step 3: Technical Documentation
   const [docTab, setDocTab] = useState('overview');
   const [secOverview, setSecOverview] = useState('');
-  const [secCode, setSecCode] = useState('// اكتب الكود البرمجي هنا\n\nvoid setup() {\n  Serial.begin(115200);\n}\n\nvoid loop() {\n  // your logic here\n  delay(1000);\n}');
+  const [secCode, setSecCode] = useState('// اكتب كود Arduino / ESP32 هنا\n\nvoid setup() {\n  Serial.begin(115200);\n  Serial.println("IoT Project Initialized!");\n}\n\nvoid loop() {\n  // logic here\n  delay(1000);\n}');
   const [secChallenges, setSecChallenges] = useState('');
 
-  // Step 4 – Wiring Diagram
+  // Step 4: Wiring Diagram (Auto Builder & Upload)
+  const [connectionsList, setConnectionsList] = useState([
+    { id: 'w1', fromComp: 'DHT22 / AM2302', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '3.3V', color: '#EF4444', note: 'Power' },
+    { id: 'w2', fromComp: 'DHT22 / AM2302', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'Ground' },
+    { id: 'w3', fromComp: 'DHT22 / AM2302', fromPin: 'DATA', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO25', color: '#F59E0B', note: 'Signal' }
+  ]);
   const [wiringImageUrl, setWiringImageUrl] = useState('');
-  const [wiringUploading, setWiringUploading] = useState(false);
-  const [wiringProgress, setWiringProgress] = useState(0);
   const [wiringDescription, setWiringDescription] = useState('');
 
-  // Check username
+  // Check username on mount
   useEffect(() => {
     if (!user) return;
     const check = async () => {
@@ -285,8 +226,39 @@ export default function ProjectPublisher({ user }) {
     check();
   }, [user]);
 
-  // ── Handlers ──────────────────────────────────────────────
+  // Check if initiated with template param
+  useEffect(() => {
+    const templateId = searchParams.get('template');
+    if (templateId) {
+      const found = FEATURED_TEMPLATES.find(t => t.id === templateId);
+      if (found) {
+        handleApplyTemplate(found);
+      }
+    }
+  }, [searchParams]);
 
+  // ─── Template Application Handler ───
+  const handleApplyTemplate = (template) => {
+    setActiveTemplateOrigin(template.title);
+    setTitle(`مشروع مستند إلى: ${template.title}`);
+    setSummary(template.summary || '');
+    setDifficulty(template.difficulty || 'مبتدئ');
+    setTagsList(template.tags || ['ESP32', 'IoT']);
+    if (template.components && template.components.length > 0) {
+      setComponentsList(template.components);
+    }
+    if (template.connections && template.connections.length > 0) {
+      setConnectionsList(template.connections);
+    }
+    if (template.overviewTemplate) {
+      setSecOverview(template.overviewTemplate);
+    }
+    if (template.codeTemplate) {
+      setSecCode(template.codeTemplate);
+    }
+  };
+
+  // ─── Tags Handler ───
   const handleAddTag = (e) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
@@ -296,39 +268,11 @@ export default function ProjectPublisher({ user }) {
     }
   };
 
-  const addComponent = () => {
-    setComponentsList(prev => [...prev, { id: Date.now(), name: '', function: '', imageUrl: '' }]);
-  };
-
-  const updateComponent = (id, updated) => {
-    setComponentsList(prev => prev.map(c => c.id === id ? updated : c));
-  };
-
-  const removeComponent = (id) => {
-    setComponentsList(prev => prev.filter(c => c.id !== id));
-  };
-
-  const handleWiringUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setWiringUploading(true);
-    setWiringProgress(0);
-    try {
-      const compressed = await compressImage(file, 1400, 1400, 0.85);
-      const url = await uploadToCloudinary(compressed, (p) => setWiringProgress(p), 'iot365/wiring');
-      setWiringImageUrl(url);
-    } catch (err) {
-      setError('فشل رفع مخطط التوصيل: ' + err.message);
-    } finally {
-      setWiringUploading(false);
-    }
-  };
-
-  // Build compiled content for Firestore
+  // ─── Markdown Compilation ───
   const buildDocContent = () => {
     const compSection = componentsList
       .filter(c => c.name)
-      .map(c => `### ${c.name}\n${c.imageUrl ? `![${c.name}](${c.imageUrl})\n` : ''}${c.function || ''}`)
+      .map(c => `### ${c.name} (${c.category || 'PART'})\n${c.imageUrl ? `![${c.name}](${c.imageUrl})\n` : ''}${c.function || ''}`)
       .join('\n\n');
 
     return `# ${title || 'توثيق المشروع'}
@@ -352,9 +296,11 @@ ${wiringImageUrl ? `\n![مخطط التوصيل](${wiringImageUrl})` : ''}
 ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
   };
 
+  // ─── Publish to Firestore ───
   const handlePublish = async () => {
     if (!title.trim() || !summary.trim()) {
-      setError('الرجاء ملء العنوان والوصف المختصر على الأقل.');
+      setError('الرجاء ملء العنوان والوصف المختصر للمشروع.');
+      setStep(1);
       return;
     }
     setLoading(true);
@@ -370,15 +316,19 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
         ownerName: profile.displayName || user.displayName || 'Developer',
         title: title.trim(),
         summary: summary.trim(),
+        difficulty,
         content: buildDocContent(),
-        // Structured data for rich display
+        // Structured parts and wiring
         componentsData: componentsList.filter(c => c.name),
+        connectionsData: connectionsList,
         wiringImageUrl: wiringImageUrl || null,
         wiringDescription: wiringDescription.trim() || null,
         images: componentsList.filter(c => c.imageUrl).map(c => c.imageUrl),
         schematics: wiringImageUrl ? [wiringImageUrl] : [],
         componentsList: tagsList,
         visibility,
+        is_featured: false,
+        timesUsedAsTemplate: 0,
         metrics: { views: 0, likes: 0, clones: 0 },
         createdAt: new Date().toISOString()
       };
@@ -393,8 +343,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
     }
   };
 
-  // ── Early returns ──────────────────────────────────────────
-
+  // ─── Early returns ───
   if (checkingUser) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
@@ -405,334 +354,476 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
   if (!hasUsername) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
+      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl" dir="rtl">
         <AlertCircle className="w-16 h-16 text-primary mx-auto mb-4" />
         <h3 className="text-xl font-bold text-white">تحتاج إلى تعيين اسم مستخدم أولاً</h3>
         <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-          لتتمكن من نشر مشاريعك، يرجى التوجه لصفحة الإعدادات وإنشاء رابط Vanity URL.
+          لتتمكن من نشر مشاريعك في المجتمع، يرجى التوجه لصفحة ملفك الشخصي وتعيين اسم المستخدم.
         </p>
-        <button onClick={() => navigate('/settings')}
+        <button
+          onClick={() => navigate('/settings')}
           style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-          className="mt-6 font-bold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg cursor-pointer">
+          className="mt-6 font-bold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg cursor-pointer"
+        >
           توجه إلى الإعدادات الآن
         </button>
       </div>
     );
   }
 
-  // ── Render ─────────────────────────────────────────────────
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-
-      {/* Header */}
+    <div className="max-w-7xl mx-auto space-y-6 pb-20 text-right" dir="rtl">
+      
+      {/* ─── Top Header & Templates Button ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
-            <Sparkles className="text-primary w-6 h-6 animate-pulse" />
-            أنشئ مشروع IoT جديد
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">شارك تصميم دوائرك وأكوادك مع مجتمع المطورين</p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
+              <Sparkles className="text-primary w-6 h-6 animate-pulse" />
+              محرر ونشر مشاريع IoT المتكامل
+            </h2>
+            <button
+              type="button"
+              onClick={() => setIsMobilePreviewOpen(true)}
+              className="xl:hidden px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-bold text-primary flex items-center gap-1.5 cursor-pointer"
+            >
+              <Eye size={13} />
+              معاينة البطاقة
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            صمم دوائرك، ابنِ مخططات التوصيل الذكية، وشارك كودك مع مجتمع مطوري الأجهزة الذكية
+          </p>
         </div>
 
-        {/* Step Indicators */}
-        <div className="flex items-center gap-1.5">
-          {STEPS.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <div key={s.num} className="flex items-center">
-                <button type="button" onClick={() => step > s.num && setStep(s.num)}
-                  disabled={step <= s.num}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
-                    step === s.num
-                      ? 'bg-primary text-black shadow-lg shadow-primary/20 ring-2 ring-primary/45'
-                      : step > s.num
-                      ? 'bg-primary/10 text-primary border border-primary/20 cursor-pointer'
-                      : 'bg-card/5 text-muted-foreground border border-border'
-                  }`}>
-                  <Icon size={12} />
-                  <span className="hidden sm:inline">{s.label}</span>
-                  {step > s.num && <CheckCircle2 size={11} />}
-                </button>
-                {i < STEPS.length - 1 && (
-                  <ChevronRight size={14} className={`mx-0.5 ${step > s.num ? 'text-primary/60' : 'text-border'}`} />
-                )}
-              </div>
-            );
-          })}
+        <div className="flex items-center gap-2">
+          {/* Featured Templates Trigger */}
+          <button
+            type="button"
+            onClick={() => setTemplatesModalOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 text-xs font-bold transition-all cursor-pointer shadow-sm"
+          >
+            <Flame size={15} />
+            استخدم نموذجاً جاهزاً (Templates)
+          </button>
         </div>
       </div>
 
-      {/* Error Banner */}
+      {/* ─── Template Banner (If started from template) ─── */}
+      {activeTemplateOrigin && (
+        <div className="bg-sky-500/10 border border-sky-500/25 rounded-2xl p-4 flex items-center justify-between gap-3 text-sky-400 text-xs font-medium animate-fadeIn">
+          <div className="flex items-center gap-2.5">
+            <Copy size={16} className="shrink-0" />
+            <span>
+              بدأت من هيكل النموذج: <strong className="text-white font-bold">{activeTemplateOrigin}</strong> — قم بتعديل القطع والأكواد بما يناسب مشروعك الخاص.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActiveTemplateOrigin(null)}
+            className="text-[11px] text-muted-foreground hover:text-white"
+          >
+            إغلاق التنبيه
+          </button>
+        </div>
+      )}
+
+      {/* ─── Step Indicators ─── */}
+      <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-none gap-2 bg-card/20 border border-border p-2 rounded-2xl">
+        {STEPS.map((s, i) => {
+          const Icon = s.icon;
+          const isCurrent = step === s.num;
+          const isPassed = step > s.num;
+
+          return (
+            <div key={s.num} className="flex items-center shrink-0">
+              <button
+                type="button"
+                onClick={() => setStep(s.num)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  isCurrent
+                    ? 'bg-primary text-black shadow-lg shadow-primary/20 ring-2 ring-primary/45'
+                    : isPassed
+                    ? 'bg-primary/10 text-primary border border-primary/20'
+                    : 'bg-card/5 text-muted-foreground border border-border hover:bg-card/10'
+                }`}
+              >
+                <Icon size={14} />
+                <span>{s.label}</span>
+                {isPassed && <CheckCircle2 size={12} />}
+              </button>
+              {i < STEPS.length - 1 && (
+                <ChevronRight size={14} className={`mx-1 rotate-180 ${isPassed ? 'text-primary' : 'text-border'}`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Error Alert */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-center gap-3 text-sm">
-          <AlertCircle className="shrink-0" size={18} />
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-center gap-3 text-xs">
+          <AlertCircle className="shrink-0" size={16} />
           <p>{error}</p>
         </div>
       )}
 
-      {/* ─── STEP 1: Basic Info ──────────────────────────── */}
-      {step === 1 && (
-        <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
-          <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border pb-2">
-            <FileText size={18} className="text-primary" /> الخطوة 1: البيانات الأساسية
-          </h3>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">عنوان المشروع *</label>
-                <input required type="text" placeholder="مثال: محطة طقس ذكية تدعم التنبيهات الفورية"
-                  value={title} onChange={(e) => setTitle(e.target.value)} dir="rtl"
-                  className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground transition-colors" />
+      {/* ─── Main Grid: Form Steps + Live Preview Sidebar ─── */}
+      <div className="flex gap-6 items-start">
+        
+        {/* Left / Main Workspace Area */}
+        <div className="flex-1 min-w-0 space-y-6">
+
+          {/* ─── STEP 1: Basic Info ─── */}
+          {step === 1 && (
+            <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <FileText size={18} className="text-primary" />
+                  الخطوة 1: البيانات الأساسية للبطاقة
+                </h3>
+
+                {/* Smart Template Nudge */}
+                <button
+                  type="button"
+                  onClick={() => setTemplatesModalOpen(true)}
+                  className="text-xs text-sky-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <HelpCircle size={13} />
+                  غير متأكد مما تكتب؟ شاهد نماذج مشابهة
+                </button>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">الخصوصية</label>
-                <select value={visibility} onChange={(e) => setVisibility(e.target.value)}
-                  className="w-full bg-card dark:bg-[#0d0e12] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground transition-colors">
-                  <option value="public">عام (Public)</option>
-                  <option value="private">خاص (Private)</option>
-                </select>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Title */}
+                  <div className="md:col-span-2 space-y-1.5">
+                    <label className="block text-xs font-bold text-muted-foreground">عنوان المشروع *</label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="مثال: محطة طقس ذكية متكاملة تدعم التنبيهات الفورية"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                    />
+                  </div>
+
+                  {/* Difficulty */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-muted-foreground">مستوى الصعوبة</label>
+                    <select
+                      value={difficulty}
+                      onChange={(e) => setDifficulty(e.target.value)}
+                      className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                    >
+                      <option value="مبتدئ">مبتدئ (Beginner)</option>
+                      <option value="متوسط">متوسط (Intermediate)</option>
+                      <option value="متقدم">متقدم (Advanced)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-muted-foreground">الوصف الموجز (يظهر على بطاقة المشروع في المستودع) *</label>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder="صف الهدف من مشروعك وما المشكلة التي يحلها باختصار..."
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
+                    className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground resize-none transition-colors"
+                  />
+                </div>
+
+                {/* Visibility & Tags */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-muted-foreground">الخصوصية</label>
+                    <select
+                      value={visibility}
+                      onChange={(e) => setVisibility(e.target.value)}
+                      className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                    >
+                      <option value="public">عام في المجتمع (Public)</option>
+                      <option value="private">خاص بي فقط (Private)</option>
+                    </select>
+                  </div>
+
+                  <div className="md:col-span-2 space-y-1.5">
+                    <label className="block text-xs font-bold text-muted-foreground">وسوم البحث (اضغط Enter لإضافة وسم)</label>
+                    <input
+                      type="text"
+                      placeholder="مثال: ESP32, MQTT, Soil Moisture, OLED..."
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyDown={handleAddTag}
+                      className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                    />
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      {tagsList.map((tag, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => setTagsList(t => t.filter((_, i) => i !== idx))}
+                            className="hover:text-white transition-colors cursor-pointer"
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">الوصف المختصر *</label>
-              <textarea required rows={3} placeholder="صف الفكرة والهدف من مشروعك باختصار..."
-                value={summary} onChange={(e) => setSummary(e.target.value)} dir="rtl"
-                className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground resize-none transition-colors" />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-muted-foreground mb-1.5 text-right">
-                وسوم / تصنيفات البحث (اختياري)
-              </label>
-              <input type="text" placeholder="اضغط Enter لإضافة وسم (ESP32, IoT, Arduino...)"
-                value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyDown={handleAddTag}
-                className="w-full bg-card/5 border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-right text-foreground transition-colors" dir="rtl" />
-              <div className="flex flex-wrap gap-2 mt-3">
-                {tagsList.map((tag, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-                    {tag}
-                    <button type="button" onClick={() => setTagsList(t => t.filter((_, i) => i !== idx))}
-                      className="hover:text-white transition-colors cursor-pointer"><X size={12} /></button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── STEP 2: Hardware Components ─────────────────── */}
-      {step === 2 && (
-        <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-border pb-2">
-            <button type="button" onClick={addComponent}
-              style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-lg shadow-primary/20">
-              <Plus size={14} /> إضافة جهاز / قطعة
-            </button>
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Cpu size={18} className="text-primary" /> الخطوة 2: الأجهزة والقطع
-            </h3>
-          </div>
-
-          <div className="bg-primary/5 border border-primary/15 rounded-xl p-3 flex items-start gap-2.5 text-right" dir="rtl">
-            <Info size={15} className="text-primary shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              أضف كل جهاز أو قطعة إلكترونية بشكل منفصل مع صورة لها ووصف وظيفتها في المشروع.
-              الصور تُرفع تلقائياً إلى Cloudinary عند اختيارها.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {componentsList.map((comp) => (
-              <ComponentCard
-                key={comp.id}
-                comp={comp}
-                onChange={(updated) => updateComponent(comp.id, updated)}
-                onRemove={() => removeComponent(comp.id)}
-              />
-            ))}
-          </div>
-
-          {componentsList.length === 0 && (
-            <div className="text-center py-10 text-muted-foreground">
-              <Cpu size={40} className="mx-auto mb-3 opacity-30" />
-              <p className="text-sm">لا توجد أجهزة مضافة. اضغط "إضافة جهاز" لتبدأ.</p>
             </div>
           )}
-        </div>
-      )}
 
-      {/* ─── STEP 3: Technical Docs ───────────────────────── */}
-      {step === 3 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* ─── STEP 2: Devices & Parts ─── */}
+          {step === 2 && (
+            <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
+                <Cpu size={18} className="text-primary" />
+                الخطوة 2: الأجهزة والقطع المستخدمة (Hardware Components)
+              </h3>
 
-          {/* Editor Panel */}
-          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[680px]">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
-              <Code size={16} className="text-primary animate-pulse" /> الخطوة 3: التوثيق التقني
-            </h3>
-
-            {/* Tabs */}
-            <div className="flex gap-1.5 bg-muted dark:bg-[#0d0e12] border border-border p-1 rounded-xl shrink-0" dir="rtl">
-              {[
-                { id: 'overview', label: '📄 نظرة عامة' },
-                { id: 'code', label: '💻 الكود' },
-                { id: 'challenges', label: '⚠️ تحديات' },
-              ].map(t => (
-                <button key={t.id} type="button" onClick={() => setDocTab(t.id)}
-                  className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-bold transition-all text-center cursor-pointer ${
-                    docTab === t.id
-                      ? 'bg-primary text-black shadow-md'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-card/10'
-                  }`}>
-                  {t.label}
-                </button>
-              ))}
+              <ComponentPicker
+                components={componentsList}
+                onChange={setComponentsList}
+              />
             </div>
+          )}
 
-            {/* Textarea */}
-            <div className="flex-1 flex flex-col min-h-0">
-              {docTab === 'overview' && (
-                <textarea value={secOverview} onChange={(e) => setSecOverview(e.target.value)}
-                  placeholder="اكتب هنا نظرة عامة عن المشروع وهدفه الأساسي..."
-                  className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors"
-                  dir="rtl" />
-              )}
-              {docTab === 'code' && (
-                <textarea value={secCode} onChange={(e) => setSecCode(e.target.value)}
-                  placeholder="// اكتب كود Arduino / ESP32 هنا"
-                  className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-left leading-relaxed transition-colors"
-                  dir="ltr" />
-              )}
-              {docTab === 'challenges' && (
-                <textarea value={secChallenges} onChange={(e) => setSecChallenges(e.target.value)}
-                  placeholder="اكتب الصعوبات والتحديات التي واجهتها والحلول التي وجدتها..."
-                  className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors"
-                  dir="rtl" />
-              )}
-            </div>
-          </div>
+          {/* ─── STEP 3: Technical Docs ─── */}
+          {step === 3 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Editor */}
+              <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[640px]">
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
+                  <Code size={16} className="text-primary animate-pulse" />
+                  محرر التوثيق والأكواد البرمجية
+                </h3>
 
-          {/* Live Preview Panel */}
-          <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[680px] overflow-hidden">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
-              <Eye size={16} className="text-primary" /> معاينة حية للمستند
-            </h3>
-            <div className="flex-1 overflow-y-auto scrollbar-thin pr-1">
-              <MarkdownPreview text={buildDocContent()} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── STEP 4: Wiring Diagram ───────────────────────── */}
-      {step === 4 && (
-        <div className="bg-card/[0.01] border border-border p-6 rounded-3xl space-y-6 backdrop-blur-xl">
-          <h3 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border pb-2">
-            <Zap size={18} className="text-primary" /> الخطوة 4: التوصيل الكهربائي النهائي
-          </h3>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Upload Zone */}
-            <div className="space-y-4">
-              <label className="block text-sm font-bold text-foreground text-right">صورة مخطط التوصيل (Wiring Diagram)</label>
-
-              <input type="file" ref={wiringFileRef} accept="image/*" className="hidden" onChange={handleWiringUpload} />
-
-              {wiringImageUrl ? (
-                <div className="relative rounded-2xl overflow-hidden border border-primary/30 group shadow-xl shadow-primary/5">
-                  <img src={wiringImageUrl} alt="مخطط التوصيل" className="w-full max-h-[300px] object-contain bg-black/40" />
-                  <button type="button" onClick={() => { setWiringImageUrl(''); wiringFileRef.current.value = ''; }}
-                    className="absolute top-3 right-3 p-2 bg-black/70 hover:bg-red-500 text-white rounded-xl transition-colors cursor-pointer">
-                    <X size={14} />
-                  </button>
-                  <button type="button" onClick={() => wiringFileRef.current?.click()}
-                    className="absolute bottom-3 left-3 px-3 py-1.5 text-xs bg-black/70 hover:bg-primary text-white hover:text-black rounded-xl transition-colors cursor-pointer font-bold">
-                    تغيير الصورة
-                  </button>
+                <div className="flex gap-1.5 bg-muted dark:bg-[#0c0e14] border border-border p-1 rounded-xl shrink-0">
+                  {[
+                    { id: 'overview', label: '📄 نظرة عامة' },
+                    { id: 'code', label: '💻 كود C++ / Arduino' },
+                    { id: 'challenges', label: '⚠️ التحديات والحلول' },
+                  ].map(t => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setDocTab(t.id)}
+                      className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-bold transition-all text-center cursor-pointer ${
+                        docTab === t.id
+                          ? 'bg-primary text-black shadow-md'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
                 </div>
+
+                <div className="flex-1 flex flex-col min-h-0">
+                  {docTab === 'overview' && (
+                    <textarea
+                      value={secOverview}
+                      onChange={(e) => setSecOverview(e.target.value)}
+                      placeholder="اكتب شرحاً تفصيلياً عن وظيفة المشروع وهيكليته البرمجية..."
+                      className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
+                    />
+                  )}
+                  {docTab === 'code' && (
+                    <textarea
+                      value={secCode}
+                      onChange={(e) => setSecCode(e.target.value)}
+                      placeholder="// اكتب كود Arduino / ESP32 هنا"
+                      className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin text-left leading-relaxed transition-colors"
+                      dir="ltr"
+                    />
+                  )}
+                  {docTab === 'challenges' && (
+                    <textarea
+                      value={secChallenges}
+                      onChange={(e) => setSecChallenges(e.target.value)}
+                      placeholder="اكتب الصعوبات التقنية التي واجهتك (مثل مشاكل التغذية أو التوقيت) والحلول..."
+                      className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Preview */}
+              <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[640px] overflow-hidden">
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
+                  <Eye size={16} className="text-primary" />
+                  معاينة التنسيق (Markdown Live Preview)
+                </h3>
+                <div className="flex-1 overflow-y-auto scrollbar-thin pr-1">
+                  <MarkdownPreview text={buildDocContent()} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── STEP 4: Wiring Diagram & Schematic ─── */}
+          {step === 4 && (
+            <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
+                <Zap size={18} className="text-primary" />
+                الخطوة 4: التوصيل الكهربائي والمخطط (Wiring & Schematic)
+              </h3>
+
+              <WiringBuilder
+                components={componentsList}
+                connections={connectionsList}
+                onConnectionsChange={setConnectionsList}
+                wiringImageUrl={wiringImageUrl}
+                onWiringImageChange={setWiringImageUrl}
+                wiringDescription={wiringDescription}
+                onWiringDescriptionChange={setWiringDescription}
+              />
+            </div>
+          )}
+
+          {/* ─── STEP 5: Final Review & Publish ─── */}
+          {step === 5 && (
+            <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-6 backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div>
+                  <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                    <CheckCircle2 size={18} className="text-emerald-400" />
+                    الخطوة 5: المعاينة الشاملة قبل النشر
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    هكذا سيظهر مشروعك بالضبط لبقية مطوري المجتمع
+                  </p>
+                </div>
+
+                <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  جاهز للنشر
+                </span>
+              </div>
+
+              {/* Summary Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
+                  <span className="text-[10px] text-muted-foreground font-bold">العنوان والصعوبة:</span>
+                  <h4 className="text-xs font-extrabold text-foreground">{title || 'بدون عنوان'}</h4>
+                  <span className="inline-block text-[10px] text-primary font-bold">{difficulty}</span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
+                  <span className="text-[10px] text-muted-foreground font-bold">القطع والتوصيلات:</span>
+                  <h4 className="text-xs font-extrabold text-foreground">{componentsList.length} قطع إلكترونية</h4>
+                  <span className="inline-block text-[10px] text-sky-400 font-mono">{connectionsList.length} أسلاك موصولة</span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
+                  <span className="text-[10px] text-muted-foreground font-bold">تفاعل المجتمع:</span>
+                  <div className="flex items-center gap-2 text-xs font-bold text-foreground pt-1">
+                    <MessageSquare size={13} className="text-primary" />
+                    <span>زر "تواصل مع المطور" مفعّل تلقائياً</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Visual Schematic Snapshot */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-foreground">مخطط التوصيل الكهربائي للمشروع:</span>
+                {wiringImageUrl ? (
+                  <div className="rounded-2xl overflow-hidden border border-border bg-black/40 text-center p-4">
+                    <img src={wiringImageUrl} alt="مخطط التوصيل" className="max-h-80 mx-auto object-contain rounded-xl" />
+                  </div>
+                ) : (
+                  <SchematicSvgViewer components={componentsList} connections={connectionsList} />
+                )}
+              </div>
+
+              {/* Documentation Preview */}
+              <div className="space-y-2 border-t border-border pt-4">
+                <span className="text-xs font-bold text-foreground">التوثيق التقني النهائي:</span>
+                <div className="p-5 rounded-2xl bg-card dark:bg-[#080a0f] border border-border max-h-96 overflow-y-auto scrollbar-thin">
+                  <MarkdownPreview text={buildDocContent()} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── Navigation Controls ─── */}
+          <div className="flex items-center justify-between pt-4 border-t border-border">
+            <div>
+              {step < 5 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError('');
+                    setStep(step + 1);
+                  }}
+                  style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+                  className="font-bold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg shadow-primary/20 cursor-pointer text-xs"
+                >
+                  الخطوة التالية <ArrowRight size={15} className="rotate-180" />
+                </button>
               ) : (
-                <button type="button" onClick={() => wiringFileRef.current?.click()}
-                  className="w-full border-2 border-dashed border-border rounded-2xl p-10 bg-card/[0.01] hover:bg-card/[0.02] hover:border-primary/40 transition-all flex flex-col items-center justify-center text-center group cursor-pointer">
-                  {wiringUploading ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                      <span className="text-primary font-bold text-sm">{wiringProgress}%</span>
-                      <span className="text-xs text-muted-foreground">جاري الرفع إلى Cloudinary...</span>
-                    </div>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handlePublish}
+                  style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+                  className="font-bold px-8 py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 shadow-xl shadow-primary/25 cursor-pointer disabled:opacity-50 text-xs"
+                >
+                  {loading ? (
+                    <><div className="w-4 h-4 rounded-full border-2 border-black border-t-transparent animate-spin" /> جاري النشر للمجتمع...</>
                   ) : (
-                    <>
-                      <ImagePlus className="w-12 h-12 text-muted-foreground group-hover:text-primary transition-colors mb-3" />
-                      <span className="text-sm font-bold text-foreground/90">اسحب صورة مخطط التوصيل أو اضغط للتصفح</span>
-                      <span className="text-[11px] text-muted-foreground mt-1">يدعم Fritzing diagrams أو صور التوصيل الفعلية</span>
-                    </>
+                    <><CheckCircle2 size={16} /> تأكيد ونشر المشروع في المستودع العام</>
                   )}
                 </button>
               )}
             </div>
 
-            {/* Wiring Description */}
-            <div className="space-y-3">
-              <label className="block text-sm font-bold text-foreground text-right">شرح التوصيل (اختياري)</label>
-              <textarea rows={8}
-                placeholder="اشرح هنا طريقة التوصيل خطوة بخطوة:&#10;&#10;1. وصّل VCC الحساس بـ 3.3V على لوحة ESP32&#10;2. وصّل GND بـ GND&#10;3. وصّل منفذ البيانات (DATA) بـ GPIO25..."
-                value={wiringDescription} onChange={(e) => setWiringDescription(e.target.value)} dir="rtl"
-                className="w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-sm font-mono text-foreground focus:outline-none focus:border-primary/40 resize-none overflow-y-auto scrollbar-thin text-right leading-relaxed transition-colors h-full" />
+            <div>
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError('');
+                    setStep(step - 1);
+                  }}
+                  className="bg-card/5 text-foreground border border-border px-5 py-2.5 rounded-xl hover:bg-card/10 transition-colors flex items-center gap-2 cursor-pointer text-xs"
+                >
+                  <ArrowLeft size={15} className="rotate-180" /> الخطوة السابقة
+                </button>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Summary preview of components */}
-          {componentsList.filter(c => c.name).length > 0 && (
-            <div className="border-t border-border pt-5">
-              <p className="text-xs text-muted-foreground text-right mb-3">ملخص الأجهزة المُدخلة ({componentsList.filter(c => c.name).length} قطعة):</p>
-              <div className="flex flex-wrap gap-3">
-                {componentsList.filter(c => c.name).map((c) => (
-                  <div key={c.id} className="flex items-center gap-2 bg-card dark:bg-[#0d0e12] border border-border rounded-xl px-3 py-2">
-                    {c.imageUrl && (
-                      <img src={c.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover border border-border" />
-                    )}
-                    {!c.imageUrl && <Cpu size={14} className="text-primary" />}
-                    <span className="text-xs font-semibold text-foreground">{c.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ─── Navigation Controls ──────────────────────────── */}
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <div>
-          {step < 4 ? (
-            <button type="button" onClick={() => { setError(''); setStep(step + 1); }}
-              style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-              className="font-bold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg shadow-primary/20 cursor-pointer">
-              الخطوة التالية <ArrowRight size={16} />
-            </button>
-          ) : (
-            <button type="button" disabled={loading} onClick={handlePublish}
-              style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-              className="font-bold px-8 py-2.5 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg shadow-primary/20 cursor-pointer disabled:opacity-50">
-              {loading ? (
-                <><div className="w-4 h-4 rounded-full border-2 border-black border-t-transparent animate-spin" /> جاري النشر...</>
-              ) : (
-                <><CheckCircle2 size={16} /> نشر المشروع للمجتمع</>
-              )}
-            </button>
-          )}
-        </div>
-        <div>
-          {step > 1 && (
-            <button type="button" onClick={() => { setError(''); setStep(step - 1); }}
-              className="bg-card/5 text-foreground border border-border px-6 py-2.5 rounded-xl hover:bg-card/10 transition-colors flex items-center gap-2 cursor-pointer">
-              <ArrowLeft size={16} /> الخطوة السابقة
-            </button>
-          )}
-        </div>
+        {/* Right Side: Persistent Live Project Card Preview */}
+        <ProjectLivePreview
+          title={title}
+          summary={summary}
+          difficulty={difficulty}
+          visibility={visibility}
+          tags={tagsList}
+          components={componentsList}
+          connections={connectionsList}
+          wiringImageUrl={wiringImageUrl}
+          user={user}
+          isMobileDrawerOpen={isMobilePreviewOpen}
+          onCloseMobileDrawer={() => setIsMobilePreviewOpen(false)}
+        />
       </div>
+
+      {/* ─── Featured Templates Modal ─── */}
+      <FeaturedTemplatesModal
+        isOpen={templatesModalOpen}
+        onClose={() => setTemplatesModalOpen(false)}
+        onSelectTemplate={handleApplyTemplate}
+      />
     </div>
   );
 }

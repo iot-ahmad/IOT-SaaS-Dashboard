@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AuthPage from './components/AuthPage';
-import { FloatingPaths } from './components/ui/background-paths';
 import { HomeView } from './components/Views';
 import UniversalController from './components/UniversalController';
 import { DevicesView, AutomationsToolView, AlertsView, LiveTerminal } from './components/ToolViews';
@@ -12,7 +11,7 @@ import DeveloperGuide from './components/DeveloperGuide';
 import SimulatorView from './components/SimulatorView';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
-import { Loader2, Sun, Moon } from 'lucide-react';
+import { Loader2, Sun, Moon, MessageSquare } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
@@ -25,6 +24,8 @@ import ProjectDetail from './components/ProjectDetail';
 import UserProfile from './components/UserProfile';
 import ProfilePage from './components/ProfilePage';
 import SupportModal from './components/SupportModal';
+import { MessagingProvider, useMessaging } from './context/MessagingContext';
+import MessagingModal from './components/messaging/MessagingModal';
 
 /**
  * Standalone layout wrapper for the public Hub section.
@@ -37,6 +38,7 @@ function HubLayout({ children, user, logout }) {
   const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { unreadCount = 0, setIsMessagingOpen = () => {} } = useMessaging();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const dropdownRef = useRef(null);
@@ -76,10 +78,7 @@ function HubLayout({ children, user, logout }) {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30 overflow-x-hidden">
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
+
 
       {/* ─── Top Navbar ─── */}
       <header className="relative z-40 flex items-center justify-between py-3 px-6 md:px-12 border-b border-border bg-card/60 bg-background/60 backdrop-blur-md sticky top-0">
@@ -134,6 +133,20 @@ function HubLayout({ children, user, logout }) {
           {user ? (
             // ── Logged-in user actions ──
             <div className="flex items-center gap-2">
+              {/* Direct Messages Button */}
+              <button
+                onClick={() => setIsMessagingOpen(true)}
+                className="relative p-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                title="الرسائل المباشرة"
+              >
+                <MessageSquare size={15} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-black text-[9px] font-extrabold flex items-center justify-center shadow-md">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
               {/* Back to dashboard */}
               <button
                 onClick={() => navigate('/')}
@@ -256,70 +269,73 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Auth page path */}
-        <Route path="/login" element={
-          !user ? (
-            <AuthPage
-              loginWithGoogle={loginWithGoogle}
-              error={authError}
-              setError={setError}
-            />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        } />
+    <MessagingProvider user={user}>
+      <BrowserRouter>
+        <Routes>
+          {/* Auth page path */}
+          <Route path="/login" element={
+            !user ? (
+              <AuthPage
+                loginWithGoogle={loginWithGoogle}
+                error={authError}
+                setError={setError}
+              />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } />
 
-        {/* ── Hub routes — standalone page for ALL users (logged-in or guest) ── */}
-        <Route path="/hub" element={
-          <HubLayout user={user} logout={logout}>
-            <ProjectFeed user={user} />
-          </HubLayout>
-        } />
-
-        <Route path="/hub/new" element={
-          user ? (
+          {/* ── Hub routes — standalone page for ALL users (logged-in or guest) ── */}
+          <Route path="/hub" element={
             <HubLayout user={user} logout={logout}>
-              <ProjectPublisher user={user} />
+              <ProjectFeed user={user} />
             </HubLayout>
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        } />
+          } />
 
-        <Route path="/hub/project/:projectId" element={
-          <HubLayout user={user} logout={logout}>
-            <ProjectDetail currentUser={user} />
-          </HubLayout>
-        } />
+          <Route path="/hub/new" element={
+            user ? (
+              <HubLayout user={user} logout={logout}>
+                <ProjectPublisher user={user} />
+              </HubLayout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } />
 
-        {/* Authenticated routes (Dashboard) — must come before /:username wildcard */}
-        <Route path="/" element={
-          user ? (
-            <Dashboard user={user} logout={logout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        } />
+          <Route path="/hub/project/:projectId" element={
+            <HubLayout user={user} logout={logout}>
+              <ProjectDetail currentUser={user} />
+            </HubLayout>
+          } />
 
-        {/* Vanity profile pages — must come after all specific routes */}
-        <Route path="/:username" element={
-          <HubLayout user={user} logout={logout}>
-            <UserProfile currentUser={user} />
-          </HubLayout>
-        } />
+          {/* Authenticated routes (Dashboard) — must come before /:username wildcard */}
+          <Route path="/" element={
+            user ? (
+              <Dashboard user={user} logout={logout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } />
 
-        {/* Catch-all: authenticated tools or redirect to login */}
-        <Route path="/*" element={
-          user ? (
-            <Dashboard user={user} logout={logout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        } />
-      </Routes>
-    </BrowserRouter>
+          {/* Vanity profile pages — must come after all specific routes */}
+          <Route path="/:username" element={
+            <HubLayout user={user} logout={logout}>
+              <UserProfile currentUser={user} />
+            </HubLayout>
+          } />
+
+          {/* Catch-all: authenticated tools or redirect to login */}
+          <Route path="/*" element={
+            user ? (
+              <Dashboard user={user} logout={logout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } />
+        </Routes>
+        <MessagingModal user={user} />
+      </BrowserRouter>
+    </MessagingProvider>
   );
 }
 
@@ -649,10 +665,7 @@ function Dashboard({ user, logout }) {
 
   return (
      <div className="relative h-screen bg-background text-foreground flex selection:bg-primary/30 overflow-hidden">
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45 dark:opacity-25">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
+
 
       {isMobileMenuOpen && (
         <div 

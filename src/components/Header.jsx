@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen, Globe } from 'lucide-react';
+import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen, Globe, MessageSquare } from 'lucide-react';
 import { TOOLS } from '../data/mockData';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useMessaging } from '../context/MessagingContext';
 
 export default function Header({ 
   activeWorkspace, 
@@ -16,6 +17,7 @@ export default function Header({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { unreadCount = 0, setIsMessagingOpen = () => {} } = useMessaging();
   const [localIsDark, setLocalIsDark] = useState(true);
   const isDark = propIsDark !== undefined ? propIsDark : localIsDark;
 
@@ -117,6 +119,22 @@ export default function Header({
 
       <div className="flex items-center gap-2 sm:gap-3">
 
+
+        {/* Direct Messages Button */}
+        <button
+          onClick={() => setIsMessagingOpen(true)}
+          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
+          className="relative flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-foreground transition-colors cursor-pointer"
+          title="الرسائل المباشرة"
+        >
+          <MessageSquare size={16} />
+          <span className="hidden sm:inline">الرسائل</span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-black text-[9px] font-extrabold flex items-center justify-center shadow-md">
+              {unreadCount}
+            </span>
+          )}
+        </button>
 
         {/* Projects Community Button */}
         <button
