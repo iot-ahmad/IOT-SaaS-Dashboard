@@ -2690,19 +2690,9 @@ export default function UniversalController({ deviceStates, publish, storageScop
   const [showModal, setShowModal] = useState(false);
   const [editingWidget, setEditingWidget] = useState(null);
 
-  const defaultWidgets = [
-    { id: 'demo1', type: 'gauge', name: 'Temperature', topic: 'sensor/temp', unit: '°C', maxVal: 100, w: 3, h: 3 },
-    { id: 'demo2', type: 'switch', name: 'LED Light', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 },
-    { id: 'demo3', type: 'dpad', name: 'RC Direction', topic: 'car/move', unit: '', maxVal: 1, w: 3, h: 4 },
-    { id: 'demo4', type: 'speed', name: 'RC Speed', topic: 'car/speed', unit: '', maxVal: 255, w: 3, h: 2 },
-  ];
+  const defaultWidgets = [];
 
-  const defaultLayouts = layoutsFromLg([
-    { i: 'demo1', x: 0, y: 0, w: 3, h: 3 },
-    { i: 'demo2', x: 3, y: 0, w: 2, h: 2 },
-    { i: 'demo3', x: 5, y: 0, w: 3, h: 4 },
-    { i: 'demo4', x: 0, y: 3, w: 3, h: 2 },
-  ]);
+  const defaultLayouts = layoutsFromLg([]);
 
   const effectiveDefaultWidgets = (initialWidgets && initialWidgets.length > 0) ? initialWidgets : defaultWidgets;
   const effectiveDefaultLayouts = initialLayouts || layoutsFromLg(effectiveDefaultWidgets.map((w, idx) => ({
@@ -2720,19 +2710,10 @@ export default function UniversalController({ deviceStates, publish, storageScop
   useEffect(() => {
     if (!loaded) return;
     if (savedWidgets && savedWidgets.length > 0) {
-      // Check if savedWidgets is just the generic demo array or empty
-      const isGenericDemo = savedWidgets.length <= 4 && savedWidgets.every(w => w.id && (w.id.startsWith('demo') || w.id.startsWith('actuator')));
-      if (isGenericDemo && initialWidgets && initialWidgets.length > 0) {
-        setWidgets(effectiveDefaultWidgets);
-        setLayouts(effectiveDefaultLayouts);
-        save(effectiveDefaultWidgets, effectiveDefaultLayouts);
-      } else {
-        setWidgets(savedWidgets);
-      }
+      setWidgets(savedWidgets);
     } else {
       setWidgets(effectiveDefaultWidgets);
       setLayouts(effectiveDefaultLayouts);
-      save(effectiveDefaultWidgets, effectiveDefaultLayouts);
     }
 
     if (savedLayouts?.lg && savedLayouts.lg.length > 0) {

@@ -42,12 +42,14 @@ export default function SimulatorView({
 }) {
   const containerRef = useRef(null);
   
-  // Selected Project State
-  const [selectedProjectId, setSelectedProjectId] = useState('all-in-one');
+  // Selected Project State: 'empty' by default (blank canvas) or one of SIMULATOR_PROJECTS
+  const [selectedProjectId, setSelectedProjectId] = useState('empty');
+  const isCustomProject = selectedProjectId === 'empty';
   const activeProject = SIMULATOR_PROJECTS.find(p => p.id === selectedProjectId) || SIMULATOR_PROJECTS[0];
 
-  const [wokwiUrlInput, setWokwiUrlInput] = useState(activeProject.wokwiUrl || initialWokwiUrl);
-  const [activeWokwiUrl, setActiveWokwiUrl] = useState(activeProject.wokwiUrl || initialWokwiUrl);
+  const blankWokwiUrl = 'https://wokwi.com/projects/new/esp32';
+  const [wokwiUrlInput, setWokwiUrlInput] = useState(blankWokwiUrl);
+  const [activeWokwiUrl, setActiveWokwiUrl] = useState(blankWokwiUrl);
   const [iframeKey, setIframeKey] = useState(0);
   
   // View mode: 'split' | 'circuit' | 'dashboard'
@@ -115,13 +117,25 @@ export default function SimulatorView({
     }
   };
 
-  const handleSelectProject = (project) => {
-    setSelectedProjectId(project.id);
-    if (project.wokwiUrl) {
-      setWokwiUrlInput(project.wokwiUrl);
-      setActiveWokwiUrl(project.wokwiUrl);
+  const handleSelectProjectId = (projectId) => {
+    setSelectedProjectId(projectId);
+    if (projectId === 'empty') {
+      setWokwiUrlInput(blankWokwiUrl);
+      setActiveWokwiUrl(blankWokwiUrl);
       setIframeKey(k => k + 1);
+    } else {
+      const proj = SIMULATOR_PROJECTS.find(p => p.id === projectId);
+      if (proj?.wokwiUrl) {
+        setWokwiUrlInput(proj.wokwiUrl);
+        setActiveWokwiUrl(proj.wokwiUrl);
+        setIframeKey(k => k + 1);
+      }
     }
+  };
+
+  const handleSelectProject = (project) => {
+    if (!project) return;
+    handleSelectProjectId(project.id);
   };
 
   const handleApplyUrl = (e) => {
@@ -133,7 +147,7 @@ export default function SimulatorView({
   };
 
   const handleResetDefault = () => {
-    const defaultUrl = 'https://wokwi.com/projects/468717878078638081';
+    const defaultUrl = isCustomProject ? blankWokwiUrl : (activeProject.wokwiUrl || blankWokwiUrl);
     setWokwiUrlInput(defaultUrl);
     setActiveWokwiUrl(defaultUrl);
     setIframeKey(k => k + 1);
@@ -190,37 +204,49 @@ export default function SimulatorView({
       {/* ── Control Header Toolbar ── */}
       <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl p-2 sm:p-2.5 flex flex-col gap-2 shrink-0 shadow-md">
         
-        {/* Row 1: Presets Quick Bar */}
+        {/* Row 1: Presets Quick Dropdown Bar */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-2">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
-            <span className="text-xs font-bold text-muted-foreground ml-1 shrink-0 flex items-center gap-1">
-              <Layers size={13} className="text-primary" />
-              مشاريع المحاكي الجاهزة:
-            </span>
-            {SIMULATOR_PROJECTS.map((proj) => (
-              <button
-                key={proj.id}
-                onClick={() => handleSelectProject(proj)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all border ${
-                  selectedProjectId === proj.id
-                    ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                    : 'bg-muted/70 hover:bg-muted border-border text-foreground/80 hover:text-foreground'
-                }`}
-                title={proj.description}
-              >
-                <span>{proj.title.split('(')[0]}</span>
-                {selectedProjectId === proj.id && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
-              </button>
-            ))}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-bold shrink-0">
+              <Layers size={14} />
+              <span>مشروع المحاكاة:</span>
+            </div>
+
+            {/* Dropdown Menu */}
+            <select
+              value={selectedProjectId}
+              onChange={(e) => handleSelectProjectId(e.target.value)}
+              className="bg-muted hover:bg-muted/80 border border-border text-foreground text-xs font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary cursor-pointer shadow-sm min-w-[220px]"
+            >
+              <option value="empty">✨ مشروع جديد فارغ (Custom / Blank)</option>
+              <optgroup label="── مشاريع محاكاة جاهزة للتعلم والاختبار ──">
+                {SIMULATOR_PROJECTS.map((proj) => (
+                  <option key={proj.id} value={proj.id}>
+                    {proj.title}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+
+            {!isCustomProject && (
+              <span className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted/40 border border-border px-2 py-1 rounded-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                {activeProject.badge}
+              </span>
+            )}
           </div>
 
-          <button
-            onClick={() => setShowProjectsModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-primary text-primary-foreground shadow-md hover:opacity-90 transition-opacity shrink-0"
-          >
-            <Sparkles size={13} />
-            <span>الكود ومخطط التوصيل (Wiring)</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {!isCustomProject && (
+              <button
+                onClick={() => setShowProjectsModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-primary text-primary-foreground shadow-md hover:opacity-90 transition-opacity shrink-0"
+              >
+                <Sparkles size={13} />
+                <span>الكود ومخطط التوصيل</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Row 2: Main Toolbar Line */}
@@ -589,8 +615,8 @@ export default function SimulatorView({
                   publish={publish}
                   storageScopeId={`${userUID || 'guest'}_wokwi_${selectedProjectId}`}
                   userUID={userUID}
-                  initialWidgets={activeProject.widgets}
-                  customTitle={`لوحة مشروع: ${activeProject.title.split('(')[0]}`}
+                  initialWidgets={isCustomProject ? [] : activeProject.widgets}
+                  customTitle={isCustomProject ? 'لوحة تحكم فارغة (ابدأ بإضافة أدواتك)' : `لوحة مشروع: ${activeProject.title.split('(')[0]}`}
                 />
               )}
 
@@ -610,21 +636,22 @@ export default function SimulatorView({
               {activePanel === 'devices' && (
                 <div className="space-y-4">
                   {/* Active Project Preset Devices Live Monitor */}
-                  <div className="bg-card/60 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-sm">
-                    <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border/60 flex-wrap">
-                      <div className="flex items-center gap-2">
-                        <Cpu className="text-primary" size={16} />
-                        <h4 className="text-xs sm:text-sm font-extrabold text-foreground">
-                          أجهزة وحساسات مشروع: {activeProject.title.split('(')[0]}
-                        </h4>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                          {activeProject.presetDevices?.length || 0} أجهزة
+                  {!isCustomProject && (
+                    <div className="bg-card/60 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+                      <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border/60 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <Cpu className="text-primary" size={16} />
+                          <h4 className="text-xs sm:text-sm font-extrabold text-foreground">
+                            أجهزة وحساسات مشروع: {activeProject.title.split('(')[0]}
+                          </h4>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                            {activeProject.presetDevices?.length || 0} أجهزة
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground hidden sm:inline">
+                          قراءات حية واختبار مباشر عبر MQTT
                         </span>
                       </div>
-                      <span className="text-[10px] text-muted-foreground hidden sm:inline">
-                        قراءات حية واختبار مباشر عبر MQTT
-                      </span>
-                    </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                       {(activeProject.presetDevices || []).map(dev => {
@@ -693,6 +720,7 @@ export default function SimulatorView({
                       })}
                     </div>
                   </div>
+                )}
 
                   {/* User's custom saved devices view */}
                   <NewDevicesView
@@ -717,27 +745,48 @@ export default function SimulatorView({
               {activePanel === 'guide' && (
                 <div className="space-y-4 text-xs">
                   
-                  {/* Project Info Header */}
-                  <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-xl p-4">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">
-                        {activeProject.badge}
-                      </span>
-                      <button
-                        onClick={() => setShowProjectsModal(true)}
-                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-                      >
-                        <Sparkles size={13} />
-                        فتح النافذة التفصيلية الكاملة
-                      </button>
+                  {isCustomProject ? (
+                    <div className="bg-muted/40 border border-border rounded-xl p-6 text-center space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+                        <Code size={24} />
+                      </div>
+                      <h4 className="font-bold text-foreground text-sm">مساحة عمل محاكاة فارغة / مخصصة</h4>
+                      <p className="text-muted-foreground text-xs max-w-md mx-auto leading-relaxed">
+                        أنت الآن تعمل على محاكي فارغ. يمكنك برمجة دائرتك الخاصة وتوصيل حساساتك المخصصة، أو اختيار أي من المشاريع الجاهزة من القائمة المنسدلة بالأعلى لتوليد الكود ومخطط التوصيل فوراً.
+                      </p>
+                      <div className="pt-2">
+                        <button
+                          type="button"
+                          onClick={() => handleSelectProjectId('all-in-one')}
+                          className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow-sm transition-all"
+                        >
+                          تجربة المحطة الشاملة الجاهزة 🌟
+                        </button>
+                      </div>
                     </div>
-                    <h4 className="font-extrabold text-sm text-foreground mt-1">
-                      {activeProject.title}
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                      {activeProject.description}
-                    </p>
-                  </div>
+                  ) : (
+                    <>
+                      {/* Project Info Header */}
+                      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-xl p-4">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">
+                            {activeProject.badge}
+                          </span>
+                          <button
+                            onClick={() => setShowProjectsModal(true)}
+                            className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                          >
+                            <Sparkles size={13} />
+                            فتح النافذة التفصيلية الكاملة
+                          </button>
+                        </div>
+                        <h4 className="font-extrabold text-sm text-foreground mt-1">
+                          {activeProject.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                          {activeProject.description}
+                        </p>
+                      </div>
 
                   {/* UID Toggle Bar */}
                   <div className="bg-muted/50 border border-border rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
@@ -821,7 +870,8 @@ export default function SimulatorView({
                       </table>
                     </div>
                   </div>
-
+                </>
+              )}
                 </div>
               )}
             </div>
