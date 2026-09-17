@@ -736,8 +736,8 @@ function GaugeWidget({ widget, value, history = [] }) {
   const pct = hasData
     ? Math.min(100, Math.max(0, (num / widget.maxVal) * 100))
     : 0;
-  // Muted corporate theme colors
-  const color = pct > 80 ? '#B85C5C' : '#4A6D8C';
+  // Subtle visual accent color for gauge progress ring only
+  const ringColor = pct > 80 ? '#B85C5C' : '#5B8C6E';
 
   const chartData = history.map((y, i) => ({ i, v: y }));
 
@@ -745,8 +745,8 @@ function GaugeWidget({ widget, value, history = [] }) {
     <div className="flex flex-col h-full gap-2 min-h-0 text-left">
       {/* Header Info */}
       <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2" style={{ color }}>
-          <Activity size={16} />
+        <div className="flex items-center gap-2 text-foreground">
+          <Activity size={16} className="text-muted-foreground" />
           <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
         </div>
         <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
@@ -764,7 +764,7 @@ function GaugeWidget({ widget, value, history = [] }) {
                 <circle 
                   cx="56" cy="56" r="48" 
                   className="transition-all duration-700 ease-out" 
-                  stroke={color}
+                  stroke={ringColor}
                   strokeWidth="6" fill="none" 
                   strokeDasharray="301.6" 
                   strokeDashoffset={301.6 - (301.6 * pct) / 100}
@@ -772,7 +772,7 @@ function GaugeWidget({ widget, value, history = [] }) {
                 />
               </svg>
               <div className="absolute flex flex-col items-center">
-                <div className="text-2xl font-black tracking-tight" style={{ color }}>
+                <div className="text-2xl font-black tracking-tight text-foreground">
                   {num.toFixed(1)}
                 </div>
                 <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">{widget.unit || ''}</span>
@@ -786,12 +786,12 @@ function GaugeWidget({ widget, value, history = [] }) {
                   <AreaChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id={`grad_${widget.id}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={color} stopOpacity={0.15}/>
-                        <stop offset="100%" stopColor={color} stopOpacity={0}/>
+                        <stop offset="0%" stopColor={ringColor} stopOpacity={0.15}/>
+                        <stop offset="100%" stopColor={ringColor} stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <YAxis domain={['auto', 'auto']} hide width={0} />
-                    <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#grad_${widget.id})`} dot={false} isAnimationActive={false} />
+                    <Area type="monotone" dataKey="v" stroke={ringColor} strokeWidth={1.5} fill={`url(#grad_${widget.id})`} dot={false} isAnimationActive={false} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -2806,8 +2806,8 @@ export default function UniversalController({ deviceStates, publish, storageScop
       <div className="flex justify-between items-center gap-4 mb-6 flex-wrap">
         <div className="flex items-center gap-2">
           {esp32Prefix && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-muted border border-border text-xs font-semibold text-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Target ESP32: {esp32Prefix}
             </div>
           )}
@@ -2822,7 +2822,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
             <button
               type="button"
               onClick={resetToProjectPreset}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs transition-all shadow-sm active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/70 hover:bg-muted text-foreground font-bold text-xs transition-all shadow-sm active:scale-95"
               title="استعادة أو تحميل جميع أدوات وحساسات هذا المشروع الجاهزة فوراً"
             >
               <RotateCcw size={13} />

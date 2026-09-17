@@ -207,8 +207,8 @@ export default function SimulatorView({
         {/* Row 1: Presets Quick Dropdown Bar */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-bold shrink-0">
-              <Layers size={14} />
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted border border-border text-foreground text-xs font-bold shrink-0">
+              <Layers size={14} className="text-muted-foreground" />
               <span>مشروع المحاكاة:</span>
             </div>
 
@@ -216,7 +216,7 @@ export default function SimulatorView({
             <select
               value={selectedProjectId}
               onChange={(e) => handleSelectProjectId(e.target.value)}
-              className="bg-muted hover:bg-muted/80 border border-border text-foreground text-xs font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary cursor-pointer shadow-sm min-w-[220px]"
+              className="bg-muted hover:bg-muted/80 border border-border text-foreground text-xs font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:border-foreground/30 cursor-pointer shadow-sm min-w-[220px]"
             >
               <option value="empty">✨ مشروع جديد فارغ (Custom / Blank)</option>
               <optgroup label="── مشاريع محاكاة جاهزة للتعلم والاختبار ──">
@@ -230,7 +230,7 @@ export default function SimulatorView({
 
             {!isCustomProject && (
               <span className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted/40 border border-border px-2 py-1 rounded-md">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 {activeProject.badge}
               </span>
             )}
@@ -240,9 +240,9 @@ export default function SimulatorView({
             {!isCustomProject && (
               <button
                 onClick={() => setShowProjectsModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-primary text-primary-foreground shadow-md hover:opacity-90 transition-opacity shrink-0"
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-muted hover:bg-muted/80 border border-border text-foreground shadow-sm transition-all shrink-0 cursor-pointer"
               >
-                <Sparkles size={13} />
+                <Sparkles size={13} className="text-amber-400" />
                 <span>الكود ومخطط التوصيل</span>
               </button>
             )}
@@ -254,8 +254,8 @@ export default function SimulatorView({
 
           {/* URL Form & Actions */}
           <form onSubmit={handleApplyUrl} className="flex flex-1 items-center gap-1.5 min-w-[260px]">
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-bold shrink-0">
-              <Cpu size={14} />
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted border border-border text-foreground text-xs font-bold shrink-0">
+              <Cpu size={14} className="text-muted-foreground" />
               <span className="hidden sm:inline">رابط المحاكي:</span>
             </div>
 
@@ -264,10 +264,10 @@ export default function SimulatorView({
               value={wokwiUrlInput}
               onChange={(e) => setWokwiUrlInput(e.target.value)}
               placeholder="أدخل رابط Wokwi أو Project ID..."
-              className="flex-1 bg-muted/70 border border-border focus:border-primary/50 text-xs rounded-lg px-2.5 py-1 outline-none font-mono text-foreground truncate min-w-[110px]"
+              className="flex-1 bg-muted/70 border border-border focus:border-foreground/30 text-xs rounded-lg px-2.5 py-1 outline-none font-mono text-foreground truncate min-w-[110px]"
             />
 
-            <Button type="submit" size="sm" className="shrink-0 text-xs px-2.5 py-1 h-auto font-semibold">
+            <Button type="submit" size="sm" className="shrink-0 text-xs px-2.5 py-1 h-auto font-semibold bg-muted hover:bg-muted/80 text-foreground border border-border">
               تحديث
             </Button>
 
@@ -275,7 +275,7 @@ export default function SimulatorView({
               <button
                 type="button"
                 onClick={handleResetDefault}
-                className="text-[11px] text-muted-foreground hover:text-primary underline px-1 shrink-0"
+                className="text-[11px] text-muted-foreground hover:text-foreground underline px-1 shrink-0"
                 title="إعادة لرابط المشروع الأصلي"
               >
                 الافتراضي
@@ -286,7 +286,7 @@ export default function SimulatorView({
               href={activeWokwiUrl.includes('http') ? activeWokwiUrl : `https://wokwi.com/projects/${activeWokwiUrl}`} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-primary transition-colors shrink-0"
+              className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors shrink-0"
               title="فتح في Wokwi بتبويب جديد"
             >
               <ExternalLink size={13} />
@@ -295,7 +295,7 @@ export default function SimulatorView({
             <button
               type="button"
               onClick={handleReloadIframe}
-              className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-primary transition-colors shrink-0"
+              className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors shrink-0"
               title="إعادة تحميل المحاكي"
             >
               <RefreshCw size={13} />
@@ -311,7 +311,7 @@ export default function SimulatorView({
                 onClick={() => setViewMode('split')}
                 className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
                   viewMode === 'split' 
-                    ? 'bg-primary text-primary-foreground shadow-sm' 
+                    ? 'bg-background border border-border text-foreground shadow-sm' 
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 title="تجزئة الشاشة"
@@ -324,7 +324,7 @@ export default function SimulatorView({
                 onClick={() => setViewMode('circuit')}
                 className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
                   viewMode === 'circuit' 
-                    ? 'bg-primary text-primary-foreground shadow-sm' 
+                    ? 'bg-background border border-border text-foreground shadow-sm' 
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 title="المحاكي فقط"
@@ -337,7 +337,7 @@ export default function SimulatorView({
                 onClick={() => setViewMode('dashboard')}
                 className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
                   viewMode === 'dashboard' 
-                    ? 'bg-primary text-primary-foreground shadow-sm' 
+                    ? 'bg-background border border-border text-foreground shadow-sm' 
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 title="اللوحة فقط"
@@ -351,7 +351,7 @@ export default function SimulatorView({
             {viewMode === 'split' && (
               <button
                 onClick={() => setOrientation(o => o === 'vertical' ? 'horizontal' : 'vertical')}
-                className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-primary transition-colors"
+                className="p-1.5 rounded-lg bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors"
                 title={orientation === 'vertical' ? 'تبديل للتقسيم الأفقي' : 'تبديل للتقسيم العمودي'}
               >
                 {orientation === 'vertical' ? <Rows size={14} /> : <Columns size={14} />}
@@ -364,7 +364,7 @@ export default function SimulatorView({
                 <button
                   onClick={() => setActivePanel('controller')}
                   className={`p-1 rounded-md transition-all ${
-                    activePanel === 'controller' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                    activePanel === 'controller' ? 'bg-background text-foreground shadow' : 'text-muted-foreground hover:text-foreground'
                   }`}
                   title="لوحة التحكم"
                 >
@@ -373,7 +373,7 @@ export default function SimulatorView({
                 <button
                   onClick={() => setActivePanel('devices')}
                   className={`p-1 rounded-md transition-all ${
-                    activePanel === 'devices' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                    activePanel === 'devices' ? 'bg-background text-foreground shadow' : 'text-muted-foreground hover:text-foreground'
                   }`}
                   title="الأجهزة والحساسات"
                 >
@@ -382,7 +382,7 @@ export default function SimulatorView({
                 <button
                   onClick={() => setActivePanel('terminal')}
                   className={`p-1 rounded-md transition-all ${
-                    activePanel === 'terminal' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                    activePanel === 'terminal' ? 'bg-background text-foreground shadow' : 'text-muted-foreground hover:text-foreground'
                   }`}
                   title="سجل الإشارات (Terminal)"
                 >
@@ -391,7 +391,7 @@ export default function SimulatorView({
                 <button
                   onClick={() => setActivePanel('guide')}
                   className={`p-1 rounded-md transition-all ${
-                    activePanel === 'guide' ? 'bg-background text-primary shadow' : 'text-muted-foreground hover:text-foreground'
+                    activePanel === 'guide' ? 'bg-background text-foreground shadow' : 'text-muted-foreground hover:text-foreground'
                   }`}
                   title="كود Wokwi والتوصيل"
                 >
@@ -404,11 +404,7 @@ export default function SimulatorView({
             <button
               type="button"
               onClick={toggleFullScreen}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-xs transition-all shrink-0 border ${
-                isFullScreen
-                  ? 'bg-muted border-border text-foreground/70 hover:bg-muted/80 shadow-sm'
-                  : 'bg-primary text-primary-foreground border-primary hover:opacity-90 shadow-md'
-              }`}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-xs transition-all shrink-0 border bg-muted hover:bg-muted/80 border border-border text-foreground shadow-sm cursor-pointer"
               title={isFullScreen ? 'الخروج من ملء الشاشة' : 'توسيع الشاشة بالكامل (Full Screen)'}
             >
               {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
@@ -422,7 +418,7 @@ export default function SimulatorView({
                 onClick={() => setShowUidBanner(v => !v)}
                 className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs font-medium transition-colors ${
                   showUidBanner 
-                    ? 'bg-primary/15 border-primary/30 text-primary' 
+                    ? 'bg-background border-border text-foreground' 
                     : 'bg-muted border-border text-muted-foreground hover:text-foreground'
                 }`}
                 title="إظهار/إخفاء UID الحساب"
@@ -437,10 +433,10 @@ export default function SimulatorView({
 
         {/* UID Notice Banner */}
         {userUID && showUidBanner && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-primary/8 border border-primary/20 rounded-lg px-3 py-1.5 text-xs w-full animate-fadeIn">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-muted/50 border border-border rounded-lg px-3 py-1.5 text-xs w-full animate-fadeIn">
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
-              <span className="font-bold text-primary">UID الحساب:</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="font-bold text-foreground">UID الحساب:</span>
             </div>
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <code className="flex-1 bg-muted border border-border text-foreground font-mono text-[11px] px-2 py-0.5 rounded truncate select-all">
@@ -480,16 +476,16 @@ export default function SimulatorView({
             {/* Header info badge inside pane */}
             <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/40 text-xs shrink-0">
               <div className="flex items-center gap-2 text-foreground font-semibold truncate">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                 <span className="truncate">محاكي Wokwi: {activeProject.title.split('(')[0]}</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 shrink-0">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-foreground border border-border shrink-0">
                   {activeProject.badge}
                 </span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => setShowProjectsModal(true)}
-                  className="text-[11px] text-primary hover:underline font-bold"
+                  className="text-[11px] text-foreground hover:underline font-bold cursor-pointer"
                 >
                   عرض الكود والتوصيل
                 </button>
@@ -508,16 +504,16 @@ export default function SimulatorView({
             {showPlayHint && (
               <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-muted/60 border-b border-border shrink-0">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/15 border border-primary/30 shrink-0 animate-pulse">
-                    <Play size={11} className="text-primary fill-primary ml-0.5" />
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-muted border border-border shrink-0 animate-pulse">
+                    <Play size={11} className="text-foreground fill-foreground ml-0.5" />
                   </span>
-                  <p className="text-foreground/70 font-bold text-xs truncate">
+                  <p className="text-foreground/80 font-bold text-xs truncate">
                     اضغط "Play" الأخضر داخل المحاكي لتشغيل الحساسات وبث القراءات فورياً
                   </p>
                 </div>
                 <button 
                   onClick={() => setShowPlayHint(false)}
-                  className="text-muted-foreground hover:text-foreground p-0.5 shrink-0"
+                  className="text-muted-foreground hover:text-foreground p-0.5 shrink-0 cursor-pointer"
                   title="إغلاق التنبيه"
                 >
                   <X size={13} />
@@ -549,10 +545,10 @@ export default function SimulatorView({
             {/* Pane Sub-header */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/40 text-xs shrink-0">
               <div className="flex items-center gap-2 text-foreground font-semibold">
-                {activePanel === 'controller' && <Gamepad2 size={14} className="text-primary" />}
-                {activePanel === 'devices' && <Cpu size={14} className="text-primary" />}
-                {activePanel === 'terminal' && <Terminal size={14} className="text-primary" />}
-                {activePanel === 'guide' && <Code size={14} className="text-primary" />}
+                {activePanel === 'controller' && <Gamepad2 size={14} className="text-muted-foreground" />}
+                {activePanel === 'devices' && <Cpu size={14} className="text-muted-foreground" />}
+                {activePanel === 'terminal' && <Terminal size={14} className="text-muted-foreground" />}
+                {activePanel === 'guide' && <Code size={14} className="text-muted-foreground" />}
                 <span>
                   {activePanel === 'controller' && 'لوحة التحكم التفاعلية'}
                   {activePanel === 'devices' && 'الأجهزة المتصلة والحساسات'}
@@ -565,25 +561,25 @@ export default function SimulatorView({
               <div className="flex items-center gap-1 text-[11px]">
                 <button 
                   onClick={() => setActivePanel('controller')}
-                  className={`px-2 py-0.5 rounded transition-all ${activePanel === 'controller' ? 'bg-primary/20 text-primary font-bold' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`px-2 py-0.5 rounded transition-all cursor-pointer ${activePanel === 'controller' ? 'bg-background border border-border text-foreground font-bold shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   اللوحة
                 </button>
                 <button 
                   onClick={() => setActivePanel('devices')}
-                  className={`px-2.5 py-0.5 rounded transition-all ${activePanel === 'devices' ? 'bg-primary/20 text-primary font-bold' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`px-2.5 py-0.5 rounded transition-all cursor-pointer ${activePanel === 'devices' ? 'bg-background border border-border text-foreground font-bold shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   الأجهزة
                 </button>
                 <button 
                   onClick={() => setActivePanel('terminal')}
-                  className={`px-2 py-0.5 rounded transition-all ${activePanel === 'terminal' ? 'bg-primary/20 text-primary font-bold' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`px-2 py-0.5 rounded transition-all cursor-pointer ${activePanel === 'terminal' ? 'bg-background border border-border text-foreground font-bold shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   التيرمنال
                 </button>
                 <button 
                   onClick={() => setActivePanel('guide')}
-                  className={`px-2 py-0.5 rounded transition-all ${activePanel === 'guide' ? 'bg-primary/20 text-primary font-bold' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`px-2 py-0.5 rounded transition-all cursor-pointer ${activePanel === 'guide' ? 'bg-background border border-border text-foreground font-bold shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   الكود والتوصيل
                 </button>
@@ -592,15 +588,15 @@ export default function SimulatorView({
 
             {/* Live Telemetry Sensor Bar */}
             {Object.keys(deviceStates || {}).length > 0 && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border-b border-primary/15 text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
-                <span className="flex items-center gap-1.5 text-primary font-bold shrink-0">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/30 border-b border-border text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
+                <span className="flex items-center gap-1.5 text-foreground font-bold shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   بث الحساسات الحي:
                 </span>
                 {Object.entries(deviceStates).map(([top, val]) => (
-                  <span key={top} className="px-2 py-0.5 rounded-md bg-background/80 border border-border text-foreground/70 shrink-0 shadow-sm">
+                  <span key={top} className="px-2 py-0.5 rounded-md bg-background/80 border border-border text-foreground/80 shrink-0 shadow-sm">
                     <span className="text-muted-foreground">{top.split('/').pop()}: </span>
-                    <span className="font-bold">{val}</span>
+                    <span className="font-bold text-foreground">{val}</span>
                   </span>
                 ))}
               </div>
@@ -640,11 +636,11 @@ export default function SimulatorView({
                     <div className="bg-card/60 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-sm">
                       <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border/60 flex-wrap">
                         <div className="flex items-center gap-2">
-                          <Cpu className="text-primary" size={16} />
+                          <Cpu className="text-muted-foreground" size={16} />
                           <h4 className="text-xs sm:text-sm font-extrabold text-foreground">
                             أجهزة وحساسات مشروع: {activeProject.title.split('(')[0]}
                           </h4>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-foreground border border-border">
                             {activeProject.presetDevices?.length || 0} أجهزة
                           </span>
                         </div>
@@ -664,14 +660,14 @@ export default function SimulatorView({
                             key={dev.id} 
                             className={`p-2.5 rounded-xl border transition-all ${
                               hasVal 
-                                ? 'bg-primary/5 border-primary/30 shadow-sm' 
-                                : 'bg-muted/40 border-border'
+                                ? 'bg-muted/60 border-border shadow-sm' 
+                                : 'bg-muted/30 border-border'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2 mb-1.5">
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <span className={`w-2 h-2 rounded-full shrink-0 ${hasVal ? 'bg-primary animate-pulse' : 'bg-muted-foreground/40'}`} />
+                                  <span className={`w-2 h-2 rounded-full shrink-0 ${hasVal ? 'bg-emerald-400 animate-pulse' : 'bg-muted-foreground/40'}`} />
                                   <h5 className="font-bold text-xs text-foreground truncate" title={dev.name}>{dev.name}</h5>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
@@ -679,7 +675,7 @@ export default function SimulatorView({
                                   <span className="truncate" title={dev.topic}>{dev.topic}</span>
                                 </div>
                               </div>
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 bg-white/[0.06] text-white/50 border border-white/[0.08]">
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 bg-muted text-muted-foreground border border-border">
                                 {dev.type}
                               </span>
                             </div>
@@ -688,7 +684,7 @@ export default function SimulatorView({
                             <div className="mt-2 pt-1.5 border-t border-border/40 flex items-center justify-between gap-2">
                               <span className="text-[10px] text-muted-foreground">القيمة الحالية:</span>
                               {hasVal ? (
-                                <span className="font-mono font-bold text-sm text-primary">
+                                <span className="font-mono font-bold text-sm text-foreground">
                                   {liveVal} {dev.unit && dev.unit !== 'State' ? dev.unit : ''}
                                 </span>
                               ) : (
@@ -702,14 +698,14 @@ export default function SimulatorView({
                                 <button
                                   type="button"
                                   onClick={() => publish(dev.topic, 'ON')}
-                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25 transition-all active:scale-95"
+                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-muted hover:bg-muted/80 text-foreground border border-border transition-all active:scale-95 cursor-pointer"
                                 >
                                   تشغيل ON
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => publish(dev.topic, 'OFF')}
-                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-muted hover:bg-muted/80 text-muted-foreground border border-border transition-all active:scale-95"
+                                  className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border transition-all active:scale-95 cursor-pointer"
                                 >
                                   إطفاء OFF
                                 </button>
@@ -747,7 +743,7 @@ export default function SimulatorView({
                   
                   {isCustomProject ? (
                     <div className="bg-muted/40 border border-border rounded-xl p-6 text-center space-y-3">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+                      <div className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto">
                         <Code size={24} />
                       </div>
                       <h4 className="font-bold text-foreground text-sm">مساحة عمل محاكاة فارغة / مخصصة</h4>
@@ -758,7 +754,7 @@ export default function SimulatorView({
                         <button
                           type="button"
                           onClick={() => handleSelectProjectId('all-in-one')}
-                          className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow-sm transition-all"
+                          className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground border border-border font-bold text-xs shadow-sm transition-all cursor-pointer"
                         >
                           تجربة المحطة الشاملة الجاهزة 🌟
                         </button>
@@ -767,16 +763,16 @@ export default function SimulatorView({
                   ) : (
                     <>
                       {/* Project Info Header */}
-                      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-xl p-4">
+                      <div className="bg-muted/40 border border-border rounded-xl p-4">
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="text-xs font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded bg-muted text-foreground border border-border">
                             {activeProject.badge}
                           </span>
                           <button
                             onClick={() => setShowProjectsModal(true)}
-                            className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                            className="text-xs font-bold text-foreground hover:underline flex items-center gap-1 cursor-pointer"
                           >
-                            <Sparkles size={13} />
+                            <Sparkles size={13} className="text-amber-400" />
                             فتح النافذة التفصيلية الكاملة
                           </button>
                         </div>
@@ -800,16 +796,16 @@ export default function SimulatorView({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setUseAccountUid(false)}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                          !useAccountUid ? 'bg-primary text-primary-foreground font-bold shadow' : 'bg-muted text-muted-foreground hover:text-foreground'
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                          !useAccountUid ? 'bg-background border border-border text-foreground font-bold shadow-sm' : 'bg-muted text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         قالب فارغ ("")
                       </button>
                       <button
                         onClick={() => setUseAccountUid(true)}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                          useAccountUid ? 'bg-primary text-primary-foreground font-bold shadow' : 'bg-muted text-muted-foreground hover:text-foreground'
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                          useAccountUid ? 'bg-background border border-border text-foreground font-bold shadow-sm' : 'bg-muted text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         تعبئة UID حسابي تلقائياً
@@ -824,14 +820,14 @@ export default function SimulatorView({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={copyCode}
-                          className="flex items-center gap-1 px-3 py-1 rounded-lg bg-primary text-primary-foreground font-semibold text-xs hover:opacity-90 transition-opacity shadow"
+                          className="flex items-center gap-1 px-3 py-1 rounded-lg bg-muted hover:bg-muted/80 border border-border text-foreground font-semibold text-xs transition-opacity shadow cursor-pointer"
                         >
                           {copiedCode ? <Check size={13} /> : <Copy size={13} />}
                           {copiedCode ? 'تم نسخ الكود!' : 'نسخ الكود'}
                         </button>
                         <button
                           onClick={copyDiagram}
-                          className="flex items-center gap-1 px-3 py-1 rounded-lg bg-muted border border-border hover:bg-muted/80 text-foreground font-semibold text-xs transition-colors"
+                          className="flex items-center gap-1 px-3 py-1 rounded-lg bg-muted border border-border hover:bg-muted/80 text-foreground font-semibold text-xs transition-colors cursor-pointer"
                         >
                           {copiedDiagram ? <Check size={13} /> : <Copy size={13} />}
                           {copiedDiagram ? 'تم نسخ diagram.json!' : 'نسخ diagram.json'}
@@ -861,8 +857,8 @@ export default function SimulatorView({
                           {activeProject.pinouts.map((po, idx) => (
                             <tr key={idx} className="hover:bg-muted/30">
                               <td className="p-2 font-sans font-medium text-foreground">{po.component}</td>
-                              <td className="p-2 text-primary font-bold">{po.pin}</td>
-                              <td className="p-2 text-primary/80">{po.topic}</td>
+                              <td className="p-2 text-foreground font-bold">{po.pin}</td>
+                              <td className="p-2 text-muted-foreground">{po.topic}</td>
                               <td className="p-2 font-sans text-muted-foreground">{po.note}</td>
                             </tr>
                           ))}
@@ -885,26 +881,26 @@ export default function SimulatorView({
       {showProjectsModal && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-5">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowProjectsModal(false)} />
-          <div className="relative bg-card border border-border rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-fadeIn text-white">
+          <div className="relative bg-card border border-border rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-fadeIn text-foreground">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-muted/40 shrink-0 text-white">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-muted/40 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold">
-                  <Sparkles size={16} />
+                <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground font-bold">
+                  <Sparkles size={16} className="text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm sm:text-base text-white">
+                  <h3 className="font-bold text-sm sm:text-base text-foreground">
                     مكتبة مشاريع المحاكي — الكود والتوصيل الإلكتروني
                   </h3>
-                  <p className="text-[11px] text-white/70">
+                  <p className="text-[11px] text-muted-foreground">
                     مشاريع جاهزة ومكتملة من الأكواد والتوصيلات لنسخها فوراً إلى Wokwi
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowProjectsModal(false)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -916,25 +912,25 @@ export default function SimulatorView({
                 <button
                   key={proj.id}
                   onClick={() => handleSelectProject(proj)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-all border ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-all border cursor-pointer ${
                     selectedProjectId === proj.id
-                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      ? 'bg-background border-border text-foreground shadow-sm'
                       : 'bg-muted/70 hover:bg-muted border-border text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <span>{proj.title.split('(')[0]}</span>
-                  {selectedProjectId === proj.id && <CheckCircle2 size={12} />}
+                  {selectedProjectId === proj.id && <CheckCircle2 size={12} className="text-emerald-400" />}
                 </button>
               ))}
             </div>
 
             {/* Modal Tabs Header */}
-            <div className="flex items-center justify-between px-5 py-2 border-b border-border bg-card text-xs shrink-0 text-white">
+            <div className="flex items-center justify-between px-5 py-2 border-b border-border bg-card text-xs shrink-0">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setModalTab('code')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'code' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    modalTab === 'code' ? 'bg-muted border border-border text-foreground' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <FileCode size={14} />
@@ -942,8 +938,8 @@ export default function SimulatorView({
                 </button>
                 <button
                   onClick={() => setModalTab('wiring')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'wiring' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    modalTab === 'wiring' ? 'bg-muted border border-border text-foreground' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <Cpu size={14} />
@@ -951,8 +947,8 @@ export default function SimulatorView({
                 </button>
                 <button
                   onClick={() => setModalTab('libraries')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'libraries' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    modalTab === 'libraries' ? 'bg-muted border border-border text-foreground' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <Layers size={14} />
@@ -960,8 +956,8 @@ export default function SimulatorView({
                 </button>
                 <button
                   onClick={() => setModalTab('guide')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    modalTab === 'guide' ? 'bg-primary/20 text-primary border border-primary/30' : 'text-white/70 hover:text-white'
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    modalTab === 'guide' ? 'bg-muted border border-border text-foreground' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <BookOpen size={14} />
@@ -975,9 +971,9 @@ export default function SimulatorView({
                   <span className="text-[11px] text-muted-foreground hidden sm:inline">الـ UID بالكود:</span>
                   <button
                     onClick={() => setUseAccountUid(v => !v)}
-                    className={`px-2 py-1 rounded-md text-[11px] font-semibold border transition-all ${
+                    className={`px-2 py-1 rounded-md text-[11px] font-semibold border transition-all cursor-pointer ${
                       useAccountUid
-                        ? 'bg-primary/15 text-primary border-primary/30'
+                        ? 'bg-background border-border text-foreground'
                         : 'bg-muted text-muted-foreground border-border hover:text-foreground'
                     }`}
                   >
@@ -988,7 +984,7 @@ export default function SimulatorView({
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 overflow-y-auto flex-1 space-y-4 text-xs scrollbar-thin text-white">
+            <div className="p-5 overflow-y-auto flex-1 space-y-4 text-xs scrollbar-thin">
               
               {/* TAB 1: Code */}
               {modalTab === 'code' && (
@@ -1003,14 +999,14 @@ export default function SimulatorView({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={copyCode}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-bold hover:opacity-90 shadow"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 border border-border text-foreground font-bold shadow cursor-pointer"
                       >
                         {copiedCode ? <Check size={13} /> : <Copy size={13} />}
                         {copiedCode ? 'تم النسخ!' : 'نسخ الكود'}
                       </button>
                       <button
                         onClick={() => downloadFile('sketch.ino', currentCode)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted border border-border hover:bg-muted/80 text-foreground font-semibold"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted border border-border hover:bg-muted/80 text-foreground font-semibold cursor-pointer"
                       >
                         <Download size={13} />
                         <span>تحميل sketch.ino</span>
@@ -1027,7 +1023,7 @@ export default function SimulatorView({
               {/* TAB 2: Wiring & Diagram JSON */}
               {modalTab === 'wiring' && (
                 <div className="space-y-4">
-                  <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="bg-muted/40 border border-border rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                       <h4 className="font-bold text-foreground text-sm">مخطط التوصيل الكامل (Wokwi Diagram JSON)</h4>
                       <p className="text-muted-foreground text-[11px] mt-0.5">
@@ -1037,14 +1033,14 @@ export default function SimulatorView({
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={copyDiagram}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary hover:opacity-90 text-primary-foreground font-bold shadow"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border font-bold shadow cursor-pointer"
                       >
                         {copiedDiagram ? <Check size={13} /> : <Copy size={13} />}
                         {copiedDiagram ? 'تم نسخ diagram.json!' : 'نسخ diagram.json'}
                       </button>
                       <button
                         onClick={() => downloadFile('diagram.json', activeProject.diagramJson)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted border border-border hover:bg-muted/80 text-foreground font-semibold"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted border border-border hover:bg-muted/80 text-foreground font-semibold cursor-pointer"
                       >
                         <Download size={13} />
                         <span>تحميل</span>
@@ -1070,9 +1066,9 @@ export default function SimulatorView({
                           {activeProject.pinouts.map((po, idx) => (
                             <tr key={idx} className="hover:bg-muted/30">
                               <td className="p-2.5 font-sans font-medium text-foreground">{po.component}</td>
-                              <td className="p-2.5 text-primary font-bold">{po.pin}</td>
+                              <td className="p-2.5 text-foreground font-bold">{po.pin}</td>
                               <td className="p-2.5 font-sans text-muted-foreground">{po.type}</td>
-                              <td className="p-2.5 text-primary/80">{po.topic}</td>
+                              <td className="p-2.5 text-muted-foreground font-mono">{po.topic}</td>
                               <td className="p-2.5 font-sans text-muted-foreground">{po.note}</td>
                             </tr>
                           ))}
@@ -1103,7 +1099,7 @@ export default function SimulatorView({
                     </div>
                     <button
                       onClick={copyLibraries}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-bold hover:opacity-90 shadow"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border font-bold shadow cursor-pointer"
                     >
                       {copiedLibraries ? <Check size={13} /> : <Copy size={13} />}
                       {copiedLibraries ? 'تم النسخ!' : 'نسخ المكتبات'}
@@ -1121,7 +1117,7 @@ export default function SimulatorView({
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-2">
-                      <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs">1</span>
+                      <span className="w-6 h-6 rounded-full bg-muted border border-border text-foreground font-bold flex items-center justify-center text-xs">1</span>
                       <h5 className="font-bold text-foreground">لصق مخطط التوصيل</h5>
                       <p className="text-muted-foreground text-xs leading-relaxed">
                         في Wokwi افتح تبويب <code>diagram.json</code> والصق محتوى التوصيل — ستظهر كافة القطع والأسلاك موصولة فوراً!
@@ -1129,7 +1125,7 @@ export default function SimulatorView({
                     </div>
 
                     <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-2">
-                      <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs">2</span>
+                      <span className="w-6 h-6 rounded-full bg-muted border border-border text-foreground font-bold flex items-center justify-center text-xs">2</span>
                       <h5 className="font-bold text-foreground">لصق الكود والـ UID</h5>
                       <p className="text-muted-foreground text-xs leading-relaxed">
                         الصق كود <code>sketch.ino</code> وضع الـ UID الخاص بك في المتغير <code>USER_UID</code> أو اتركه فارغاً إذا كنت ترغب في اختباره كـ guest.
@@ -1137,7 +1133,7 @@ export default function SimulatorView({
                     </div>
 
                     <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-2">
-                      <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs">3</span>
+                      <span className="w-6 h-6 rounded-full bg-muted border border-border text-foreground font-bold flex items-center justify-center text-xs">3</span>
                       <h5 className="font-bold text-foreground">بدء التشغيل ▶</h5>
                       <p className="text-muted-foreground text-xs leading-relaxed">
                         اضغط على الزر الأخضر ▶ داخل Wokwi، وستبدأ قراءات الحساسات بالظهور في لوحة التحكم والتيرمنال فورياً.
@@ -1145,12 +1141,12 @@ export default function SimulatorView({
                     </div>
                   </div>
 
-                  <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-xs space-y-1">
-                    <h5 className="font-bold text-primary flex items-center gap-1.5">
-                      <Shield size={14} />
+                  <div className="bg-muted/40 border border-border rounded-xl p-4 text-xs space-y-1">
+                    <h5 className="font-bold text-foreground flex items-center gap-1.5">
+                      <Shield size={14} className="text-muted-foreground" />
                       معلومات الاتصال بسيرفر الـ MQTT:
                     </h5>
-                    <p className="text-foreground/80 leading-relaxed font-mono">
+                    <p className="text-foreground/90 leading-relaxed font-mono">
                       Broker: broker.hivemq.com | TCP Port: 1883 | WSS Port: 8884/mqtt
                     </p>
                     <p className="text-muted-foreground text-[11px]">
