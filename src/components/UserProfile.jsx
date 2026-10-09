@@ -461,11 +461,7 @@ export default function UserProfile({ currentUser }) {
     <div className="max-w-5xl mx-auto space-y-6">
       
       {/* Developer Profile Header Card */}
-      <div className="bg-gradient-to-br from-white/[0.01] to-white/[0.03] border border-border rounded-3xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden shadow-xl">
-        
-        {/* Glow backdrop on profile card */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-6 md:p-8 relative overflow-hidden">
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between relative z-10">
           
           {/* Action button: Edit Profile or Message Developer */}
@@ -475,10 +471,10 @@ export default function UserProfile({ currentUser }) {
                 localStorage.setItem('active_tool_fallback', 'profile');
                 window.location.href = '/?tool=profile';
               }}
-              className="bg-card/5 hover:bg-card/10 border border-border text-foreground font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
+              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
             >
-              <Edit3 size={14} />
-              تعديل بروفايل المطور
+              <Edit3 size={13} />
+              <span>تعديل الملف الشخصي</span>
             </button>
           ) : (
             <button
@@ -495,59 +491,53 @@ export default function UserProfile({ currentUser }) {
                   projectTitle: null
                 });
               }}
-              className="bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 text-sky-400 font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center shadow-sm"
+              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
             >
-              <MessageSquare size={14} />
-              مراسلة المطور
+              <MessageSquare size={13} />
+              <span>مراسلة المطور</span>
             </button>
           )}
 
           {/* User Details info */}
-          <div className="flex flex-col md:flex-row gap-6 items-center text-center md:text-right">
-            
+          <div className="flex flex-col md:flex-row gap-5 items-center text-center md:text-right">
             {/* Avatar image */}
-            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-primary/20 shadow-md">
+            <div className="relative w-20 h-20 rounded-full overflow-hidden border border-white/20">
               {profileUser.avatarUrl || profileUser.photoURL ? (
                 <img src={profileUser.avatarUrl || profileUser.photoURL} alt={profileUser.displayName} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white font-bold text-3xl uppercase">
-                  {profileUser.displayName.charAt(0)}
+                <div className="w-full h-full bg-[#1e2024] flex items-center justify-center text-white font-bold text-2xl uppercase">
+                  {profileUser.displayName?.charAt(0) || 'U'}
                 </div>
               )}
             </div>
 
             {/* User credentials */}
-            <div className="space-y-2">
-              <h2 className="text-2xl font-black text-foreground">{profileUser.displayName}</h2>
-              <p className="text-xs text-primary font-mono font-bold">@{profileUser.username}</p>
-              {profileUser.headline ? (
-                <p className="text-sm font-semibold text-muted-foreground">{profileUser.headline}</p>
-              ) : (
-                <p className="text-xs text-muted-foreground italic">مطور IoT هاوٍ</p>
+            <div className="space-y-1.5">
+              <h2 className="text-xl font-bold text-white">{profileUser.displayName}</h2>
+              <p className="text-xs text-zinc-400 font-mono">@{profileUser.username}</p>
+              {profileUser.headline && (
+                <p className="text-xs text-zinc-300">{profileUser.headline}</p>
               )}
               {profileUser.bio && (
-                <p className="text-xs text-muted-foreground max-w-lg leading-relaxed mt-2">{profileUser.bio}</p>
+                <p className="text-xs text-zinc-400 max-w-lg leading-relaxed mt-1">{profileUser.bio}</p>
               )}
 
               {/* Social Links Icons */}
-              <div className="flex gap-4 justify-center md:justify-end pt-3">
+              <div className="flex gap-3 justify-center md:justify-end pt-2">
                 {profileUser.socialLinks?.github && (
-                  <a href={profileUser.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors" title="Github">
-                    <GithubIcon size={18} />
+                  <a href={profileUser.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors" title="Github">
+                    <GithubIcon size={16} />
                   </a>
                 )}
                 {profileUser.socialLinks?.linkedin && (
-                  <a href={profileUser.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors" title="LinkedIn">
-                    <LinkedinIcon size={18} />
+                  <a href={profileUser.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors" title="LinkedIn">
+                    <LinkedinIcon size={16} />
                   </a>
                 )}
                 {profileUser.socialLinks?.website && (
-                  <a href={profileUser.socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors" title="Personal Website">
-                    <Globe size={18} />
+                  <a href={profileUser.socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors" title="Personal Website">
+                    <Globe size={16} />
                   </a>
-                )}
-                {!profileUser.socialLinks?.github && !profileUser.socialLinks?.linkedin && !profileUser.socialLinks?.website && (
-                  <span className="text-[10px] text-muted-foreground">لا توجد روابط اجتماعية مضافة</span>
                 )}
               </div>
             </div>
@@ -560,71 +550,58 @@ export default function UserProfile({ currentUser }) {
 
       {/* Projects Grid Heading */}
       <div className="space-y-4">
-        <h3 className="text-lg font-black text-foreground text-right flex items-center justify-end gap-2">
-          مشاريع المطور العامة ({projects.length})
-          <FolderCode size={18} className="text-primary" />
+        <h3 className="text-sm font-bold text-white text-right flex items-center justify-end gap-2 border-b border-white/[0.08] pb-3">
+          <span>مشاريع المطور المنشورة ({projects.length})</span>
+          <FolderCode size={16} className="text-zinc-400" />
         </h3>
 
         {projects.length === 0 ? (
-          <div className="text-center py-16 bg-card/[0.01] border border-border rounded-3xl p-8 backdrop-blur-xl">
-            <FolderCode className="w-14 h-14 text-muted-foreground mx-auto mb-3" />
-            <h4 className="text-sm font-bold text-muted-foreground">لا توجد مشاريع عامة</h4>
-            <p className="text-xs text-muted-foreground mt-1">لم يقم هذا المطور بنشر أي مشاريع عامة بعد.</p>
+          <div className="text-center py-12 bg-[#18191c] border border-white/[0.08] rounded-2xl p-6">
+            <FolderCode className="w-10 h-10 text-zinc-600 mx-auto mb-2" />
+            <h4 className="text-xs font-bold text-zinc-400">لا توجد مشاريع منشورة</h4>
+            <p className="text-[11px] text-zinc-500 mt-1">لم يقم هذا المطور بنشر أي مشاريع عامة بعد.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {projects.map((proj) => (
               <div
                 key={proj.id}
                 onClick={() => navigate(`/hub/project/${proj.id}`)}
-                className="group bg-card/[0.02] hover:bg-card/[0.04] border border-border hover:border-primary/50 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between h-[300px] relative overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-primary/5 cursor-pointer"
+                className="group bg-[#18191c] hover:bg-[#1e2025] border border-white/[0.08] hover:border-white/20 rounded-2xl p-5 transition-all flex flex-col justify-between cursor-pointer"
               >
                 <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-[9px] text-muted-foreground font-mono">{new Date(proj.createdAt).toLocaleDateString()}</span>
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-[9px] text-zinc-500 font-mono">{new Date(proj.createdAt).toLocaleDateString('ar-JO')}</span>
                     {proj.images && proj.images.length > 0 ? (
-                      <div className="w-10 h-10 rounded-xl overflow-hidden border border-border shrink-0">
+                      <div className="w-9 h-9 rounded-lg overflow-hidden border border-white/[0.08] shrink-0">
                         <img src={proj.images[0]} alt={proj.title} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="w-10 h-10 rounded-xl bg-card/5 border border-border flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0">
-                        <Cpu size={20} />
+                      <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 shrink-0">
+                        <Cpu size={16} />
                       </div>
                     )}
                   </div>
-                  <h3 className="text-base font-extrabold text-foreground group-hover:text-primary transition-colors text-right line-clamp-1">
+                  <h3 className="text-xs md:text-sm font-bold text-white group-hover:text-zinc-200 transition-colors text-right line-clamp-1">
                     {proj.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-2 text-right leading-relaxed line-clamp-3">
+                  <p className="text-[11px] text-zinc-400 mt-1 text-right leading-relaxed line-clamp-2">
                     {proj.summary}
                   </p>
                 </div>
 
-                <div>
-                  <div className="flex flex-wrap gap-1.5 justify-end mt-4 line-clamp-1 h-6">
-                    {proj.componentsList && proj.componentsList.slice(0, 3).map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[9px] font-bold px-2 py-1 rounded-lg bg-zinc-900 border border-border text-muted-foreground group-hover:border-primary/20 group-hover:text-primary transition-colors"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                <div className="pt-3 border-t border-white/[0.06] mt-3 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                  <div className="flex items-center gap-1">
+                    <Eye size={11} />
+                    <span>{proj.metrics?.views || 0}</span>
                   </div>
-
-                  <div className="flex items-center justify-between border-t border-border pt-3 mt-4 text-[10px] text-muted-foreground font-mono">
-                    <div className="flex items-center gap-1">
-                      <Eye size={12} />
-                      <span>{proj.metrics?.views || 0}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <ThumbsUp size={12} />
-                      <span>{proj.metrics?.likes || 0}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Copy size={12} />
-                      <span>{proj.metrics?.clones || 0}</span>
-                    </div>
+                  <div className="flex items-center gap-1">
+                    <ThumbsUp size={11} />
+                    <span>{proj.metrics?.likes || 0}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Copy size={11} />
+                    <span>{proj.metrics?.clones || 0}</span>
                   </div>
                 </div>
               </div>

@@ -18,7 +18,12 @@ import { db } from './firebase';
 
 import { persistPortalMode } from './config/portals';
 
-import ProjectFeed from './components/ProjectFeed';
+import CommunityLayout from './components/community/CommunityLayout';
+import CommunityFeed from './components/community/CommunityFeed';
+import ExploreProjects from './components/community/ExploreProjects';
+import DiscussionsView from './components/community/DiscussionsView';
+import SavedProjects from './components/community/SavedProjects';
+import NotificationsView from './components/community/NotificationsView';
 import ProjectPublisher from './components/ProjectPublisher';
 import ProjectDetail from './components/ProjectDetail';
 import UserProfile from './components/UserProfile';
@@ -285,27 +290,51 @@ function App() {
             )
           } />
 
-          {/* ── Hub routes — standalone page for ALL users (logged-in or guest) ── */}
+          {/* ── Community Hub Routes (Figma Spec) ── */}
           <Route path="/hub" element={
-            <HubLayout user={user} logout={logout}>
-              <ProjectFeed user={user} />
-            </HubLayout>
+            <CommunityLayout user={user} logout={logout}>
+              <CommunityFeed user={user} />
+            </CommunityLayout>
+          } />
+
+          <Route path="/hub/explore" element={
+            <CommunityLayout user={user} logout={logout}>
+              <ExploreProjects user={user} />
+            </CommunityLayout>
           } />
 
           <Route path="/hub/new" element={
             user ? (
-              <HubLayout user={user} logout={logout}>
+              <CommunityLayout user={user} logout={logout}>
                 <ProjectPublisher user={user} />
-              </HubLayout>
+              </CommunityLayout>
             ) : (
               <Navigate to="/login" replace />
             )
           } />
 
           <Route path="/hub/project/:projectId" element={
-            <HubLayout user={user} logout={logout}>
+            <CommunityLayout user={user} logout={logout}>
               <ProjectDetail currentUser={user} />
-            </HubLayout>
+            </CommunityLayout>
+          } />
+
+          <Route path="/hub/discussions" element={
+            <CommunityLayout user={user} logout={logout}>
+              <DiscussionsView user={user} />
+            </CommunityLayout>
+          } />
+
+          <Route path="/hub/saved" element={
+            <CommunityLayout user={user} logout={logout}>
+              <SavedProjects user={user} />
+            </CommunityLayout>
+          } />
+
+          <Route path="/hub/notifications" element={
+            <CommunityLayout user={user} logout={logout}>
+              <NotificationsView user={user} />
+            </CommunityLayout>
           } />
 
           {/* Authenticated routes (Dashboard) — must come before /:username wildcard */}
@@ -319,9 +348,9 @@ function App() {
 
           {/* Vanity profile pages — must come after all specific routes */}
           <Route path="/:username" element={
-            <HubLayout user={user} logout={logout}>
+            <CommunityLayout user={user} logout={logout}>
               <UserProfile currentUser={user} />
-            </HubLayout>
+            </CommunityLayout>
           } />
 
           {/* Catch-all: authenticated tools or redirect to login */}

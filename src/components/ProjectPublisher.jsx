@@ -374,62 +374,23 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-20 text-right" dir="rtl">
       
-      {/* ─── Top Header & Templates Button ─── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
+      {/* ─── Top Header ─── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
-              <Sparkles className="text-primary w-6 h-6 animate-pulse" />
-              محرر ونشر مشاريع IoT المتكامل
+            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+              <Code size={20} className="text-zinc-400" />
+              <span>محرر وتوثيق مشاريع الـ IoT</span>
             </h2>
-            <button
-              type="button"
-              onClick={() => setIsMobilePreviewOpen(true)}
-              className="xl:hidden px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-bold text-primary flex items-center gap-1.5 cursor-pointer"
-            >
-              <Eye size={13} />
-              معاينة البطاقة
-            </button>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            صمم دوائرك، ابنِ مخططات التوصيل الذكية، وشارك كودك مع مجتمع مطوري الأجهزة الذكية
+          <p className="text-xs text-zinc-400 mt-1">
+            صمم دوائرك، ابنِ مخططات التوصيل الذكية، وشارك كودك مع مجتمع المطورين
           </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Featured Templates Trigger */}
-          <button
-            type="button"
-            onClick={() => setTemplatesModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 text-xs font-bold transition-all cursor-pointer shadow-sm"
-          >
-            <Flame size={15} />
-            استخدم نموذجاً جاهزاً (Templates)
-          </button>
         </div>
       </div>
 
-      {/* ─── Template Banner (If started from template) ─── */}
-      {activeTemplateOrigin && (
-        <div className="bg-sky-500/10 border border-sky-500/25 rounded-2xl p-4 flex items-center justify-between gap-3 text-sky-400 text-xs font-medium animate-fadeIn">
-          <div className="flex items-center gap-2.5">
-            <Copy size={16} className="shrink-0" />
-            <span>
-              بدأت من هيكل النموذج: <strong className="text-white font-bold">{activeTemplateOrigin}</strong> — قم بتعديل القطع والأكواد بما يناسب مشروعك الخاص.
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setActiveTemplateOrigin(null)}
-            className="text-[11px] text-muted-foreground hover:text-white"
-          >
-            إغلاق التنبيه
-          </button>
-        </div>
-      )}
-
-      {/* ─── Step Indicators ─── */}
-      <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-none gap-2 bg-card/20 border border-border p-2 rounded-2xl">
+      {/* ─── Step Indicators (Neutral Gray Glassmorphism) ─── */}
+      <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-none gap-2 bg-[#18191c] border border-white/[0.08] p-2 rounded-2xl">
         {STEPS.map((s, i) => {
           const Icon = s.icon;
           const isCurrent = step === s.num;
@@ -440,20 +401,20 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               <button
                 type="button"
                 onClick={() => setStep(s.num)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                   isCurrent
-                    ? 'bg-primary text-black shadow-lg shadow-primary/20 ring-2 ring-primary/45'
+                    ? 'bg-white/[0.15] text-white border border-white/25 shadow-sm font-bold'
                     : isPassed
-                    ? 'bg-primary/10 text-primary border border-primary/20'
-                    : 'bg-card/5 text-muted-foreground border border-border hover:bg-card/10'
+                    ? 'bg-white/[0.05] text-zinc-300 border border-white/[0.08]'
+                    : 'text-zinc-500 hover:text-zinc-300'
                 }`}
               >
                 <Icon size={14} />
                 <span>{s.label}</span>
-                {isPassed && <CheckCircle2 size={12} />}
+                {isPassed && <CheckCircle2 size={12} className="text-zinc-300" />}
               </button>
               {i < STEPS.length - 1 && (
-                <ChevronRight size={14} className={`mx-1 rotate-180 ${isPassed ? 'text-primary' : 'text-border'}`} />
+                <ChevronRight size={14} className={`mx-1 rotate-180 ${isPassed ? 'text-zinc-400' : 'text-zinc-600'}`} />
               )}
             </div>
           );
@@ -754,7 +715,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
           )}
 
           {/* ─── Navigation Controls ─── */}
-          <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="flex items-center justify-between pt-4 border-t border-white/[0.08]">
             <div>
               {step < 5 ? (
                 <button
@@ -763,23 +724,22 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                     setError('');
                     setStep(step + 1);
                   }}
-                  style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-                  className="font-bold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg shadow-primary/20 cursor-pointer text-xs"
+                  className="bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer text-xs"
                 >
-                  الخطوة التالية <ArrowRight size={15} className="rotate-180" />
+                  <span>الخطوة التالية</span>
+                  <ArrowRight size={14} className="rotate-180" />
                 </button>
               ) : (
                 <button
                   type="button"
                   disabled={loading}
                   onClick={handlePublish}
-                  style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-                  className="font-bold px-8 py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 shadow-xl shadow-primary/25 cursor-pointer disabled:opacity-50 text-xs"
+                  className="bg-white/[0.12] hover:bg-white/[0.2] border border-white/[0.2] text-white font-bold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 text-xs"
                 >
                   {loading ? (
-                    <><div className="w-4 h-4 rounded-full border-2 border-black border-t-transparent animate-spin" /> جاري النشر للمجتمع...</>
+                    <><div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" /> جاري النشر...</>
                   ) : (
-                    <><CheckCircle2 size={16} /> تأكيد ونشر المشروع في المستودع العام</>
+                    <><CheckCircle2 size={15} /> تأكيد ونشر المشروع في المستودع</>
                   )}
                 </button>
               )}
@@ -793,9 +753,9 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                     setError('');
                     setStep(step - 1);
                   }}
-                  className="bg-card/5 text-foreground border border-border px-5 py-2.5 rounded-xl hover:bg-card/10 transition-colors flex items-center gap-2 cursor-pointer text-xs"
+                  className="bg-white/[0.04] text-zinc-400 hover:text-white border border-white/[0.08] px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
                 >
-                  <ArrowLeft size={15} className="rotate-180" /> الخطوة السابقة
+                  <ArrowLeft size={14} className="rotate-180" /> الخطوة السابقة
                 </button>
               )}
             </div>
