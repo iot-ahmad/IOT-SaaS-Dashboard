@@ -324,33 +324,15 @@ export default function ProjectDetail({ currentUser }) {
         <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
           <h2 className="text-sm font-bold text-white flex items-center gap-2">
             <Zap size={16} className="text-zinc-400" />
-            <span>مخطط التوصيل الكهربائي</span>
+            <span>مخطط التوصيل الكهربائي وشرح التوصيلات (Circuit & Pinout)</span>
           </h2>
-          {connectionsData.length > 0 && (
-            <span className="text-[11px] font-mono text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded">
-              {connectionsData.length} أسلاك موصولة
-            </span>
-          )}
         </div>
 
-        {connectionsData.length > 0 ? (
-          <SchematicSvgViewer components={structuredComponents} connections={connectionsData} />
-        ) : project.wiringImageUrl ? (
-          <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-black/40 text-center p-3">
-            <img src={project.wiringImageUrl} alt="مخطط التوصيل" className="w-full object-contain max-h-[380px] mx-auto rounded-lg" />
-          </div>
-        ) : (
-          <p className="text-xs text-zinc-500 italic">لم يتم إرفاق مخطط توصيل مرئي لهذا المشروع.</p>
-        )}
-
-        {project.wiringDescription && (
-          <div className="space-y-1 pt-1">
-            <h4 className="text-xs font-medium text-zinc-300">ملاحظات التوصيل:</h4>
-            <div className="text-xs text-zinc-400 leading-relaxed whitespace-pre-line bg-[#1e2024] p-3 rounded-xl border border-white/[0.06]">
-              {project.wiringDescription}
-            </div>
-          </div>
-        )}
+        <SchematicSvgViewer
+          wiringImageUrl={project.wiringImageUrl}
+          wiringDescription={project.wiringDescription}
+          components={structuredComponents}
+        />
       </div>
 
       {/* ── Technical Documentation ─────────────────────────── */}

@@ -111,14 +111,31 @@ export default function UserProfile({ currentUser }) {
         setError('');
         setProfileSetupNeeded(false);
 
-        // Find user with matching unique username
+        let userDocData = null;
+        let userDocId = null;
+
+        // 1. Find user with matching unique username
         const usersRef = collection(db, 'users');
         const userQuery = query(usersRef, where('username', '==', username.toLowerCase().trim()));
         const userSnap = await getDocs(userQuery);
 
         if (!userSnap.empty) {
-          const userDoc = userSnap.docs[0];
-          const userData = { uid: userDoc.id, ...userDoc.data() };
+          const uDoc = userSnap.docs[0];
+          userDocId = uDoc.id;
+          userDocData = uDoc.data();
+        } else {
+          // 2. Fallback: Check if route param is a direct UID
+          try {
+            const directDoc = await getDoc(doc(db, 'users', username));
+            if (directDoc.exists()) {
+              userDocId = directDoc.id;
+              userDocData = directDoc.data();
+            }
+          } catch (_) {}
+        }
+
+        if (userDocData) {
+          const userData = { uid: userDocId, ...userDocData };
           setProfileUser(userData);
 
           // Populate edit fields in case they match current user
@@ -135,7 +152,7 @@ export default function UserProfile({ currentUser }) {
           const projRef = collection(db, 'projects');
           const projQuery = query(
             projRef,
-            where('ownerId', '==', userDoc.id),
+            where('ownerId', '==', userDocId),
             where('visibility', '==', 'public')
           );
           const projSnap = await getDocs(projQuery);
@@ -150,21 +167,13 @@ export default function UserProfile({ currentUser }) {
 
         } else {
           // Username not found — check if the logged-in user just hasn't set up yet
-          if (currentUser) {
-            // Check by UID in case they have a doc but no username field
-            const { getDoc: _getDoc, doc: _doc } = await import('firebase/firestore');
-            const uidDocRef = _doc(db, 'users', currentUser.uid);
-            const uidSnap = await _getDoc(uidDocRef);
-
-            if (!uidSnap.exists() || !uidSnap.data()?.username) {
-              // Logged-in user with no profile setup — trigger onboarding
-              setProfileSetupNeeded(true);
-              setEditDisplayName(currentUser.displayName || '');
-              setEditUsername('');
-              setEditAvatarUrl(currentUser.photoURL || '');
-              setLoading(false);
-              return;
-            }
+          if (currentUser && (currentUser.uid === username || username === 'me')) {
+            setProfileSetupNeeded(true);
+            setEditDisplayName(currentUser.displayName || '');
+            setEditUsername('');
+            setEditAvatarUrl(currentUser.photoURL || '');
+            setLoading(false);
+            return;
           }
           setError('المطور غير موجود أو لم يقم بإنشاء اسم مستخدم فريد بعد.');
         }
@@ -443,13 +452,13 @@ export default function UserProfile({ currentUser }) {
   // ── 404: profile not found and user is a guest ───────────────────
   if (error || !profileUser) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl">
-        <AlertCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-foreground">الملف الشخصي غير متاح</h3>
-        <p className="text-sm text-muted-foreground mt-3">{error || 'لم يتم العثور على هذا المستخدم.'}</p>
+      <div className="max-w-md mx-auto text-center py-16 bg-[#18191c] border border-white/[0.08] p-8 rounded-2xl">
+        <AlertCircle className="w-12 h-12 text-zinc-500 mx-auto mb-4" />
+        <h3 className="text-lg font-bold text-white">الملف الشخصي غير متاح</h3>
+        <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{error || 'لم يتم العثور على هذا المستخدم أو لم يقم بإنشاء حسابه بعد.'}</p>
         <button
           onClick={() => navigate('/hub')}
-          className="mt-6 bg-primary text-black font-bold px-6 py-2 rounded-xl hover:bg-primary/95 transition-all shadow-md shadow-primary/10"
+          className="mt-6 bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold px-5 py-2.5 rounded-xl transition-all cursor-pointer text-xs"
         >
           الذهاب للمستودع العام
         </button>

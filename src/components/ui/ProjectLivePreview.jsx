@@ -14,6 +14,7 @@ export default function ProjectLivePreview({
   components = [],
   connections = [],
   wiringImageUrl = '',
+  wiringDescription = '',
   user = {},
   isMobileDrawerOpen = false,
   onCloseMobileDrawer = () => {}
@@ -166,7 +167,11 @@ export default function ProjectLivePreview({
             previewCardContent
           ) : (
             <div className="space-y-3">
-              <SchematicSvgViewer components={components} connections={connections} />
+              <SchematicSvgViewer
+                wiringImageUrl={wiringImageUrl}
+                wiringDescription={wiringDescription}
+                components={components}
+              />
             </div>
           )}
         </div>

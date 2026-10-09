@@ -11,7 +11,9 @@ service cloud.firestore {
       );
     }
     
-    // 1. Users collection
+    // ─────────────────────────────────────────────────────────────
+    // 1. Users collection (حسابات المستخدمين والملفات الشخصية)
+    // ─────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if true;
       allow create: if isAdmin() || (
@@ -26,18 +28,22 @@ service cloud.firestore {
       );
       allow delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
 
-      // Subcollections (settings, devices, automations, etc.)
+      // Subcollections (الأجهزة، الإعدادات، المفاتيح الخاصة بالمستخدم)
       match /{allChildren=**} {
         allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
       }
     }
 
-    // 2. User general settings (e.g. messaging privacy, blocked users)
+    // ─────────────────────────────────────────────────────────────
+    // 2. User general settings (إعدادات الخصوصية والرسائل)
+    // ─────────────────────────────────────────────────────────────
     match /user_settings/{userId} {
       allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
     }
 
-    // 3. Projects collection
+    // ─────────────────────────────────────────────────────────────
+    // 3. Projects collection (مستودع المشاريع والمخططات في المجتمع)
+    // ─────────────────────────────────────────────────────────────
     match /projects/{projectId} {
       // القراءة: عامة للمشاريع العامة، وخاصة لصاحب المشروع أو للأدمن فقط
       allow read: if isAdmin() 
@@ -48,9 +54,9 @@ service cloud.firestore {
       // الإنشاء: للمسجلين مع إلزام مطابقة ownerId
       allow create: if request.auth != null && (isAdmin() || request.resource.data.ownerId == request.auth.uid);
       
-      // التعديل: فصل كامل عن الحذف
-      // - صاحب المشروع أو الأدمن يعدّل المشروع
-      // - المستخدمين الآخرين يمكنهم فقط تعديل metrics بشرط أن يكون المشروع عاماً (Public)
+      // التعديل:
+      // - صاحب المشروع أو الأدمن يعدّل المشروع بالكامل
+      // - أي مستخدم مسجل يمكنه التفاعل مع metrics (المشاهدات، الإعجابات، النسخ) للمشاريع العامة
       allow update: if isAdmin() || (
         request.auth != null && (
           resource.data.ownerId == request.auth.uid || 
@@ -64,7 +70,7 @@ service cloud.firestore {
       // الحذف: فقط لصاحب المشروع أو الأدمن
       allow delete: if isAdmin() || (request.auth != null && resource.data.ownerId == request.auth.uid);
 
-      // Public Q&A subcollection for projects
+      // أسئلة واستفسارات المشروع (Public Q&A)
       match /public_qa/{qaId} {
         allow read: if true;
         allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
@@ -77,14 +83,57 @@ service cloud.firestore {
       }
     }
 
-    // 4. Direct Messaging
+    // ─────────────────────────────────────────────────────────────
+    // 4. Discussions & Forum (منتدى النقاشات والأسئلة التقنية)
+    // ─────────────────────────────────────────────────────────────
+    match /discussions/{discussionId} {
+      // القراءة: عامة للجميع
+      allow read: if true;
+      
+      // الإنشاء: للمستخدم المسجل مع مطابقة authorId
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+      
+      // التعديل: لصاحب السؤال أو للأدمن، أو لأي مستخدم مسجل للتصويت (upvotes) وتحديث عدد الإجابات
+      allow update: if isAdmin() || (
+        request.auth != null && (
+          resource.data.authorId == request.auth.uid ||
+          request.resource.data.diff(resource.data).affectedKeys().hasAny(['upvotes', 'answersCount', 'isAnswered'])
+        )
+      );
+      
+      // الحذف: فقط لصاحب السؤال أو الأدمن
+      allow delete: if isAdmin() || (request.auth != null && resource.data.authorId == request.auth.uid);
+
+      // الأجوبة والردود على النقاش (Answers subcollection)
+      match /answers/{answerId} {
+        allow read: if true;
+        allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAdmin() || (
+          request.auth != null && (
+            resource.data.authorId == request.auth.uid ||
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes', 'isAccepted'])
+          )
+        );
+        allow delete: if isAdmin() || (request.auth != null && resource.data.authorId == request.auth.uid);
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 5. Direct Messaging (نظام المراسلة الفورية بين المطورين)
+    // ─────────────────────────────────────────────────────────────
     match /conversations/{conversationId} {
       allow read: if isAdmin() || (request.auth != null && request.auth.uid in resource.data.participants);
       allow create: if request.auth != null && request.auth.uid in request.resource.data.participants;
-      allow update: if isAdmin() || (request.auth != null && request.auth.uid in resource.data.participants);
+
+      // التعديل: المشارك يقدر يعدّل حقول غير participants (مثل آخر رسالة، حالة القراءة، التوقيت)
+      allow update: if isAdmin() || (
+        request.auth != null && 
+        request.auth.uid in resource.data.participants &&
+        request.resource.data.participants == resource.data.participants
+      );
       allow delete: if isAdmin();
 
-      // Messages subcollection
+      // رسائل المحادثة (Messages subcollection)
       match /messages/{messageId} {
         allow read: if isAdmin() || (
           request.auth != null && 
@@ -97,13 +146,27 @@ service cloud.firestore {
       }
     }
 
-    // 5. Reports collection (safety & moderation)
+    // ─────────────────────────────────────────────────────────────
+    // 6. Notifications & Saved Projects (الإشعارات والمشاريع المحفوظة)
+    // ─────────────────────────────────────────────────────────────
+    match /notifications/{notificationId} {
+      allow read, update, delete: if isAdmin() || (request.auth != null && resource.data.recipientId == request.auth.uid);
+      allow create: if request.auth != null;
+    }
+
+    match /saved_projects/{saveId} {
+      allow read, delete: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 7. Safety, Moderation & System Config
+    // ─────────────────────────────────────────────────────────────
     match /reports/{reportId} {
       allow create: if request.auth != null && request.resource.data.reporterId == request.auth.uid;
       allow read, update, delete: if isAdmin();
     }
 
-    // 6. System Configurations & Global Announcements
     match /system_config/{configId} {
       allow read: if true;
       allow write: if isAdmin();

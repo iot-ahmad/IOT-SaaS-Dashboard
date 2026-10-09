@@ -56,6 +56,21 @@ export const FEATURED_TEMPLATES = [
       { id: 'w6', fromComp: 'شاشة OLED 0.96 بوصة SSD1306', fromPin: 'SDA', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO21', color: '#38BDF8', note: 'I2C Data Bus' },
       { id: 'w7', fromComp: 'شاشة OLED 0.96 بوصة SSD1306', fromPin: 'SCL', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO22', color: '#22C55E', note: 'I2C Clock Bus' }
     ],
+    wiringImageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1000&auto=format&fit=crop&q=80',
+    wiringDescription: `### 🔌 جدول التوصيل الكهربائي (ESP32 NodeMCU):
+1. شاشة OLED 0.96 (I2C):
+   - VCC ──► 3.3V في ESP32
+   - GND ──► GND في ESP32
+   - SDA ──► GPIO 21
+   - SCL ──► GPIO 22
+
+2. حساس الحرارة والرطوبة DHT22:
+   - VCC ──► 3.3V في ESP32
+   - GND ──► GND المشترك
+   - DATA ──► GPIO 25 (مع مقاومة رفع Pull-up 4.7kΩ)
+
+3. التغذية والطاقة:
+   - مخرج بطارية 18650 عبر TP4056 ──► منفذ VIN و GND في لوحة ESP32.`,
     overviewTemplate: `يهدف هذا المشروع إلى بناء محطة طقس ذكية مدمجة ومنخفضة التكلفة لمراقبة المناخ والحرارة بدقة عالية.
 
 ### 🌟 المميزات الرئيسية:
@@ -107,6 +122,22 @@ void loop() {
     authorRole: 'Embedded Systems Specialist',
     coverImage: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&auto=format&fit=crop&q=80',
     tags: ['ESP32', 'Soil Moisture', 'Relay', 'Water Pump', 'Automation'],
+    wiringImageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1000&auto=format&fit=crop&q=80',
+    wiringDescription: `### 🔌 جدول التوصيل الكهربائي (ESP32 NodeMCU):
+1. حساس رطوبة التربة السعوي (Capacitive Soil Sensor):
+   - VCC ──► 3.3V في ESP32
+   - GND ──► GND المشترك
+   - AOUT ──► GPIO 34 (منفذ القراءة التناظرية ADC1)
+
+2. مرحل التحكم 5V Relay:
+   - VCC ──► 5V (VIN)
+   - GND ──► GND
+   - IN ──► GPIO 26
+
+3. مضخة المياه 5V DC:
+   - القطب الموجب للمضخة ──► نقطة NO في الريلاي
+   - نقطة COM في الريلاي ──► القطب الموجب للبطارية/المصدر الخارجي
+   - القطب السالب للمضخة ──► القطب السالب للمصدر المشترك`,
     components: [
       {
         id: 'comp-1',
@@ -227,6 +258,23 @@ void loop() {
       { id: 'w5', fromComp: 'HC-SR04 (حساس مسافة بالموجات فوق الصوتية)', fromPin: 'TRIG', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO5', color: '#FB923C', note: 'نبضة الإرسال' },
       { id: 'w6', fromComp: 'HC-SR04 (حساس مسافة بالموجات فوق الصوتية)', fromPin: 'ECHO', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO4', color: '#FB923C', note: 'إشارة الارتداد' }
     ],
+    wiringImageUrl: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?w=1000&auto=format&fit=crop&q=80',
+    wiringDescription: `### 🔌 جدول التوصيل الكهربائي (ESP32 + L298N):
+1. دائرة درايفر المحركات L298N:
+   - IN1 ──► GPIO 18 (محرك أيسر)
+   - IN2 ──► GPIO 19 (محرك أيسر)
+   - IN3 ──► GPIO 22 (محرك أيمن)
+   - IN4 ──► GPIO 23 (محرك أيمن)
+   - GND في L298N ──► GND مشترك مع ESP32 ومصدر البطارية
+
+2. حساس الموجات فوق الصوتية HC-SR04:
+   - VCC ──► 5V
+   - GND ──► GND
+   - TRIG ──► GPIO 5
+   - ECHO ──► مقسم جهد (Voltage Divider) ──► GPIO 4 (حماية منفذ الـ 3.3V)
+
+3. محرك السيرفو SG90:
+   - سلك الإشارة البرتقالي ──► GPIO 13 (PWM)`,
     overviewTemplate: `مركبة روبوتية ذكية تعتمد على متحكم ESP32 توفر نمطي قيادة: تحكم يدوي كامل عبر أزرار الداشبورد، ونمط قيادة ذاتية لتفادي الحواجز.`,
     codeTemplate: `#define IN1 18
 #define IN2 19

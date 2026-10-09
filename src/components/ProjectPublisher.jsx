@@ -62,17 +62,20 @@ export const MarkdownPreview = ({ text }) => {
   };
 
   const highlightCode = (code) => {
-    const keywords = /\b(const|let|var|void|setup|loop|if|else|for|while|return|class|import|from|export|default|include|define|int|float|double|char|bool|boolean|string|String|digitalWrite|digitalRead|analogWrite|analogRead|pinMode|delay|Serial|begin|println|print|pub|fn|struct|new)\b/g;
-    const strings = /(["|'`])(.*?)\1/g;
-    const numbers = /\b(\d+)\b/g;
-    const comments = /(\/\/.*|\/\*[\s\S]*?\*\/|#.*)/g;
+    if (!code) return '';
+    // Escape HTML special characters
+    const safe = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // Single-pass tokenizer to avoid replacing inside generated HTML class names
+    const tokenRegex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|#.*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b(?:const|let|var|void|setup|loop|if|else|for|while|return|class|import|from|export|default|include|define|int|float|double|char|bool|boolean|string|String|digitalWrite|digitalRead|analogWrite|analogRead|pinMode|delay|Serial|begin|println|print|pub|fn|struct|new)\b)|(\b\d+\b)/g;
 
-    let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    html = html.replace(comments, '<span class="text-zinc-500 font-mono">$1</span>');
-    html = html.replace(keywords, (m) => `<span class="text-purple-400 font-bold">${m}</span>`);
-    html = html.replace(strings, '<span class="text-emerald-400 font-mono">"$2"</span>');
-    html = html.replace(numbers, '<span class="text-amber-400 font-mono">$1</span>');
-    return html;
+    return safe.replace(tokenRegex, (match, comment, str, keyword, num) => {
+      if (comment) return `<span style="color:#71717a">${comment}</span>`;
+      if (str) return `<span style="color:#34d399">${str}</span>`;
+      if (keyword) return `<span style="color:#c084fc;font-weight:600">${keyword}</span>`;
+      if (num) return `<span style="color:#fbbf24">${num}</span>`;
+      return match;
+    });
   };
 
   const formatText = (t) => {
@@ -249,6 +252,12 @@ export default function ProjectPublisher({ user }) {
     }
     if (template.connections && template.connections.length > 0) {
       setConnectionsList(template.connections);
+    }
+    if (template.wiringImageUrl) {
+      setWiringImageUrl(template.wiringImageUrl);
+    }
+    if (template.wiringDescription) {
+      setWiringDescription(template.wiringDescription);
     }
     if (template.overviewTemplate) {
       setSecOverview(template.overviewTemplate);
@@ -694,14 +703,12 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
               {/* Visual Schematic Snapshot */}
               <div className="space-y-2">
-                <span className="text-xs font-bold text-foreground">مخطط التوصيل الكهربائي للمشروع:</span>
-                {wiringImageUrl ? (
-                  <div className="rounded-2xl overflow-hidden border border-border bg-black/40 text-center p-4">
-                    <img src={wiringImageUrl} alt="مخطط التوصيل" className="max-h-80 mx-auto object-contain rounded-xl" />
-                  </div>
-                ) : (
-                  <SchematicSvgViewer components={componentsList} connections={connectionsList} />
-                )}
+                <span className="text-xs font-bold text-white">مخطط التوصيل وشرح التوصيلات:</span>
+                <SchematicSvgViewer
+                  wiringImageUrl={wiringImageUrl}
+                  wiringDescription={wiringDescription}
+                  components={componentsList}
+                />
               </div>
 
               {/* Documentation Preview */}
@@ -772,6 +779,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
           components={componentsList}
           connections={connectionsList}
           wiringImageUrl={wiringImageUrl}
+          wiringDescription={wiringDescription}
           user={user}
           isMobileDrawerOpen={isMobilePreviewOpen}
           onCloseMobileDrawer={() => setIsMobilePreviewOpen(false)}

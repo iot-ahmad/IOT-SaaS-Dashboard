@@ -97,7 +97,11 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
 
           {activeTab === 'wiring' && (
             <div className="space-y-4">
-              <SchematicSvgViewer components={template.components} connections={template.connections} />
+              <SchematicSvgViewer
+                wiringImageUrl={template.wiringImageUrl}
+                wiringDescription={template.wiringDescription}
+                components={template.components}
+              />
             </div>
           )}
 
