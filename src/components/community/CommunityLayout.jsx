@@ -64,7 +64,7 @@ export default function CommunityLayout({ user, logout, children }) {
     { label: 'المشاريع المحفوظة', path: '/hub/saved', icon: Bookmark },
     { label: 'الرسائل المباشرة', action: () => setIsMessagingOpen(true), icon: MessageSquare, badge: unreadCount },
     { label: 'التنبيهات', path: '/hub/notifications', icon: Bell, badge: 2 },
-    { label: 'الملف الشخصي', path: user?.displayName ? `/${user.displayName.toLowerCase().replace(/\s+/g, '_')}` : '/profile', icon: User },
+    { label: 'الملف الشخصي', path: user?.username ? `/${user.username}` : (user?.displayName ? `/${user.displayName.toLowerCase().replace(/\s+/g, '_')}` : '/profile'), icon: User },
   ];
 
   const currentPath = location.pathname;
@@ -162,7 +162,11 @@ export default function CommunityLayout({ user, logout, children }) {
                     </div>
 
                     <button
-                      onClick={() => { navigate(user.displayName ? `/${user.displayName.toLowerCase().replace(/\s+/g, '_')}` : '/profile'); setIsUserMenuOpen(false); }}
+                      onClick={() => {
+                        const target = user?.username ? `/${user.username}` : (user?.displayName ? `/${user.displayName.toLowerCase().replace(/\s+/g, '_')}` : '/profile');
+                        navigate(target);
+                        setIsUserMenuOpen(false);
+                      }}
                       className="w-full flex items-center gap-2 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] px-3 py-2 rounded-xl transition-colors cursor-pointer"
                     >
                       <User size={13} />

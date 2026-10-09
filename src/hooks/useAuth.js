@@ -11,7 +11,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
 
@@ -47,9 +47,16 @@ export function useAuth() {
       }
     }, 15000);
 
+    let userDocUnsub = null;
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       authListenerFired.current = true;
       clearTimeout(watchdog);
+
+      if (userDocUnsub) {
+        userDocUnsub();
+        userDocUnsub = null;
+      }
 
       if (firebaseUser) {
         const isGoogleUser = firebaseUser.providerData?.some(p => p.providerId === 'google.com');
@@ -64,17 +71,32 @@ export function useAuth() {
         });
         setLoading(false);
 
-        // 2. Fetch extra profile details in the background
-        fetchUserProfile(firebaseUser.uid).then((userData) => {
-          if (Object.keys(userData).length > 0) {
-            setUser(prev => prev ? {
-              ...prev,
-              ...userData,
-              displayName: firebaseUser.displayName || userData.displayName || prev.displayName,
-              photoURL: firebaseUser.photoURL || userData.photoURL || prev.photoURL,
-            } : null);
-          }
-        }).catch(() => {});
+        // 2. Real-time subscription to extra profile details (username, avatar, etc.)
+        try {
+          userDocUnsub = onSnapshot(doc(db, 'users', firebaseUser.uid), (docSnap) => {
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
+              setUser(prev => prev ? {
+                ...prev,
+                ...userData,
+                displayName: firebaseUser.displayName || userData.displayName || prev.displayName,
+                photoURL: firebaseUser.photoURL || userData.photoURL || prev.photoURL,
+              } : null);
+            }
+          }, () => {
+            // Fallback one-time fetch if snapshot fails
+            fetchUserProfile(firebaseUser.uid).then((userData) => {
+              if (Object.keys(userData).length > 0) {
+                setUser(prev => prev ? {
+                  ...prev,
+                  ...userData,
+                  displayName: firebaseUser.displayName || userData.displayName || prev.displayName,
+                  photoURL: firebaseUser.photoURL || userData.photoURL || prev.photoURL,
+                } : null);
+              }
+            }).catch(() => {});
+          });
+        } catch (_) {}
 
       } else {
         setUser(null);
@@ -84,6 +106,7 @@ export function useAuth() {
 
     return () => {
       clearTimeout(watchdog);
+      if (userDocUnsub) userDocUnsub();
       unsubscribe();
     };
   }, []);

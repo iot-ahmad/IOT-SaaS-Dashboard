@@ -132,6 +132,25 @@ export default function UserProfile({ currentUser }) {
               userDocData = directDoc.data();
             }
           } catch (_) {}
+
+          // 3. Fallback: Check if currently logged in user matches this username/profile
+          if (!userDocData && currentUser) {
+            const matchUser =
+              currentUser.uid === username ||
+              username === 'me' ||
+              (currentUser.username && currentUser.username.toLowerCase() === username.toLowerCase().trim()) ||
+              (currentUser.displayName && currentUser.displayName.toLowerCase().replace(/\s+/g, '_') === username.toLowerCase().trim());
+            
+            if (matchUser) {
+              try {
+                const currentDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (currentDoc.exists()) {
+                  userDocId = currentDoc.id;
+                  userDocData = currentDoc.data();
+                }
+              } catch (_) {}
+            }
+          }
         }
 
         if (userDocData) {

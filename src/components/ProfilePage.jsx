@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   User, Globe, Camera, Copy, Check, Shield, Bell, Link as LinkIcon,
   CreditCard, Lock, Smartphone, Mail, Activity, Cpu, Sparkles, X,
-  AlertCircle, Edit3, ChevronRight,
+  AlertCircle, Edit3, ChevronRight, ExternalLink,
 } from 'lucide-react';
 import {
   updateProfile, updatePassword, reauthenticateWithCredential,
@@ -435,9 +435,24 @@ export default function ProfilePage({ user, userUID, logout }) {
                         <input className={inputCls} value={editDisplayName} onChange={e => setEditDisplayName(e.target.value)} placeholder="e.g. Ahmad Al-Mohamad" required />
                       </div>
                       <div>
-                        <label className="text-xs text-muted-foreground block mb-1.5 font-semibold">Username (Vanity URL) *</label>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-xs text-muted-foreground font-semibold">Username (Vanity URL) *</label>
+                          {editUsername && (
+                            <button
+                              type="button"
+                              onClick={() => navigate(`/${editUsername}`)}
+                              className="text-[11px] text-primary hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0 font-medium"
+                              title="فتح صفحة الحساب العامة"
+                            >
+                              <span>معاينة وفتح الحساب</span>
+                              <ExternalLink size={12} />
+                            </button>
+                          )}
+                        </div>
                         <input className={`${inputCls} font-mono`} value={editUsername} onChange={e => setEditUsername(e.target.value)} placeholder="e.g. smart_dev" dir="ltr" required />
-                        <p className="text-[10px] text-muted-foreground mt-1">iot365.app/{editUsername || 'username'}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1 font-mono">
+                          رابط حسابك المباشر: <span className="text-primary/90 font-medium">iot365.app/{editUsername || 'username'}</span>
+                        </p>
                       </div>
                     </div>
                     <div className="mt-4">
