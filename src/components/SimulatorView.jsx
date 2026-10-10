@@ -484,8 +484,16 @@ export default function SimulatorView({
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
+                  onClick={copyCode}
+                  className="flex items-center gap-1 text-[11px] bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 px-2.5 py-0.5 rounded-md font-bold transition-all cursor-pointer shadow-sm"
+                  title="نسخ الكود المحدث المشفر (جاهز للصق في المحاكي)"
+                >
+                  {copiedCode ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                  <span>{copiedCode ? 'تم نسخ الكود المشفر!' : '⚡ نسخ الكود المحدث للمحاكي'}</span>
+                </button>
+                <button
                   onClick={() => setShowProjectsModal(true)}
-                  className="text-[11px] text-foreground hover:underline font-bold cursor-pointer"
+                  className="text-[11px] text-foreground hover:underline font-bold cursor-pointer hidden sm:inline"
                 >
                   عرض الكود والتوصيل
                 </button>
