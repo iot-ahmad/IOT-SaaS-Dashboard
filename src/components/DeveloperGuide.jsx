@@ -48,7 +48,7 @@ const getBotResponse = (input, uid) => {
   }
 
   if (text.includes('broker') || text.includes('بروك') || text.includes('hivemq') || text.includes('سيرفر') || text.includes('server') || text.includes('port') || text.includes('بورت') || text.includes('host') || text.includes('عنوان') || text.includes('منفذ')) {
-    return `**معلومات الاتصال بسيرفر IOT365 السحابي الخاص 🌐:**\n\n*   **Host (السيرفر):** \`fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud\`\n*   **Port (المنفذ المشفر TLS):** \`8883\` (لأجهزة ESP32 عبر WiFiClientSecure)\n*   **WebSockets Port (للموقع):** \`8884\` (على المسار \`/mqtt\`)\n*   **الحماية:** يتطلب اسم مستخدم وكلمة مرور (Username & Password)\n\n> 💡 إعداد الاتصال في كود ESP32:\n\`\`\`cpp\nespClient.setInsecure();\nclient.setServer("fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud", 8883);\nclient.connect("ESP32_Device", "YOUR_USERNAME", "YOUR_PASSWORD");\n\`\`\``;
+    return `**معلومات الاتصال بسيرفر IOT365 السحابي المشفر 🌐:**\n\n*   **Host (السيرفر):** \`fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud\`\n*   **Port (المنفذ المشفر TLS):** \`8883\` (لأجهزة ESP32 عبر WiFiClientSecure)\n*   **WebSockets Port (للموقع):** \`8884\` (على المسار \`/mqtt\`)\n*   **بيانات الدخول الجاهزة:** \`Username: iot365\` | \`Password: iot365-jo\`\n\n> 💡 إعداد الاتصال في كود ESP32:\n\`\`\`cpp\nespClient.setInsecure();\nclient.setServer("fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud", 8883);\nclient.connect("ESP32_Device", "iot365", "iot365-jo");\n\`\`\``;
   }
 
   if (text.includes('كيف') && (text.includes('اربط') || text.includes('أربط') || text.includes('اتصال') || text.includes('connect') || text.includes('esp32') || text.includes('طريقة') || text.includes('شغل'))) {

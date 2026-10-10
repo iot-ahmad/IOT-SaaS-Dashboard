@@ -152,6 +152,7 @@ ESP32Servo`,
  */
 
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <DHT.h>
 #include <ESP32Servo.h>
@@ -172,8 +173,8 @@ const char* password = "";
 // Dedicated IOT365 Cloud Cluster
 const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
 const int   mqtt_port   = 8883;
-const char* mqtt_user   = ""; // أدخل اسم المستخدم هنا
-const char* mqtt_pass   = ""; // أدخل كلمة المرور هنا
+const char* mqtt_user   = "iot365";
+const char* mqtt_pass   = "iot365-jo";
 
 // Pin Definitions
 #define PIN_DHT         15
@@ -197,7 +198,7 @@ DHT dht(PIN_DHT, DHT22);
 Servo myServo;
 Adafruit_NeoPixel pixels(NUM_PIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-WiFiClient espClient;
+WiFiClientSecure espClient;
 PubSubClient client(espClient);
 
 // Timing variables
@@ -341,7 +342,11 @@ void reconnectMQTT() {
     Serial.print("Attempting MQTT connection... ");
     String clientId = "ESP32_IOT365_" + String(random(0xffff), HEX);
     
-    if (client.connect(clientId.c_str())) {
+    bool connected = (strlen(mqtt_user) > 0)
+      ? client.connect(clientId.c_str(), mqtt_user, mqtt_pass)
+      : client.connect(clientId.c_str());
+    
+    if (connected) {
       Serial.println("CONNECTED!");
 
       // Subscribe to all actuator topics
@@ -407,7 +412,8 @@ void setup() {
   }
   Serial.println("\\nWiFi Connected! IP: " + WiFi.localIP().toString());
 
-  // Setup MQTT
+  // Setup Secure MQTT (TLS)
+  espClient.setInsecure();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
@@ -536,6 +542,7 @@ ESP32Servo`,
  * نظام الري والزراعة الذكية
  */
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <DHT.h>
 #include <ESP32Servo.h>
@@ -545,6 +552,9 @@ const char* USER_UID = "${uidPlaceholder}";
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
+const int   mqtt_port   = 8883;
+const char* mqtt_user   = "iot365";
+const char* mqtt_pass   = "iot365-jo";
 
 #define PIN_DHT    15
 #define PIN_SOIL   34
@@ -554,7 +564,7 @@ const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
 
 DHT dht(PIN_DHT, DHT22);
 Servo valveServo;
-WiFiClient espClient;
+WiFiClientSecure espClient;
 PubSubClient client(espClient);
 
 unsigned long lastSend = 0;
@@ -589,13 +599,14 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  client.setServer(mqtt_server, 8883);
+  espClient.setInsecure();
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
 
 void loop() {
   if (!client.connected()) {
-    while (!client.connect("ESP32_FarmClient")) delay(1000);
+    while (!(strlen(mqtt_user) > 0 ? client.connect("ESP32_FarmClient", mqtt_user, mqtt_pass) : client.connect("ESP32_FarmClient"))) delay(1000);
     String sub = (strlen(USER_UID) > 0) ? String(USER_UID) + "/#" : "guest_iot365/#";
     client.subscribe(sub.c_str());
   }
@@ -689,6 +700,7 @@ ESP32Servo`,
  * نظام المنزل الذكي والإنذار
  */
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <ESP32Servo.h>
 
@@ -697,6 +709,9 @@ const char* USER_UID = "${uidPlaceholder}";
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
+const int   mqtt_port   = 8883;
+const char* mqtt_user   = "iot365";
+const char* mqtt_pass   = "iot365-jo";
 
 #define PIN_PIR    19
 #define PIN_LDR    35
@@ -705,7 +720,7 @@ const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
 #define PIN_LIGHT  2
 
 Servo lockServo;
-WiFiClient espClient;
+WiFiClientSecure espClient;
 PubSubClient client(espClient);
 unsigned long lastSend = 0;
 
@@ -742,13 +757,14 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  client.setServer(mqtt_server, 8883);
+  espClient.setInsecure();
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
 
 void loop() {
   if (!client.connected()) {
-    while (!client.connect("ESP32_SecurityClient")) delay(1000);
+    while (!(strlen(mqtt_user) > 0 ? client.connect("ESP32_SecurityClient", mqtt_user, mqtt_pass) : client.connect("ESP32_SecurityClient"))) delay(1000);
     String sub = (strlen(USER_UID) > 0) ? String(USER_UID) + "/#" : "guest_iot365/#";
     client.subscribe(sub.c_str());
   }
@@ -836,6 +852,7 @@ void loop() {
  * تحكم كامل بالسيارة الذكية وحساس المسافة
  */
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 
 const char* USER_UID = "${uidPlaceholder}";
@@ -843,6 +860,9 @@ const char* USER_UID = "${uidPlaceholder}";
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
+const int   mqtt_port   = 8883;
+const char* mqtt_user   = "iot365";
+const char* mqtt_pass   = "iot365-jo";
 
 #define PIN_TRIG  5
 #define PIN_ECHO  18
@@ -850,7 +870,7 @@ const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
 #define PIN_HORN  12
 #define PIN_FWD   4
 
-WiFiClient espClient;
+WiFiClientSecure espClient;
 PubSubClient client(espClient);
 unsigned long lastSend = 0;
 int currentSpeed = 180;
@@ -902,13 +922,14 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  client.setServer(mqtt_server, 8883);
+  espClient.setInsecure();
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
 
 void loop() {
   if (!client.connected()) {
-    while (!client.connect("ESP32_CarClient")) delay(1000);
+    while (!(strlen(mqtt_user) > 0 ? client.connect("ESP32_CarClient", mqtt_user, mqtt_pass) : client.connect("ESP32_CarClient"))) delay(1000);
     String sub = (strlen(USER_UID) > 0) ? String(USER_UID) + "/#" : "guest_iot365/#";
     client.subscribe(sub.c_str());
   }
