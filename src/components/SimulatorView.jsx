@@ -70,8 +70,8 @@ export default function SimulatorView({
   const [showProjectsModal, setShowProjectsModal] = useState(false);
   const [modalTab, setModalTab] = useState('code'); // 'code' | 'wiring' | 'libraries' | 'guide'
   
-  // UID injection toggle: default false (empty UID as requested by user)
-  const [useAccountUid, setUseAccountUid] = useState(false);
+  // UID injection toggle: default true so user's UID is automatically included in copied sketch code
+  const [useAccountUid, setUseAccountUid] = useState(true);
 
   // Copy feedback states
   const [copiedCode, setCopiedCode] = useState(false);

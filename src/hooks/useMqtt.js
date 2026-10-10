@@ -38,18 +38,24 @@ export function useMqtt(userUID = 'ahmad2004') {
 
     client.on('connect', () => {
       setIsConnected(true);
-      // Subscribe to user-specific topics AND global absolute topics if needed
+      // Subscribe to user-specific topics AND global guest topics (for Wokwi simulation fallback)
       client.subscribe(`${userUID}/#`, { qos: 0 });
+      if (userUID !== 'guest_iot365') {
+        client.subscribe('guest_iot365/#', { qos: 0 });
+      }
       addLog('system', `Connected to IOT365 Cloud Broker (WSS)`);
     });
 
     client.on('message', (topic, payload) => {
       const message = payload.toString();
       
-      // If topic starts with UID, strip it for the UI state
-      const shortTopic = topic.startsWith(`${userUID}/`) 
-        ? topic.replace(`${userUID}/`, '') 
-        : topic;
+      // If topic starts with UID or guest_iot365, strip it for the UI state
+      let shortTopic = topic;
+      if (topic.startsWith(`${userUID}/`)) {
+        shortTopic = topic.slice(userUID.length + 1);
+      } else if (topic.startsWith('guest_iot365/')) {
+        shortTopic = topic.slice('guest_iot365/'.length);
+      }
       
       addLog('incoming', `${shortTopic}: ${message}`);
 
@@ -80,6 +86,12 @@ export function useMqtt(userUID = 'ahmad2004') {
       // If topic starts with '/', use it as is. Otherwise, prefix with UID.
       const fullTopic = topic.startsWith('/') ? topic.slice(1) : `${userUID}/${topic}`;
       clientRef.current.publish(fullTopic, str, { qos: 0 });
+      
+      // Also publish to guest_iot365 if different, to control Wokwi devices running without a customized UID
+      if (userUID && userUID !== 'guest_iot365' && !topic.startsWith('/')) {
+        clientRef.current.publish(`guest_iot365/${topic}`, str, { qos: 0 });
+      }
+      
       addLog('outgoing', `${topic}: ${str}`);
       
       // Update UI state immediately (optimistic update)
