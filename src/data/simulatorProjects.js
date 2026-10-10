@@ -169,8 +169,11 @@ const char* USER_UID = "${uidPlaceholder}";
 // Network & MQTT Broker Config
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "broker.hivemq.com";
-const int   mqtt_port   = 1883;
+// Dedicated IOT365 Cloud Cluster
+const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
+const int   mqtt_port   = 8883;
+const char* mqtt_user   = ""; // أدخل اسم المستخدم هنا
+const char* mqtt_pass   = ""; // أدخل كلمة المرور هنا
 
 // Pin Definitions
 #define PIN_DHT         15
@@ -541,7 +544,7 @@ const char* USER_UID = "${uidPlaceholder}";
 
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "broker.hivemq.com";
+const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
 
 #define PIN_DHT    15
 #define PIN_SOIL   34
@@ -586,7 +589,7 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, 8883);
   client.setCallback(callback);
 }
 
@@ -693,7 +696,7 @@ const char* USER_UID = "${uidPlaceholder}";
 
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "broker.hivemq.com";
+const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
 
 #define PIN_PIR    19
 #define PIN_LDR    35
@@ -739,7 +742,7 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, 8883);
   client.setCallback(callback);
 }
 
@@ -839,7 +842,7 @@ const char* USER_UID = "${uidPlaceholder}";
 
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "broker.hivemq.com";
+const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
 
 #define PIN_TRIG  5
 #define PIN_ECHO  18
@@ -899,7 +902,7 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, 8883);
   client.setCallback(callback);
 }
 

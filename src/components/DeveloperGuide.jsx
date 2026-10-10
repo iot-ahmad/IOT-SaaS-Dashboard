@@ -48,7 +48,7 @@ const getBotResponse = (input, uid) => {
   }
 
   if (text.includes('broker') || text.includes('بروك') || text.includes('hivemq') || text.includes('سيرفر') || text.includes('server') || text.includes('port') || text.includes('بورت') || text.includes('host') || text.includes('عنوان') || text.includes('منفذ')) {
-    return `**معلومات الاتصال بالـ MQTT Broker لـ IOT365 🌐:**\n\n*   **Host (العنوان):** \`broker.hivemq.com\`\n*   **Port (المنفذ):** \`1883\` (بدون تشفير)\n*   **WebSockets Port (للموقع):** \`8000\` (على المسار \`/mqtt\`)\n\n> 💡 تأكد من مطابقة هذه البيانات في كود الـ Arduino الخاص بك:\n\`\`\`cpp\nclient.setServer("broker.hivemq.com", 1883);\n\`\`\``;
+    return `**معلومات الاتصال بسيرفر IOT365 السحابي الخاص 🌐:**\n\n*   **Host (السيرفر):** \`fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud\`\n*   **Port (المنفذ المشفر TLS):** \`8883\` (لأجهزة ESP32 عبر WiFiClientSecure)\n*   **WebSockets Port (للموقع):** \`8884\` (على المسار \`/mqtt\`)\n*   **الحماية:** يتطلب اسم مستخدم وكلمة مرور (Username & Password)\n\n> 💡 إعداد الاتصال في كود ESP32:\n\`\`\`cpp\nespClient.setInsecure();\nclient.setServer("fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud", 8883);\nclient.connect("ESP32_Device", "YOUR_USERNAME", "YOUR_PASSWORD");\n\`\`\``;
   }
 
   if (text.includes('كيف') && (text.includes('اربط') || text.includes('أربط') || text.includes('اتصال') || text.includes('connect') || text.includes('esp32') || text.includes('طريقة') || text.includes('شغل'))) {
@@ -64,7 +64,7 @@ const getBotResponse = (input, uid) => {
   }
 
   if (text.includes('topic') || text.includes('عنوان الموضوع') || text.includes('موضوع') || text.includes('توبيك') || text.includes('بنية')) {
-    return `**بنية المواضيع (Topics) الفريدة في IOT365 📂:**\n\nلمنع تداخل البيانات بين المستخدمين على السيرفر العام، نستخدم بنية تبدأ بـ الـ UID الخاص بك:\n\`\`\`text\n[userUID]/[Topic_Name]\n\`\`\`\n**أمثلة:**\n*   مفتاح تشغيل: \`${cleanUid}/actuator/led\`\n*   مخطط بياني للحرارة: \`${cleanUid}/sensor/temp\`\n*   أداة D-Pad للسيارة: \`${cleanUid}/car/move\``;
+    return `**بنية المواضيع (Topics) الفريدة في IOT365 📂:**\n\nلضمان أقصى درجات الأمان وتنظيم البيانات المشفرة على سيرفر IOT365 الخاص، نستخدم بنية تبدأ بـ الـ UID الخاص بك:\n\`\`\`text\n[userUID]/[Topic_Name]\n\`\`\`\n**أمثلة:**\n*   مفتاح تشغيل: \`${cleanUid}/actuator/led\`\n*   مخطط بياني للحرارة: \`${cleanUid}/sensor/temp\`\n*   أداة D-Pad للسيارة: \`${cleanUid}/car/move\``;
   }
 
   if (text.includes('d-pad') || text.includes('سيارة') || text.includes('car') || text.includes('rc') || text.includes('اتجاه') || text.includes('أزرار') || text.includes('حركة')) {
@@ -175,7 +175,7 @@ export default function DeveloperGuide({ userUID }) {
 معلومات المنصة:
 - مطور ومصمم منصة IOT365 بالكامل هو: المطور أحمد البطاينة (Ahmad Al-Batayneh) 💻✨.
 - UID المستخدم الحالي: ${userUID || 'YOUR_UID'}
-- MQTT Broker: broker.hivemq.com — المنفذ: 1883
+- MQTT Broker: fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud — المنفذ المشفر TLS: 8883 (WSS للمتصفح: 8884/mqtt) — يتطلب Username و Password
 - بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
 خبرتك تشمل أيضاً:
 - تشخيص العتاد الفيزيائي (Hardware Diagnostics) وتحليل أعطال الأجهزة مثل المضخات والحساسات والدوائر الكهربائية.

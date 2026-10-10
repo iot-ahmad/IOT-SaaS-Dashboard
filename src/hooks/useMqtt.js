@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import mqtt from 'mqtt';
 
-// NOTE: ESP32 uses port 1883 (TCP), but browsers MUST use WSS.
-// For a private broker, set VITE_MQTT_BROKER_URL in your .env file.
-// Example for a private broker: wss://your-broker.example.com:8884/mqtt
-const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL || 'wss://broker.hivemq.com:8884/mqtt';
+// Dedicated IOT365 Cloud Cluster (WSS port 8884)
+const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL || 'wss://fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud:8884/mqtt';
+const MQTT_USERNAME = import.meta.env.VITE_MQTT_USERNAME || '';
+const MQTT_PASSWORD = import.meta.env.VITE_MQTT_PASSWORD || '';
 
 export function useMqtt(userUID = 'ahmad2004') {
   const [isConnected, setIsConnected] = useState(false);
@@ -24,18 +24,23 @@ export function useMqtt(userUID = 'ahmad2004') {
   }, []);
 
   useEffect(() => {
-    const client = mqtt.connect(BROKER_URL, {
+    const connectOptions = {
       clientId: `iot_dashboard_${Math.random().toString(16).slice(2, 10)}`,
       clean: true,
       connectTimeout: 5000,
       reconnectPeriod: 3000,
-    });
+    };
+
+    if (MQTT_USERNAME) connectOptions.username = MQTT_USERNAME;
+    if (MQTT_PASSWORD) connectOptions.password = MQTT_PASSWORD;
+
+    const client = mqtt.connect(BROKER_URL, connectOptions);
 
     client.on('connect', () => {
       setIsConnected(true);
       // Subscribe to user-specific topics AND global absolute topics if needed
       client.subscribe(`${userUID}/#`, { qos: 0 });
-      addLog('system', `Connected to HiveMQ (WSS)`);
+      addLog('system', `Connected to IOT365 Cloud Broker (WSS)`);
     });
 
     client.on('message', (topic, payload) => {

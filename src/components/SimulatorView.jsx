@@ -1147,10 +1147,10 @@ export default function SimulatorView({
                       معلومات الاتصال بسيرفر الـ MQTT:
                     </h5>
                     <p className="text-foreground/90 leading-relaxed font-mono">
-                      Broker: broker.hivemq.com | TCP Port: 1883 | WSS Port: 8884/mqtt
+                      Broker: fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud | TLS Port: 8883 | WSS Port: 8884/mqtt
                     </p>
                     <p className="text-muted-foreground text-[11px]">
-                      نفس السيرفر المستخدم بالموقع لضمان التوافق اللحظي بين المحاكي والداشبورد.
+                      السيرفر السحابي المخصص لـ IOT365 لضمان الأمان والتوافق اللحظي بين المحاكي والداشبورد.
                     </p>
                   </div>
                 </div>

@@ -86,8 +86,8 @@ graph TD
     useAuth -->|تسجيل الدخول الآمن| Firebase
     React -->|حفظ تفضيلات وإعدادات الواجهة| Firestore
     
-    useMqtt <-->|اتصال ويب سري WSS Port: 8884| HiveMQ
-    ESP32 <-->|اتصال شبكة TCP Port: 1883| HiveMQ
+    useMqtt <-->|اتصال ويب مشفر WSS Port: 8884| HiveMQ[Dedicated HiveMQ Cloud]
+    ESP32 <-->|اتصال شبكة مشفر TLS Port: 8883| HiveMQ
     
     ESP32 <-->|قراءة وتحكم فوري| Sensors
     useMqtt -->|تحديث الحالة اللحظية للواجهة| Grid
@@ -122,7 +122,7 @@ graph TD
 * **React Leaflet:** لتتبع الإحداثيات الجغرافية (GPS) للأجهزة المتحركة.
 
 ### الاتصالات والباك إند (Cloud Infrastructure)
-* **MQTT Client (mqtt.js) via WSS:** للاتصال الفوري ثنائي الاتجاه بالوسيط (HiveMQ).
+* **MQTT Client (mqtt.js) via WSS (Port 8884):** للاتصال الفوري المشفر ثنائي الاتجاه بالسيرفر السحابي المخصص (HiveMQ Dedicated Cloud) عبر بروتوكول TLS.
 * **Firebase Suite (Authentication & Cloud Firestore):** لحفظ بيانات حسابات المطورين وتفضيلات مشاريعهم السحابية بأمان تام.
 
 ---
