@@ -3,8 +3,8 @@ import mqtt from 'mqtt';
 
 // Dedicated IOT365 Cloud Cluster (WSS port 8884)
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL || 'wss://fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud:8884/mqtt';
-const MQTT_USERNAME = import.meta.env.VITE_MQTT_USERNAME || '';
-const MQTT_PASSWORD = import.meta.env.VITE_MQTT_PASSWORD || '';
+const MQTT_USERNAME = import.meta.env.VITE_MQTT_USERNAME || 'iot365';
+const MQTT_PASSWORD = import.meta.env.VITE_MQTT_PASSWORD || 'iot365-jo';
 
 export function useMqtt(userUID = 'ahmad2004') {
   const [isConnected, setIsConnected] = useState(false);
