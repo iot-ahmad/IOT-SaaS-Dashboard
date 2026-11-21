@@ -70,20 +70,20 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" dir="ltr">
-      <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-left">
+      <div className="bg-card border border-border rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-left">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <Cpu size={18} className="text-primary" />
-              Hardware & Electronic Component Library
+              Hardware &amp; Electronic Component Library
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">Select from pre-configured parts or add a custom component to your project</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -92,13 +92,13 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
         {/* Search & Category filter */}
         <div className="p-5 border-b border-border space-y-3 bg-muted/30">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary" size={16} />
             <input
               type="text"
               placeholder="Search components (ESP32, DHT22, Relay, OLED, Servo...)"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl py-2.5 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+              className="w-full bg-input border border-border rounded-xl py-2.5 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
             />
           </div>
 
@@ -112,7 +112,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                   activeCategory === cat.id
                     ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
-                    : 'bg-card dark:bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10'
+                    : 'bg-card text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
                 {cat.label}
@@ -139,7 +139,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                       });
                       onClose();
                     }}
-                    className="group flex gap-3 p-3 rounded-2xl bg-card dark:bg-[#0e111a] border border-border hover:border-primary/60 hover:shadow-lg hover:shadow-primary/5 transition-all cursor-pointer relative"
+                    className="group flex gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/60 hover:shadow-lg hover:shadow-primary/5 transition-all cursor-pointer relative"
                   >
                     <img
                       src={item.imageUrl}
@@ -151,7 +151,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                         <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
                           {item.category}
                         </span>
-                        <span className="text-[10px] text-muted-foreground font-mono">
+                        <span className="text-[10px] text-primary font-mono font-bold">
                           {item.defaultPins?.length || 0} Pins
                         </span>
                       </div>
@@ -192,7 +192,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                   placeholder="e.g., BMP280 Barometric Pressure Sensor"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
-                  className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-input border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -202,7 +202,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                   <select
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
-                    className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
+                    className="w-full bg-input border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
                   >
                     <option value="MCU">Microcontroller (MCU)</option>
                     <option value="SENSOR">Sensor (SENSOR)</option>
@@ -229,7 +229,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                   placeholder="Brief description of what this component does..."
                   value={customRole}
                   onChange={(e) => setCustomRole(e.target.value)}
-                  className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary resize-none"
+                  className="w-full bg-input border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary resize-none"
                 />
               </div>
 
@@ -254,14 +254,14 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border flex items-center justify-between bg-card/20">
+        <div className="p-4 border-t border-border flex items-center justify-between bg-muted/20">
           {!showCustomForm ? (
             <button
               type="button"
               onClick={() => setShowCustomForm(true)}
               className="text-xs font-bold text-primary hover:underline cursor-pointer flex items-center gap-1"
             >
-              <Plus size={14} /> Can't find your part? Add a custom component
+              <Plus size={14} className="text-primary" /> Can't find your part? Add a custom component
             </button>
           ) : (
             <button
@@ -273,7 +273,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
             </button>
           )}
 
-          <span className="text-[11px] text-muted-foreground font-mono">
+          <span className="text-[11px] text-primary font-mono font-bold">
             {COMPONENT_DATABASE.length} Parts Available
           </span>
         </div>
@@ -330,7 +330,7 @@ export default function ComponentPicker({ components = [], onChange }) {
         {components.map((comp) => (
           <div
             key={comp.id}
-            className="group bg-card dark:bg-[#0d1017] border border-border rounded-2xl p-4 flex flex-col justify-between hover:border-primary/50 transition-all shadow-lg hover:shadow-primary/5 relative"
+            className="group bg-card border border-border rounded-2xl p-4 flex flex-col justify-between hover:border-primary/50 transition-all shadow-lg hover:shadow-primary/5 relative"
           >
             {/* Remove Action */}
             <button
@@ -345,12 +345,12 @@ export default function ComponentPicker({ components = [], onChange }) {
             <div className="space-y-3">
               {/* Image & Category */}
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-xl overflow-hidden border border-border bg-black/40 shrink-0">
+                <div className="w-14 h-14 rounded-xl overflow-hidden border border-border bg-background shrink-0">
                   {comp.imageUrl ? (
                     <img src={comp.imageUrl} alt={comp.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                      <Cpu size={20} />
+                    <div className="w-full h-full flex items-center justify-center text-primary">
+                      <Cpu size={20} className="text-primary" />
                     </div>
                   )}
                 </div>
@@ -376,7 +376,7 @@ export default function ComponentPicker({ components = [], onChange }) {
                   value={comp.function || ''}
                   onChange={(e) => handleUpdateComponent(comp.id, { function: e.target.value })}
                   placeholder="Component role in this project..."
-                  className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl p-2.5 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary resize-none transition-colors"
+                  className="w-full bg-input border border-border rounded-xl p-2.5 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary resize-none transition-colors"
                 />
               </div>
             </div>
@@ -387,11 +387,9 @@ export default function ComponentPicker({ components = [], onChange }) {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="border-2 border-dashed border-border hover:border-primary/60 rounded-2xl p-6 bg-card/[0.01] hover:bg-card/[0.04] transition-all flex flex-col items-center justify-center text-center group cursor-pointer min-h-[160px]"
+          className="border-2 border-dashed border-border hover:border-primary/60 rounded-2xl p-6 bg-card/50 hover:bg-muted/40 transition-all flex flex-col items-center justify-center text-center group cursor-pointer min-h-[160px]"
         >
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform mb-3">
-            <Plus size={22} />
-          </div>
+          <Plus size={26} className="text-primary group-hover:scale-110 transition-transform mb-3" />
           <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">
             + Add Hardware Component
           </span>

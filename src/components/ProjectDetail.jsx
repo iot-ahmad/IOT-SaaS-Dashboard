@@ -141,13 +141,13 @@ export default function ProjectDetail({ currentUser }) {
 
   if (error || !project) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-[#18191c] border border-white/[0.08] p-8 rounded-2xl" dir="ltr">
-        <AlertCircle className="w-12 h-12 text-zinc-500 mx-auto mb-3" />
-        <h3 className="text-base font-bold text-white">Failed to Load Project</h3>
-        <p className="text-xs text-zinc-400 mt-2">{error || 'Project not found.'}</p>
+      <div className="max-w-md mx-auto text-center py-16 bg-card border border-border p-8 rounded-2xl" dir="ltr">
+        <AlertCircle className="w-12 h-12 text-primary mx-auto mb-3" />
+        <h3 className="text-base font-bold text-foreground">Failed to Load Project</h3>
+        <p className="text-xs text-muted-foreground mt-2">{error || 'Project not found.'}</p>
         <button
           onClick={() => navigate('/hub/explore')}
-          className="mt-5 font-medium px-5 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white text-xs transition-all cursor-pointer"
+          className="mt-5 font-medium px-5 py-2 rounded-xl bg-muted hover:bg-secondary border border-border text-foreground text-xs transition-all cursor-pointer"
         >
           Back to Explore Projects
         </button>
@@ -163,14 +163,14 @@ export default function ProjectDetail({ currentUser }) {
     <div className="max-w-5xl mx-auto space-y-6 pb-16 text-left" dir="ltr">
 
       {/* ── Breadcrumb & Action Bar ─────────────────────────── */}
-      <div className="flex flex-wrap justify-between items-center gap-3 border-b border-white/[0.08] pb-4">
+      <div className="flex flex-wrap justify-between items-center gap-3 border-b border-border pb-4">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-zinc-400">
-          <button onClick={() => navigate('/hub/explore')} className="hover:text-white transition-colors">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <button onClick={() => navigate('/hub/explore')} className="hover:text-foreground transition-colors">
             Projects
           </button>
           <span>/</span>
-          <span className="text-white font-medium truncate max-w-[200px]">{project.title}</span>
+          <span className="text-foreground font-medium truncate max-w-[200px]">{project.title}</span>
         </div>
 
         {/* Action Buttons */}
@@ -180,22 +180,22 @@ export default function ProjectDetail({ currentUser }) {
             onClick={handleLike}
             className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all border flex items-center gap-1.5 cursor-pointer ${
               liked
-                ? 'bg-white/[0.15] border-white/30 text-white'
-                : 'bg-white/[0.04] border-white/[0.08] text-zinc-400 hover:text-white'
+                ? 'bg-primary/15 border-primary/35 text-primary'
+                : 'bg-muted/60 border-border text-muted-foreground hover:text-foreground'
             }`}
           >
-            <ThumbsUp size={13} className={liked ? 'fill-white' : ''} />
+            <ThumbsUp size={13} className="text-primary" />
             <span>{liked ? 'Liked' : 'Like'}</span>
-            <span className="text-[10px] font-mono text-zinc-400">({project.metrics?.likes || 0})</span>
+            <span className="text-[10px] font-mono text-primary font-bold">({project.metrics?.likes || 0})</span>
           </button>
 
           {/* Message Owner */}
           {(!currentUser || currentUser.uid !== project.ownerId) && (
             <button
               onClick={handleMessageOwner}
-              className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-muted/60 hover:bg-muted border border-border text-foreground flex items-center gap-1.5 cursor-pointer"
             >
-              <MessageSquare size={13} />
+              <MessageSquare size={13} className="text-primary" />
               <span>Message Developer</span>
             </button>
           )}
@@ -203,9 +203,9 @@ export default function ProjectDetail({ currentUser }) {
           {/* Copy Documentation */}
           <button
             onClick={handleClone}
-            className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-muted hover:bg-secondary border border-border text-foreground flex items-center gap-1.5 cursor-pointer"
           >
-            {copied ? <Check size={13} /> : <Copy size={13} />}
+            {copied ? <Check size={13} className="text-primary" /> : <Copy size={13} className="text-primary" />}
             <span>{copied ? 'Copied!' : 'Copy Documentation'}</span>
           </button>
 
@@ -223,51 +223,51 @@ export default function ProjectDetail({ currentUser }) {
       </div>
 
       {/* ── Hero: Project Summary & Author Card ─────────────── */}
-      <div className="bg-[#18191c] border border-white/[0.08] p-6 rounded-2xl space-y-4">
+      <div className="bg-card border border-border p-6 rounded-2xl space-y-4">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="flex-1 space-y-2.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-400">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-muted border border-border text-primary font-bold">
                 {formatDifficulty(project.difficulty)}
               </span>
-              <span className="text-xs text-zinc-500 flex items-center gap-1 font-mono">
-                <Calendar size={11} />
+              <span className="text-xs text-muted-foreground flex items-center gap-1 font-mono">
+                <Calendar size={11} className="text-primary" />
                 {new Date(project.createdAt || Date.now()).toLocaleDateString('en-US')}
               </span>
             </div>
 
-            <h1 className="text-xl md:text-2xl font-bold text-white leading-snug">{project.title}</h1>
-            <p className="text-xs text-zinc-400 leading-relaxed max-w-2xl">{project.summary}</p>
+            <h1 className="text-xl md:text-2xl font-bold text-foreground leading-snug">{project.title}</h1>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl">{project.summary}</p>
           </div>
 
           {/* Author info */}
-          <div className="bg-[#1e2024] border border-white/[0.08] rounded-xl p-3.5 min-w-[200px] space-y-2 shrink-0">
+          <div className="bg-muted/40 border border-border rounded-xl p-3.5 min-w-[200px] space-y-2 shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-white/[0.08] text-zinc-300 font-bold flex items-center justify-center text-xs">
+              <div className="w-8 h-8 rounded-full bg-primary/15 text-primary font-bold flex items-center justify-center text-xs">
                 {(project.ownerName || 'U').charAt(0)}
               </div>
               <div>
                 <button
                   onClick={() => navigate(`/${project.ownerUsername || 'user'}`)}
-                  className="font-bold text-white hover:text-zinc-200 transition-colors text-xs block text-left"
+                  className="font-bold text-foreground hover:text-primary transition-colors text-xs block text-left"
                 >
                   {project.ownerName || 'Developer'}
                 </button>
-                <p className="text-[10px] text-zinc-500 font-mono">@{project.ownerUsername || 'maker'}</p>
+                <p className="text-[10px] text-muted-foreground font-mono">@{project.ownerUsername || 'maker'}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-1 pt-2 border-t border-white/[0.06] text-center text-zinc-400 text-[10px] font-mono">
+            <div className="grid grid-cols-3 gap-1 pt-2 border-t border-border text-center text-muted-foreground text-[10px] font-mono">
               <div>
-                <span className="block font-bold text-white text-xs">{project.metrics?.views || 0}</span>
+                <span className="block font-bold text-primary text-xs">{project.metrics?.views || 0}</span>
                 <span>Views</span>
               </div>
               <div>
-                <span className="block font-bold text-white text-xs">{project.metrics?.likes || 0}</span>
+                <span className="block font-bold text-primary text-xs">{project.metrics?.likes || 0}</span>
                 <span>Likes</span>
               </div>
               <div>
-                <span className="block font-bold text-white text-xs">{project.metrics?.clones || 0}</span>
+                <span className="block font-bold text-primary text-xs">{project.metrics?.clones || 0}</span>
                 <span>Clones</span>
               </div>
             </div>
@@ -276,9 +276,9 @@ export default function ProjectDetail({ currentUser }) {
 
         {/* Tags */}
         {tagComponents.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/[0.06]">
+          <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border">
             {tagComponents.map((tag, idx) => (
-              <span key={idx} className="text-[10px] px-2 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-zinc-400 font-mono">
+              <span key={idx} className="text-[10px] px-2 py-0.5 rounded bg-muted border border-border text-primary font-mono">
                 #{tag}
               </span>
             ))}
@@ -289,34 +289,34 @@ export default function ProjectDetail({ currentUser }) {
       {/* ── Bill of Materials (BOM) ─────────────────────────── */}
       {structuredComponents.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Cpu size={16} className="text-zinc-400" />
-            <span>Hardware & Components Used ({structuredComponents.length})</span>
+          <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Cpu size={16} className="text-primary" />
+            <span>Hardware &amp; Components Used (<span className="text-primary font-mono">{structuredComponents.length}</span>)</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {structuredComponents.map((comp, idx) => (
               <div
                 key={idx}
-                className="bg-[#18191c] border border-white/[0.08] rounded-xl p-3.5 space-y-2"
+                className="bg-card border border-border rounded-xl p-3.5 space-y-2"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/[0.08] bg-[#141518] shrink-0 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-background shrink-0 flex items-center justify-center">
                     {comp.imageUrl ? (
                       <img src={comp.imageUrl} alt={comp.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Cpu size={18} className="text-zinc-600" />
+                      <Cpu size={20} className="text-primary" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/[0.04] text-zinc-400 block w-fit mb-0.5">
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-muted text-primary block w-fit mb-0.5">
                       {comp.category || 'PART'}
                     </span>
-                    <h3 className="font-bold text-white text-xs truncate">{comp.name}</h3>
+                    <h3 className="font-bold text-foreground text-xs truncate">{comp.name}</h3>
                   </div>
                 </div>
                 {comp.function && (
-                  <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">{comp.function}</p>
+                  <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">{comp.function}</p>
                 )}
               </div>
             ))}
@@ -325,11 +325,11 @@ export default function ProjectDetail({ currentUser }) {
       )}
 
       {/* ── Wiring & Circuit Schematic Section ─────────────── */}
-      <div className="bg-[#18191c] border border-white/[0.08] p-5 rounded-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Zap size={16} className="text-zinc-400" />
-            <span>Circuit Schematic & Pinout Connections</span>
+      <div className="bg-card border border-border p-5 rounded-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-2.5">
+          <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Zap size={16} className="text-primary" />
+            <span>Circuit Schematic &amp; Pinout Connections</span>
           </h2>
         </div>
 
@@ -341,17 +341,17 @@ export default function ProjectDetail({ currentUser }) {
       </div>
 
       {/* ── Technical Documentation ─────────────────────────── */}
-      <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-          <h3 className="text-xs font-bold text-white flex items-center gap-2">
-            <Layers size={14} className="text-zinc-400" />
-            <span>Technical Documentation & Source Code</span>
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h3 className="text-xs font-bold text-foreground flex items-center gap-2">
+            <Layers size={14} className="text-primary" />
+            <span>Technical Documentation &amp; Source Code</span>
           </h3>
           <button
             onClick={handleClone}
-            className="text-xs text-zinc-400 hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
+            className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
           >
-            <Copy size={12} />
+            <Copy size={12} className="text-primary" />
             <span>Copy Documentation</span>
           </button>
         </div>
@@ -362,15 +362,15 @@ export default function ProjectDetail({ currentUser }) {
 
       {/* ── Q&A Subcollection ──────────────────────────────── */}
       {publicQaList.length > 0 && (
-        <div className="bg-[#18191c] border border-white/[0.08] p-5 rounded-2xl space-y-3">
-          <h3 className="text-xs font-bold text-white border-b border-white/[0.06] pb-2">
-            Frequently Asked Questions ({publicQaList.length})
+        <div className="bg-card border border-border p-5 rounded-2xl space-y-3">
+          <h3 className="text-xs font-bold text-foreground border-b border-border pb-2">
+            Frequently Asked Questions (<span className="text-primary font-mono">{publicQaList.length}</span>)
           </h3>
           <div className="space-y-2">
             {publicQaList.map(qa => (
-              <div key={qa.id} className="p-3 rounded-xl bg-[#1e2024] border border-white/[0.06] space-y-1.5">
-                <h4 className="font-bold text-white text-xs">{qa.question}</h4>
-                <p className="text-xs text-zinc-400 leading-relaxed">{qa.answer}</p>
+              <div key={qa.id} className="p-3 rounded-xl bg-muted/40 border border-border space-y-1.5">
+                <h4 className="font-bold text-foreground text-xs">{qa.question}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">{qa.answer}</p>
               </div>
             ))}
           </div>

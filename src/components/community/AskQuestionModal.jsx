@@ -68,16 +68,16 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" dir="ltr">
-      <div className="bg-[#18191c] border border-white/10 w-full max-w-xl rounded-2xl p-6 shadow-2xl space-y-4 text-foreground text-left">
+      <div className="bg-card border border-border w-full max-w-xl rounded-2xl p-6 shadow-2xl space-y-4 text-foreground text-left">
         
-        <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2.5">
-            <HelpCircle size={18} className="text-zinc-400" />
-            <h3 className="text-sm font-bold text-white">Ask a Technical Question</h3>
+            <HelpCircle size={18} className="text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Ask a Technical Question</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <X size={16} />
           </button>
@@ -92,48 +92,48 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">Question Title *</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Question Title *</label>
             <input
               type="text"
               required
               placeholder="e.g., How to reduce ESP32 power consumption during Deep Sleep?"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
+              className="w-full bg-input border border-border rounded-xl py-2 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">Category</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2 px-2.5 text-xs text-white focus:outline-none focus:border-white/20 transition-colors"
+                className="w-full bg-input border border-border rounded-xl py-2 px-2.5 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-colors"
               >
-                <option value="Power & Battery Management">Power & Battery Management</option>
-                <option value="Sensors & Actuators">Sensors & Actuators</option>
-                <option value="Cloud & MQTT">Cloud & MQTT</option>
-                <option value="Robotics & Motors">Robotics & Motors</option>
-                <option value="Firmware & RTOS">Firmware & RTOS</option>
+                <option value="Power & Battery Management">Power &amp; Battery Management</option>
+                <option value="Sensors & Actuators">Sensors &amp; Actuators</option>
+                <option value="Cloud & MQTT">Cloud &amp; MQTT</option>
+                <option value="Robotics & Motors">Robotics &amp; Motors</option>
+                <option value="Firmware & RTOS">Firmware &amp; RTOS</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">Tags</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Tags</label>
               <input
                 type="text"
                 placeholder="ESP32, I2C (Press Enter)"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleAddTag}
-                className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
+                className="w-full bg-input border border-border rounded-xl py-2 px-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground"
               />
               <div className="flex flex-wrap gap-1 mt-1.5">
                 {tags.map((t, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-1 text-[10px] bg-white/[0.04] border border-white/[0.08] text-zinc-300 px-2 py-0.5 rounded">
+                  <span key={idx} className="inline-flex items-center gap-1 text-[10px] bg-muted border border-border text-primary px-2 py-0.5 rounded">
                     #{t}
-                    <button type="button" onClick={() => handleRemoveTag(t)} className="hover:text-white">×</button>
+                    <button type="button" onClick={() => handleRemoveTag(t)} className="hover:text-foreground">×</button>
                   </span>
                 ))}
               </div>
@@ -141,29 +141,29 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">Question Details *</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Question Details *</label>
             <textarea
               required
               rows={4}
               placeholder="Explain the problem in detail, expected behavior, and what you have tried so far..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500 resize-none font-sans"
+              className="w-full bg-input border border-border rounded-xl p-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground resize-none font-sans"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-medium text-zinc-400 hover:text-white transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 rounded-xl bg-white/[0.1] hover:bg-white/[0.16] border border-white/[0.12] text-white font-bold text-xs transition-all disabled:opacity-40 cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs transition-all disabled:opacity-40 cursor-pointer"
             >
               {loading ? 'Posting...' : 'Post Question'}
             </button>

@@ -54,29 +54,29 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
     {
       title: 'Interactive Dashboards',
       desc: 'Design and customize real-time dashboards to visualize sensor telemetry and control hardware with a single click.',
-      icon: <LayoutDashboard size={20} />
+      icon: <LayoutDashboard size={22} className="text-primary" />
     },
     {
       title: 'Real-Time MQTT Connectivity',
       desc: 'Instant, secure connection for ESP32 and IoT hardware over TLS-encrypted MQTT with ultra-low latency.',
-      icon: <Cpu size={20} />
+      icon: <Cpu size={22} className="text-primary" />
     },
     {
       title: 'Smart Automations & Rules',
       desc: 'Build automated rules and scenarios to trigger your actuators automatically based on live sensor thresholds.',
-      icon: <Zap size={20} />
+      icon: <Zap size={22} className="text-primary" />
     },
     {
       title: 'Instant Alerts & Diagnostics',
       desc: 'Smart notification and physical AI diagnostic engine that monitors device health and prevents failures early.',
-      icon: <BellRing size={20} />
+      icon: <BellRing size={22} className="text-primary" />
     }
   ];
 
   return (
     <div
       dir="ltr"
-      className="relative flex min-h-screen w-full flex-col bg-[#080808] text-white overflow-y-auto overflow-x-hidden scroll-smooth font-sans select-none"
+      className="relative flex min-h-screen w-full flex-col bg-background text-foreground overflow-y-auto overflow-x-hidden scroll-smooth font-sans select-none"
     >
       {/* Dynamic Wave & Grain Background */}
       <WaveBackground />
@@ -89,17 +89,17 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
         </div>
 
         {/* Middle: Links */}
-        <div className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-white/40 uppercase">
-          <a href="#features" onClick={handleNavToFeatures} className="hover:text-white transition-colors">Features</a>
-          <a href="#features" onClick={handleNavToFeatures} className="hover:text-white transition-colors">Documentation</a>
-          <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0 text-[11px] font-bold tracking-widest uppercase">Support</button>
+        <div className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
+          <a href="#features" onClick={handleNavToFeatures} className="hover:text-foreground transition-colors">Features</a>
+          <a href="#features" onClick={handleNavToFeatures} className="hover:text-foreground transition-colors">Documentation</a>
+          <button onClick={() => setShowSupport(true)} className="hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0 text-[11px] font-bold tracking-widest uppercase">Support</button>
         </div>
 
         {/* Right: Toggle Button */}
         <div>
           <button
             onClick={() => { setError(null); setShowLogin(!showLogin); }}
-            className="border border-white/20 hover:border-white/50 px-5 py-2 rounded-sm text-[10px] font-black tracking-widest text-white hover:bg-white/10 transition-all duration-300 cursor-pointer uppercase"
+            className="border border-border hover:border-primary/50 px-5 py-2 rounded-sm text-[10px] font-black tracking-widest text-foreground hover:bg-muted transition-all duration-300 cursor-pointer uppercase"
           >
             {showLogin ? 'HOME' : 'GATEWAY'}
           </button>
@@ -122,8 +122,8 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
             >
               {/* Hero Section */}
               <div className="w-full min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20">
-                {/* Cyan Subtitle Badge */}
-                <span className="text-cyan-400 text-xs font-extrabold tracking-[0.25em] uppercase mb-4 opacity-80">
+                {/* Lime Subtitle Badge */}
+                <span className="text-primary text-xs font-extrabold tracking-[0.25em] uppercase mb-4 opacity-90">
                   SMART IOT CLOUD PLATFORM
                 </span>
 
@@ -137,7 +137,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   <h1 
                     className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none select-none uppercase"
                     style={{ 
-                      WebkitTextStroke: '1px rgba(255, 255, 255, 0.35)', 
+                      WebkitTextStroke: '1px rgba(240, 240, 232, 0.35)', 
                       color: 'transparent' 
                     }}
                   >
@@ -147,12 +147,12 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
                 {/* Website Description */}
                 <p
-                  className="text-white/50 text-sm sm:text-base font-light leading-relaxed max-w-xl mb-10 text-center"
+                  className="text-muted-foreground text-sm sm:text-base font-light leading-relaxed max-w-xl mb-10 text-center"
                 >
                   Interactive cloud platform to connect, simulate, and monitor IoT devices in real time. Direct hardware control for{' '}
-                  <code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code>
+                  <code className="bg-muted border border-border text-primary px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code>
                   {' '}over isolated{' '}
-                  <code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code>
+                  <code className="bg-muted border border-border text-primary px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code>
                   {' '}with zero infrastructure hassle.
                 </p>
 
@@ -160,13 +160,13 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 <div className="flex flex-wrap items-center justify-center gap-4">
                   <button
                     onClick={() => setShowLogin(true)}
-                    className="px-8 py-3.5 bg-white text-black font-extrabold rounded-full hover:bg-neutral-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.55)] active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
+                    className="px-8 py-3.5 bg-primary text-primary-foreground font-extrabold rounded-full hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
                   >
                     GET STARTED
                   </button>
                   <button
                     onClick={() => navigate('/hub')}
-                    className="px-8 py-3.5 bg-transparent text-white border border-white/20 font-extrabold rounded-full hover:bg-white/10 hover:border-white/40 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
+                    className="px-8 py-3.5 bg-transparent text-foreground border border-border font-extrabold rounded-full hover:bg-muted hover:border-primary/40 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
                   >
                     BROWSE PROJECTS
                   </button>
@@ -178,10 +178,10 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 id="features"
                 className="w-full max-w-5xl py-24 px-6 flex flex-col items-center justify-center text-center mt-12 scroll-mt-24"
               >
-                <span className="text-cyan-400 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-3">
+                <span className="text-primary text-[10px] font-extrabold tracking-[0.2em] uppercase mb-3">
                   PLATFORM CAPABILITIES
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-16 tracking-tight">
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-16 tracking-tight">
                   Complete Ecosystem for IoT Hardware
                 </h2>
 
@@ -189,17 +189,15 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   {featuresList.map((feat, idx) => (
                     <div 
                       key={idx} 
-                      className="p-8 rounded-3xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-md flex flex-col justify-between"
+                      className="p-8 rounded-3xl border border-border bg-card hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
                     >
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-10 h-10 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center text-cyan-400">
-                          {feat.icon}
-                        </div>
-                        <span className="text-white/20 text-xs font-mono">0{idx + 1}</span>
+                        {feat.icon}
+                        <span className="text-primary text-xs font-mono font-bold">0{idx + 1}</span>
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-white mb-2">{feat.title}</h3>
-                        <p className="text-sm text-white/45 leading-relaxed">{feat.desc}</p>
+                        <h3 className="text-lg font-bold text-foreground mb-2">{feat.title}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{feat.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -220,24 +218,22 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
             >
               {error && (
                 <div
-                  className="w-full bg-card/[0.03] border border-border text-white/50 text-xs rounded-2xl p-4 mb-4 text-center leading-relaxed"
+                  className="w-full bg-card border border-border text-muted-foreground text-xs rounded-2xl p-4 mb-4 text-center leading-relaxed"
                 >
                   {error}
                 </div>
               )}
 
-              {/* Glassmorphic card */}
-              <div className="w-full rounded-3xl border border-white/[0.07] bg-card/[0.02] backdrop-blur-2xl p-8 shadow-[0_20px_80px_rgba(0,0,0,0.9)] relative overflow-hidden flex flex-col items-center">
-                <div className="absolute -top-20 -right-20 w-48 h-48 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-
+              {/* Card */}
+              <div className="w-full rounded-3xl border border-border bg-card p-8 shadow-2xl relative overflow-hidden flex flex-col items-center">
                 <div className="text-center mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mx-auto mb-4 text-white/30">
-                    <GraduationCap size={22} />
+                  <div className="flex items-center justify-center mx-auto mb-4 text-primary">
+                    <GraduationCap size={26} className="text-primary" />
                   </div>
-                  <h2 className="text-2xl font-black text-white mb-1.5 tracking-tight">
+                  <h2 className="text-2xl font-black text-foreground mb-1.5 tracking-tight">
                     Sign In
                   </h2>
-                  <p className="text-[10px] font-mono tracking-[0.2em] text-white/20 uppercase">
+                  <p className="text-[10px] font-mono tracking-[0.2em] text-muted-foreground uppercase">
                     IOT STUDENT · SANDBOX GATEWAY
                   </p>
                 </div>
@@ -247,10 +243,10 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   type="button"
                   onClick={handleGoogleLogin}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-semibold py-4 px-6 rounded-2xl text-sm border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-md disabled:opacity-40 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-3 bg-muted hover:bg-secondary text-foreground font-semibold py-4 px-6 rounded-2xl text-sm border border-border hover:border-primary/40 transition-all duration-300 disabled:opacity-40 cursor-pointer"
                 >
                   {loading ? (
-                    <Loader2 size={18} className="animate-spin text-white/30" />
+                    <Loader2 size={18} className="animate-spin text-primary" />
                   ) : (
                     <GoogleIcon />
                   )}
@@ -260,9 +256,9 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 {/* Back button */}
                 <button
                   onClick={() => { setError(null); setShowLogin(false); }}
-                  className="mt-6 text-[11px] text-white/20 hover:text-white/50 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="mt-6 text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <ArrowLeft size={12} />
+                  <ArrowLeft size={12} className="text-primary" />
                   <span>Back to Home</span>
                 </button>
               </div>
@@ -276,18 +272,18 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
       <footer className="absolute bottom-8 left-6 right-6 md:left-12 md:right-12 z-20 flex flex-col md:flex-row gap-4 items-center justify-between pointer-events-none">
         {/* Left: AB Badge */}
         <div className="flex items-center gap-2.5 pointer-events-auto select-none">
-          <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px] font-black text-white/80">
+          <div className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-[10px] font-black text-primary">
             AB
           </div>
           <div className="flex flex-col text-left">
-            <span className="font-extrabold text-white/80 text-[11px] leading-none">Ahmad Batayneh</span>
-            <span className="text-[9px] text-white/40 leading-none mt-0.5 font-mono">@iot-ahmad</span>
+            <span className="font-extrabold text-foreground text-[11px] leading-none">Ahmad Batayneh</span>
+            <span className="text-[9px] text-muted-foreground leading-none mt-0.5 font-mono">@iot-ahmad</span>
           </div>
         </div>
 
         {/* Right: Info */}
-        <div className="text-[9px] tracking-[0.2em] text-white/30 uppercase font-mono text-center md:text-right">
-          BASED ON MQTT & ESP32 · SECURE PORTAL
+        <div className="text-[9px] tracking-[0.2em] text-muted-foreground uppercase font-mono text-center md:text-right">
+          BASED ON MQTT &amp; ESP32 · SECURE PORTAL
         </div>
       </footer>
       <SupportModal isOpen={showSupport} onClose={() => setShowSupport(false)} />

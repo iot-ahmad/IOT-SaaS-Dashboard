@@ -4,21 +4,21 @@ import { TOOLS } from '../data/mockData';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMessaging } from '../context/MessagingContext';
 
-export default function Header({ 
-  activeWorkspace, 
-  activeTool, 
-  isConnected, 
+export default function Header({
+  activeWorkspace,
+  activeTool,
+  isConnected,
   mqttMode = 'demo',
-  toggleMobileMenu, 
-  customWorkspaces, 
-  isSidebarCollapsed, 
+  toggleMobileMenu,
+  customWorkspaces,
+  isSidebarCollapsed,
   onToggleSidebar,
   isDark: propIsDark,
   onToggleTheme
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { unreadCount = 0, setIsMessagingOpen = () => {} } = useMessaging();
+  const { unreadCount = 0, setIsMessagingOpen = () => { } } = useMessaging();
   const [localIsDark, setLocalIsDark] = useState(true);
   const isDark = propIsDark !== undefined ? propIsDark : localIsDark;
 
@@ -84,26 +84,25 @@ export default function Header({
   const isSimulator = activeTool === 'simulator';
 
   return (
-    <header className={`flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-10 transition-all ${
-      isSimulator ? 'py-2 px-4 md:px-6' : 'py-3.5 px-6 md:px-8'
-    }`}>
+    <header className={`flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-10 transition-all ${isSimulator ? 'py-2 px-4 md:px-6' : 'py-3.5 px-6 md:px-8'
+      }`}>
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
         <button
           onClick={toggleMobileMenu}
-          className="md:hidden text-foreground hover:text-primary p-1.5 rounded-lg hover:bg-muted/60 transition-colors cursor-pointer"
+          className="md:hidden text-primary hover:opacity-80 p-1.5 rounded-lg transition-opacity cursor-pointer"
           title="Open menu"
         >
-          <Menu size={20} />
+          <Menu size={20} className="text-primary" />
         </button>
 
         {/* Desktop sidebar toggle */}
         <button
           onClick={onToggleSidebar}
-          className="hidden md:flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-muted/60 cursor-pointer"
+          className="hidden md:flex items-center justify-center text-primary hover:opacity-80 transition-opacity p-1.5 rounded-lg cursor-pointer"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {isSidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+          {isSidebarCollapsed ? <PanelLeftOpen size={18} className="text-primary" /> : <PanelLeftClose size={18} className="text-primary" />}
         </button>
 
         <div>
@@ -123,10 +122,10 @@ export default function Header({
           className="relative h-9 flex items-center gap-2 px-3 rounded-lg bg-muted/60 hover:bg-muted border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="Direct Messages"
         >
-          <MessageSquare size={15} />
+          <MessageSquare size={15} className="text-primary" />
           <span className="hidden sm:inline">Messages</span>
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md">
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md tabular-nums">
               {unreadCount}
             </span>
           )}
@@ -138,17 +137,17 @@ export default function Header({
           className="h-9 flex items-center gap-2 px-3 rounded-lg bg-muted/60 hover:bg-muted border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="Project Hub"
         >
-          <Globe size={15} />
+          <Globe size={15} className="text-primary" />
           <span className="hidden sm:inline">Project Hub</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="h-9 w-9 flex items-center justify-center rounded-lg bg-muted/60 hover:bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className="h-9 w-9 flex items-center justify-center rounded-lg bg-transparent border-0 hover:bg-muted/40 text-primary transition-colors cursor-pointer"
           title="Toggle Theme"
         >
-          {isDark ? <Sun size={15} /> : <Moon size={15} />}
+          {isDark ? <Sun size={16} className="text-primary" /> : <Moon size={16} className="text-primary" />}
         </button>
 
         {/* MQTT Broker Status Pill */}
@@ -158,14 +157,11 @@ export default function Header({
             : 'Disconnected from MQTT broker'}
           className={`hidden lg:flex h-9 items-center gap-2 px-3 rounded-lg border text-xs font-medium ${
             isConnected
-              ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
+              ? 'bg-primary/10 border-primary/25 text-primary'
               : 'bg-red-500/10 border-red-500/25 text-red-400'
           }`}
         >
-          <span className={`w-2 h-2 rounded-full shrink-0 ${
-            isConnected ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-red-500 hw-led-err'
-          }`} />
-          {isConnected ? <Wifi size={13} /> : <WifiOff size={13} />}
+          {isConnected ? <Wifi size={14} className="text-primary" /> : <WifiOff size={14} className="text-red-400" />}
           <span className="hidden xl:inline font-mono text-[11px] font-semibold">
             {isConnected ? (mqttMode === 'private' ? 'EMQX Isolated' : 'Demo Broker') : 'Broker Offline'}
           </span>

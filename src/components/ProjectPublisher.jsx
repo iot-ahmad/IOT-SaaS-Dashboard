@@ -81,7 +81,7 @@ export const MarkdownPreview = ({ text }) => {
   const formatText = (t) => {
     let s = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     s = s.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-extrabold text-foreground">$1</strong>');
-    s = s.replace(/`([^`]+)`/g, '<code class="bg-zinc-900 border border-border px-1.5 py-0.5 rounded font-mono text-pink-400 text-xs">$1</code>');
+    s = s.replace(/`([^`]+)`/g, '<code class="bg-muted border border-border px-1.5 py-0.5 rounded font-mono text-primary text-xs">$1</code>');
     s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">$1</a>');
     return s;
   };
@@ -109,7 +109,7 @@ export const MarkdownPreview = ({ text }) => {
         );
         if (el.type === 'li') return (
           <div key={idx} className="flex gap-2 items-start text-sm pl-2 mt-1">
-            <span className="text-primary mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="text-primary shrink-0 font-bold">—</span>
             <span dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
           </div>
         );
@@ -125,18 +125,18 @@ export const MarkdownPreview = ({ text }) => {
         );
         if (el.type === 'code') return (
           <div key={idx} className="my-4 font-mono text-left" dir="ltr">
-            <div className="flex items-center justify-between bg-zinc-950 px-4 py-1.5 border-t border-x border-border rounded-t-xl text-[10px] text-muted-foreground font-sans tracking-wide">
+            <div className="flex items-center justify-between bg-muted px-4 py-1.5 border-t border-x border-border rounded-t-xl text-[10px] text-muted-foreground font-sans tracking-wide">
               <span>{el.language.toUpperCase()}</span>
               <button type="button" onClick={() => navigator.clipboard.writeText(el.content)}
                 className="hover:text-primary transition-colors cursor-pointer">Copy Code</button>
             </div>
-            <pre className="bg-[#030406] border border-border rounded-b-xl p-4 overflow-x-auto text-xs leading-relaxed font-mono scrollbar-thin text-left ltr-text text-slate-300">
+            <pre className="bg-background border border-border rounded-b-xl p-4 overflow-x-auto text-xs leading-relaxed font-mono scrollbar-thin text-left ltr-text text-foreground">
               <code dangerouslySetInnerHTML={{ __html: highlightCode(el.content) }} />
             </pre>
           </div>
         );
         if (el.content?.trim() === '') return <div key={idx} className="h-2" />;
-        return <p key={idx} className="text-sm text-slate-300/90 leading-relaxed"
+        return <p key={idx} className="text-sm text-foreground/90 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />;
       })}
     </div>
@@ -363,9 +363,9 @@ ${secChallenges || 'No additional notes added...'}`;
 
   if (!hasUsername) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl" dir="ltr">
+      <div className="max-w-md mx-auto text-center py-16 bg-card border border-border p-8 rounded-3xl" dir="ltr">
         <AlertCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-white">Username Required First</h3>
+        <h3 className="text-xl font-bold text-foreground">Username Required First</h3>
         <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
           To publish projects to the community hub, please go to your profile settings and claim a unique username.
         </p>
@@ -384,22 +384,22 @@ ${secChallenges || 'No additional notes added...'}`;
     <div className="max-w-7xl mx-auto space-y-6 pb-20 text-left" dir="ltr">
       
       {/* ─── Top Header ─── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
-              <Code size={20} className="text-zinc-400" />
+            <h2 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
+              <Code size={20} className="text-primary" />
               <span>IoT Project Publisher & Documentation Studio</span>
             </h2>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Design your circuits, document smart wiring schematics, and share your firmware with the developer community
           </p>
         </div>
       </div>
 
-      {/* ─── Step Indicators (Neutral Gray Glassmorphism) ─── */}
-      <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-none gap-2 bg-[#18191c] border border-white/[0.08] p-2 rounded-2xl">
+      {/* ─── Step Indicators ─── */}
+      <div className="flex items-center justify-between overflow-x-auto pb-2 scrollbar-none gap-2 bg-card border border-border p-2 rounded-2xl">
         {STEPS.map((s, i) => {
           const Icon = s.icon;
           const isCurrent = step === s.num;
@@ -412,18 +412,18 @@ ${secChallenges || 'No additional notes added...'}`;
                 onClick={() => setStep(s.num)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                   isCurrent
-                    ? 'bg-white/[0.15] text-white border border-white/25 shadow-sm font-bold'
+                    ? 'bg-primary text-primary-foreground border border-primary shadow-sm font-bold'
                     : isPassed
-                    ? 'bg-white/[0.05] text-zinc-300 border border-white/[0.08]'
-                    : 'text-zinc-500 hover:text-zinc-300'
+                    ? 'bg-muted text-foreground border border-border'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon size={14} />
+                <Icon size={14} className={isCurrent ? 'text-primary-foreground' : 'text-primary'} />
                 <span>{s.label}</span>
-                {isPassed && <CheckCircle2 size={12} className="text-zinc-300" />}
+                {isPassed && <CheckCircle2 size={12} className="text-primary" />}
               </button>
               {i < STEPS.length - 1 && (
-                <ChevronRight size={14} className={`mx-1 ${isPassed ? 'text-zinc-400' : 'text-zinc-600'}`} />
+                <ChevronRight size={14} className={`mx-1 ${isPassed ? 'text-primary' : 'text-muted-foreground'}`} />
               )}
             </div>
           );
@@ -457,7 +457,7 @@ ${secChallenges || 'No additional notes added...'}`;
                 <button
                   type="button"
                   onClick={() => setTemplatesModalOpen(true)}
-                  className="text-xs text-sky-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-xs text-primary hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <HelpCircle size={13} />
                   Not sure where to start? Browse featured templates
@@ -475,7 +475,7 @@ ${secChallenges || 'No additional notes added...'}`;
                       placeholder="e.g., Smart IoT Weather Station with Real-Time MQTT Alerts"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                      className="w-full bg-input border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
                     />
                   </div>
 
@@ -485,7 +485,7 @@ ${secChallenges || 'No additional notes added...'}`;
                     <select
                       value={difficulty}
                       onChange={(e) => setDifficulty(e.target.value)}
-                      className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                      className="w-full bg-input border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
                     >
                       <option value="Beginner">Beginner</option>
                       <option value="Intermediate">Intermediate</option>
@@ -503,7 +503,7 @@ ${secChallenges || 'No additional notes added...'}`;
                     placeholder="Briefly describe the goal of your project and the problem it solves..."
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
-                    className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground resize-none transition-colors"
+                    className="w-full bg-input border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground resize-none transition-colors"
                   />
                 </div>
 
@@ -514,7 +514,7 @@ ${secChallenges || 'No additional notes added...'}`;
                     <select
                       value={visibility}
                       onChange={(e) => setVisibility(e.target.value)}
-                      className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                      className="w-full bg-input border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
                     >
                       <option value="public">Public (Visible in Community Hub)</option>
                       <option value="private">Private (Only Me)</option>
@@ -529,7 +529,7 @@ ${secChallenges || 'No additional notes added...'}`;
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={handleAddTag}
-                      className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
+                      className="w-full bg-input border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
                     />
                     <div className="flex flex-wrap gap-1.5 pt-2">
                       {tagsList.map((tag, idx) => (
@@ -576,7 +576,7 @@ ${secChallenges || 'No additional notes added...'}`;
                   Documentation & Firmware Code Editor
                 </h3>
 
-                <div className="flex gap-1.5 bg-muted dark:bg-[#0c0e14] border border-border p-1 rounded-xl shrink-0">
+                <div className="flex gap-1.5 bg-muted border border-border p-1 rounded-xl shrink-0">
                   {[
                     { id: 'overview', label: 'Overview' },
                     { id: 'code', label: 'C++ / Arduino Code' },
@@ -603,7 +603,7 @@ ${secChallenges || 'No additional notes added...'}`;
                       value={secOverview}
                       onChange={(e) => setSecOverview(e.target.value)}
                       placeholder="Write a detailed explanation of how the project works and its software architecture..."
-                      className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
+                      className="flex-1 w-full bg-input border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
                     />
                   )}
                   {docTab === 'code' && (
@@ -611,7 +611,7 @@ ${secChallenges || 'No additional notes added...'}`;
                       value={secCode}
                       onChange={(e) => setSecCode(e.target.value)}
                       placeholder="// Write your Arduino / ESP32 code here"
-                      className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin text-left leading-relaxed transition-colors"
+                      className="flex-1 w-full bg-input border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin text-left leading-relaxed transition-colors"
                       dir="ltr"
                     />
                   )}
@@ -620,7 +620,7 @@ ${secChallenges || 'No additional notes added...'}`;
                       value={secChallenges}
                       onChange={(e) => setSecChallenges(e.target.value)}
                       placeholder="Document any technical challenges you encountered (e.g., power supply noise, sensor calibration, timing issues) and how you resolved them..."
-                      className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
+                      className="flex-1 w-full bg-input border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
                     />
                   )}
                 </div>
@@ -665,7 +665,7 @@ ${secChallenges || 'No additional notes added...'}`;
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
                   <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                    <CheckCircle2 size={18} className="text-emerald-400" />
+                    <CheckCircle2 size={18} className="text-primary" />
                     Step 5: Comprehensive Pre-Publish Review
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -673,26 +673,26 @@ ${secChallenges || 'No additional notes added...'}`;
                   </p>
                 </div>
 
-                <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                <span className="text-xs font-bold px-3 py-1 rounded-xl bg-primary/10 border border-primary/25 text-primary">
                   Ready to Publish
                 </span>
               </div>
 
               {/* Summary Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
+                <div className="p-4 rounded-2xl bg-card border border-border space-y-1">
                   <span className="text-[10px] text-muted-foreground font-bold">Title & Difficulty:</span>
                   <h4 className="text-xs font-extrabold text-foreground">{title || 'Untitled Project'}</h4>
                   <span className="inline-block text-[10px] text-primary font-bold">{difficulty}</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
+                <div className="p-4 rounded-2xl bg-card border border-border space-y-1">
                   <span className="text-[10px] text-muted-foreground font-bold">Parts & Connections:</span>
-                  <h4 className="text-xs font-extrabold text-foreground">{componentsList.length} Electronic Parts</h4>
-                  <span className="inline-block text-[10px] text-sky-400 font-mono">{connectionsList.length} Connected Wires</span>
+                  <h4 className="text-xs font-extrabold text-primary tabular-nums">{componentsList.length} Electronic Parts</h4>
+                  <span className="inline-block text-[10px] text-primary font-mono tabular-nums">{connectionsList.length} Connected Wires</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
+                <div className="p-4 rounded-2xl bg-card border border-border space-y-1">
                   <span className="text-[10px] text-muted-foreground font-bold">Community Engagement:</span>
                   <div className="flex items-center gap-2 text-xs font-bold text-foreground pt-1">
                     <MessageSquare size={13} className="text-primary" />
@@ -703,7 +703,7 @@ ${secChallenges || 'No additional notes added...'}`;
 
               {/* Visual Schematic Snapshot */}
               <div className="space-y-2">
-                <span className="text-xs font-bold text-white">Wiring Schematic & Pinout Guide:</span>
+                <span className="text-xs font-bold text-foreground">Wiring Schematic & Pinout Guide:</span>
                 <SchematicSvgViewer
                   wiringImageUrl={wiringImageUrl}
                   wiringDescription={wiringDescription}
@@ -714,7 +714,7 @@ ${secChallenges || 'No additional notes added...'}`;
               {/* Documentation Preview */}
               <div className="space-y-2 border-t border-border pt-4">
                 <span className="text-xs font-bold text-foreground">Final Technical Documentation:</span>
-                <div className="p-5 rounded-2xl bg-card dark:bg-[#080a0f] border border-border max-h-96 overflow-y-auto scrollbar-thin">
+                <div className="p-5 rounded-2xl bg-background border border-border max-h-96 overflow-y-auto scrollbar-thin">
                   <MarkdownPreview text={buildDocContent()} />
                 </div>
               </div>
@@ -722,7 +722,7 @@ ${secChallenges || 'No additional notes added...'}`;
           )}
 
           {/* ─── Navigation Controls ─── */}
-          <div className="flex items-center justify-between pt-4 border-t border-white/[0.08]">
+          <div className="flex items-center justify-between pt-4 border-t border-border">
             <div>
               {step > 1 && (
                 <button
@@ -731,7 +731,7 @@ ${secChallenges || 'No additional notes added...'}`;
                     setError('');
                     setStep(step - 1);
                   }}
-                  className="bg-white/[0.04] text-zinc-400 hover:text-white border border-white/[0.08] px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
+                  className="bg-muted text-muted-foreground hover:text-foreground border border-border px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
                 >
                   <ArrowLeft size={14} /> Previous Step
                 </button>
@@ -746,7 +746,7 @@ ${secChallenges || 'No additional notes added...'}`;
                     setError('');
                     setStep(step + 1);
                   }}
-                  className="bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer text-xs"
+                  className="bg-primary hover:bg-primary/90 border border-primary text-primary-foreground font-bold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer text-xs"
                 >
                   <span>Next Step</span>
                   <ArrowRight size={14} />
@@ -756,7 +756,7 @@ ${secChallenges || 'No additional notes added...'}`;
                   type="button"
                   disabled={loading}
                   onClick={handlePublish}
-                  className="bg-white/[0.12] hover:bg-white/[0.2] border border-white/[0.2] text-white font-bold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 text-xs"
+                  className="bg-primary hover:bg-primary/90 border border-primary text-primary-foreground font-bold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 text-xs"
                 >
                   {loading ? (
                     <><div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" /> Publishing...</>

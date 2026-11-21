@@ -17,7 +17,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn" dir="ltr">
-      <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-left">
+      <div className="bg-card border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-left">
         {/* Header */}
         <div className="p-5 border-b border-border flex items-center justify-between bg-muted/20">
           <div>
@@ -26,8 +26,8 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
                 {template.difficulty}
               </span>
               <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
-                <Copy size={11} className="text-sky-400" />
-                Used {template.timesUsedAsTemplate} times as template
+                <Copy size={11} className="text-primary" />
+                Used <span className="text-primary font-bold">{template.timesUsedAsTemplate}</span> times as template
               </span>
             </div>
             <h3 className="text-base font-extrabold text-foreground mt-1">{template.title}</h3>
@@ -108,7 +108,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
           {activeTab === 'parts' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {template.components?.map((c, i) => (
-                <div key={i} className="flex gap-3 p-3 rounded-xl bg-card dark:bg-[#07090e] border border-border">
+                <div key={i} className="flex gap-3 p-3 rounded-xl bg-muted/40 border border-border">
                   <img src={c.imageUrl} alt={c.name} className="w-12 h-12 rounded-lg object-cover border border-border shrink-0" />
                   <div>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">{c.category}</span>
@@ -145,13 +145,13 @@ export default function FeaturedTemplatesModal({
   return (
     <>
       <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" dir="ltr">
-        <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden text-left">
+        <div className="bg-card border border-border rounded-3xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden text-left">
           {/* Header */}
           <div className="p-5 border-b border-border flex items-center justify-between">
             <div>
               <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                <Flame size={18} className="text-amber-400" />
-                Featured Projects & Starter Templates
+                <Flame size={18} className="text-primary" />
+                Featured Projects &amp; Starter Templates
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Start your project from a pre-configured architecture to save time on wiring and firmware setup
@@ -160,7 +160,7 @@ export default function FeaturedTemplatesModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -172,15 +172,15 @@ export default function FeaturedTemplatesModal({
               {filtered.map(template => (
                 <div
                   key={template.id}
-                  className="bg-card dark:bg-[#090b10] border border-border hover:border-primary/50 rounded-2xl overflow-hidden transition-all shadow-lg flex flex-col justify-between group"
+                  className="bg-background border border-border hover:border-primary/50 rounded-2xl overflow-hidden transition-all shadow-lg flex flex-col justify-between group"
                 >
-                  <div className="relative h-36 w-full bg-zinc-950 overflow-hidden">
+                  <div className="relative h-36 w-full bg-background overflow-hidden">
                     <img src={template.coverImage} alt={template.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded-md text-[10px] font-bold text-emerald-400">
+                    <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md border border-border px-2 py-0.5 rounded-md text-[10px] font-bold text-primary">
                       {template.difficulty}
                     </div>
-                    <div className="absolute top-2.5 right-2.5 bg-sky-500/20 backdrop-blur-md border border-sky-500/30 text-sky-300 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
-                      <Copy size={10} />
+                    <div className="absolute top-2.5 right-2.5 bg-primary/15 backdrop-blur-md border border-primary/30 text-primary px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
+                      <Copy size={10} className="text-primary" />
                       Used {template.timesUsedAsTemplate} times
                     </div>
                   </div>

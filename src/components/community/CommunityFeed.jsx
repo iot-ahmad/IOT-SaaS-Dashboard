@@ -89,12 +89,12 @@ export default function CommunityFeed({ user }) {
     <div className="space-y-6 max-w-6xl mx-auto">
       
       {/* ── Top Header ── */}
-      <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-card border border-border rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-lg md:text-xl font-bold text-white">
-            Community Feed & Hardware Updates
+          <h1 className="text-lg md:text-xl font-bold text-foreground">
+            Community Feed &amp; Hardware Updates
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Share your experiments with sensors and microcontrollers and explore developer projects
           </p>
         </div>
@@ -102,14 +102,14 @@ export default function CommunityFeed({ user }) {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => navigate('/hub/explore')}
-            className="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-xs font-medium text-zinc-300 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-muted hover:bg-secondary border border-border text-xs font-medium text-foreground transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Cpu size={14} className="text-zinc-400" />
+            <Cpu size={14} className="text-primary" />
             <span>Browse Projects</span>
           </button>
           <button
             onClick={() => navigate('/hub/new')}
-            className="px-3.5 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer hover:bg-primary/90"
           >
             <Plus size={14} />
             <span>Publish Project</span>
@@ -124,12 +124,12 @@ export default function CommunityFeed({ user }) {
         <div className="lg:col-span-2 space-y-4">
           
           {/* Post Creator Box */}
-          <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-3">
+          <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
             <div className="flex items-start gap-3">
               {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full object-cover border border-white/10" />
+                <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full object-cover border border-border" />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-white/[0.08] text-zinc-300 font-bold flex items-center justify-center text-xs">
+                <div className="w-8 h-8 rounded-full bg-muted text-primary font-bold flex items-center justify-center text-xs">
                   {(user?.displayName || 'U').charAt(0)}
                 </div>
               )}
@@ -140,7 +140,7 @@ export default function CommunityFeed({ user }) {
                   value={postContent}
                   onChange={(e) => setPostContent(e.target.value)}
                   placeholder="Share a quick update or technical tip about your IoT experiments..."
-                  className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl p-3 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 resize-none transition-all font-sans"
+                  className="w-full bg-input border border-border rounded-xl p-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 resize-none transition-all font-sans"
                 />
 
                 {showHardwareInput && (
@@ -149,7 +149,7 @@ export default function CommunityFeed({ user }) {
                     value={postHardware}
                     onChange={(e) => setPostHardware(e.target.value)}
                     placeholder="Hardware components separated by commas (e.g., ESP32, DHT22, OLED)..."
-                    className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none transition-all"
+                    className="w-full bg-input border border-border rounded-xl px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none transition-all"
                   />
                 )}
 
@@ -159,18 +159,18 @@ export default function CommunityFeed({ user }) {
                       type="button"
                       onClick={() => setShowHardwareInput(!showHardwareInput)}
                       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors cursor-pointer text-xs ${
-                        showHardwareInput ? 'bg-white/[0.1] border-white/20 text-white' : 'border-white/[0.06] text-zinc-400 hover:text-white'
+                        showHardwareInput ? 'bg-primary/15 border-primary/30 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      <Cpu size={13} />
+                      <Cpu size={13} className="text-primary" />
                       <span>+ Add Hardware</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => navigate('/hub/new')}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/[0.06] text-zinc-400 hover:text-white transition-colors cursor-pointer text-xs"
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer text-xs"
                     >
-                      <Code size={13} />
+                      <Code size={13} className="text-primary" />
                       <span>Document Full Project</span>
                     </button>
                   </div>
@@ -179,7 +179,7 @@ export default function CommunityFeed({ user }) {
                     type="button"
                     disabled={!postContent.trim() || isPosting}
                     onClick={handleCreatePost}
-                    className="px-4 py-1.5 rounded-lg bg-white/[0.1] hover:bg-white/[0.18] border border-white/[0.12] text-white font-bold text-xs transition-all disabled:opacity-40 cursor-pointer flex items-center gap-1.5"
+                    className="px-4 py-1.5 rounded-lg bg-primary text-primary-foreground font-bold text-xs transition-all disabled:opacity-40 cursor-pointer flex items-center gap-1.5 hover:bg-primary/90"
                   >
                     <Send size={11} />
                     <span>Post</span>
@@ -191,10 +191,10 @@ export default function CommunityFeed({ user }) {
 
           {/* Posts & Project Updates Stream */}
           {posts.length === 0 && projects.length === 0 ? (
-            <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-10 text-center space-y-3">
-              <Cpu size={36} className="text-zinc-600 mx-auto" />
-              <h3 className="text-sm font-bold text-white">No posts or projects yet</h3>
-              <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+            <div className="bg-card border border-border rounded-2xl p-10 text-center space-y-3">
+              <Cpu size={36} className="text-primary mx-auto" />
+              <h3 className="text-sm font-bold text-foreground">No posts or projects yet</h3>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
                 Be the first to share an update or document a project in the community!
               </p>
             </div>
@@ -202,43 +202,43 @@ export default function CommunityFeed({ user }) {
             <div className="space-y-4">
               {/* User created posts */}
               {posts.map((post) => (
-                <div key={post.id} className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-3">
+                <div key={post.id} className="bg-card border border-border rounded-2xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-white/[0.08] text-zinc-300 font-bold flex items-center justify-center text-xs">
+                      <div className="w-8 h-8 rounded-full bg-muted text-primary font-bold flex items-center justify-center text-xs">
                         {(post.authorName || 'U').charAt(0)}
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-white">{post.authorName}</span>
-                        <p className="text-[10px] text-zinc-500 font-mono">@{post.authorUsername} · {post.createdAt}</p>
+                        <span className="text-xs font-bold text-foreground">{post.authorName}</span>
+                        <p className="text-[10px] text-muted-foreground font-mono">@{post.authorUsername} · {post.createdAt}</p>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-xs text-zinc-300 leading-relaxed">{post.content}</p>
+                  <p className="text-xs text-foreground/85 leading-relaxed">{post.content}</p>
 
                   {post.hardware && post.hardware.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {post.hardware.map((hw, idx) => (
-                        <span key={idx} className="text-[9px] font-mono px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-400">
+                        <span key={idx} className="text-[9px] font-mono px-2 py-0.5 rounded bg-muted border border-border text-primary">
                           {hw}
                         </span>
                       ))}
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-zinc-400 text-xs">
+                  <div className="flex items-center justify-between pt-2 border-t border-border text-muted-foreground text-xs">
                     <button
                       onClick={() => handleToggleLike(post.id)}
-                      className={`flex items-center gap-1 text-xs transition-colors cursor-pointer ${
-                        likedPosts[post.id] ? 'text-white font-bold' : 'hover:text-white'
+                      className={`flex items-center gap-1 text-xs transition-colors cursor-pointer font-mono font-bold ${
+                        likedPosts[post.id] ? 'text-primary' : 'text-primary/80 hover:text-primary'
                       }`}
                     >
-                      <ThumbsUp size={13} className={likedPosts[post.id] ? 'fill-white' : ''} />
+                      <ThumbsUp size={13} className="text-primary" />
                       <span>{post.likes}</span>
                     </button>
-                    <button onClick={() => navigate('/hub/discussions')} className="hover:text-white text-xs">
-                      {post.comments} Comments
+                    <button onClick={() => navigate('/hub/discussions')} className="hover:text-foreground text-xs font-mono">
+                      <span className="text-primary font-bold">{post.comments}</span> Comments
                     </button>
                   </div>
                 </div>
@@ -249,45 +249,45 @@ export default function CommunityFeed({ user }) {
                 <div
                   key={p.id}
                   onClick={() => navigate(`/hub/project/${p.id}`)}
-                  className="bg-[#18191c] hover:bg-[#1e2025] border border-white/[0.08] hover:border-white/20 rounded-2xl p-5 space-y-3 transition-all cursor-pointer"
+                  className="bg-card hover:border-primary/40 border border-border rounded-2xl p-5 space-y-3 transition-all cursor-pointer"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-white/[0.08] text-zinc-300 font-bold flex items-center justify-center text-xs">
+                      <div className="w-8 h-8 rounded-full bg-muted text-primary font-bold flex items-center justify-center text-xs">
                         {(p.ownerName || 'M').charAt(0)}
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-white">{p.ownerName || 'Developer'}</span>
-                        <p className="text-[10px] text-zinc-500 font-mono">Published a new project · {new Date(p.createdAt || Date.now()).toLocaleDateString('en-US')}</p>
+                        <span className="text-xs font-bold text-foreground">{p.ownerName || 'Developer'}</span>
+                        <p className="text-[10px] text-muted-foreground font-mono">Published a new project · {new Date(p.createdAt || Date.now()).toLocaleDateString('en-US')}</p>
                       </div>
                     </div>
-                    <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-zinc-400">
+                    <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-muted border border-border text-primary">
                       {formatDifficulty(p.difficulty)}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-bold text-white hover:text-zinc-200 transition-colors">
+                    <h3 className="text-sm font-bold text-foreground hover:text-primary transition-colors">
                       {p.title}
                     </h3>
-                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
                       {p.summary}
                     </p>
                   </div>
 
                   {p.images?.[0] && (
-                    <div className="rounded-xl overflow-hidden border border-white/[0.06] max-h-64 bg-[#141518]">
+                    <div className="rounded-xl overflow-hidden border border-border max-h-64 bg-background">
                       <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover" />
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.06] text-xs text-zinc-500 font-mono">
+                  <div className="flex items-center justify-between pt-2.5 border-t border-border text-xs text-primary font-mono font-bold">
                     <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1"><Eye size={12} /> {p.metrics?.views || 0}</span>
-                      <span className="flex items-center gap-1"><ThumbsUp size={12} /> {p.metrics?.likes || 0}</span>
+                      <span className="flex items-center gap-1"><Eye size={12} className="text-primary" /> {p.metrics?.views || 0}</span>
+                      <span className="flex items-center gap-1"><ThumbsUp size={12} className="text-primary" /> {p.metrics?.likes || 0}</span>
                     </div>
-                    <span className="text-[11px] text-zinc-400 hover:underline flex items-center gap-1">
-                      View Full Documentation <ArrowRight size={11} />
+                    <span className="text-[11px] text-primary hover:underline flex items-center gap-1 font-sans">
+                      View Full Documentation <ArrowRight size={11} className="text-primary" />
                     </span>
                   </div>
                 </div>
@@ -300,36 +300,36 @@ export default function CommunityFeed({ user }) {
         {/* ── Right Column ── */}
         <div className="space-y-4">
           
-          <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-3">
-            <h3 className="text-xs font-bold text-white border-b border-white/[0.06] pb-2">
+          <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+            <h3 className="text-xs font-bold text-foreground border-b border-border pb-2">
               Latest Published Projects
             </h3>
             {projects.length === 0 ? (
-              <p className="text-[11px] text-zinc-500">No projects yet</p>
+              <p className="text-[11px] text-muted-foreground">No projects yet</p>
             ) : (
               <div className="space-y-2.5">
                 {projects.slice(0, 4).map((proj) => (
                   <div
                     key={proj.id}
                     onClick={() => navigate(`/hub/project/${proj.id}`)}
-                    className="p-2 rounded-xl hover:bg-white/[0.04] transition-colors cursor-pointer"
+                    className="p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer"
                   >
-                    <h4 className="text-xs font-medium text-white line-clamp-1">{proj.title}</h4>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">by {proj.ownerName || 'Developer'}</p>
+                    <h4 className="text-xs font-medium text-foreground line-clamp-1">{proj.title}</h4>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">by {proj.ownerName || 'Developer'}</p>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-2">
-            <h3 className="text-xs font-bold text-white">Popular Tags</h3>
+          <div className="bg-card border border-border rounded-2xl p-4 space-y-2">
+            <h3 className="text-xs font-bold text-foreground">Popular Tags</h3>
             <div className="flex flex-wrap gap-1">
               {['ESP32', 'BME280', 'MQTT', 'DHT22', 'Relay', 'OLED', 'DeepSleep'].map((t, idx) => (
                 <button
                   key={idx}
                   onClick={() => navigate(`/hub/explore?q=${t}`)}
-                  className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e2024] border border-white/[0.06] text-zinc-400 hover:text-white transition-colors"
+                  className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted border border-border text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                 >
                   #{t}
                 </button>

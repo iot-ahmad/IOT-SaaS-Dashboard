@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Maximize2, Minimize2, MoreHorizontal } from 'lucide-react';
+import { Cpu, Maximize2, Minimize2, MoreHorizontal, Wifi, WifiOff } from 'lucide-react';
 import { SIMULATOR_PROJECTS } from '../../data/simulatorProjects';
 
 export default function TopBar({
@@ -15,7 +15,7 @@ export default function TopBar({
   moreMenuButtonRef
 }) {
   return (
-    <header className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-sm">
+    <header className="bg-card border border-border rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-sm">
       {/* Start: Title + Project select */}
       <div className="flex items-center gap-2.5 min-w-0">
         <div className="flex items-center gap-1.5 shrink-0">
@@ -25,13 +25,13 @@ export default function TopBar({
           </h1>
         </div>
 
-        <div className="h-4 w-px bg-white/10 hidden sm:block shrink-0" />
+        <div className="h-4 w-px bg-border hidden sm:block shrink-0" />
 
         {/* Project select */}
         <select
           value={selectedProjectId}
           onChange={(e) => onSelectProjectId(e.target.value)}
-          className="bg-zinc-800 border border-white/10 text-foreground text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-primary/40 cursor-pointer shadow-sm max-w-[200px] sm:max-w-xs truncate"
+          className="bg-input border border-border text-foreground text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-primary/40 cursor-pointer shadow-sm max-w-[200px] sm:max-w-xs truncate"
           title="Select simulation project"
         >
           <option value="empty">New Blank Project (Custom)</option>
@@ -46,14 +46,14 @@ export default function TopBar({
       </div>
 
       {/* Center: Segmented view mode control (sim | split | dash) */}
-      <div className="flex items-center bg-zinc-800 p-0.5 rounded-lg border border-white/10 shrink-0">
+      <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border shrink-0">
         <button
           type="button"
           onClick={() => onViewModeChange('circuit')}
-          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
             viewMode === 'circuit'
-              ? 'bg-zinc-900 border border-white/10 text-foreground shadow-sm'
-              : 'text-zinc-400 hover:text-foreground'
+              ? 'bg-card border border-border text-primary shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
           title="Simulator view only"
         >
@@ -62,10 +62,10 @@ export default function TopBar({
         <button
           type="button"
           onClick={() => onViewModeChange('split')}
-          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
             viewMode === 'split'
-              ? 'bg-zinc-900 border border-white/10 text-foreground shadow-sm'
-              : 'text-zinc-400 hover:text-foreground'
+              ? 'bg-card border border-border text-primary shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
           title="Split screen view"
         >
@@ -74,10 +74,10 @@ export default function TopBar({
         <button
           type="button"
           onClick={() => onViewModeChange('dashboard')}
-          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
             viewMode === 'dashboard'
-              ? 'bg-zinc-900 border border-white/10 text-foreground shadow-sm'
-              : 'text-zinc-400 hover:text-foreground'
+              ? 'bg-card border border-border text-primary shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
           title="Dashboard view only"
         >
@@ -89,11 +89,15 @@ export default function TopBar({
       <div className="flex items-center gap-1.5 shrink-0 ms-auto">
         {/* MQTT Status Chip */}
         <div 
-          className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-zinc-800 border border-white/10 text-[11px] font-medium shrink-0"
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-medium shrink-0 ${
+            mqttOnline
+              ? 'bg-primary/10 border-primary/25 text-primary'
+              : 'bg-red-500/10 border-red-500/25 text-red-400'
+          }`}
           title={mqttOnline ? 'Connected to MQTT broker' : 'Disconnected from MQTT broker'}
         >
-          <span className={`w-2 h-2 rounded-full shrink-0 ${mqttOnline ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
-          <span className="hidden sm:inline text-zinc-300 font-mono">
+          {mqttOnline ? <Wifi size={12} className="text-primary shrink-0" /> : <WifiOff size={12} className="text-red-400 shrink-0" />}
+          <span className="hidden sm:inline font-mono">
             {mqttOnline ? 'MQTT Connected' : 'MQTT Offline'}
           </span>
         </div>
@@ -103,10 +107,10 @@ export default function TopBar({
           type="button"
           onClick={onToggleFullScreen}
           aria-label={isFullScreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          className="p-1.5 rounded-lg bg-zinc-800 border border-white/10 text-zinc-300 hover:text-foreground hover:bg-zinc-700/60 transition-all shrink-0 cursor-pointer"
+          className="p-1.5 rounded-lg bg-transparent border-0 text-primary hover:bg-muted transition-all shrink-0 cursor-pointer"
           title={isFullScreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
-          {isFullScreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+          {isFullScreen ? <Minimize2 size={15} className="text-primary" /> : <Maximize2 size={15} className="text-primary" />}
         </button>
 
         {/* "⋯" More Button */}
@@ -116,14 +120,14 @@ export default function TopBar({
           onClick={onToggleMoreMenu}
           aria-label="More simulator and account options"
           aria-expanded={showMoreMenu}
-          className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+          className={`p-1.5 rounded-lg border-0 transition-all cursor-pointer ${
             showMoreMenu 
-              ? 'bg-zinc-700 border-primary/50 text-foreground shadow' 
-              : 'bg-zinc-800 border-white/10 text-zinc-300 hover:text-foreground hover:bg-zinc-700/60'
+              ? 'bg-muted text-primary shadow' 
+              : 'bg-transparent text-primary hover:bg-muted'
           }`}
           title="More simulator and account options"
         >
-          <MoreHorizontal size={15} />
+          <MoreHorizontal size={15} className="text-primary" />
         </button>
       </div>
     </header>

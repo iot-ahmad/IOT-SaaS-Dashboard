@@ -39,24 +39,23 @@ export default function ProjectLivePreview({
   const previewCardContent = (
     <div className="space-y-4 text-left" dir="ltr">
       {/* ── Community Card Mock ── */}
-      <div className="hub-card group border border-primary/30 shadow-2xl shadow-primary/5 bg-[#090b10] rounded-2xl overflow-hidden transition-all">
+      <div className="hub-card group border border-primary/30 shadow-2xl shadow-primary/5 bg-card rounded-2xl overflow-hidden transition-all">
         {/* Cover image wrap */}
-        <div className="relative h-44 w-full bg-zinc-950 overflow-hidden">
+        <div className="relative h-44 w-full bg-background overflow-hidden">
           <img
             src={coverImage}
             alt={title || 'Project Preview'}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
-          <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#090b10] to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-card to-transparent pointer-events-none" />
 
           {/* Difficulty badge */}
-          <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg text-[10px] font-bold">
-            <span className={difficultyColors[difficulty] || 'text-emerald-400'}>{difficulty}</span>
+          <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md border border-border px-2.5 py-1 rounded-lg text-[10px] font-bold">
+            <span className={difficultyColors[difficulty] || 'text-primary'}>{difficulty}</span>
           </div>
 
           {/* Live badge */}
-          <div className="absolute top-2.5 right-2.5 bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="absolute top-2.5 right-2.5 bg-primary/20 backdrop-blur-md border border-primary/30 text-primary px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
             LIVE PREVIEW
           </div>
         </div>
@@ -82,7 +81,7 @@ export default function ProjectLivePreview({
               </span>
             ))}
             {validComponents.length > 3 && (
-              <span className="text-[9px] text-muted-foreground font-mono px-1">
+              <span className="text-[9px] text-primary font-mono px-1">
                 +{validComponents.length - 3}
               </span>
             )}
@@ -92,7 +91,7 @@ export default function ProjectLivePreview({
           </div>
 
           {/* Footer stats */}
-          <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/[0.05] text-[10px] text-muted-foreground font-mono">
+          <div className="flex items-center justify-between pt-2 mt-2 border-t border-border text-[10px] text-muted-foreground font-mono">
             <div className="flex items-center gap-1.5">
               <div className="w-5 h-5 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-[9px] text-primary font-bold">
                 {(user?.displayName || 'D').charAt(0)}
@@ -101,14 +100,14 @@ export default function ProjectLivePreview({
             </div>
 
             <div className="flex items-center gap-2.5">
-              <span className="flex items-center gap-1 text-sky-400">
-                <Copy size={11} /> 0 Clones
+              <span className="flex items-center gap-1 text-primary">
+                <Copy size={11} className="text-primary" /> 0 Clones
               </span>
-              <span className="flex items-center gap-1 text-rose-400">
-                <ThumbsUp size={11} /> 0
+              <span className="flex items-center gap-1 text-primary">
+                <ThumbsUp size={11} className="text-primary" /> 0
               </span>
-              <span className="flex items-center gap-1 text-emerald-400">
-                <Eye size={11} /> 1
+              <span className="flex items-center gap-1 text-primary">
+                <Eye size={11} className="text-primary" /> 1
               </span>
             </div>
           </div>
@@ -116,17 +115,17 @@ export default function ProjectLivePreview({
       </div>
 
       {/* Connection & Components Summary Pill */}
-      <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-xl p-3 space-y-2 text-xs">
+      <div className="bg-card border border-border rounded-xl p-3 space-y-2 text-xs">
         <div className="flex items-center justify-between font-bold text-foreground">
           <span className="flex items-center gap-1.5 text-primary">
-            <Zap size={13} />
+            <Zap size={13} className="text-primary" />
             Circuit Status:
           </span>
-          <span className="font-mono text-muted-foreground">{connections.length} Wires</span>
+          <span className="font-mono text-primary">{connections.length} Wires</span>
         </div>
         <div className="flex items-center justify-between text-muted-foreground text-[11px]">
           <span>Total Components Added:</span>
-          <span className="font-bold text-foreground">{validComponents.length} Parts</span>
+          <span className="font-bold text-primary font-mono">{validComponents.length} Parts</span>
         </div>
       </div>
     </div>
@@ -136,14 +135,11 @@ export default function ProjectLivePreview({
     <>
       {/* ── Desktop Persistent Side Panel ── */}
       <aside className="hidden xl:flex flex-col w-80 shrink-0 sticky top-24 space-y-4">
-        <div className="bg-card/[0.02] border border-border/80 rounded-3xl p-4 shadow-xl backdrop-blur-xl space-y-4">
+        <div className="bg-card border border-border rounded-3xl p-4 shadow-xl space-y-4">
           {/* Header */}
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
+              <Eye size={14} className="text-primary shrink-0" />
               <span className="text-xs font-bold text-foreground">Live Project Preview</span>
             </div>
 
@@ -183,7 +179,7 @@ export default function ProjectLivePreview({
       {/* ── Mobile Collapsible Drawer ── */}
       {isMobileDrawerOpen && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm xl:hidden">
-          <div className="w-full max-w-lg bg-card dark:bg-[#0a0c12] border-t border-border rounded-t-3xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto space-y-4">
+          <div className="w-full max-w-lg bg-card border-t border-border rounded-t-3xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <Eye size={16} className="text-primary" />

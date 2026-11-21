@@ -32,7 +32,7 @@ export default function DashboardPanel({
 
   return (
     <section
-      className={`relative flex flex-col bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-md transition-all duration-150 ${
+      className={`relative flex flex-col bg-card border border-border rounded-xl overflow-hidden shadow-md transition-all duration-150 ${
         viewMode === 'dashboard'
           ? 'w-full h-full'
           : orientation === 'vertical'
@@ -41,13 +41,13 @@ export default function DashboardPanel({
       }`}
     >
       {/* Single Unified Tab Row with Underline Navigation */}
-      <div className="flex items-center justify-between px-3 border-b border-white/10 bg-zinc-900/90 text-xs shrink-0">
+      <div className="flex items-center justify-between px-3 border-b border-border bg-card text-xs shrink-0">
         <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none" aria-label="Dashboard tabs">
           <button
             type="button"
             onClick={() => onSelectPanel('controller')}
             className={`py-2.5 px-2 font-bold text-xs transition-colors relative cursor-pointer ${
-              activePanel === 'controller' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
+              activePanel === 'controller' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Dashboard
@@ -60,7 +60,7 @@ export default function DashboardPanel({
             type="button"
             onClick={() => onSelectPanel('devices')}
             className={`py-2.5 px-2 font-bold text-xs transition-colors relative cursor-pointer ${
-              activePanel === 'devices' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
+              activePanel === 'devices' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Devices
@@ -73,7 +73,7 @@ export default function DashboardPanel({
             type="button"
             onClick={() => onSelectPanel('terminal')}
             className={`py-2.5 px-2 font-bold text-xs transition-colors relative cursor-pointer ${
-              activePanel === 'terminal' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
+              activePanel === 'terminal' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Terminal
@@ -86,7 +86,7 @@ export default function DashboardPanel({
             type="button"
             onClick={() => onSelectPanel('guide')}
             className={`py-2.5 px-2 font-bold text-xs transition-colors relative cursor-pointer ${
-              activePanel === 'guide' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
+              activePanel === 'guide' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Code &amp; Wiring
@@ -102,7 +102,7 @@ export default function DashboardPanel({
             <button
               type="button"
               onClick={onOpenModal}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/90 hover:bg-zinc-700/80 border border-white/10 text-zinc-200 text-xs font-semibold cursor-pointer transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted hover:bg-secondary border border-border text-foreground text-xs font-semibold cursor-pointer transition-all"
               title="Full Code & Wiring Diagram"
             >
               <CircuitBoard size={13} className="text-primary" />
@@ -114,15 +114,14 @@ export default function DashboardPanel({
 
       {/* Live Sensor Telemetry Strip */}
       {Object.keys(deviceStates || {}).length > 0 && (
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/40 border-b border-white/5 text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
-          <span className="flex items-center gap-1.5 text-zinc-200 font-bold shrink-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 border-b border-border text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
+          <span className="flex items-center gap-1.5 text-foreground font-bold shrink-0">
             Live Sensor Stream:
           </span>
           {Object.entries(deviceStates).map(([top, val]) => (
-            <span key={top} className="px-2 py-0.5 rounded-md bg-zinc-800 border border-white/10 text-zinc-300 shrink-0">
-              <span className="text-zinc-400">{top.split('/').pop()}: </span>
-              <span className="font-bold text-zinc-100">{val}</span>
+            <span key={top} className="px-2 py-0.5 rounded-md bg-muted border border-border text-muted-foreground shrink-0">
+              <span className="text-muted-foreground">{top.split('/').pop()}: </span>
+              <span className="font-bold text-primary">{val}</span>
             </span>
           ))}
         </div>
@@ -145,15 +144,15 @@ export default function DashboardPanel({
         {activePanel === 'devices' && (
           <div className="space-y-4">
             {!isCustomProject && (
-              <div className="bg-zinc-800/50 border border-white/10 rounded-xl p-3 sm:p-4 shadow-sm">
-                <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-white/10 flex-wrap">
+              <div className="bg-muted/30 border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+                <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border flex-wrap">
                   <div className="flex items-center gap-2">
                     <Cpu className="text-primary" size={16} />
                     <h4 className="text-xs sm:text-sm font-extrabold text-foreground">
                       Project Sensors &amp; Actuators: {activeProject.title.split('(')[0].trim()}
                     </h4>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-white/10">
-                      {activeProject.presetDevices?.length || 0} devices
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                      <span className="text-primary font-bold">{activeProject.presetDevices?.length || 0}</span> devices
                     </span>
                   </div>
                 </div>
@@ -165,35 +164,30 @@ export default function DashboardPanel({
                     const isActuator = dev.type === 'Actuator';
 
                     return (
-                      <div key={dev.id} className="p-2.5 rounded-xl border border-white/10 bg-zinc-800/40">
+                      <div key={dev.id} className="p-2.5 rounded-xl border border-border bg-muted/40">
                         <div className="flex items-start justify-between gap-2 mb-1.5">
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span
-                                className={`w-2 h-2 rounded-full shrink-0 ${
-                                  hasVal ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-600'
-                                }`}
-                              />
                               <h5 className="font-bold text-xs text-foreground truncate">{dev.name}</h5>
                             </div>
-                            <div className="flex items-center gap-2 mt-1 text-[10px] text-zinc-400 font-mono">
-                              <span className="bg-zinc-900 px-1.5 py-0.5 rounded border border-white/10">{dev.pin}</span>
+                            <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
+                              <span className="bg-background px-1.5 py-0.5 rounded border border-border text-primary">{dev.pin}</span>
                               <span className="truncate">{dev.topic}</span>
                             </div>
                           </div>
-                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-white/10">
+                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
                             {dev.type}
                           </span>
                         </div>
 
-                        <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between gap-2">
-                          <span className="text-[10px] text-zinc-400">Value:</span>
+                        <div className="mt-2 pt-1.5 border-t border-border flex items-center justify-between gap-2">
+                          <span className="text-[10px] text-muted-foreground">Value:</span>
                           {hasVal ? (
-                            <span className="font-mono font-bold text-sm text-foreground">
+                            <span className="font-mono font-bold text-sm text-primary">
                               {liveVal} {dev.unit && dev.unit !== 'State' ? dev.unit : ''}
                             </span>
                           ) : (
-                            <span className="text-[10px] text-zinc-500 italic">Waiting for data...</span>
+                            <span className="text-[10px] text-muted-foreground italic">Waiting for data...</span>
                           )}
                         </div>
 
@@ -202,14 +196,14 @@ export default function DashboardPanel({
                             <button
                               type="button"
                               onClick={() => publish(dev.topic, 'ON')}
-                              className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-zinc-700 hover:bg-zinc-600 text-foreground border border-white/10 transition-all cursor-pointer"
+                              className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 transition-all cursor-pointer"
                             >
                               Turn ON
                             </button>
                             <button
                               type="button"
                               onClick={() => publish(dev.topic, 'OFF')}
-                              className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-foreground border border-white/10 transition-all cursor-pointer"
+                              className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground border border-border transition-all cursor-pointer"
                             >
                               Turn OFF
                             </button>
@@ -232,7 +226,7 @@ export default function DashboardPanel({
 
         {activePanel === 'terminal' && (
           <div className="h-full flex flex-col gap-2">
-            <div className="p-3 bg-zinc-800/40 border border-white/10 rounded-xl text-xs text-zinc-400 flex items-center gap-2">
+            <div className="p-3 bg-muted/40 border border-border rounded-xl text-xs text-muted-foreground flex items-center gap-2">
               <Terminal size={14} className="text-primary shrink-0" />
               <span>This terminal displays all real-time MQTT messages exchanged between the dashboard and the Wokwi simulator.</span>
             </div>
@@ -245,12 +239,10 @@ export default function DashboardPanel({
         {activePanel === 'guide' && (
           <div className="space-y-4 text-xs">
             {isCustomProject ? (
-              <div className="bg-zinc-800/40 border border-white/10 rounded-xl p-6 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-white/10 flex items-center justify-center text-zinc-400 mx-auto">
-                  <Code size={24} />
-                </div>
+              <div className="bg-muted/30 border border-border rounded-xl p-6 text-center space-y-3">
+                <Code size={28} className="text-primary mx-auto" />
                 <h4 className="font-bold text-foreground text-sm">Blank / Custom Simulation Workspace</h4>
-                <p className="text-zinc-400 text-xs max-w-md mx-auto leading-relaxed">
+                <p className="text-muted-foreground text-xs max-w-md mx-auto leading-relaxed">
                   You are currently working on a blank simulator. Select any ready-made project from the dropdown above to generate firmware code and wiring diagrams instantly.
                 </p>
                 <button
@@ -263,9 +255,9 @@ export default function DashboardPanel({
               </div>
             ) : (
               <>
-                <div className="bg-zinc-800/40 border border-white/10 rounded-xl p-4">
+                <div className="bg-muted/30 border border-border rounded-xl p-4">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-zinc-800 text-foreground border border-white/10">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-muted text-foreground border border-border">
                       {activeProject.badge}
                     </span>
                     <button
@@ -279,7 +271,7 @@ export default function DashboardPanel({
                   <h4 className="font-extrabold text-sm text-foreground mt-1">
                     {activeProject.title}
                   </h4>
-                  <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                     {activeProject.description}
                   </p>
                 </div>
@@ -288,11 +280,11 @@ export default function DashboardPanel({
                   {/* TLS & Credentials Security Banner */}
                   <div className={`rounded-xl p-3 border text-[11px] flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
                     mqttMode === 'private'
-                      ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+                      ? 'bg-primary/10 border-primary/25 text-primary'
                       : 'bg-amber-500/10 border-amber-500/25 text-amber-300'
                   }`}>
                     <div className="flex items-start gap-2">
-                      {mqttMode === 'private' ? <ShieldCheck size={15} className="shrink-0 mt-0.5" /> : <AlertTriangle size={15} className="shrink-0 mt-0.5" />}
+                      {mqttMode === 'private' ? <ShieldCheck size={15} className="shrink-0 mt-0.5 text-primary" /> : <AlertTriangle size={15} className="shrink-0 mt-0.5" />}
                       <span>
                         {mqttMode === 'private'
                           ? `Encrypted connection with ${mqttConfig?.caName || 'Root CA'} certificate + NTP sync + unique Client ID via ${mqttConfig?.provisionedBy === 'emqx_auto' ? 'auto-isolated EMQX account' : 'your private broker'}.`
@@ -303,7 +295,7 @@ export default function DashboardPanel({
                       <button
                         type="button"
                         onClick={onToggleIncludeCreds}
-                        className="px-2.5 py-1 rounded-lg bg-zinc-900/70 hover:bg-zinc-900 border border-white/10 text-foreground font-semibold shrink-0 cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-background hover:bg-muted border border-border text-foreground font-semibold shrink-0 cursor-pointer"
                       >
                         {includePrivateCreds ? 'Mask Password (Placeholders)' : 'Include My MQTT Credentials'}
                       </button>
@@ -315,15 +307,15 @@ export default function DashboardPanel({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={onCopyCode}
-                        className="flex items-center gap-1 px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-foreground font-semibold text-xs cursor-pointer"
+                        className="flex items-center gap-1 px-3 py-1 rounded-lg bg-muted hover:bg-secondary border border-border text-foreground font-semibold text-xs cursor-pointer"
                       >
-                        {copiedCode ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                        {copiedCode ? <Check size={13} className="text-primary" /> : <Copy size={13} className="text-primary" />}
                         <span>{copiedCode ? 'Copied' : 'Copy Code'}</span>
                       </button>
                     </div>
                   </div>
 
-                  <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono text-[11px] overflow-x-auto border border-white/10 max-h-[300px] scrollbar-thin">
+                  <pre className="bg-background text-foreground p-4 rounded-xl font-mono text-[11px] overflow-x-auto border border-border max-h-[300px] scrollbar-thin">
                     {currentCode}
                   </pre>
                 </div>

@@ -291,17 +291,14 @@ Mandatory Response & Security Rules:
     <div className="flex flex-col h-full bg-card bg-background border border-border dark:border-white/[0.08] rounded-3xl shadow-xl overflow-hidden" style={{ height: 'calc(100vh - 120px)' }}>
 
       {/* ── Chat Header ────────────────────────────────────────────── */}
-      <div className="bg-card bg-background border-b border-border px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
+      <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
         <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
-            <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain p-0.5" />
+          <div className="w-11 h-11 flex items-center justify-center shrink-0 overflow-hidden">
+            <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain" />
           </div>
           <div className="text-left">
             <h2 className="font-extrabold text-foreground text-base">IOT365 Smart Assistant</h2>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <p className="text-[11px] text-muted-foreground font-medium">Your AI assistant for ESP32 & MQTT projects</p>
-            </div>
+            <p className="text-[11px] text-muted-foreground font-medium mt-0.5">Your AI assistant for ESP32 &amp; MQTT projects</p>
           </div>
         </div>
 
@@ -310,38 +307,38 @@ Mandatory Response & Security Rules:
           {userUID && (
             <div className="hidden sm:flex bg-muted border border-border rounded-xl px-3 py-2 items-center gap-2">
               <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider">UID</p>
-              <span className="font-mono text-xs font-bold text-foreground/80">{userUID.substring(0, 8)}...</span>
+              <span className="font-mono text-xs font-bold text-primary">{userUID.substring(0, 8)}...</span>
               <CopyBtn text={userUID} />
             </div>
           )}
           {/* Clear chat */}
           <button
             onClick={() => setMessages([{ id: 1, sender: 'bot', text: `Welcome! I am the IOT365 Smart Assistant.\n\nI can help you with connecting your ESP32, structuring MQTT topics, writing Arduino/C++ firmware, saving dashboard layouts, or any other technical questions.\n\nAsk me anything!` }])}
-            className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            className="p-2.5 rounded-xl text-primary hover:bg-muted transition-all cursor-pointer"
             title="Clear conversation"
           >
-            <RefreshCw size={16} />
+            <RefreshCw size={16} className="text-primary" />
           </button>
         </div>
       </div>
 
       {/* ── Messages Area ───────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-background/50 bg-background scrollbar-thin">
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-background scrollbar-thin">
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={`flex gap-3 max-w-[80%] ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}
           >
             {msg.sender === 'bot' && (
-              <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center shrink-0 self-start overflow-hidden">
-                <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain p-0.5" />
+              <div className="w-8 h-8 flex items-center justify-center shrink-0 self-start overflow-hidden">
+                <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain" />
               </div>
             )}
 
             <div dir="ltr" className={`p-4 rounded-2xl text-left border ${
               msg.sender === 'user'
                 ? 'bg-primary text-primary-foreground border-transparent rounded-tr-none text-sm font-semibold shadow-lg shadow-primary/20'
-                : 'bg-card dark:bg-card/[0.03] border-border dark:border-white/[0.07] text-foreground/90 rounded-tl-none space-y-1 shadow-sm'
+                : 'bg-card border-border text-foreground/90 rounded-tl-none space-y-1 shadow-sm'
             }`}>
               {msg.sender === 'user' ? (
                 <p className="leading-relaxed text-left"><bdi>{msg.text}</bdi></p>
@@ -355,10 +352,10 @@ Mandatory Response & Security Rules:
         {/* Typing Indicator */}
         {isTyping && (
           <div className="flex gap-3 mr-auto max-w-[80%]">
-            <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain p-0.5" />
+            <div className="w-8 h-8 flex items-center justify-center shrink-0 overflow-hidden">
+              <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain" />
             </div>
-            <div className="p-4 bg-card dark:bg-card/[0.03] border border-border dark:border-white/[0.07] rounded-2xl rounded-tl-none flex items-center gap-1.5">
+            <div className="p-4 bg-card border border-border rounded-2xl rounded-tl-none flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '150ms' }} />
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -370,12 +367,12 @@ Mandatory Response & Security Rules:
       </div>
 
       {/* ── Input Box & Suggestions (Vercel v0 Style) ────────────────── */}
-      <div className="p-6 bg-card bg-background border-t border-border shrink-0 rounded-b-3xl flex flex-col gap-4">
+      <div className="p-6 bg-card border-t border-border shrink-0 rounded-b-3xl flex flex-col gap-4">
         
         {/* Input Box */}
         <form
           onSubmit={(e) => { e.preventDefault(); if (inputVal.trim() && !isTyping) { handleSend(); adjustHeight(true); } }}
-          className="relative bg-background dark:bg-[#0b0c10] rounded-xl border border-border dark:border-neutral-800 transition-all focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20"
+          className="relative bg-input rounded-xl border border-border transition-all focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20"
         >
           <div className="overflow-y-auto">
             <textarea
@@ -387,22 +384,22 @@ Mandatory Response & Security Rules:
               }}
               onKeyDown={handleKeyDown}
               placeholder="Type your question here... (e.g., How do I connect an ESP32 with a DHT22 sensor?)"
-              className="w-full px-4 py-3 resize-none bg-transparent border-none text-foreground text-sm focus:outline-none placeholder:text-muted-foreground dark:placeholder:text-neutral-500 min-h-[60px]"
+              className="w-full px-4 py-3 resize-none bg-transparent border-none text-foreground text-sm focus:outline-none placeholder:text-muted-foreground min-h-[60px]"
               style={{
                 overflow: "hidden",
               }}
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 border-t border-border dark:border-neutral-900 bg-background/50 dark:bg-[#0b0c10]/50 rounded-b-xl">
+          <div className="flex items-center justify-between p-3 border-t border-border bg-card/50 rounded-b-xl">
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="group p-2 hover:bg-muted dark:hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1 text-muted-foreground dark:text-zinc-400"
+                className="group p-2 hover:bg-muted rounded-lg transition-colors flex items-center gap-1 text-primary cursor-pointer"
                 title="Attach file"
               >
-                <Paperclip className="w-4 h-4 text-foreground/90" />
-                <span className="text-[10px] text-muted-foreground dark:text-zinc-400 hidden group-hover:inline transition-opacity">
+                <Paperclip className="w-4 h-4 text-primary" />
+                <span className="text-[10px] text-muted-foreground hidden group-hover:inline transition-opacity">
                   Attach
                 </span>
               </button>
@@ -411,9 +408,9 @@ Mandatory Response & Security Rules:
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="px-2.5 py-1 rounded-lg text-xs text-muted-foreground dark:text-zinc-400 transition-colors border border-dashed border-slate-300 dark:border-zinc-700 hover:border-slate-400 dark:hover:border-zinc-600 hover:bg-muted dark:hover:bg-zinc-800 flex items-center justify-between gap-1"
+                className="px-2.5 py-1 rounded-lg text-xs text-muted-foreground transition-colors border border-dashed border-border hover:border-primary/40 hover:bg-muted flex items-center justify-between gap-1 cursor-pointer"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 text-primary" />
                 Project
               </button>
               
@@ -423,14 +420,14 @@ Mandatory Response & Security Rules:
                 className={`px-2 py-2 rounded-lg transition-colors flex items-center justify-center ${
                   inputVal.trim() && !isTyping
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "bg-muted dark:bg-neutral-800 text-muted-foreground dark:text-zinc-500 cursor-not-allowed"
+                    : "bg-muted text-muted-foreground cursor-not-allowed"
                 }`}
               >
                 <ArrowUp
                   className={`w-4 h-4 ${
                     inputVal.trim() && !isTyping
                       ? "text-primary-foreground"
-                      : "text-muted-foreground dark:text-zinc-500"
+                      : "text-muted-foreground"
                   }`}
                 />
                 <span className="sr-only">Send</span>
@@ -439,21 +436,21 @@ Mandatory Response & Security Rules:
           </div>
         </form>
 
-        {/* Quick Suggestions (v0 Style Action Buttons) */}
+        {/* Quick Suggestions */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
           {[
-            { label: 'Broker Details?', q: 'What are the MQTT Broker connection details?', icon: <Globe className="w-3.5 h-3.5" /> },
-            { label: 'Connect ESP32?', q: 'How do I connect my ESP32 device?', icon: <Cpu className="w-3.5 h-3.5" /> },
-            { label: 'Save Layout?', q: 'How do I save my dashboard layout and project names?', icon: <Plus className="w-3.5 h-3.5" /> },
-            { label: 'Temperature Sensor?', q: 'How do I read data from a DHT22 sensor?', icon: <Zap className="w-3.5 h-3.5" /> },
-            { label: 'RC Car Control?', q: 'How do I control an RC car using the D-Pad?', icon: <Play className="w-3.5 h-3.5" /> },
-            { label: 'Platform Creator?', q: 'Who is the developer of the IOT365 platform?', icon: <CircleUserRound className="w-3.5 h-3.5" /> },
+            { label: 'Broker Details?', q: 'What are the MQTT Broker connection details?', icon: <Globe className="w-3.5 h-3.5 text-primary" /> },
+            { label: 'Connect ESP32?', q: 'How do I connect my ESP32 device?', icon: <Cpu className="w-3.5 h-3.5 text-primary" /> },
+            { label: 'Save Layout?', q: 'How do I save my dashboard layout and project names?', icon: <Plus className="w-3.5 h-3.5 text-primary" /> },
+            { label: 'Temperature Sensor?', q: 'How do I read data from a DHT22 sensor?', icon: <Zap className="w-3.5 h-3.5 text-primary" /> },
+            { label: 'RC Car Control?', q: 'How do I control an RC car using the D-Pad?', icon: <Play className="w-3.5 h-3.5 text-primary" /> },
+            { label: 'Platform Creator?', q: 'Who is the developer of the IOT365 platform?', icon: <CircleUserRound className="w-3.5 h-3.5 text-primary" /> },
           ].map((chip, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => handleSend(chip.q)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-background dark:bg-[#0b0c10] hover:bg-muted dark:hover:bg-neutral-800 text-muted-foreground dark:text-neutral-400 hover:text-foreground rounded-full border border-border dark:border-neutral-800 transition-colors text-xs font-medium"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-card hover:bg-muted text-muted-foreground hover:text-foreground rounded-full border border-border transition-colors text-xs font-medium cursor-pointer"
             >
               {chip.icon}
               <span>{chip.label}</span>

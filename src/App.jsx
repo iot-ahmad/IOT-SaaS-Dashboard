@@ -129,10 +129,10 @@ function HubLayout({ children, user, logout }) {
         <div className="flex items-center gap-2.5">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-muted border border-border text-muted-foreground dark:text-white/60 hover:text-primary transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-transparent border-0 text-primary hover:bg-muted/40 transition-colors cursor-pointer"
             title="Toggle theme"
           >
-            {isDark ? <Sun size={15} /> : <Moon size={15} />}
+            {isDark ? <Sun size={15} className="text-primary" /> : <Moon size={15} className="text-primary" />}
           </button>
 
           {user ? (
@@ -141,12 +141,12 @@ function HubLayout({ children, user, logout }) {
               {/* Direct Messages Button */}
               <button
                 onClick={() => setIsMessagingOpen(true)}
-                className="relative p-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                className="relative p-2 rounded-xl bg-transparent border-0 text-primary hover:bg-muted/40 transition-colors cursor-pointer"
                 title="Direct Messages"
               >
-                <MessageSquare size={15} />
+                <MessageSquare size={15} className="text-primary" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md tabular-nums">
                     {unreadCount}
                   </span>
                 )}
@@ -175,7 +175,7 @@ function HubLayout({ children, user, logout }) {
                   )}
                 </button>
                 {/* Dropdown */}
-                <div className={`absolute top-full right-0 mt-2 w-44 bg-card dark:bg-[#0b0c10] border border-border rounded-2xl shadow-xl shadow-black/20 transition-all duration-200 overflow-hidden z-50 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                <div className={`absolute top-full right-0 mt-2 w-44 bg-popover border border-border rounded-2xl shadow-xl shadow-black/20 transition-all duration-200 overflow-hidden z-50 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                   <div className="px-3 py-2.5 border-b border-border">
                     <p className="text-[11px] font-bold text-foreground truncate">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
@@ -708,7 +708,7 @@ function Dashboard({ user, logout }) {
 
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm z-20 md:hidden"
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-20 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

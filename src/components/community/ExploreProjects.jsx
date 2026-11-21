@@ -99,20 +99,20 @@ export default function ExploreProjects({ user }) {
     <div className="space-y-6 max-w-7xl mx-auto">
       
       {/* ── Page Header ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2.5">
-            <Layers size={20} className="text-zinc-400" />
+          <h1 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2.5">
+            <Layers size={20} className="text-primary" />
             <span>Explore Projects</span>
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             IoT and electronic circuit projects published by the community
           </p>
         </div>
 
         <button
           onClick={() => navigate('/hub/new')}
-          className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-semibold text-xs transition-all flex items-center gap-2 cursor-pointer self-start md:self-auto"
+          className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs transition-all flex items-center gap-2 cursor-pointer self-start md:self-auto hover:bg-primary/90"
         >
           <Plus size={14} />
           <span>Publish New Project</span>
@@ -120,7 +120,7 @@ export default function ExploreProjects({ user }) {
       </div>
 
       {/* ── Search & Filter Controls ── */}
-      <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-3">
+      <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
         
         <div className="flex flex-col md:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
@@ -129,13 +129,13 @@ export default function ExploreProjects({ user }) {
               placeholder="Search by title, sensors (BME280, DHT22), or microcontroller (ESP32)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2.5 pl-10 pr-14 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
+              className="w-full bg-input border border-border rounded-xl py-2.5 pl-10 pr-14 text-xs text-foreground focus:outline-none focus:border-primary/40 transition-colors placeholder:text-muted-foreground"
             />
-            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary" />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
               >
                 Clear
               </button>
@@ -143,16 +143,16 @@ export default function ExploreProjects({ user }) {
           </div>
 
           <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
-            <div className="flex items-center gap-2 bg-[#1e2024] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-300 w-full md:w-auto">
-              <Filter size={13} className="text-zinc-400 shrink-0" />
-              <span className="text-zinc-500 font-medium">Sort by:</span>
+            <div className="flex items-center gap-2 bg-input border border-border rounded-xl px-3 py-2 text-xs text-foreground w-full md:w-auto">
+              <Filter size={13} className="text-primary shrink-0" />
+              <span className="text-muted-foreground font-medium">Sort by:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer text-xs"
+                className="bg-transparent text-foreground font-medium focus:outline-none cursor-pointer text-xs"
               >
                 {SORT_OPTIONS.map(opt => (
-                  <option key={opt.id} value={opt.id} className="bg-[#18191c] text-white">
+                  <option key={opt.id} value={opt.id} className="bg-popover text-foreground">
                     {opt.label}
                   </option>
                 ))}
@@ -173,11 +173,11 @@ export default function ExploreProjects({ user }) {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-white/[0.12] text-white border border-white/[0.18]'
-                    : 'bg-[#1e2024] border border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'bg-primary/15 text-primary border border-primary/35 font-semibold'
+                    : 'bg-muted/40 border border-border text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
-                <Icon size={13} className={isActive ? 'text-white' : 'text-zinc-400'} />
+                <Icon size={13} className="text-primary" />
                 <span>{cat.label}</span>
               </button>
             );
@@ -190,24 +190,24 @@ export default function ExploreProjects({ user }) {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map(n => (
-            <div key={n} className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-3 animate-pulse h-72">
-              <div className="h-36 bg-white/[0.04] rounded-xl" />
-              <div className="h-4 bg-white/[0.04] rounded-lg w-3/4" />
-              <div className="h-3 bg-white/[0.04] rounded-lg w-full" />
-              <div className="h-3 bg-white/[0.04] rounded-lg w-1/2" />
+            <div key={n} className="bg-card border border-border rounded-2xl p-4 space-y-3 animate-pulse h-72">
+              <div className="h-36 bg-muted rounded-xl" />
+              <div className="h-4 bg-muted rounded-lg w-3/4" />
+              <div className="h-3 bg-muted rounded-lg w-full" />
+              <div className="h-3 bg-muted rounded-lg w-1/2" />
             </div>
           ))}
         </div>
       ) : filteredProjects.length === 0 ? (
-        <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-12 text-center space-y-3">
-          <Cpu size={40} className="text-zinc-600 mx-auto" />
-          <h3 className="text-sm font-bold text-white">No published projects found</h3>
-          <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+        <div className="bg-card border border-border rounded-2xl p-12 text-center space-y-3">
+          <Cpu size={40} className="text-primary mx-auto" />
+          <h3 className="text-sm font-bold text-foreground">No published projects found</h3>
+          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
             {searchQuery ? 'No results match your current search criteria.' : 'Be the first to document and publish your project in the community!'}
           </p>
           <button
             onClick={() => navigate('/hub/new')}
-            className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-medium text-xs transition-all"
+            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs transition-all cursor-pointer"
           >
             Publish New Project
           </button>
@@ -218,10 +218,10 @@ export default function ExploreProjects({ user }) {
             <div
               key={proj.id}
               onClick={() => navigate(`/hub/project/${proj.id}`)}
-              className="group bg-[#18191c] hover:bg-[#1f2025] border border-white/[0.08] hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-200 flex flex-col cursor-pointer"
+              className="group bg-card hover:border-primary/45 border border-border rounded-2xl overflow-hidden transition-all duration-200 flex flex-col cursor-pointer"
             >
               {/* Image Preview */}
-              <div className="relative h-44 bg-[#141518] overflow-hidden border-b border-white/[0.06]">
+              <div className="relative h-44 bg-background overflow-hidden border-b border-border">
                 {proj.images?.[0] ? (
                   <img
                     src={proj.images[0]}
@@ -229,32 +229,32 @@ export default function ExploreProjects({ user }) {
                     className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 bg-[#16171a]">
-                    <Cpu size={28} className="text-zinc-600 group-hover:text-zinc-400 transition-colors" />
-                    <span className="text-[10px] text-zinc-600 font-mono">Hardware Project</span>
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 bg-background">
+                    <Cpu size={28} className="text-primary transition-colors" />
+                    <span className="text-[10px] text-muted-foreground font-mono">Hardware Project</span>
                   </div>
                 )}
 
                 {/* Difficulty & Date */}
                 <div className="absolute top-2.5 right-2.5">
-                  <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-sm border border-white/10 text-zinc-300">
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-sm border border-border text-primary">
                     {formatDifficulty(proj.difficulty)}
                   </span>
                 </div>
 
-                <div className="absolute top-2.5 left-2.5 text-[9px] font-mono text-zinc-400 bg-black/70 backdrop-blur-sm border border-white/10 px-2 py-0.5 rounded-md flex items-center gap-1">
-                  <Calendar size={9} />
+                <div className="absolute top-2.5 left-2.5 text-[9px] font-mono text-muted-foreground bg-black/70 backdrop-blur-sm border border-border px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <Calendar size={9} className="text-primary" />
                   <span>{new Date(proj.createdAt || Date.now()).toLocaleDateString('en-US')}</span>
                 </div>
               </div>
 
               {/* Card Body */}
               <div className="p-4 flex-1 flex flex-col space-y-2.5">
-                <h3 className="text-xs md:text-sm font-bold text-white group-hover:text-zinc-200 transition-colors line-clamp-1">
+                <h3 className="text-xs md:text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                   {proj.title}
                 </h3>
 
-                <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed flex-1">
+                <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed flex-1">
                   {proj.summary}
                 </p>
 
@@ -264,13 +264,13 @@ export default function ExploreProjects({ user }) {
                     {proj.componentsList.slice(0, 3).map((tag, i) => (
                       <span
                         key={i}
-                        className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-zinc-400"
+                        className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-muted border border-border text-primary"
                       >
                         {tag}
                       </span>
                     ))}
                     {proj.componentsList.length > 3 && (
-                      <span className="text-[9px] text-zinc-600 font-mono px-1">
+                      <span className="text-[9px] text-primary font-mono px-1">
                         +{proj.componentsList.length - 3}
                       </span>
                     )}
@@ -278,20 +278,20 @@ export default function ExploreProjects({ user }) {
                 )}
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.06] mt-auto text-[10px] text-zinc-500">
+                <div className="flex items-center justify-between pt-2.5 border-t border-border mt-auto text-[10px] text-muted-foreground">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-white/[0.08] text-zinc-300 text-[9px] font-bold flex items-center justify-center">
+                    <div className="w-5 h-5 rounded-full bg-muted text-primary text-[9px] font-bold flex items-center justify-center">
                       {(proj.ownerName || 'U').charAt(0)}
                     </div>
-                    <span className="text-zinc-400 font-medium truncate max-w-[110px]">
+                    <span className="text-muted-foreground font-medium truncate max-w-[110px]">
                       {proj.ownerName || 'Developer'}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2.5 font-mono">
-                    <span className="flex items-center gap-1"><Eye size={10} /> {proj.metrics?.views || 0}</span>
-                    <span className="flex items-center gap-1"><ThumbsUp size={10} /> {proj.metrics?.likes || 0}</span>
-                    <span className="flex items-center gap-1"><Copy size={10} /> {proj.timesUsedAsTemplate || proj.metrics?.clones || 0}</span>
+                  <div className="flex items-center gap-2.5 font-mono text-primary font-bold">
+                    <span className="flex items-center gap-1"><Eye size={10} className="text-primary" /> {proj.metrics?.views || 0}</span>
+                    <span className="flex items-center gap-1"><ThumbsUp size={10} className="text-primary" /> {proj.metrics?.likes || 0}</span>
+                    <span className="flex items-center gap-1"><Copy size={10} className="text-primary" /> {proj.timesUsedAsTemplate || proj.metrics?.clones || 0}</span>
                   </div>
                 </div>
 

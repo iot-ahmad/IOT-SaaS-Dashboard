@@ -104,13 +104,13 @@ export default function MessagingModal({ user }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md animate-fadeIn" dir="ltr">
-      <div className="bg-card dark:bg-[#0b0d13] border border-border rounded-3xl w-full max-w-4xl h-[620px] max-h-[92vh] flex flex-col shadow-2xl overflow-hidden text-left">
+      <div className="bg-card border border-border rounded-3xl w-full max-w-4xl h-[620px] max-h-[92vh] flex flex-col shadow-2xl overflow-hidden text-left">
         
         {/* ─── Top Bar ─── */}
         <div className="p-4 border-b border-border flex items-center justify-between bg-muted/20">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-              <MessageSquare size={16} />
+            <div className="flex items-center justify-center text-primary">
+              <MessageSquare size={18} />
             </div>
             <div>
               <h3 className="text-sm font-bold text-foreground">Direct Messages</h3>
@@ -139,14 +139,14 @@ export default function MessagingModal({ user }) {
 
         {/* ─── Privacy Settings Bar ─── */}
         {showSettings && (
-          <div className="p-3 bg-card dark:bg-[#07090e] border-b border-border text-xs flex flex-wrap items-center justify-between gap-3 text-left animate-fadeIn">
+          <div className="p-3 bg-muted/50 border-b border-border text-xs flex flex-wrap items-center justify-between gap-3 text-left animate-fadeIn">
             <div className="flex items-center gap-2">
               <Lock size={14} className="text-primary" />
               <span className="font-bold text-foreground">Allow messages from:</span>
               <select
                 value={privacySettings.allowMessagesFrom || 'everyone'}
                 onChange={(e) => setPrivacySettings(prev => ({ ...prev, allowMessagesFrom: e.target.value }))}
-                className="bg-card dark:bg-[#0d1017] border border-border rounded-lg py-1 px-2 text-xs text-foreground focus:outline-none focus:border-primary"
+                className="bg-input border border-border rounded-lg py-1 px-2 text-xs text-foreground focus:outline-none focus:border-primary"
               >
                 <option value="everyone">Everyone (Recommended for community)</option>
                 <option value="followers">Followers Only</option>
@@ -173,7 +173,7 @@ export default function MessagingModal({ user }) {
                   placeholder="Search conversations or projects..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-card dark:bg-[#06080c] border border-border rounded-xl py-1.5 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-input border border-border rounded-xl py-1.5 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function MessagingModal({ user }) {
                             className={`p-3 rounded-2xl text-xs leading-relaxed space-y-2 ${
                               isMe
                                 ? 'bg-primary text-primary-foreground rounded-tr-none font-medium'
-                                : 'bg-card dark:bg-[#121622] text-foreground border border-border rounded-tl-none'
+                                : 'bg-muted text-foreground border border-border rounded-tl-none'
                             }`}
                           >
                             {/* Text content */}
@@ -351,19 +351,19 @@ export default function MessagingModal({ user }) {
 
                             {/* Code Snippet */}
                             {msg.codeSnippet && (
-                              <div className="mt-2 rounded-xl overflow-hidden border border-black/20 bg-zinc-950 text-left font-mono text-[11px]" dir="ltr">
-                                <div className="bg-zinc-900 px-2.5 py-1 text-[9px] text-zinc-400 flex items-center justify-between border-b border-zinc-800">
+                              <div className="mt-2 rounded-xl overflow-hidden border border-border bg-background text-left font-mono text-[11px]" dir="ltr">
+                                <div className="bg-muted px-2.5 py-1 text-[9px] text-muted-foreground flex items-center justify-between border-b border-border">
                                   <span>CODE / PIN FIX</span>
                                   <button
                                     type="button"
                                     onClick={() => handleCopyCode(msg.id, msg.codeSnippet)}
                                     className="hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
                                   >
-                                    {copiedCodeId === msg.id ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} />}
+                                    {copiedCodeId === msg.id ? <Check size={10} className="text-primary" /> : <Copy size={10} className="text-primary" />}
                                     <span>{copiedCodeId === msg.id ? 'Copied' : 'Copy'}</span>
                                   </button>
                                 </div>
-                                <pre className="p-2.5 text-sky-300 overflow-x-auto scrollbar-thin">
+                                <pre className="p-2.5 text-primary overflow-x-auto scrollbar-thin">
                                   <code>{msg.codeSnippet}</code>
                                 </pre>
                               </div>
@@ -384,7 +384,7 @@ export default function MessagingModal({ user }) {
                 <form onSubmit={handleSend} className="p-3 border-t border-border bg-card/20 space-y-2">
                   {/* Code snippet drawer */}
                   {showCodeInput && (
-                    <div className="p-2 bg-card dark:bg-[#07090e] border border-border rounded-xl space-y-1 animate-fadeIn">
+                    <div className="p-2 bg-muted border border-border rounded-xl space-y-1 animate-fadeIn">
                       <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                         <span className="font-mono text-primary font-bold">Code / Pinout Editor</span>
                         <button type="button" onClick={() => setShowCodeInput(false)} className="hover:text-red-400">
@@ -419,7 +419,7 @@ export default function MessagingModal({ user }) {
                       placeholder="Write a message to the developer..."
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
-                      className="flex-1 bg-card dark:bg-[#090b10] border border-border rounded-xl py-2 px-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                      className="flex-1 bg-input border border-border rounded-xl py-2 px-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                     />
 
                     <button
@@ -435,9 +435,7 @@ export default function MessagingModal({ user }) {
               </>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-muted-foreground space-y-3">
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                  <MessageSquare size={28} />
-                </div>
+                <MessageSquare size={32} className="text-primary" />
                 <h4 className="text-sm font-bold text-foreground">Select a conversation to start</h4>
                 <p className="text-xs max-w-xs text-muted-foreground/80 leading-relaxed">
                   Message project owners directly to ask technical questions or suggest improvements to circuits and code.
@@ -451,7 +449,7 @@ export default function MessagingModal({ user }) {
       {/* ─── Convert to Public Q&A Modal ─── */}
       {qaModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn" dir="ltr">
-          <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-lg p-5 shadow-2xl space-y-4 text-left">
+          <div className="bg-card border border-border rounded-3xl w-full max-w-lg p-5 shadow-2xl space-y-4 text-left">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <HelpCircle size={18} className="text-primary" />
@@ -474,7 +472,7 @@ export default function MessagingModal({ user }) {
                   required
                   value={qaQuestion}
                   onChange={(e) => setQaQuestion(e.target.value)}
-                  className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-input border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -485,7 +483,7 @@ export default function MessagingModal({ user }) {
                   required
                   value={qaAnswer}
                   onChange={(e) => setQaAnswer(e.target.value)}
-                  className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary resize-none"
+                  className="w-full bg-input border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary resize-none"
                 />
               </div>
 

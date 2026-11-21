@@ -31,7 +31,7 @@ const LinkedinIcon = ({ size = 18, className = '' }) => (
 
 // ─── Card wrapper shared across all tabs ─────────────────────────────────────
 const Card = ({ children, className = '' }) => (
-  <div className={`bg-card/[0.02] border border-border rounded-2xl p-6 backdrop-blur-md hover:bg-card/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-slate-300 dark:border-white/20 ${className}`}>
+  <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:border-primary/30 ${className}`}>
     {children}
   </div>
 );
@@ -468,7 +468,7 @@ export default function ProfilePage({ user, userUID, logout }) {
 
       {/* Toast notification */}
       {toast && (
-        <div className={`fixed top-6 right-6 z-[100] px-5 py-3 rounded-2xl shadow-2xl font-semibold text-sm flex items-center gap-2 animate-fadeIn ${toast.type === 'error' ? 'bg-red-500/95 text-white' : 'bg-blue-500/95 text-white'}`}>
+        <div className={`fixed top-6 right-6 z-[100] px-5 py-3 rounded-2xl shadow-2xl font-semibold text-sm flex items-center gap-2 animate-fadeIn ${toast.type === 'error' ? 'bg-red-500/95 text-white' : 'bg-primary text-primary-foreground'}`}>
           {toast.type === 'error' ? <AlertCircle size={16} /> : <Check size={16} />}
           {toast.msg}
         </div>
@@ -611,7 +611,7 @@ export default function ProfilePage({ user, userUID, logout }) {
 
                   {/* Social links */}
                   <Card>
-                    <h3 className="font-bold mb-4 flex items-center gap-2"><Globe size={16} className="text-blue-400" /> Social &amp; Professional Links</h3>
+                    <h3 className="font-bold mb-4 flex items-center gap-2"><Globe size={16} className="text-primary" /> Social &amp; Professional Links</h3>
                     <div className="space-y-3">
                       {[
                         { icon: GithubIcon, key: 'github', val: editGithub, set: setEditGithub, ph: 'https://github.com/username' },
@@ -621,7 +621,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                         <div key={key} className="flex items-center bg-muted border border-border rounded-xl px-3 focus-within:border-primary/50 transition-all">
                           <input type="url" value={val} onChange={e => set(e.target.value)} placeholder={ph} dir="ltr"
                             className="flex-1 bg-transparent border-none py-2.5 px-2 focus:outline-none text-sm font-mono text-foreground placeholder:text-muted-foreground" />
-                          <Icon size={15} className="text-muted-foreground shrink-0" />
+                          <Icon size={15} className="text-primary shrink-0" />
                         </div>
                       ))}
                     </div>
@@ -683,7 +683,7 @@ export default function ProfilePage({ user, userUID, logout }) {
 
               {/* Localization */}
               <Card>
-                <h3 className="font-bold mb-4 flex items-center gap-2"><Globe size={18} className="text-blue-400" /> Localization</h3>
+                <h3 className="font-bold mb-4 flex items-center gap-2"><Globe size={18} className="text-primary" /> Localization</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <label className="text-xs text-muted-foreground block mb-1">Language</label>
@@ -724,7 +724,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                   </h3>
                   <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${
                     mqttUseCustom
-                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                      ? 'bg-primary/15 border-primary/30 text-primary'
                       : 'bg-amber-500/15 border-amber-500/30 text-amber-400'
                   }`}>
                     {mqttUseCustom
@@ -832,7 +832,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                               aria-label="Copy username"
                               className="p-2.5 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
                             >
-                              {copiedMqttField === 'user' ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
+                              {copiedMqttField === 'user' ? <Check size={15} className="text-primary" /> : <Copy size={15} className="text-primary" />}
                             </button>
                           </div>
                         </div>
@@ -863,7 +863,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                               aria-label="Copy password"
                               className="p-2.5 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
                             >
-                              {copiedMqttField === 'pass' ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
+                              {copiedMqttField === 'pass' ? <Check size={15} className="text-primary" /> : <Copy size={15} className="text-primary" />}
                             </button>
                           </div>
                         </div>
@@ -917,7 +917,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                     </div>
                     <div className="p-2 rounded-lg bg-muted border border-border">
                       <span className="text-muted-foreground block text-[10px]">Permission:</span>
-                      <span className="text-emerald-400 font-bold">Publish &amp; Subscribe (Allow)</span>
+                      <span className="text-primary font-bold">Publish &amp; Subscribe (Allow)</span>
                     </div>
                   </div>
                 </div>
@@ -966,7 +966,7 @@ export default function ProfilePage({ user, userUID, logout }) {
           {/* ══ TAB: Notifications ═══════════════════════════════════════ */}
           {activeTab === 'notifs' && (
             <Card>
-              <h3 className="font-bold mb-4 flex items-center gap-2"><Bell size={18} className="text-yellow-400" /> Notifications</h3>
+              <h3 className="font-bold mb-4 flex items-center gap-2"><Bell size={18} className="text-primary" /> Notifications</h3>
               <div className="space-y-4">
                 {[
                   { id: 'push',      label: 'Push Notifications', desc: 'Receive alerts directly on your device' },
@@ -984,7 +984,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                       <button
                         onClick={() => saveNotifications({ ...notifications, [item.id]: !active })}
                         className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${active ? 'bg-primary' : 'bg-muted border border-border'}`}>
-                        <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-300 ${active ? 'translate-x-4' : 'translate-x-0'}`} />
+                        <div className={`w-4 h-4 rounded-full transition-transform duration-300 ${active ? 'translate-x-4 bg-primary-foreground' : 'translate-x-0 bg-muted-foreground'}`} />
                       </button>
                     </div>
                   );
@@ -996,7 +996,7 @@ export default function ProfilePage({ user, userUID, logout }) {
           {/* ══ TAB: Connected Accounts ══════════════════════════════════ */}
           {activeTab === 'connected' && (
             <Card>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><LinkIcon size={18} className="text-purple-400" /> Connected Accounts</h3>
+              <h3 className="font-bold mb-2 flex items-center gap-2"><LinkIcon size={18} className="text-primary" /> Connected Accounts</h3>
               <p className="text-sm text-muted-foreground mb-6">Link external services to log in faster and sync your data.</p>
               <div className="space-y-4">
                 {/* Google */}
@@ -1027,8 +1027,8 @@ export default function ProfilePage({ user, userUID, logout }) {
                 {/* GitHub */}
                 <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#333] text-white rounded-full flex items-center justify-center p-2.5">
-                      <GithubIcon size={20} />
+                    <div className="flex items-center justify-center text-primary">
+                      <GithubIcon size={22} />
                     </div>
                     <div>
                       <p className="text-sm font-bold">GitHub</p>
@@ -1051,7 +1051,7 @@ export default function ProfilePage({ user, userUID, logout }) {
           {activeTab === 'billing' && (
             <Card>
               <h3 className="font-bold mb-4 flex items-center gap-2"><CreditCard size={18} className="text-primary" /> Billing &amp; Plan</h3>
-              <div className="bg-gradient-to-br from-purple-950/40 to-black/40 border border-primary/20 rounded-xl p-5 mb-6 relative overflow-hidden text-center">
+              <div className="bg-muted/40 border border-border rounded-xl p-5 mb-6 relative overflow-hidden text-center">
                 <div className="absolute right-0 top-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10" />
                 <div className="relative z-10 py-6">
                   <div className="inline-block bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-primary/30 mb-4">

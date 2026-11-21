@@ -57,45 +57,45 @@
 
 }
 
-/* ── Design Tokens: Dark Mode (Precision Industrial IoT Workbench) ── */
+/* ── Design Tokens: Dark Mode (Charcoal + Light Ivory + Lime Green) ── */
 .dark {
-  --background: #0b0e14;
-  --foreground: #f1f5f9;
+  --background: oklch(16.5% 0.004 130);
+  --foreground: oklch(94.5% 0.012 110);
 
-  --card: #121620;
-  --card-foreground: #f1f5f9;
-  --sidebar: #0e1118;
-  --sidebar-foreground: #f1f5f9;
-  --sidebar-border: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
-  --input: #141925;
-  --muted: #181d29;
-  --muted-foreground: #8b97ad;
-  --secondary: #1d2332;
-  --secondary-foreground: #f1f5f9;
-  --popover: #141925;
-  --popover-foreground: #f1f5f9;
+  --card: oklch(20% 0.006 130);
+  --card-foreground: oklch(94.5% 0.012 110);
+  --sidebar: oklch(20% 0.006 130);
+  --sidebar-foreground: oklch(94.5% 0.012 110);
+  --sidebar-border: oklch(94.5% 0.012 110 / 0.09);
+  --border: oklch(94.5% 0.012 110 / 0.09);
+  --input: oklch(18% 0.005 130);
+  --muted: oklch(23% 0.006 130);
+  --muted-foreground: oklch(72% 0.012 120);
+  --secondary: oklch(25% 0.006 130);
+  --secondary-foreground: oklch(94.5% 0.012 110);
+  --popover: oklch(20% 0.006 130);
+  --popover-foreground: oklch(94.5% 0.012 110);
 
-  /* Primary: Precision Cobalt Blue */
-  --primary: #2563eb;
-  --primary-foreground: #ffffff;
-  --ring: #3b82f6;
-  --accent: #181d29;
-  --accent-foreground: #f1f5f9;
-  --sidebar-accent: #181d29;
-  --sidebar-accent-foreground: #f1f5f9;
-  --sidebar-primary: #2563eb;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #3b82f6;
+  /* Primary: Lime Green Accent */
+  --primary: oklch(84.1% 0.238 128.85);
+  --primary-foreground: oklch(16.5% 0.004 130);
+  --ring: oklch(84.1% 0.238 128.85);
+  --accent: oklch(23% 0.006 130);
+  --accent-foreground: oklch(84.1% 0.238 128.85);
+  --sidebar-accent: oklch(23% 0.006 130);
+  --sidebar-accent-foreground: oklch(94.5% 0.012 110);
+  --sidebar-primary: oklch(84.1% 0.238 128.85);
+  --sidebar-primary-foreground: oklch(16.5% 0.004 130);
+  --sidebar-ring: oklch(84.1% 0.238 128.85);
 
-  /* Semantic status: Bright & Eye-catching */
+  /* Semantic status */
   --destructive: #ef4444;
-  --destructive-foreground: #e8e9eb;
-  --status-on: #22c55e;
+  --destructive-foreground: oklch(94.5% 0.012 110);
+  --status-on: oklch(84.1% 0.238 128.85);
   --status-off: #ef4444;
 
-  --chart-1: #38bdf8;
-  --chart-2: #22c55e;
+  --chart-1: oklch(84.1% 0.238 128.85);
+  --chart-2: oklch(78% 0.16 140);
   --chart-3: #f59e0b;
   --chart-4: #a855f7;
   --chart-5: #ec4899;
@@ -171,7 +171,7 @@
   }
 
   .workbench-grid {
-    background-image: radial-gradient(rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+    background-image: radial-gradient(oklch(94.5% 0.012 110 / 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 
@@ -193,9 +193,9 @@
     width: 16px;
     height: 16px;
     border-radius: 9999px;
-    background: linear-gradient(145deg, #f8fafc, #94a3b8);
-    border: 2px solid #38bdf8;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(56, 189, 248, 0.15);
+    background: linear-gradient(145deg, #f8fafc, #b5b6ad);
+    border: 2px solid oklch(84.1% 0.238 128.85);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(163, 230, 53, 0.18);
     cursor: grab;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
@@ -203,43 +203,31 @@
   .hw-slider::-webkit-slider-thumb:hover,
   .hw-slider::-webkit-slider-thumb:active {
     transform: scale(1.12);
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.65), 0 0 0 4px rgba(56, 189, 248, 0.25);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.65), 0 0 0 4px rgba(163, 230, 53, 0.28);
   }
 
   .hw-slider::-moz-range-thumb {
     width: 16px;
     height: 16px;
     border-radius: 9999px;
-    background: linear-gradient(145deg, #f8fafc, #94a3b8);
-    border: 2px solid #38bdf8;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(56, 189, 248, 0.15);
+    background: linear-gradient(145deg, #f8fafc, #b5b6ad);
+    border: 2px solid oklch(84.1% 0.238 128.85);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(163, 230, 53, 0.18);
     cursor: grab;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
 
   .hw-oled-screen {
-    background: #040a10;
+    background: oklch(13.5% 0.004 130);
     background-image: repeating-linear-gradient(
       0deg,
-      rgba(56, 189, 248, 0.04) 0px,
-      rgba(56, 189, 248, 0.04) 1px,
+      rgba(163, 230, 53, 0.04) 0px,
+      rgba(163, 230, 53, 0.04) 1px,
       transparent 1px,
       transparent 3px
     );
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(56, 189, 248, 0.18);
-    text-shadow: 0 0 8px rgba(56, 189, 248, 0.55);
-  }
-
-  .hw-led-on {
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
-  }
-
-  .hw-led-cyan {
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
-  }
-
-  .hw-led-err {
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(163, 230, 53, 0.2);
+    text-shadow: 0 0 8px rgba(163, 230, 53, 0.45);
   }
 
   .scrollbar-thin::-webkit-scrollbar {
@@ -329,26 +317,26 @@
     border-color: color-mix(in srgb, var(--primary) 60%, transparent) !important;
   }
 
-  /* ── Icon utilities — Monochromatic Muted (Corporate) ── */
+  /* ── Icon utilities — Lime Green Accent ── */
 
   .icon-primary {
-    color: var(--muted-foreground);
-    stroke: var(--muted-foreground);
+    color: var(--primary);
+    stroke: var(--primary);
   }
 
   .icon-muted {
-    color: var(--muted-foreground);
-    stroke: var(--muted-foreground);
+    color: var(--primary);
+    stroke: var(--primary);
   }
 
   .icon-accent {
-    color: var(--muted-foreground);
-    stroke: var(--muted-foreground);
+    color: var(--primary);
+    stroke: var(--primary);
   }
 
   .icon-secondary {
-    color: var(--muted-foreground);
-    stroke: var(--muted-foreground);
+    color: var(--primary);
+    stroke: var(--primary);
   }
 
   .icon-destructive {
@@ -356,34 +344,34 @@
     stroke: var(--destructive);
   }
 
-  /* Icon inside an active nav button gets foreground tint */
+  /* Icon inside an active nav button gets lime tint */
   [data-active="true"] svg,
   .btn-active svg {
-    color: var(--foreground);
-    stroke: var(--foreground);
+    color: var(--primary);
+    stroke: var(--primary);
   }
 
-  /* Icon button container — unified radius, neutral border */
+  /* Icon button container — clean borderless/backgroundless SVG */
   .icon-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--muted-foreground);
+    border: none;
+    background: transparent;
+    color: var(--primary);
     border-radius: var(--radius);
     padding: 0.4rem;
-    transition: color 0.15s, background 0.15s;
+    transition: opacity 0.15s, background 0.15s;
     cursor: pointer;
   }
 
   .icon-btn:hover {
-    color: var(--foreground);
+    color: var(--primary);
     background: var(--muted);
   }
 
   .icon-btn.active {
-    color: var(--foreground);
+    color: var(--primary);
     background: var(--muted);
   }
 
@@ -395,7 +383,7 @@
     width: 1.75rem;
     height: 1.75rem;
     flex-shrink: 0;
-    color: var(--muted-foreground);
+    color: var(--primary);
     transition: color 0.15s;
   }
 

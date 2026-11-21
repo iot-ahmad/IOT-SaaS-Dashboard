@@ -57,15 +57,15 @@ export default function MoreMenu({
       role="dialog"
       aria-modal="true"
       aria-label="Simulator & Account Settings"
-      className="absolute end-0 top-full mt-2 w-72 sm:w-80 bg-zinc-900 border border-white/15 rounded-xl shadow-2xl p-3 z-50 flex flex-col gap-3 text-xs animate-in fade-in zoom-in-95 duration-150"
+      className="absolute end-0 top-full mt-2 w-72 sm:w-80 bg-popover border border-border rounded-xl shadow-2xl p-3 z-50 flex flex-col gap-3 text-xs animate-in fade-in zoom-in-95 duration-150"
     >
-      <div className="flex items-center justify-between pb-2 border-b border-white/10">
+      <div className="flex items-center justify-between pb-2 border-b border-border">
         <span className="font-bold text-foreground">Simulator &amp; Account Settings</span>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close menu"
-          className="text-zinc-400 hover:text-foreground p-1 rounded-md"
+          className="text-muted-foreground hover:text-foreground p-1 rounded-md"
         >
           <X size={14} />
         </button>
@@ -73,7 +73,7 @@ export default function MoreMenu({
 
       {/* Wokwi Project URL Form */}
       <form onSubmit={onApplyUrl} className="flex flex-col gap-1.5">
-        <label htmlFor="wokwi-url-input" className="text-zinc-400 text-[11px]">
+        <label htmlFor="wokwi-url-input" className="text-muted-foreground text-[11px]">
           Wokwi Project URL:
         </label>
         <div className="flex items-center gap-1.5">
@@ -83,7 +83,7 @@ export default function MoreMenu({
             value={wokwiUrlInput}
             onChange={(e) => setWokwiUrlInput(e.target.value)}
             placeholder="Wokwi URL or Project ID..."
-            className="flex-1 bg-zinc-800 border border-white/10 text-xs rounded-lg px-2.5 py-1.5 outline-none font-mono text-zinc-200 truncate focus:border-primary/50"
+            className="flex-1 bg-input border border-border text-xs rounded-lg px-2.5 py-1.5 outline-none font-mono text-foreground truncate focus:border-primary/50"
           />
           <button
             type="submit"
@@ -96,7 +96,7 @@ export default function MoreMenu({
           <button
             type="button"
             onClick={onResetDefault}
-            className="text-[10px] text-zinc-400 hover:text-primary text-start underline cursor-pointer"
+            className="text-[10px] text-muted-foreground hover:text-primary text-start underline cursor-pointer"
           >
             Reset to default URL
           </button>
@@ -105,8 +105,8 @@ export default function MoreMenu({
 
       {/* Account UID */}
       {userUID && (
-        <div className="flex flex-col gap-1 pt-2 border-t border-white/10">
-          <span className="text-zinc-400 text-[11px]">Account UID:</span>
+        <div className="flex flex-col gap-1 pt-2 border-t border-border">
+          <span className="text-muted-foreground text-[11px]">Account UID:</span>
           <div className="flex items-center gap-1.5">
             <input
               type="text"
@@ -114,15 +114,15 @@ export default function MoreMenu({
               value={userUID}
               dir="ltr"
               aria-label="Account UID"
-              className="flex-1 bg-zinc-800 border border-white/10 text-[11px] font-mono text-zinc-300 px-2 py-1 rounded-lg select-all outline-none"
+              className="flex-1 bg-input border border-border text-[11px] font-mono text-primary px-2 py-1 rounded-lg select-all outline-none"
             />
             <button
               type="button"
               onClick={onCopyUid}
               aria-label="Copy Account UID"
-              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-800 border border-white/10 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold shrink-0 cursor-pointer"
+              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted border border-border hover:bg-secondary text-foreground text-xs font-semibold shrink-0 cursor-pointer"
             >
-              {copiedUid ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+              {copiedUid ? <Check size={12} className="text-primary" /> : <Copy size={12} className="text-primary" />}
               <span>{copiedUid ? 'Copied' : 'Copy'}</span>
             </button>
           </div>
@@ -130,16 +130,16 @@ export default function MoreMenu({
       )}
 
       {/* Action links */}
-      <div className="flex flex-col gap-1 pt-2 border-t border-white/10">
+      <div className="flex flex-col gap-1 pt-2 border-t border-border">
         <button
           type="button"
           onClick={() => {
             onReloadIframe();
             onClose();
           }}
-          className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-foreground text-xs transition-colors cursor-pointer text-start"
+          className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground text-xs transition-colors cursor-pointer text-start"
         >
-          <RefreshCw size={13} />
+          <RefreshCw size={13} className="text-primary" />
           <span>Reload Simulator</span>
         </button>
 
@@ -147,9 +147,9 @@ export default function MoreMenu({
           href={activeWokwiUrl.includes('http') ? activeWokwiUrl : `https://wokwi.com/projects/${activeWokwiUrl}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-foreground text-xs transition-colors text-start"
+          className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground text-xs transition-colors text-start"
         >
-          <ExternalLink size={13} />
+          <ExternalLink size={13} className="text-primary" />
           <span>Open in Wokwi (New Tab) ↗</span>
         </a>
 
@@ -160,7 +160,7 @@ export default function MoreMenu({
               onOpenModal();
               onClose();
             }}
-            className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-foreground text-xs transition-colors cursor-pointer text-start"
+            className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground text-xs transition-colors cursor-pointer text-start"
           >
             <FileCode size={13} className="text-primary" />
             <span>Full Code &amp; Wiring Diagram</span>

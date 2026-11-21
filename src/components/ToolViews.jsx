@@ -29,7 +29,7 @@ const CopyTopicButton = ({ topic, userUID }) => {
       title={`Copy: ${fullTopic}`}
       className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground/70'}`}
     >
-      {copied ? <Check size={10} /> : <Copy size={10} />}
+      {copied ? <Check size={10} className="text-primary" /> : <Copy size={10} className="text-primary" />}
       {copied ? 'Copied!' : fullTopic}
     </button>
   );
@@ -54,8 +54,7 @@ const LastSeenBadge = ({ lastSeenTimestamp }) => {
   else label = `${Math.floor(diffSec / 3600)}h ago`;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${isOffline ? 'bg-red-500/10 text-red-400' : 'bg-primary/10 text-primary'}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${isOffline ? 'bg-red-400' : 'bg-primary animate-pulse'}`}></span>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${isOffline ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-primary/10 border-primary/25 text-primary'}`}>
       {isOffline ? 'Offline' : label}
     </span>
   );
@@ -74,7 +73,7 @@ export const DevicesView = ({ userUID, lastSeen }) => {
         <h2 className="text-xl font-bold">Connected Devices</h2>
         <button
           style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-          className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm"
+          className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm rounded-xl"
         >
           <Plus size={18} /> Add Device
         </button>
@@ -82,11 +81,11 @@ export const DevicesView = ({ userUID, lastSeen }) => {
 
       <div className="flex gap-3">
         <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-white/30" size={16} />
-          <input className="w-full bg-muted border border-border rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:border-primary/50 text-sm placeholder:text-muted-foreground dark:text-white/30" placeholder="Search devices..." />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={16} />
+          <input className="w-full bg-input border border-border rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:border-primary/50 text-sm placeholder:text-muted-foreground" placeholder="Search devices..." />
         </div>
-        <button className="bg-muted border border-border px-4 rounded-xl text-muted-foreground flex items-center gap-2 text-sm hover:bg-secondary transition-colors">
-          <Filter size={16} /> Filter
+        <button className="bg-muted border border-border px-4 rounded-xl text-foreground flex items-center gap-2 text-sm hover:bg-secondary transition-colors">
+          <Filter size={16} className="text-primary" /> Filter
         </button>
       </div>
 
@@ -103,14 +102,12 @@ export const DevicesView = ({ userUID, lastSeen }) => {
               <th className="px-5 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {mergedDevices.map(device => (
-              <tr key={device.id} className="hover:bg-card/[0.02] transition-colors">
+              <tr key={device.id} className="hover:bg-muted/30 transition-colors">
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground flex-shrink-0">
-                      <Cpu size={14} />
-                    </div>
+                    <Cpu size={16} className="text-primary flex-shrink-0" />
                     <div>
                       <span className="font-medium text-sm">{device.name}</span>
                       <span className="block text-xs text-muted-foreground dark:text-white/30">{device.type}</span>
@@ -343,7 +340,7 @@ Respond in clear, professional English with a structured engineering format.`
       if (part.type === 'code') {
         return (
           <div key={idx} className="my-3 font-mono text-left" dir="ltr">
-            <pre className="bg-[#030406] border border-border dark:border-white/[0.07] rounded-xl p-4 overflow-x-auto text-[11px] leading-relaxed font-mono text-slate-300 dark:text-slate-400 scrollbar-thin text-left ltr-text">
+            <pre className="bg-background border border-border rounded-xl p-4 overflow-x-auto text-[11px] leading-relaxed font-mono text-foreground/85 scrollbar-thin text-left ltr-text">
               <code>{part.code}</code>
             </pre>
           </div>
@@ -353,14 +350,14 @@ Respond in clear, professional English with a structured engineering format.`
       let line = part.content;
       if (line.trim() === '') return <div key={idx} className="h-1.5" />;
 
-      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-muted bg-background/40 border border-border px-1.5 py-0.5 rounded font-mono text-white/70 dark:text-white/60 text-[10px]">$1</code></bdi>');
+      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-muted border border-border px-1.5 py-0.5 rounded font-mono text-primary text-[10px]">$1</code></bdi>');
       html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
       
       if (/^\*(?!\*)/.test(line.trim())) {
         html = html.trim().substring(1).trim();
         return (
-          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/70 text-left">
-            <span className="text-primary mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
+          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/80 text-left">
+            <span className="text-primary font-bold shrink-0">—</span>
             <span dangerouslySetInnerHTML={{ __html: html }} />
           </div>
         );
@@ -369,27 +366,23 @@ Respond in clear, professional English with a structured engineering format.`
       if (line.trim().startsWith('>')) {
         html = html.trim().substring(1).trim();
         return (
-          <blockquote key={idx} className="border-l-2 border-primary/50 pl-3 pr-0 my-2 text-xs text-muted-foreground italic bg-background dark:bg-card/[0.01] py-1 text-left rounded-r-md" dangerouslySetInnerHTML={{ __html: html }} />
+          <blockquote key={idx} className="border-l-2 border-primary/50 pl-3 pr-0 my-2 text-xs text-muted-foreground italic bg-background py-1 text-left rounded-r-md" dangerouslySetInnerHTML={{ __html: html }} />
         );
       }
 
       return (
-        <p key={idx} className="text-xs text-foreground/70 leading-relaxed mt-0.5 text-left" dangerouslySetInnerHTML={{ __html: html }} />
+        <p key={idx} className="text-xs text-foreground/80 leading-relaxed mt-0.5 text-left" dangerouslySetInnerHTML={{ __html: html }} />
       );
     });
   };
 
   return (
     <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20 shadow-lg relative overflow-hidden mb-6">
-      <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shrink-0">
-          <Cpu size={18} />
-        </div>
+        <Cpu size={22} className="text-primary shrink-0" />
         <div className="text-left font-sans">
           <h3 className="font-extrabold text-foreground text-sm">Cosmos3 Physical AI Diagnostics</h3>
-          <p className="text-[10px] text-muted-foreground dark:text-white/30 font-medium">Physical AI analysis engine for hardware diagnostics and engineering automation</p>
+          <p className="text-[10px] text-muted-foreground font-medium">Physical AI analysis engine for hardware diagnostics and engineering automation</p>
         </div>
       </div>
 
@@ -400,7 +393,7 @@ Respond in clear, professional English with a structured engineering format.`
             <select
               value={device}
               onChange={(e) => setDevice(e.target.value)}
-              className="w-full bg-muted bg-background/50 border border-border rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-primary/50 text-foreground"
+              className="w-full bg-input border border-border rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-primary/50 text-foreground"
             >
               <option>Soil Sensor #01</option>
               <option>Main Irrigation Valve</option>
@@ -420,7 +413,7 @@ Respond in clear, professional English with a structured engineering format.`
                 value={scenario}
                 onChange={(e) => setScenario(e.target.value)}
                 placeholder="e.g., Water pump stopped suddenly, or auto-irrigation conflicts with detected rain..."
-                className="flex-1 bg-muted bg-background/50 border border-border rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-primary/50 text-foreground"
+                className="flex-1 bg-input border border-border rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-primary/50 text-foreground"
               />
               <button
                 type="submit"
@@ -457,19 +450,18 @@ Respond in clear, professional English with a structured engineering format.`
       {/* Result Diagnostic Panel */}
       {(loading || response) && (
         <div className="mt-5 border-t border-border pt-4 text-left">
-          <div className="bg-[#07090d] border border-border rounded-2xl p-5 shadow-inner relative">
+          <div className="bg-background border border-border rounded-2xl p-5 shadow-inner relative">
             <div className="absolute top-4 right-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span className="text-[9px] text-primary font-mono uppercase tracking-wider font-bold">PHYSICAL REAL-TIME DIAGNOSTIC</span>
             </div>
             
             {loading ? (
               <div className="py-8 flex flex-col items-center justify-center gap-3">
                 <RefreshCw size={24} className="text-primary animate-spin" />
-                <p className="text-xs text-muted-foreground dark:text-white/30 animate-pulse">Cosmos3 is analyzing physical hardware parameters and deriving engineering behavior...</p>
+                <p className="text-xs text-muted-foreground">Cosmos3 is analyzing physical hardware parameters and deriving engineering behavior...</p>
               </div>
             ) : (
-              <div dir="ltr" className="space-y-2 text-slate-200 font-sans leading-relaxed text-left">
+              <div dir="ltr" className="space-y-2 text-foreground font-sans leading-relaxed text-left">
                 {renderDiagnosticContent(response)}
               </div>
             )}
@@ -576,13 +568,7 @@ export const AutomationsToolView = ({ publish, userUID }) => {
             <Card key={auto.id} className="relative group flex flex-col justify-between gap-4">
               <div className="flex justify-between items-start gap-2">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
-                    auto.active
-                      ? 'bg-primary/12 border-primary/25 text-primary'
-                      : 'bg-muted border-border text-muted-foreground'
-                  }`}>
-                    <Zap size={18} />
-                  </div>
+                  <Zap size={20} className={auto.active ? 'text-primary shrink-0' : 'text-muted-foreground shrink-0'} />
                   <div className="min-w-0">
                     <h3 className="font-bold text-sm text-foreground truncate">{auto.name}</h3>
                     <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{auto.rule}</p>
@@ -592,11 +578,11 @@ export const AutomationsToolView = ({ publish, userUID }) => {
                   <button
                     onClick={() => toggleAuto(auto.id)}
                     className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 flex-shrink-0 cursor-pointer ${
-                      auto.active ? 'bg-emerald-500' : 'bg-muted border border-border'
+                      auto.active ? 'bg-primary' : 'bg-muted border border-border'
                     }`}
                     title={auto.active ? 'Disable rule' : 'Enable rule'}
                   >
-                    <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${auto.active ? 'translate-x-5' : 'translate-x-0'}`} />
+                    <div className={`w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ${auto.active ? 'translate-x-5 bg-primary-foreground' : 'translate-x-0 bg-foreground/80'}`} />
                   </button>
                   <button
                     onClick={() => handleDelete(auto.id)}
@@ -612,18 +598,18 @@ export const AutomationsToolView = ({ publish, userUID }) => {
               <div className="space-y-2">
                 <div className="bg-muted/40 border border-border rounded-lg p-2.5 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/25">
+                    <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/25">
                       IF
                     </span>
                     <span className="text-[11px] font-mono font-semibold text-foreground">
-                      {auto.operator} {auto.value}
+                      {auto.operator} <span className="text-primary">{auto.value}</span>
                     </span>
                   </div>
                   <CopyTopicButton topic={auto.trigger} userUID={userUID} />
                 </div>
 
                 <div className="bg-muted/40 border border-border rounded-lg p-2.5 flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 shrink-0">
+                  <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/25 shrink-0">
                     THEN
                   </span>
                   <CopyTopicButton topic={auto.action} userUID={userUID} />
@@ -631,8 +617,8 @@ export const AutomationsToolView = ({ publish, userUID }) => {
               </div>
 
               <div className="flex justify-between text-[11px] text-muted-foreground font-mono border-t border-border pt-3">
-                <span>Last ran: {auto.lastRan}</span>
-                <span>Runs: {auto.usage}</span>
+                <span>Last ran: <span className="text-primary">{auto.lastRan}</span></span>
+                <span>Runs: <span className="text-primary">{auto.usage}</span></span>
               </div>
             </Card>
           ))}
@@ -776,8 +762,8 @@ export const AlertsView = ({ userUID }) => {
     switch (type) {
       case 'critical': return { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/12 border-red-500/25', accent: 'border-l-2 border-l-red-500', badge: 'CRITICAL' };
       case 'warning': return { icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/12 border-amber-500/25', accent: 'border-l-2 border-l-amber-500', badge: 'WARNING' };
-      case 'success': return { icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/12 border-emerald-500/25', accent: 'border-l-2 border-l-emerald-500', badge: 'SUCCESS' };
-      default: return { icon: Info, color: 'text-sky-400', bg: 'bg-sky-500/12 border-sky-500/25', accent: 'border-l-2 border-l-sky-500', badge: 'INFO' };
+      case 'success': return { icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/12 border-primary/25', accent: 'border-l-2 border-l-primary', badge: 'SUCCESS' };
+      default: return { icon: Info, color: 'text-primary', bg: 'bg-primary/12 border-primary/25', accent: 'border-l-2 border-l-primary', badge: 'INFO' };
     }
   };
 
@@ -809,7 +795,7 @@ export const AlertsView = ({ userUID }) => {
       ) : activeTab === 'history' ? (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <span className="text-xs font-mono text-muted-foreground">{alerts.length} alerts</span>
+            <span className="text-xs font-mono text-muted-foreground"><span className="text-primary font-bold">{alerts.length}</span> alerts</span>
             {alerts.length > 0 && (
               <button onClick={clearAllAlerts} className="text-xs font-semibold text-red-400 hover:text-red-300 transition-colors cursor-pointer">Clear All</button>
             )}
@@ -821,11 +807,9 @@ export const AlertsView = ({ userUID }) => {
               {alerts.map(alert => {
                 const { icon: Icon, color, bg, accent, badge } = getIcon(alert.type);
                 return (
-                  <div key={alert.id} className={`hw-panel p-4 rounded-xl border border-border ${accent} flex items-center justify-between gap-3 bg-card hover:border-white/15 transition-colors`}>
+                  <div key={alert.id} className={`hw-panel p-4 rounded-xl border border-border ${accent} flex items-center justify-between gap-3 bg-card hover:border-primary/30 transition-colors`}>
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className={`w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 ${bg} ${color}`}>
-                        <Icon size={16} />
-                      </div>
+                      <Icon size={18} className={`${color} shrink-0`} />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border ${bg} ${color}`}>{badge}</span>
@@ -856,15 +840,15 @@ export const AlertsView = ({ userUID }) => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {rules.map(rule => (
-                <div key={rule.id} className="hw-panel p-5 rounded-xl border border-border bg-card relative group hover:border-white/15 transition-colors">
+                <div key={rule.id} className="hw-panel p-5 rounded-xl border border-border bg-card relative group hover:border-primary/30 transition-colors">
                   <div className="flex justify-between items-start mb-3 gap-2">
                     <h3 className="font-bold text-sm text-foreground">{rule.name}</h3>
                     <div className="flex items-center gap-2 shrink-0">
                       <button 
                         onClick={() => toggleRule(rule.id)}
-                        className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 flex-shrink-0 cursor-pointer ${rule.active ? 'bg-emerald-500' : 'bg-muted border border-border'}`}
+                        className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 flex-shrink-0 cursor-pointer ${rule.active ? 'bg-primary' : 'bg-muted border border-border'}`}
                       >
-                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${rule.active ? 'translate-x-5' : 'translate-x-0'}`} />
+                        <div className={`w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ${rule.active ? 'translate-x-5 bg-primary-foreground' : 'translate-x-0 bg-foreground/80'}`} />
                       </button>
                       <button onClick={() => deleteRule(rule.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer" title="Delete rule">
                         <Trash2 size={14} />
@@ -952,21 +936,27 @@ export const LiveTerminal = ({ messages, isConnected, isSidebarCollapsed = false
   const txCount = messages.filter(m => m.type === 'outgoing').length;
 
   return (
-    <div className={`fixed bottom-0 left-0 ${isSidebarCollapsed ? 'md:left-16' : 'md:left-64'} right-0 z-40 bg-[#080b10]/95 backdrop-blur-md border-t border-border transition-all duration-300 ${isExpanded ? 'h-52' : 'h-10'}`}>
+    <div className={`fixed bottom-0 left-0 ${isSidebarCollapsed ? 'md:left-16' : 'md:left-64'} right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border transition-all duration-300 ${isExpanded ? 'h-52' : 'h-10'}`}>
       <div
         role="button"
         tabIndex={0}
         onClick={() => setIsExpanded(!isExpanded)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsExpanded(!isExpanded); }}
-        className="w-full h-10 flex items-center justify-between px-4 hover:bg-white/[0.03] transition-colors cursor-pointer select-none"
+        className="w-full h-10 flex items-center justify-between px-4 hover:bg-muted/40 transition-colors cursor-pointer select-none"
       >
         <div className="flex items-center gap-2.5">
-          <Terminal size={14} className="text-sky-400" />
-          <span className="text-xs font-bold text-slate-200 tracking-wide">Live MQTT Bus</span>
-          <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-red-500 hw-led-err'}`} />
+          <Terminal size={14} className="text-primary" />
+          <span className="text-xs font-bold text-foreground tracking-wide">Live MQTT Bus</span>
+          <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+            isConnected
+              ? 'bg-primary/10 border-primary/25 text-primary'
+              : 'bg-red-500/10 border-red-500/25 text-red-400'
+          }`}>
+            {isConnected ? 'ONLINE' : 'OFFLINE'}
+          </span>
 
           {/* Interactive Bus Filters */}
-          <div className="hidden sm:flex items-center gap-1 ml-2 bg-white/[0.04] border border-white/[0.08] rounded-md p-0.5">
+          <div className="hidden sm:flex items-center gap-1 ml-2 bg-muted/60 border border-border rounded-md p-0.5">
             {[
               { id: 'all', label: 'All' },
               { id: 'incoming', label: 'RX' },
@@ -983,7 +973,7 @@ export const LiveTerminal = ({ messages, isConnected, isSidebarCollapsed = false
                 className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer ${
                   filter === f.id
                     ? 'bg-primary text-primary-foreground'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {f.label}
@@ -993,35 +983,35 @@ export const LiveTerminal = ({ messages, isConnected, isSidebarCollapsed = false
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">
-            <span className="text-emerald-400">RX {rxCount}</span> · <span className="text-sky-400">TX {txCount}</span> · {messages.length} total
+          <span className="text-[10px] font-mono text-muted-foreground hidden sm:inline">
+            RX <span className="text-primary font-bold">{rxCount}</span> · TX <span className="text-primary font-bold">{txCount}</span> · <span className="text-primary font-bold">{messages.length}</span> total
           </span>
-          <div className="text-slate-400 hover:text-white">
-            {isExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          <div className="text-primary">
+            {isExpanded ? <ChevronDown size={16} className="text-primary" /> : <ChevronUp size={16} className="text-primary" />}
           </div>
         </div>
       </div>
 
       {isExpanded && (
-        <div ref={scrollRef} className="h-40 overflow-y-auto px-4 py-2.5 font-mono text-[11px] space-y-1 bg-[#06090d] border-t border-border scrollbar-thin">
+        <div ref={scrollRef} className="h-40 overflow-y-auto px-4 py-2.5 font-mono text-[11px] space-y-1 bg-background border-t border-border scrollbar-thin">
           {filteredMessages.length === 0 && (
-            <p className="text-slate-500 italic">Waiting for MQTT packets from ESP32 or dashboard...</p>
+            <p className="text-muted-foreground italic">Waiting for MQTT packets from ESP32 or dashboard...</p>
           )}
           {filteredMessages.map(msg => {
             const badge =
               msg.type === 'incoming'
-                ? <span className="px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 font-bold shrink-0">RX ◀</span>
+                ? <span className="px-1.5 py-0.2 rounded bg-primary/15 text-primary font-bold shrink-0">RX ◀</span>
                 : msg.type === 'outgoing'
-                  ? <span className="px-1.5 py-0.2 rounded bg-sky-500/15 text-sky-400 font-bold shrink-0">TX ▶</span>
+                  ? <span className="px-1.5 py-0.2 rounded bg-muted text-primary font-bold shrink-0">TX ▶</span>
                   : msg.type === 'error'
                     ? <span className="px-1.5 py-0.2 rounded bg-red-500/15 text-red-400 font-bold shrink-0">ERR ✕</span>
-                    : <span className="px-1.5 py-0.2 rounded bg-slate-500/15 text-slate-400 font-bold shrink-0">SYS ●</span>;
+                    : <span className="px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-bold shrink-0">SYS ●</span>;
 
             return (
               <div key={msg.id} className="flex items-center gap-2 leading-relaxed">
-                <span className="text-slate-500 flex-shrink-0">{msg.timestamp}</span>
+                <span className="text-muted-foreground flex-shrink-0">{msg.timestamp}</span>
                 {badge}
-                <span className="text-slate-200 break-all">{msg.text}</span>
+                <span className="text-foreground break-all">{msg.text}</span>
               </div>
             );
           })}

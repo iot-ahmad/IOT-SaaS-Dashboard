@@ -16,7 +16,7 @@ export function SchematicSvgViewer({ wiringImageUrl, wiringDescription, componen
       {/* Wiring Image */}
       {wiringImageUrl ? (
         <div className="space-y-2">
-          <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#141518] text-center p-3 group">
+          <div className="relative rounded-2xl overflow-hidden border border-border bg-card text-center p-3 group">
             <img
               src={wiringImageUrl}
               alt="Electrical Wiring Schematic"
@@ -25,28 +25,28 @@ export function SchematicSvgViewer({ wiringImageUrl, wiringDescription, componen
             />
             <button
               onClick={() => setIsZoomed(true)}
-              className="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 cursor-pointer"
+              className="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-border text-foreground text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 cursor-pointer"
             >
-              <Eye size={13} />
+              <Eye size={13} className="text-primary" />
               <span>Zoom Schematic</span>
             </button>
           </div>
         </div>
       ) : (
-        <div className="p-8 rounded-2xl border border-dashed border-white/[0.08] bg-[#16171a] text-center space-y-2">
-          <Zap size={28} className="text-zinc-600 mx-auto" />
-          <p className="text-xs text-zinc-400">No wiring schematic image attached to this project.</p>
+        <div className="p-8 rounded-2xl border border-dashed border-border bg-card text-center space-y-2">
+          <Zap size={28} className="text-primary/60 mx-auto" />
+          <p className="text-xs text-muted-foreground">No wiring schematic image attached to this project.</p>
         </div>
       )}
 
       {/* Wiring Explanation */}
       {wiringDescription ? (
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-            <FileText size={14} className="text-zinc-400" />
-            <span>Pinout & Wiring Guide:</span>
+          <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <FileText size={14} className="text-primary" />
+            <span>Pinout &amp; Wiring Guide:</span>
           </h4>
-          <div className="text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap bg-[#1e2024] p-4 rounded-xl border border-white/[0.06] font-mono select-text">
+          <div className="text-xs text-foreground/85 leading-relaxed whitespace-pre-wrap bg-muted/40 p-4 rounded-xl border border-border font-mono select-text">
             {wiringDescription}
           </div>
         </div>
@@ -155,14 +155,14 @@ Important Notes:
     <div className="space-y-6 text-left" dir="ltr">
       
       {/* ── 1. Upload Schematic Image ── */}
-      <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-5 space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Image size={16} className="text-zinc-400" />
+            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <Image size={16} className="text-primary" />
               <span>1. Upload Wiring Schematic (Schematic / Circuit Diagram)</span>
             </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Upload a circuit diagram exported from Fritzing, Wokwi, or EasyEDA, or a clear photo of your breadboard build
             </p>
           </div>
@@ -170,7 +170,7 @@ Important Notes:
           <button
             type="button"
             onClick={() => setShowUrlInput(!showUrlInput)}
-            className="text-xs text-zinc-400 hover:text-white transition-colors"
+            className="text-xs text-primary hover:underline transition-colors cursor-pointer"
           >
             {showUrlInput ? 'Upload file instead of URL' : '+ Add via direct image URL'}
           </button>
@@ -191,11 +191,11 @@ Important Notes:
               placeholder="https://example.com/schematic.png"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              className="flex-1 bg-[#1e2024] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+              className="flex-1 bg-input border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary/40"
             />
             <button
               type="submit"
-              className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white text-xs font-bold"
+              className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold cursor-pointer"
             >
               Apply URL
             </button>
@@ -204,26 +204,26 @@ Important Notes:
 
         {/* Image Preview or Upload Dropzone */}
         {wiringImageUrl ? (
-          <div className="relative rounded-xl overflow-hidden border border-white/[0.08] bg-[#141518] text-center p-3 space-y-3">
+          <div className="relative rounded-xl overflow-hidden border border-border bg-background text-center p-3 space-y-3">
             <img
               src={wiringImageUrl}
               alt="Uploaded Wiring Schematic"
               className="max-h-80 mx-auto object-contain rounded-lg"
             />
-            <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs">
-              <span className="text-zinc-400 font-mono text-[11px]">Schematic image attached</span>
+            <div className="flex items-center justify-between pt-2 border-t border-border text-xs">
+              <span className="text-muted-foreground font-mono text-[11px]">Schematic image attached</span>
               <button
                 type="button"
                 onClick={() => onWiringImageChange('')}
                 className="text-rose-400 hover:text-rose-300 flex items-center gap-1 cursor-pointer font-medium"
               >
                 <Trash2 size={13} />
-                <span>Remove & Replace Image</span>
+                <span>Remove &amp; Replace Image</span>
               </button>
             </div>
           </div>
         ) : (
-          <label className="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/[0.1] hover:border-white/[0.25] rounded-2xl bg-[#141518]/50 hover:bg-[#141518] transition-all cursor-pointer group">
+          <label className="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-border hover:border-primary/40 rounded-2xl bg-background/60 hover:bg-muted/30 transition-all cursor-pointer group">
             <input
               type="file"
               accept="image/*"
@@ -231,32 +231,32 @@ Important Notes:
               className="absolute inset-0 opacity-0 cursor-pointer"
               disabled={uploading}
             />
-            <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:scale-105 transition-all mb-3">
+            <div className="flex items-center justify-center text-primary group-hover:scale-105 transition-all mb-3">
               {uploading ? (
-                <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                <div className="w-6 h-6 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
               ) : (
-                <Upload size={22} />
+                <Upload size={26} className="text-primary" />
               )}
             </div>
-            <p className="text-xs font-bold text-white mb-1">
+            <p className="text-xs font-bold text-foreground mb-1">
               {uploading ? 'Uploading and processing schematic image...' : 'Click to select schematic image or drag and drop here'}
             </p>
-            <p className="text-[11px] text-zinc-500 font-mono">
-              Supports PNG, JPG, WebP, or screenshots from Fritzing & Wokwi
+            <p className="text-[11px] text-muted-foreground font-mono">
+              Supports PNG, JPG, WebP, or screenshots from Fritzing &amp; Wokwi
             </p>
           </label>
         )}
       </div>
 
       {/* ── 2. Step-by-Step Wiring & Pinout Guide ── */}
-      <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-5 space-y-3">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <FileText size={16} className="text-zinc-400" />
-              <span>2. Pinout & Step-by-Step Wiring Guide</span>
+            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <FileText size={16} className="text-primary" />
+              <span>2. Pinout &amp; Step-by-Step Wiring Guide</span>
             </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Document the exact pin numbers and how each sensor or actuator connects to the microcontroller
             </p>
           </div>
@@ -264,7 +264,7 @@ Important Notes:
           <button
             type="button"
             onClick={handleInsertTemplate}
-            className="text-xs text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] px-3 py-1.5 rounded-xl transition-all cursor-pointer"
+            className="text-xs text-primary hover:bg-primary/10 bg-muted border border-border px-3 py-1.5 rounded-xl transition-all cursor-pointer font-semibold"
           >
             + Insert Suggested Wiring Template
           </button>
@@ -275,7 +275,7 @@ Important Notes:
           value={wiringDescription}
           onChange={(e) => onWiringDescriptionChange(e.target.value)}
           placeholder={`Write pinout and wiring details here:\nExample:\n- Sensor VCC ──► ESP32 3.3V Pin\n- Sensor GND ──► ESP32 GND Pin\n- Data Line (SDA) ──► ESP32 GPIO21`}
-          className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl p-3.5 text-xs text-white focus:outline-none focus:border-white/20 leading-relaxed font-mono resize-none transition-colors"
+          className="w-full bg-input border border-border rounded-xl p-3.5 text-xs text-foreground focus:outline-none focus:border-primary/50 leading-relaxed font-mono resize-none transition-colors"
         />
       </div>
 

@@ -38,13 +38,9 @@ export default function SupportModal({ isOpen, onClose }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", duration: 0.4 }}
-            className="relative bg-card/95 dark:bg-[#0c0d12]/95 border border-border/80 dark:border-white/[0.08] p-8 rounded-3xl w-full max-w-md shadow-[0_20px_80px_rgba(0,0,0,0.9)] text-foreground z-50 overflow-hidden"
+            className="relative bg-card border border-border p-8 rounded-3xl w-full max-w-md shadow-[0_20px_80px_rgba(0,0,0,0.9)] text-foreground z-50 overflow-hidden"
             dir="ltr"
           >
-            {/* Subtle neon glowing accent dots */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
-
             {/* Close button */}
             <button
               type="button"
@@ -57,8 +53,8 @@ export default function SupportModal({ isOpen, onClose }) {
 
             {/* Header */}
             <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 text-primary">
-                <LifeBuoy size={24} />
+              <div className="flex items-center justify-center mx-auto mb-3 text-primary">
+                <LifeBuoy size={28} className="text-primary" />
               </div>
               <h3 className="text-xl font-bold tracking-tight">Technical Support</h3>
               <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
@@ -73,18 +69,16 @@ export default function SupportModal({ isOpen, onClose }) {
                 href="https://www.instagram.com/iot365.tech?igsh=MjVvcnlhNm41cnBi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-pink-500/5 to-purple-500/5 hover:from-pink-500/10 hover:to-purple-500/10 border border-pink-500/15 hover:border-pink-500/30 transition-all duration-300 group cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border hover:border-primary/30 transition-all duration-300 group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-pink-500/10">
-                    <InstagramIcon size={20} />
-                  </div>
+                  <InstagramIcon size={22} className="text-primary shrink-0" />
                   <div className="text-left">
-                    <p className="text-sm font-bold text-foreground group-hover:text-pink-400 transition-colors">Instagram</p>
+                    <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">Instagram</p>
                     <p className="text-[11px] text-muted-foreground font-mono">@iot365.tech</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-pink-400 group-hover:translate-x-[2px] transition-all" />
+                <ExternalLink size={16} className="text-primary group-hover:translate-x-[2px] transition-all" />
               </a>
 
               {/* LinkedIn Link */}
@@ -92,18 +86,16 @@ export default function SupportModal({ isOpen, onClose }) {
                 href="https://www.linkedin.com/in/ahmad-al-batayneh"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border hover:border-white/15 transition-all duration-300 group cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border hover:border-primary/30 transition-all duration-300 group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-sm">
-                    <LinkedinIcon size={20} />
-                  </div>
+                  <LinkedinIcon size={22} className="text-primary shrink-0" />
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">LinkedIn</p>
                     <p className="text-[11px] text-muted-foreground">Eng. Ahmad Al-Batayneh</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[2px] transition-all" />
+                <ExternalLink size={16} className="text-primary group-hover:translate-x-[2px] transition-all" />
               </a>
 
               {/* Team Website Link */}
@@ -111,18 +103,16 @@ export default function SupportModal({ isOpen, onClose }) {
                 href="https://team-iot365.netlify.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border hover:border-white/15 transition-all duration-300 group cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border hover:border-primary/30 transition-all duration-300 group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-sm">
-                    <Users size={20} />
-                  </div>
+                  <Users size={22} className="text-primary shrink-0" />
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">Our Team</p>
                     <p className="text-[11px] text-muted-foreground font-mono">team-iot365.netlify.app</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[2px] transition-all" />
+                <ExternalLink size={16} className="text-primary group-hover:translate-x-[2px] transition-all" />
               </a>
             </div>
 

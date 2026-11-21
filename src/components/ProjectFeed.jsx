@@ -12,13 +12,13 @@ import FeaturedTemplatesModal from './ui/FeaturedTemplatesModal';
 
 // ─── Category config (icon + label + filter keyword) ──────────────────────────
 const CATEGORIES = [
-  { id: 'all',        label: 'All',               icon: LayoutGrid,   color: 'text-primary',     bg: 'bg-primary/10',     activeBg: 'bg-primary',     keywords: [] },
-  { id: 'home',       label: 'Home Automation',   icon: Home,         color: 'text-sky-400',     bg: 'bg-sky-400/10',     activeBg: 'bg-sky-400',     keywords: ['relay','smart home','مبدل','منزلي','إضاءة','lighting'] },
-  { id: 'farm',       label: 'Smart Agriculture', icon: Leaf,         color: 'text-emerald-400', bg: 'bg-emerald-400/10', activeBg: 'bg-emerald-400', keywords: ['soil','humidity','moisture','irrigation','farm','زراعة','تربة','ري'] },
-  { id: 'robot',      label: 'Robotics',          icon: Bot,          color: 'text-violet-400',  bg: 'bg-violet-400/10',  activeBg: 'bg-violet-400',  keywords: ['motor','servo','robot','روبوت','محرك'] },
-  { id: 'iot',        label: 'IoT & Wireless',    icon: Wifi,         color: 'text-cyan-400',    bg: 'bg-cyan-400/10',    activeBg: 'bg-cyan-400',    keywords: ['esp32','esp8266','wifi','mqtt','iot'] },
-  { id: 'sensor',     label: 'Sensors',           icon: Thermometer,  color: 'text-rose-400',    bg: 'bg-rose-400/10',    activeBg: 'bg-rose-400',    keywords: ['dht11','dht22','sensor','temperature','حرارة','حساس'] },
-  { id: 'energy',     label: 'Power & Energy',    icon: Zap,          color: 'text-primary',     bg: 'bg-primary/10',     activeBg: 'bg-primary',     keywords: ['solar','battery','power','energy','طاقة','شمسية'] },
+  { id: 'all',        label: 'All',               icon: LayoutGrid,   color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: [] },
+  { id: 'home',       label: 'Home Automation',   icon: Home,         color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: ['relay','smart home','مبدل','منزلي','إضاءة','lighting'] },
+  { id: 'farm',       label: 'Smart Agriculture', icon: Leaf,         color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: ['soil','humidity','moisture','irrigation','farm','زراعة','تربة','ري'] },
+  { id: 'robot',      label: 'Robotics',          icon: Bot,          color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: ['motor','servo','robot','روبوت','محرك'] },
+  { id: 'iot',        label: 'IoT & Wireless',    icon: Wifi,         color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: ['esp32','esp8266','wifi','mqtt','iot'] },
+  { id: 'sensor',     label: 'Sensors',           icon: Thermometer,  color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: ['dht11','dht22','sensor','temperature','حرارة','حساس'] },
+  { id: 'energy',     label: 'Power & Energy',    icon: Zap,          color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: ['solar','battery','power','energy','طاقة','شمسية'] },
 ];
 
 // ─── Sort options ─────────────────────────────────────────────────────────────
@@ -66,8 +66,8 @@ function ProjectCard({ proj, onClick, onAuthorClick, onUseTemplate }) {
         {hasImage ? (
           <>
             {!imgLoaded && (
-              <div className="absolute inset-0 bg-zinc-900 flex items-center justify-center">
-                <Cpu className="text-zinc-700 animate-pulse" size={28} />
+              <div className="absolute inset-0 bg-card flex items-center justify-center">
+                <Cpu className="text-primary animate-pulse" size={28} />
               </div>
             )}
             <img
@@ -78,27 +78,25 @@ function ProjectCard({ proj, onClick, onAuthorClick, onUseTemplate }) {
             />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex flex-col items-center justify-center gap-2">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Cpu className="text-primary" size={22} />
-            </div>
-            <span className="text-[10px] text-zinc-600 font-mono">No preview</span>
+          <div className="absolute inset-0 bg-card flex flex-col items-center justify-center gap-2">
+            <Cpu className="text-primary group-hover:scale-110 transition-transform" size={26} />
+            <span className="text-[10px] text-muted-foreground font-mono">No preview</span>
           </div>
         )}
 
         {/* Gradient overlay at bottom of image */}
-        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-zinc-950/90 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-card/90 to-transparent pointer-events-none" />
 
         {/* Difficulty badge */}
         {proj.difficulty && (
-          <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded-md text-[9px] font-bold text-primary">
+          <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-md border border-border px-2 py-0.5 rounded-md text-[9px] font-bold text-primary">
             {formatDifficulty(proj.difficulty)}
           </div>
         )}
 
         {/* Date badge */}
-        <div className="absolute top-2.5 left-2.5 bg-black/50 backdrop-blur-sm border border-white/10 text-[9px] text-zinc-300 px-1.5 py-0.5 rounded-md font-mono flex items-center gap-1">
-          <Calendar size={8} />
+        <div className="absolute top-2.5 left-2.5 bg-black/50 backdrop-blur-sm border border-border text-[9px] text-foreground/80 px-1.5 py-0.5 rounded-md font-mono flex items-center gap-1">
+          <Calendar size={8} className="text-primary" />
           {new Date(proj.createdAt).toLocaleDateString('en-US')}
         </div>
       </div>
@@ -106,12 +104,12 @@ function ProjectCard({ proj, onClick, onAuthorClick, onUseTemplate }) {
       {/* ── Card Body ── */}
       <div className="p-4 flex flex-col gap-2.5 flex-1 text-left" dir="ltr">
         {/* Title */}
-        <h3 className="text-sm font-extrabold text-white group-hover:text-primary transition-colors leading-snug line-clamp-1">
+        <h3 className="text-sm font-extrabold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-1">
           {proj.title}
         </h3>
 
         {/* Summary */}
-        <p className="text-[11px] text-zinc-500 leading-relaxed line-clamp-2 flex-1">
+        <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 flex-1">
           {proj.summary}
         </p>
 
@@ -127,13 +125,13 @@ function ProjectCard({ proj, onClick, onAuthorClick, onUseTemplate }) {
               </span>
             ))}
             {proj.componentsList.length > 3 && (
-              <span className="text-[9px] text-zinc-600 font-mono px-1">+{proj.componentsList.length - 3}</span>
+              <span className="text-[9px] text-primary font-mono px-1">+{proj.componentsList.length - 3}</span>
             )}
           </div>
         )}
 
         {/* Footer: Author + Metrics */}
-        <div className="flex items-center justify-between pt-2 mt-auto border-t border-white/[0.05]">
+        <div className="flex items-center justify-between pt-2 mt-auto border-t border-border">
           {/* Author */}
           <button
             className="flex items-center gap-1.5 group/author"
@@ -142,23 +140,23 @@ function ProjectCard({ proj, onClick, onAuthorClick, onUseTemplate }) {
             <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-[9px] font-bold text-primary uppercase shadow-sm group-hover/author:border-primary/50 transition-colors">
               {(proj.ownerName || proj.ownerUsername || 'U').charAt(0)}
             </div>
-            <span className="text-[11px] text-zinc-500 group-hover/author:text-white transition-colors font-medium">
+            <span className="text-[11px] text-muted-foreground group-hover/author:text-foreground transition-colors font-medium">
               @{proj.ownerUsername}
             </span>
           </button>
 
           {/* Metrics */}
-          <div className="flex items-center gap-3 text-[10px] text-zinc-600 font-mono">
-            <div className="flex items-center gap-1 hover:text-primary transition-colors" title="Views">
-              <Eye size={11} />
+          <div className="flex items-center gap-3 text-[10px] text-primary font-mono font-bold">
+            <div className="flex items-center gap-1" title="Views">
+              <Eye size={11} className="text-primary" />
               <span>{proj.metrics?.views || 0}</span>
             </div>
-            <div className="flex items-center gap-1 hover:text-rose-400 transition-colors" title="Likes">
-              <ThumbsUp size={11} />
+            <div className="flex items-center gap-1" title="Likes">
+              <ThumbsUp size={11} className="text-primary" />
               <span>{proj.metrics?.likes || 0}</span>
             </div>
-            <div className="flex items-center gap-1 hover:text-sky-400 transition-colors" title="Used as Template">
-              <Copy size={11} />
+            <div className="flex items-center gap-1" title="Used as Template">
+              <Copy size={11} className="text-primary" />
               <span>{proj.timesUsedAsTemplate || 0}</span>
             </div>
           </div>
@@ -275,16 +273,16 @@ export default function ProjectFeed({ user }) {
         .hub-card {
           display: flex;
           flex-direction: column;
-          background: rgba(255,255,255,0.015);
-          border: 1px solid rgba(255,255,255,0.07);
+          background: var(--card);
+          border: 1px solid var(--border);
           border-radius: 16px;
           overflow: hidden;
           transition: border-color .25s, box-shadow .25s, transform .25s;
           position: relative;
         }
         .hub-card:hover {
-          border-color: rgba(56,189,248,.35);
-          box-shadow: 0 12px 40px rgba(0,0,0,.45), 0 0 0 0.5px rgba(56,189,248,.15);
+          border-color: var(--primary);
+          box-shadow: 0 12px 40px rgba(0,0,0,.45);
           transform: translateY(-2px);
         }
         .hub-card-img-wrap {
@@ -292,7 +290,7 @@ export default function ProjectFeed({ user }) {
           width: 100%;
           height: 160px;
           overflow: hidden;
-          background: #111;
+          background: var(--background);
           flex-shrink: 0;
         }
         .hub-card-img {
@@ -309,12 +307,12 @@ export default function ProjectFeed({ user }) {
         {/* ══════════════════════════════════════════════════════════════════
             FEATURED & TEMPLATE PROJECTS SPOTLIGHT HERO
         ══════════════════════════════════════════════════════════════════ */}
-        <div className="bg-card/[0.02] border border-border/80 rounded-3xl p-6 backdrop-blur-xl space-y-4 shadow-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
+        <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
             <div>
               <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-                <Flame size={20} className="text-amber-400" />
-                Featured & Template Projects
+                <Flame size={20} className="text-primary" />
+                Featured &amp; Template Projects
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Verified engineering blueprints and ready-to-use wiring schematics to jumpstart your project
@@ -324,9 +322,9 @@ export default function ProjectFeed({ user }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setTemplatesModalOpen(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-3.5 py-1.5 rounded-xl bg-primary/10 border border-primary/25 text-primary hover:bg-primary/20 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
               >
-                <Layers size={13} />
+                <Layers size={13} className="text-primary" />
                 View All Templates
               </button>
               <button
@@ -345,19 +343,19 @@ export default function ProjectFeed({ user }) {
             {FEATURED_TEMPLATES.map(template => (
               <div
                 key={template.id}
-                className="group relative bg-[#090b10] border border-border hover:border-primary/50 rounded-2xl overflow-hidden transition-all shadow-lg flex flex-col justify-between"
+                className="group relative bg-background border border-border hover:border-primary/50 rounded-2xl overflow-hidden transition-all shadow-lg flex flex-col justify-between"
               >
-                <div className="relative h-32 w-full bg-zinc-950 overflow-hidden">
+                <div className="relative h-32 w-full bg-background overflow-hidden">
                   <img
                     src={template.coverImage}
                     alt={template.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded-md text-[9px] font-bold text-emerald-400">
+                  <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md border border-border px-2 py-0.5 rounded-md text-[9px] font-bold text-primary">
                     {formatDifficulty(template.difficulty)}
                   </div>
-                  <div className="absolute top-2 left-2 bg-sky-500/20 backdrop-blur-md border border-sky-500/30 text-sky-300 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
-                    <Copy size={9} />
+                  <div className="absolute top-2 left-2 bg-primary/15 backdrop-blur-md border border-primary/30 text-primary px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
+                    <Copy size={9} className="text-primary" />
                     Used {template.timesUsedAsTemplate} times
                   </div>
                 </div>
@@ -523,11 +521,9 @@ export default function ProjectFeed({ user }) {
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <SkeletonCard key={i} />)}
           </div>
         ) : sorted.length === 0 ? (
-          <div className="text-center py-20 border border-border rounded-2xl bg-card/[0.01]">
-            <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-4">
-              <Cpu className="text-zinc-700" size={26} />
-            </div>
-            <h3 className="text-base font-bold text-white">No Projects Found</h3>
+          <div className="text-center py-20 border border-border rounded-2xl bg-card">
+            <Cpu className="text-primary mx-auto mb-4" size={32} />
+            <h3 className="text-base font-bold text-foreground">No Projects Found</h3>
             <p className="text-xs text-muted-foreground mt-1.5 max-w-xs mx-auto">
               {hasFilters ? 'Try changing the category or search terms.' : 'Be the first to publish a project in the community!'}
             </p>

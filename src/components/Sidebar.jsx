@@ -61,10 +61,10 @@ export default function Sidebar({
       {/* Collapse toggle — desktop only */}
       <button
         onClick={onToggleCollapse}
-        className="hidden md:flex absolute top-4 right-[-12px] z-50 w-6 h-6 rounded-full bg-card border border-border items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-all shadow-md cursor-pointer"
+        className="hidden md:flex absolute top-4 right-[-12px] z-50 w-6 h-6 rounded-full bg-transparent border-0 items-center justify-center text-primary hover:opacity-80 transition-opacity cursor-pointer"
         title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+        {isCollapsed ? <ChevronRight size={14} className="text-primary" /> : <ChevronLeft size={14} className="text-primary" />}
       </button>
 
       {/* Brand Logo */}
@@ -89,10 +89,10 @@ export default function Sidebar({
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
-              className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
+              className="p-1 rounded-md text-primary hover:bg-muted/40 transition-colors cursor-pointer"
               title="Add workspace"
             >
-              <Plus size={14} />
+              <Plus size={14} className="text-primary" />
             </button>
           </div>
 
@@ -114,7 +114,7 @@ export default function Sidebar({
                         className="flex-1 bg-transparent text-sm outline-none text-foreground min-w-0"
                       />
                       <button onClick={() => commitRename(ws.id)} className="text-primary hover:text-primary/70 flex-shrink-0">
-                        <Check size={14} />
+                        <Check size={14} className="text-primary" />
                       </button>
                       <button onClick={() => setRenamingId(null)} className="text-muted-foreground hover:text-foreground flex-shrink-0">
                         <X size={14} />
@@ -137,8 +137,8 @@ export default function Sidebar({
                         <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-primary rounded-r-full" />
                       )}
                       {Icon
-                        ? <Icon size={17} className={`shrink-0 ${isActive ? 'text-primary' : ''}`} />
-                        : <Gamepad2 size={17} className={`shrink-0 ${isActive ? 'text-primary' : ''}`} />
+                        ? <Icon size={17} className="shrink-0 text-primary" />
+                        : <Gamepad2 size={17} className="shrink-0 text-primary" />
                       }
                       {!isCollapsed && <span className="truncate flex-1 text-left">{ws.name}</span>}
 
@@ -150,10 +150,10 @@ export default function Sidebar({
                             tabIndex={0}
                             onClick={e => { e.stopPropagation(); startRename(ws); }}
                             onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); startRename(ws); } }}
-                            className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                            className="p-1 rounded-md hover:bg-secondary text-primary transition-colors"
                             title="Rename"
                           >
-                            <Pencil size={11} />
+                            <Pencil size={11} className="text-primary" />
                           </span>
                           <span
                             role="button"
@@ -207,7 +207,7 @@ export default function Sidebar({
                   {isActive && (
                     <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-primary rounded-r-full" />
                   )}
-                  <Icon size={17} className={`shrink-0 ${isActive ? 'text-primary' : ''}`} />
+                  <Icon size={17} className="shrink-0 text-primary" />
                   {!isCollapsed && <span className="truncate text-left">{tool.name}</span>}
                 </button>
               );
@@ -235,7 +235,6 @@ export default function Sidebar({
                 <span className="text-foreground font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-sidebar hw-led-on" />
               </div>
               <div className="flex flex-col text-left min-w-0">
                 <span className="text-xs font-semibold text-foreground truncate">{user?.displayName || 'User'}</span>
@@ -260,7 +259,6 @@ export default function Sidebar({
                 <span className="text-foreground font-bold text-sm">
                   {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-sidebar hw-led-on" />
               </div>
             </div>
           )}
@@ -273,7 +271,7 @@ export default function Sidebar({
             className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
             title={isCollapsed ? 'Support' : ''}
           >
-            <HelpCircle size={16} />
+            <HelpCircle size={16} className="text-primary" />
             {!isCollapsed && <span>Support</span>}
           </Button>
 
@@ -285,7 +283,7 @@ export default function Sidebar({
             className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
             title={isCollapsed ? 'Sign Out' : ''}
           >
-            <LogOut size={16} />
+            <LogOut size={16} className="text-primary" />
             {!isCollapsed && <span>Sign Out</span>}
           </Button>
         </div>

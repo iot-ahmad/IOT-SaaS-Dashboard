@@ -382,14 +382,14 @@ export default function UserProfile({ currentUser }) {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowEditModal(false)} />
-            <div className="bg-[#0b0c10] border border-border p-6 rounded-3xl w-full max-w-lg relative text-slate-200 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div className="bg-card border border-border p-6 rounded-3xl w-full max-w-lg relative text-foreground shadow-2xl overflow-y-auto max-h-[90vh]">
               <button
                 onClick={() => setShowEditModal(false)}
                 className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors cursor-pointer"
               >
                 <X size={20} />
               </button>
-              <h3 className="text-xl font-bold mb-1 text-white text-left flex items-center gap-2 border-b border-border pb-3">
+              <h3 className="text-xl font-bold mb-1 text-foreground text-left flex items-center gap-2 border-b border-border pb-3">
                 <Edit3 size={18} className="text-primary" />
                 Create Your Profile
               </h3>
@@ -415,7 +415,7 @@ export default function UserProfile({ currentUser }) {
                     {editAvatarUrl ? (
                       <img src={editAvatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white text-2xl font-bold uppercase">
+                      <div className="w-full h-full bg-muted flex items-center justify-center text-primary text-2xl font-bold uppercase">
                         {editDisplayName.charAt(0) || 'U'}
                       </div>
                     )}
@@ -432,14 +432,14 @@ export default function UserProfile({ currentUser }) {
                     <label className="block text-xs font-bold text-muted-foreground mb-1">Unique Username *</label>
                     <input required type="text" value={editUsername} onChange={e => setEditUsername(e.target.value)}
                       placeholder="e.g. smart_dev" dir="ltr"
-                      className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left" />
+                      className="w-full bg-input border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left text-foreground" />
                     <p className="text-[9px] text-muted-foreground mt-1">Your URL: hub/{editUsername || 'username'}</p>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-muted-foreground mb-1">Display Name *</label>
                     <input required type="text" value={editDisplayName} onChange={e => setEditDisplayName(e.target.value)}
                       placeholder="e.g. Alex Morgan"
-                      className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
+                      className="w-full bg-input border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-foreground" />
                   </div>
                 </div>
 
@@ -447,7 +447,7 @@ export default function UserProfile({ currentUser }) {
                   <label className="block text-xs font-bold text-muted-foreground mb-1">Headline</label>
                   <input type="text" value={editHeadline} onChange={e => setEditHeadline(e.target.value)}
                     placeholder="Hardware & Embedded Systems Engineer"
-                    className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
+                    className="w-full bg-input border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-foreground" />
                 </div>
 
                 <div className="pt-3 flex gap-3">
@@ -456,7 +456,7 @@ export default function UserProfile({ currentUser }) {
                     Create Profile
                   </button>
                   <button type="button" onClick={() => setShowEditModal(false)}
-                    className="flex-1 bg-card/5 border border-border text-muted-foreground font-bold py-2.5 rounded-xl text-xs cursor-pointer">
+                    className="flex-1 bg-muted border border-border text-muted-foreground hover:text-foreground font-bold py-2.5 rounded-xl text-xs cursor-pointer">
                     Later
                   </button>
                 </div>
@@ -471,13 +471,13 @@ export default function UserProfile({ currentUser }) {
   // ── 404: profile not found and user is a guest ───────────────────
   if (error || !profileUser) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-[#18191c] border border-white/[0.08] p-8 rounded-2xl">
-        <AlertCircle className="w-12 h-12 text-zinc-500 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-white">Profile Unavailable</h3>
-        <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{error || 'This user was not found or has not set up their profile yet.'}</p>
+      <div className="max-w-md mx-auto text-center py-16 bg-card border border-border p-8 rounded-2xl">
+        <AlertCircle className="w-12 h-12 text-primary mx-auto mb-4" />
+        <h3 className="text-lg font-bold text-foreground">Profile Unavailable</h3>
+        <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{error || 'This user was not found or has not set up their profile yet.'}</p>
         <button
           onClick={() => navigate('/hub')}
-          className="mt-6 bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold px-5 py-2.5 rounded-xl transition-all cursor-pointer text-xs"
+          className="mt-6 bg-primary hover:bg-primary/90 border border-primary text-primary-foreground font-bold px-5 py-2.5 rounded-xl transition-all cursor-pointer text-xs"
         >
           Go to Community Hub
         </button>
@@ -489,7 +489,7 @@ export default function UserProfile({ currentUser }) {
     <div className="max-w-5xl mx-auto space-y-6">
       
       {/* Developer Profile Header Card */}
-      <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-6 md:p-8 relative overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl p-6 md:p-8 relative overflow-hidden">
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between relative z-10">
           
           {/* User Details info */}
@@ -499,7 +499,7 @@ export default function UserProfile({ currentUser }) {
               {profileUser.avatarUrl || profileUser.photoURL ? (
                 <img src={profileUser.avatarUrl || profileUser.photoURL} alt={profileUser.displayName} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-[#1e2024] flex items-center justify-center text-white font-bold text-2xl uppercase">
+                <div className="w-full h-full bg-muted flex items-center justify-center text-primary font-bold text-2xl uppercase">
                   {profileUser.displayName?.charAt(0) || 'U'}
                 </div>
               )}
@@ -507,19 +507,19 @@ export default function UserProfile({ currentUser }) {
 
             {/* User credentials */}
             <div className="space-y-1.5">
-              <h2 className="text-xl font-bold text-white">{profileUser.displayName}</h2>
-              <p className="text-xs text-zinc-400 font-mono">@{profileUser.username}</p>
+              <h2 className="text-xl font-bold text-foreground">{profileUser.displayName}</h2>
+              <p className="text-xs text-muted-foreground font-mono">@{profileUser.username}</p>
               {profileUser.headline && (
-                <p className="text-xs text-zinc-300">{profileUser.headline}</p>
+                <p className="text-xs text-foreground/85">{profileUser.headline}</p>
               )}
               {profileUser.bio && (
-                <p className="text-xs text-zinc-400 max-w-lg leading-relaxed mt-1">{profileUser.bio}</p>
+                <p className="text-xs text-muted-foreground max-w-lg leading-relaxed mt-1">{profileUser.bio}</p>
               )}
 
               {/* Social Links Icons */}
               <div className="flex gap-3 justify-center md:justify-start pt-2">
                 {profileUser.socialLinks?.github && (
-                  <a href={profileUser.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors" title="Github">
+                  <a href={profileUser.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-primary hover:opacity-80 transition-opacity" title="Github">
                     <GithubIcon size={16} />
                   </a>
                 )}
@@ -545,7 +545,7 @@ export default function UserProfile({ currentUser }) {
                 localStorage.setItem('active_tool_fallback', 'profile');
                 window.location.href = '/?tool=profile';
               }}
-              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer self-stretch md:self-auto justify-center"
+              className="bg-muted hover:bg-secondary border border-border text-foreground font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer self-stretch md:self-auto justify-center"
             >
               <Edit3 size={13} />
               <span>Edit Profile</span>
@@ -565,7 +565,7 @@ export default function UserProfile({ currentUser }) {
                   projectTitle: null
                 });
               }}
-              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer self-stretch md:self-auto justify-center"
+              className="bg-muted hover:bg-secondary border border-border text-foreground font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer self-stretch md:self-auto justify-center"
             >
               <MessageSquare size={13} />
               <span>Message Developer</span>
@@ -578,14 +578,14 @@ export default function UserProfile({ currentUser }) {
 
       {/* Projects Grid Heading */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-white text-left flex items-center gap-2 border-b border-white/[0.08] pb-3">
-          <FolderCode size={16} className="text-zinc-400" />
-          <span>Published Developer Projects ({projects.length})</span>
+        <h3 className="text-sm font-bold text-foreground text-left flex items-center gap-2 border-b border-border pb-3">
+          <FolderCode size={16} className="text-primary" />
+          <span>Published Developer Projects (<span className="text-primary font-mono tabular-nums">{projects.length}</span>)</span>
         </h3>
 
         {projects.length === 0 ? (
-          <div className="text-center py-12 bg-[#18191c] border border-white/[0.08] rounded-2xl p-6">
-            <FolderCode className="w-10 h-10 text-zinc-600 mx-auto mb-2" />
+          <div className="text-center py-12 bg-card border border-border rounded-2xl p-6">
+            <FolderCode className="w-10 h-10 text-primary mx-auto mb-2" />
             <h4 className="text-xs font-bold text-zinc-400">No Published Projects</h4>
             <p className="text-[11px] text-zinc-500 mt-1">This developer has not published any public projects yet.</p>
           </div>
@@ -595,7 +595,7 @@ export default function UserProfile({ currentUser }) {
               <div
                 key={proj.id}
                 onClick={() => navigate(`/hub/project/${proj.id}`)}
-                className="group bg-[#18191c] hover:bg-[#1e2025] border border-white/[0.08] hover:border-white/20 rounded-2xl p-5 transition-all flex flex-col justify-between cursor-pointer"
+                className="group bg-card hover:bg-muted/60 border border-border hover:border-primary/40 rounded-2xl p-5 transition-all flex flex-col justify-between cursor-pointer"
               >
                 <div>
                   <div className="flex justify-between items-start mb-3">
@@ -604,9 +604,7 @@ export default function UserProfile({ currentUser }) {
                         <img src={proj.images[0]} alt={proj.title} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 shrink-0">
-                        <Cpu size={16} />
-                      </div>
+                      <Cpu size={18} className="text-primary shrink-0 mt-0.5" />
                     )}
                     <span className="text-[9px] text-zinc-500 font-mono">{new Date(proj.createdAt).toLocaleDateString('en-US')}</span>
                   </div>
@@ -618,7 +616,7 @@ export default function UserProfile({ currentUser }) {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-white/[0.06] mt-3 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                <div className="pt-3 border-t border-border mt-3 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
                   <div className="flex items-center gap-1">
                     <Eye size={11} />
                     <span>{proj.metrics?.views || 0}</span>

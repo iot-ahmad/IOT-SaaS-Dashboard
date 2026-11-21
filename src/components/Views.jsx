@@ -90,15 +90,15 @@ const OnboardingWizard = () => {
           const StepIcon = step.icon;
           return (
             <div key={idx} className="flex flex-col items-center text-center group z-10 relative">
-              <div className="w-13 h-13 rounded-xl bg-muted border border-border flex items-center justify-center group-hover:border-primary/40 transition-colors">
-                <StepIcon size={20} className="text-primary" />
+              <div className="w-13 h-13 flex items-center justify-center bg-card">
+                <StepIcon size={24} className="text-primary" />
               </div>
               
-              <span className="mt-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted/80 border border-border text-muted-foreground font-mono">
+              <span className="mt-2 text-xs font-bold text-primary font-mono tabular-nums">
                 0{step.number}
               </span>
 
-              <h4 className="text-sm font-bold text-foreground mt-2.5 mb-0.5">
+              <h4 className="text-sm font-bold text-foreground mt-2 mb-0.5">
                 {step.title}
               </h4>
               <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">
@@ -151,52 +151,43 @@ export const HomeView = ({
         <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Workspaces</p>
-            <p className="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">{customWorkspaces.length}</p>
+            <p className="text-2xl font-bold font-mono tabular-nums text-primary mt-1">{customWorkspaces.length}</p>
             <p className="text-[11px] text-muted-foreground mt-0.5">Universal Controller ready</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Layers size={18} />
-          </div>
+          <Layers size={22} className="text-primary shrink-0" />
         </div>
 
         <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">MQTT Cloud Broker</p>
             <div className="flex items-center gap-2 mt-1">
-              <span className={`w-2 h-2 rounded-full shrink-0 ${isConnected ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-red-500 hw-led-err'}`} />
-              <p className="text-lg font-bold text-foreground">{isConnected ? 'Connected' : 'Offline'}</p>
+              <p className={`text-lg font-bold ${isConnected ? 'text-primary' : 'text-red-400'}`}>
+                {isConnected ? 'Connected' : 'Offline'}
+              </p>
             </div>
             <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
               {mqttMode === 'private' ? 'EMQX TLS 8883 · ACL' : 'Shared Demo Broker'}
             </p>
           </div>
-          <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
-            isConnected ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
-          }`}>
-            {isConnected ? <Wifi size={18} /> : <WifiOff size={18} />}
-          </div>
+          {isConnected ? <Wifi size={22} className="text-primary shrink-0" /> : <WifiOff size={22} className="text-red-400 shrink-0" />}
         </div>
 
         <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Live Telemetry Topics</p>
-            <p className="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">{activeTopicsCount}</p>
+            <p className="text-2xl font-bold font-mono tabular-nums text-primary mt-1">{activeTopicsCount}</p>
             <p className="text-[11px] text-muted-foreground mt-0.5">Active streaming channels</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0">
-            <Activity size={18} />
-          </div>
+          <Activity size={22} className="text-primary shrink-0" />
         </div>
 
         <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Active Rules</p>
-            <p className="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">{activeRulesCount}</p>
+            <p className="text-2xl font-bold font-mono tabular-nums text-primary mt-1">{activeRulesCount}</p>
             <p className="text-[11px] text-muted-foreground mt-0.5">Automation triggers enabled</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
-            <Zap size={18} />
-          </div>
+          <Zap size={22} className="text-primary shrink-0" />
         </div>
       </div>
 
@@ -208,49 +199,43 @@ export const HomeView = ({
           className="hw-panel bg-card border border-border hover:border-primary/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-              <Gamepad2 size={18} />
-            </div>
+            <Gamepad2 size={22} className="text-primary shrink-0" />
             <div className="min-w-0">
               <h4 className="text-sm font-bold text-foreground truncate">Universal Controller</h4>
               <p className="text-xs text-muted-foreground truncate">Launch tactile sensors, switches & robotics</p>
             </div>
           </div>
-          <ChevronRight size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+          <ChevronRight size={16} className="text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
         </button>
 
         <button
           type="button"
           onClick={() => onOpenTool?.('simulator')}
-          className="hw-panel bg-card border border-border hover:border-sky-500/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
+          className="hw-panel bg-card border border-border hover:border-primary/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0">
-              <Columns size={18} />
-            </div>
+            <Columns size={22} className="text-primary shrink-0" />
             <div className="min-w-0">
               <h4 className="text-sm font-bold text-foreground truncate">Wokwi Simulator</h4>
               <p className="text-xs text-muted-foreground truncate">Split-screen virtual ESP32 testbench</p>
             </div>
           </div>
-          <ChevronRight size={16} className="text-muted-foreground group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+          <ChevronRight size={16} className="text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
         </button>
 
         <button
           type="button"
           onClick={() => onOpenTool?.('devices')}
-          className="hw-panel bg-card border border-border hover:border-emerald-500/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
+          className="hw-panel bg-card border border-border hover:border-primary/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-              <Cpu size={18} />
-            </div>
+            <Cpu size={22} className="text-primary shrink-0" />
             <div className="min-w-0">
               <h4 className="text-sm font-bold text-foreground truncate">Connected Devices</h4>
               <p className="text-xs text-muted-foreground truncate">Inspect GPIO hardware & telemetry charts</p>
             </div>
           </div>
-          <ChevronRight size={16} className="text-muted-foreground group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+          <ChevronRight size={16} className="text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
         </button>
       </div>
 
@@ -282,17 +267,14 @@ export const HomeView = ({
                 onClick={() => setActiveWorkspace(ws.id)}
                 className="hw-panel relative overflow-hidden bg-card border border-border hover:border-primary/40 rounded-xl p-5 text-left transition-all duration-150 group cursor-pointer"
               >
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/70 to-sky-400/70 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary/80 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="flex items-center justify-between gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-muted border border-border flex items-center justify-center text-primary shrink-0">
-                    <Gamepad2 size={19} />
-                  </div>
+                  <Gamepad2 size={22} className="text-primary shrink-0" />
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-md bg-muted border border-border text-muted-foreground">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-slate-500'}`} />
                       {ws.esp32Prefix ? `Target: ${ws.esp32Prefix}` : 'Global UID'}
                     </span>
-                    <ChevronRight size={15} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight size={15} className="text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </div>
                 <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">{ws.name}</h3>
@@ -350,11 +332,11 @@ export const OfficeView = () => (
       <Card>
         <div className="flex justify-between items-start mb-4">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-orange-400">
-              <Users size={20} />
+            <div className="flex items-center gap-2 mb-2 text-primary">
+              <Users size={20} className="text-primary" />
               <h3 className="text-foreground/80 font-medium">Occupancy</h3>
             </div>
-            <span className="text-2xl font-bold text-foreground">14 People</span>
+            <span className="text-2xl font-bold text-foreground"><span className="text-primary font-mono">14</span> People</span>
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-4">Meeting Room A: Occupied</p>
@@ -363,19 +345,19 @@ export const OfficeView = () => (
       <Card>
         <div className="flex justify-between items-start mb-4">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-teal-400">
-              <Thermometer size={20} />
+            <div className="flex items-center gap-2 mb-2 text-primary">
+              <Thermometer size={20} className="text-primary" />
               <h3 className="text-foreground/80 font-medium">Air Quality</h3>
             </div>
             <span className="text-2xl font-bold text-foreground">Excellent</span>
           </div>
         </div>
-        <p className="text-xs text-teal-400 mt-4">CO2: 420 ppm</p>
+        <p className="text-xs text-muted-foreground mt-4">CO2: <span className="text-primary font-mono font-bold">420 ppm</span></p>
       </Card>
 
       <Card className="md:col-span-2">
         <div className="flex items-center gap-2 mb-6">
-          <Briefcase className="text-muted-foreground" size={20} />
+          <Briefcase className="text-primary" size={20} />
           <h3 className="text-foreground/80 font-medium">Desk Bookings</h3>
         </div>
         <div className="grid grid-cols-4 gap-2">

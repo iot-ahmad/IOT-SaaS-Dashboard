@@ -34,22 +34,22 @@ export default function NotificationsView() {
     <div className="max-w-4xl mx-auto space-y-5">
       
       {/* ── Header ── */}
-      <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+      <div className="flex items-center justify-between border-b border-border pb-4">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <Bell size={18} className="text-zinc-400" />
+          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Bell size={18} className="text-primary" />
             <span>Notifications</span>
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Recent interactions and activity across the community
           </p>
         </div>
 
         <button
           onClick={markAllRead}
-          className="px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-medium text-zinc-300 transition-all flex items-center gap-1.5 cursor-pointer"
+          className="px-3 py-1.5 rounded-xl bg-muted hover:bg-secondary border border-border text-xs font-medium text-foreground transition-all flex items-center gap-1.5 cursor-pointer"
         >
-          <CheckCheck size={13} />
+          <CheckCheck size={13} className="text-primary" />
           <span>Mark all as read</span>
         </button>
       </div>
@@ -65,26 +65,24 @@ export default function NotificationsView() {
               onClick={() => navigate(notif.link)}
               className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                 notif.isUnread
-                  ? 'bg-[#18191c] border-white/[0.15]'
-                  : 'bg-[#18191c]/50 border-white/[0.06] hover:bg-[#18191c]'
+                  ? 'bg-card border-primary/30'
+                  : 'bg-card/60 border-border hover:bg-card'
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-zinc-300 shrink-0">
-                  <Icon size={15} />
-                </div>
+                <Icon size={17} className="text-primary shrink-0" />
                 <div>
-                  <p className={`text-xs font-medium ${notif.isUnread ? 'text-white' : 'text-zinc-300'}`}>
+                  <p className={`text-xs font-medium ${notif.isUnread ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
                     {notif.title}
                   </p>
-                  <span className="text-[10px] text-zinc-500 font-mono inline-block">
+                  <span className="text-[10px] text-muted-foreground font-mono inline-block">
                     {notif.time}
                   </span>
                 </div>
               </div>
 
               {notif.isUnread && (
-                <div className="w-2 h-2 rounded-full bg-white shrink-0" />
+                <span className="text-[9px] font-mono font-bold text-primary shrink-0">NEW</span>
               )}
             </div>
           );
