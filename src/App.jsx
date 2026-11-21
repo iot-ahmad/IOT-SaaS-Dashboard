@@ -631,7 +631,7 @@ function Dashboard({ user, logout }) {
   const renderContent = () => {
     if (activeTool) {
       switch (activeTool) {
-        case 'simulator':   return <SimulatorView deviceStates={deviceStates} publish={publish} messages={messages} userUID={userUID} lastSeen={lastSeen} />;
+        case 'simulator':   return <SimulatorView deviceStates={deviceStates} publish={publish} messages={messages} userUID={userUID} lastSeen={lastSeen} isConnected={isConnected} />;
         case 'devices':     return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
         case 'alerts':     return <AlertsView userUID={userUID} />;
