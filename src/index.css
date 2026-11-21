@@ -121,7 +121,89 @@
 
   /* ── Realistic Hardware Instrument Chassis & Primitives ── */
   .hw-panel {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 24px -10px rgba(0, 0, 0, 0.45);
+    background: linear-gradient(180deg, oklch(21.2% 0.006 130) 0%, oklch(19.4% 0.005 130) 100%);
+    box-shadow:
+      inset 0 1px 0 oklch(94.5% 0.012 110 / 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+      0 12px 28px -14px rgba(0, 0, 0, 0.72),
+      0 2px 6px -2px rgba(0, 0, 0, 0.45);
+  }
+
+  .hw-well {
+    background: oklch(14% 0.004 130);
+    border: 1px solid oklch(94.5% 0.012 110 / 0.08);
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.78),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.35),
+      0 1px 0 oklch(94.5% 0.012 110 / 0.06);
+  }
+
+  .hw-lcd {
+    background: oklch(13% 0.004 130);
+    background-image: repeating-linear-gradient(
+      0deg,
+      oklch(84.1% 0.238 128.85 / 0.03) 0px,
+      oklch(84.1% 0.238 128.85 / 0.03) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    border: 1px solid oklch(84.1% 0.238 128.85 / 0.2);
+    box-shadow:
+      inset 0 2px 8px rgba(0, 0, 0, 0.85),
+      0 1px 0 oklch(94.5% 0.012 110 / 0.05);
+  }
+
+  .hw-keycap {
+    background: linear-gradient(180deg, oklch(25% 0.006 130) 0%, oklch(20.5% 0.005 130) 100%);
+    border: 1px solid oklch(94.5% 0.012 110 / 0.11);
+    box-shadow:
+      inset 0 1px 0 oklch(94.5% 0.012 110 / 0.1),
+      0 2px 0 oklch(11% 0.003 130),
+      0 3px 6px rgba(0, 0, 0, 0.4);
+    transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .hw-keycap:hover {
+    border-color: oklch(84.1% 0.238 128.85 / 0.35);
+  }
+
+  .hw-keycap:active {
+    transform: translateY(1px);
+    box-shadow:
+      inset 0 1px 3px rgba(0, 0, 0, 0.65),
+      0 0 0 oklch(11% 0.003 130);
+  }
+
+  .hw-keycap-active {
+    background: linear-gradient(180deg, oklch(84.1% 0.238 128.85 / 0.22) 0%, oklch(84.1% 0.238 128.85 / 0.1) 100%);
+    border-color: oklch(84.1% 0.238 128.85 / 0.55);
+    color: oklch(84.1% 0.238 128.85);
+    box-shadow:
+      inset 0 1px 0 oklch(84.1% 0.238 128.85 / 0.22),
+      0 1px 0 oklch(11% 0.003 130),
+      0 0 10px oklch(84.1% 0.238 128.85 / 0.15);
+  }
+
+  .hw-screw {
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 35% 35%, oklch(34% 0.006 130), oklch(17% 0.004 130));
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.7), 0 0.5px 0 oklch(94.5% 0.012 110 / 0.08);
+    pointer-events: none;
+  }
+
+  @keyframes hw-flow {
+    from {
+      stroke-dashoffset: 20;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .hw-flow {
+    animation: hw-flow 0.75s linear infinite;
   }
 
   .workbench-grid {
@@ -132,11 +214,11 @@
   .hw-slider {
     -webkit-appearance: none;
     appearance: none;
-    height: 6px;
+    height: 7px;
     border-radius: 9999px;
-    background: var(--secondary);
-    border: 1px solid var(--border);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+    background: oklch(13% 0.004 130);
+    border: 1px solid oklch(94.5% 0.012 110 / 0.09);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.85), 0 1px 0 oklch(94.5% 0.012 110 / 0.06);
     cursor: pointer;
     outline: none;
   }
@@ -144,29 +226,29 @@
   .hw-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 9999px;
-    background: linear-gradient(145deg, #f8fafc, #b5b6ad);
-    border: 2px solid oklch(84.1% 0.238 128.85);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(163, 230, 53, 0.18);
+    width: 14px;
+    height: 20px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #272925 0%, #3a3d36 38%, oklch(84.1% 0.238 128.85) 45%, oklch(84.1% 0.238 128.85) 55%, #3a3d36 62%, #272925 100%);
+    border: 1px solid oklch(94.5% 0.012 110 / 0.22);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.75), inset 0 1px 0 oklch(94.5% 0.012 110 / 0.22);
     cursor: grab;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
 
   .hw-slider::-webkit-slider-thumb:hover,
   .hw-slider::-webkit-slider-thumb:active {
-    transform: scale(1.12);
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.65), 0 0 0 4px rgba(163, 230, 53, 0.28);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.8), 0 0 0 3px oklch(84.1% 0.238 128.85 / 0.22);
   }
 
   .hw-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 9999px;
-    background: linear-gradient(145deg, #f8fafc, #b5b6ad);
-    border: 2px solid oklch(84.1% 0.238 128.85);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(163, 230, 53, 0.18);
+    width: 14px;
+    height: 20px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #272925 0%, #3a3d36 38%, oklch(84.1% 0.238 128.85) 45%, oklch(84.1% 0.238 128.85) 55%, #3a3d36 62%, #272925 100%);
+    border: 1px solid oklch(94.5% 0.012 110 / 0.22);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.75), inset 0 1px 0 oklch(94.5% 0.012 110 / 0.22);
     cursor: grab;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
   }

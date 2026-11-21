@@ -792,19 +792,19 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
   );
 }
 
-// ─── Shared 12-Segment Hardware LED Bar Meter ─────────────────────────────────
+// ─── Shared 16-Segment Hardware LED Bar Meter ─────────────────────────────────
 function LedBarGraph({ pct }) {
   const clamped = Math.min(100, Math.max(0, pct || 0));
-  const activeCount = Math.round((clamped / 100) * 12);
+  const activeCount = Math.round((clamped / 100) * 16);
   return (
-    <div className="grid grid-cols-12 gap-1 w-full">
-      {Array.from({ length: 12 }).map((_, idx) => {
+    <div className="hw-well p-1 rounded-md grid grid-cols-16 gap-0.5 w-full">
+      {Array.from({ length: 16 }).map((_, idx) => {
         const lit = idx < activeCount;
-        let bgClass = 'bg-muted border-border';
+        let bgClass = 'bg-card/80 border-border/50';
         if (lit) {
-          if (idx >= 10) bgClass = 'bg-red-500 border-red-400 shadow-[0_0_6px_rgba(239,68,68,0.55)]';
-          else if (idx >= 8) bgClass = 'bg-amber-400 border-amber-300 shadow-[0_0_6px_rgba(245,158,11,0.45)]';
-          else bgClass = 'bg-primary border-primary/80';
+          if (idx >= 14) bgClass = 'bg-red-500 border-red-400 shadow-[0_0_6px_rgba(239,68,68,0.55)]';
+          else if (idx >= 12) bgClass = 'bg-amber-400 border-amber-300 shadow-[0_0_6px_rgba(245,158,11,0.45)]';
+          else bgClass = 'bg-primary border-primary/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]';
         }
         return (
           <div
@@ -817,7 +817,7 @@ function LedBarGraph({ pct }) {
   );
 }
 
-// ─── Gauge Widget ─────────────────────────────────────────────────────────────
+// ─── Gauge Widget (240° Calibrated Analog + Digital Telemetry Meter) ─────────
 function GaugeWidget({ widget, value, history = [] }) {
   const num = value !== undefined ? parseFloat(value) : NaN;
   const hasData = Number.isFinite(num);
@@ -830,77 +830,97 @@ function GaugeWidget({ widget, value, history = [] }) {
 
   const cx = 80;
   const cy = 72;
-  const r = 52;
   const arcLen = 217.817; // 2 * PI * 52 * (240 / 360)
+  const needleDeg = -120 + (pct / 100) * 240;
+  const midVal = Math.round(maxVal / 2);
 
   return (
-    <div className="flex flex-col h-full justify-center items-center gap-1 min-h-0 text-left">
+    <div className="flex flex-col h-full justify-center items-center gap-1.5 min-h-0 text-left">
       {hasData ? (
         <>
-          {/* 240° Industrial Arc Dial */}
-          <div className="relative w-36 h-[104px] flex items-center justify-center shrink-0">
-            <svg viewBox="0 0 160 116" className="w-full h-full overflow-visible">
-              {/* Outer 13 tick marks (-120° to +120°) */}
-              {Array.from({ length: 13 }).map((_, i) => {
-                const deg = -120 + i * 20;
-                const rad = (deg * Math.PI) / 180;
-                const isMajor = i % 3 === 0;
-                const r1 = isMajor ? 58 : 60;
-                const r2 = 64;
-                const x1 = cx + r1 * Math.sin(rad);
-                const y1 = cy - r1 * Math.cos(rad);
-                const x2 = cx + r2 * Math.sin(rad);
-                const y2 = cy - r2 * Math.cos(rad);
-                return (
-                  <line
-                    key={i}
-                    x1={x1} y1={y1} x2={x2} y2={y2}
-                    stroke={isMajor ? 'rgba(240,240,232,0.45)' : 'rgba(240,240,232,0.18)'}
-                    strokeWidth={isMajor ? 1.75 : 1}
-                    strokeLinecap="round"
-                  />
-                );
-              })}
+          {/* 240° Recessed Instrument Dial + Rotating Needle */}
+          <div className="hw-well rounded-xl px-2.5 pt-2 pb-1.5 w-full flex flex-col items-center justify-center shrink-0">
+            <div className="relative w-40 h-[102px] flex items-center justify-center">
+              <svg viewBox="0 0 160 112" className="w-full h-full overflow-visible">
+                {/* 25 graduated scale ticks (-120° to +120°) */}
+                {Array.from({ length: 25 }).map((_, i) => {
+                  const deg = -120 + i * 10;
+                  const rad = (deg * Math.PI) / 180;
+                  const isMajor = i % 3 === 0;
+                  const r1 = isMajor ? 57 : 60;
+                  const r2 = 64;
+                  return (
+                    <line
+                      key={i}
+                      x1={cx + r1 * Math.sin(rad)}
+                      y1={cy - r1 * Math.cos(rad)}
+                      x2={cx + r2 * Math.sin(rad)}
+                      y2={cy - r2 * Math.cos(rad)}
+                      stroke={isMajor ? 'rgba(240,240,232,0.5)' : 'rgba(240,240,232,0.18)'}
+                      strokeWidth={isMajor ? 1.5 : 0.9}
+                      strokeLinecap="round"
+                    />
+                  );
+                })}
 
-              {/* Recessed track arc */}
-              <path
-                d="M 34.97 98 A 52 52 0 1 1 125.03 98"
-                fill="none"
-                stroke="rgba(240,240,232,0.12)"
-                strokeWidth="8"
-                strokeLinecap="round"
-              />
+                {/* Recessed track arc */}
+                <path
+                  d="M 34.97 98 A 52 52 0 1 1 125.03 98"
+                  fill="none"
+                  stroke="rgba(240,240,232,0.1)"
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                />
 
-              {/* Active luminous value arc */}
-              <path
-                d="M 34.97 98 A 52 52 0 1 1 125.03 98"
-                fill="none"
-                stroke={ringColor}
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={arcLen}
-                strokeDashoffset={arcLen - (arcLen * pct) / 100}
-                style={{ transition: 'stroke-dashoffset 0.55s ease-out, stroke 0.3s ease' }}
-              />
+                {/* Active luminous value arc */}
+                <path
+                  d="M 34.97 98 A 52 52 0 1 1 125.03 98"
+                  fill="none"
+                  stroke={ringColor}
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  strokeDasharray={arcLen}
+                  strokeDashoffset={arcLen - (arcLen * pct) / 100}
+                  style={{ transition: 'stroke-dashoffset 0.55s ease-out, stroke 0.3s ease' }}
+                />
 
-              {/* Scale Min/Max Micro-Labels */}
-              <text x="26" y="111" textAnchor="middle" fontSize="9" fill="#a3e635" fontFamily="var(--font-mono)">0</text>
-              <text x="134" y="111" textAnchor="middle" fontSize="9" fill="#a3e635" fontFamily="var(--font-mono)">{maxVal}</text>
-            </svg>
+                {/* Scale Min / Mid / Max Micro-Labels */}
+                <text x="26" y="109" textAnchor="middle" fontSize="8" fill="#a3e635" fontFamily="var(--font-mono)">0</text>
+                <text x="80" y="12" textAnchor="middle" fontSize="7.5" fill="rgba(240,240,232,0.55)" fontFamily="var(--font-mono)">{midVal}</text>
+                <text x="134" y="109" textAnchor="middle" fontSize="8" fill="#a3e635" fontFamily="var(--font-mono)">{maxVal}</text>
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center pt-3 pointer-events-none">
-              <div className="text-2xl font-black font-mono tabular-nums tracking-tight text-primary leading-none">
+                {/* Rotating Calibrated Needle */}
+                <g transform={`rotate(${needleDeg} 80 72)`} style={{ transition: 'transform 0.55s ease-out' }}>
+                  <polygon points="78.2,72 80,26 81.8,72 81,82 79,82" fill={ringColor} />
+                </g>
+                <circle cx="80" cy="72" r="6" fill="#1a1b18" stroke="#8b8d83" strokeWidth="1.5" />
+                <circle cx="80" cy="72" r="2.2" fill={ringColor} />
+              </svg>
+            </div>
+
+            {/* Digital LCD Telemetry Pill */}
+            <div className="hw-lcd rounded-lg px-3 py-1 flex items-baseline justify-center gap-1.5 w-full max-w-[155px]">
+              <span className="text-xl font-black font-mono tabular-nums tracking-tight text-primary leading-none">
                 {num.toFixed(1)}
-              </div>
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
-                {widget.unit || ''}
               </span>
+              {widget.unit && (
+                <span className="text-[10px] text-muted-foreground font-mono font-bold uppercase tracking-wider">
+                  {widget.unit}
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Sparkline Telemetry Trend */}
+          {/* Oscilloscope Gridded Sparkline */}
           {chartData.length > 1 && (
-            <div className="h-11 flex-1 min-h-[28px] w-full overflow-hidden opacity-85 hover:opacity-100 transition-opacity">
+            <div
+              className="hw-well rounded-lg h-11 flex-1 min-h-[28px] w-full overflow-hidden px-1 pt-1"
+              style={{
+                backgroundImage:
+                  'linear-gradient(to right, rgba(240,240,232,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(240,240,232,0.04) 1px, transparent 1px)',
+                backgroundSize: '14px 10px',
+              }}
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 2, right: 2, left: 2, bottom: 0 }}>
                   <defs>
@@ -917,16 +937,17 @@ function GaugeWidget({ widget, value, history = [] }) {
           )}
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-2 py-3 my-auto">
-          <Radio className="text-primary" size={20} />
-          <span className="text-[11px] font-mono text-muted-foreground tracking-wide">Waiting for telemetry...</span>
+        <div className="hw-lcd rounded-xl px-4 py-3.5 w-full flex flex-col items-center justify-center gap-1.5 my-auto">
+          <Radio className="text-primary" size={18} />
+          <span className="text-lg font-mono font-bold tracking-widest text-primary/40">---.-</span>
+          <span className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">No Signal · Standby</span>
         </div>
       )}
     </div>
   );
 }
 
-// ─── Switch Widget (Physical Illuminated Rocker Switch) ───────────────────────
+// ─── Switch Widget (3D Illuminated Industrial Rocker Switch) ───────────────────
 function SwitchWidget({ widget, value, publish }) {
   const isOn = value === '1' || value === 'ON' || value === 'true';
   const toggle = () => publish(widget.topic, isOn ? 'OFF' : 'ON');
@@ -937,25 +958,28 @@ function SwitchWidget({ widget, value, publish }) {
         type="button"
         onClick={toggle}
         title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
-        className="w-24 h-14 rounded-xl bg-muted/80 border border-border p-1.5 shadow-inner cursor-pointer transition-all active:scale-[0.97]"
+        className="hw-well w-28 h-16 rounded-xl p-2 cursor-pointer transition-all active:scale-[0.98]"
       >
         <div
-          className={`w-full h-full rounded-lg border flex flex-col items-center justify-between py-1.5 px-2 transition-all duration-200 ${
+          className={`w-full h-full rounded-lg border flex flex-col items-center justify-between py-1.5 px-2.5 transition-all duration-200 ${
             isOn
-              ? 'bg-gradient-to-b from-primary/25 to-primary/10 border-primary/45'
-              : 'bg-gradient-to-b from-secondary to-background/80 border-border'
+              ? 'bg-gradient-to-b from-primary/30 via-primary/15 to-card border-primary/50 shadow-[inset_0_2px_4px_rgba(163,230,53,0.25),0_2px_6px_rgba(0,0,0,0.6)]'
+              : 'bg-gradient-to-b from-secondary via-muted to-background border-border shadow-[inset_0_-2px_4px_rgba(0,0,0,0.45),0_2px_6px_rgba(0,0,0,0.6)]'
           }`}
         >
-          <span className={`text-[9px] font-mono font-black ${isOn ? 'text-primary' : 'text-muted-foreground/50'}`}>I</span>
-          <div className={`w-8 h-1 rounded-full transition-all ${isOn ? 'bg-primary' : 'bg-muted-foreground/40'}`} />
-          <span className={`text-[9px] font-mono font-black ${!isOn ? 'text-foreground/70' : 'text-muted-foreground/40'}`}>O</span>
+          <span className={`text-[9px] font-mono font-black leading-none ${isOn ? 'text-primary' : 'text-muted-foreground/45'}`}>I</span>
+          <div className="w-10 flex flex-col gap-0.5 items-center">
+            <div className={`w-full h-0.5 rounded-full ${isOn ? 'bg-primary shadow-[0_0_6px_rgba(163,230,53,0.75)]' : 'bg-muted-foreground/30'}`} />
+            <div className="w-8 h-[1px] bg-white/[0.08]" />
+          </div>
+          <span className={`text-[9px] font-mono font-black leading-none ${!isOn ? 'text-foreground/75' : 'text-muted-foreground/35'}`}>O</span>
         </div>
       </button>
 
-      <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+      <span className={`hw-lcd inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-3 py-0.5 rounded-md ${
         isOn
-          ? 'bg-primary/12 border-primary/30 text-primary'
-          : 'bg-muted border-border text-muted-foreground'
+          ? 'text-primary border-primary/40'
+          : 'text-muted-foreground'
       }`}>
         {isOn ? 'ENERGIZED' : 'STANDBY'}
       </span>
@@ -963,7 +987,7 @@ function SwitchWidget({ widget, value, publish }) {
   );
 }
 
-// ─── Slider Widget (Servo / Speed) ────────────────────────────────────────────
+// ─── Slider Widget (Machined Console Fader & VU Meter) ────────────────────────
 function SliderWidget({ widget, publish }) {
   const max = widget.type === 'speed' ? 255 : 180;
   const [val, setVal] = useState(0);
@@ -978,12 +1002,15 @@ function SliderWidget({ widget, publish }) {
   const presets = widget.type === 'speed' ? [0, 64, 128, 192, 255] : [0, 45, 90, 135, 180];
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
-      <div className="flex justify-between items-baseline">
-        <span className="text-2xl font-black font-mono tabular-nums tracking-tight text-primary">
-          {val}
-          {widget.type !== 'speed' && <span className="text-sm text-primary/80 ml-0.5">°</span>}
-        </span>
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      <div className="hw-lcd rounded-xl px-3 py-1.5 flex justify-between items-baseline">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-2xl font-black font-mono tabular-nums tracking-tight text-primary leading-none">
+            {val}
+            {widget.type !== 'speed' && <span className="text-sm text-primary/80 ml-0.5">°</span>}
+          </span>
+          <span className="text-[10px] font-mono text-primary/70 tabular-nums">{Math.round(pct)}%</span>
+        </div>
         <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider">
           {label} / <span className="text-primary">{max}</span>
         </span>
@@ -991,14 +1018,21 @@ function SliderWidget({ widget, publish }) {
 
       <LedBarGraph pct={pct} />
 
-      <input
-        type="range"
-        min="0"
-        max={max}
-        value={val}
-        onChange={e => updateVal(Number(e.target.value))}
-        className="w-full hw-slider"
-      />
+      <div className="space-y-1">
+        <input
+          type="range"
+          min="0"
+          max={max}
+          value={val}
+          onChange={e => updateVal(Number(e.target.value))}
+          className="w-full hw-slider"
+        />
+        <div className="flex justify-between px-1 pointer-events-none">
+          {Array.from({ length: 9 }).map((_, idx) => (
+            <span key={idx} className={`w-px ${idx % 2 === 0 ? 'h-1.5 bg-foreground/30' : 'h-1 bg-foreground/15'}`} />
+          ))}
+        </div>
+      </div>
 
       <div className="flex gap-1">
         {presets.map(p => (
@@ -1006,10 +1040,10 @@ function SliderWidget({ widget, publish }) {
             key={p}
             type="button"
             onClick={() => updateVal(p)}
-            className={`flex-1 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+            className={`hw-keycap flex-1 py-1 rounded-md text-[10px] font-mono font-bold cursor-pointer ${
               val === p
-                ? 'bg-primary/15 border-primary/40 text-primary'
-                : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+                ? 'hw-keycap-active'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {p}
@@ -1024,7 +1058,7 @@ function SliderWidget({ widget, publish }) {
 // ─── CLASSROOM & INDUSTRIAL OUTPUT WIDGETS ─────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Relay Widget (DIN-Rail Schematic Contact) ────────────────────────────────
+// ─── Relay Widget (DIN-Rail Coil + SPDT Contact Schematic) ────────────────────
 function RelayWidget({ widget, value, publish }) {
   const isOn = value === '1' || value === 'ON' || value === 'true';
   const toggle = () => publish(widget.topic, isOn ? 'OFF' : 'ON');
@@ -1041,43 +1075,56 @@ function RelayWidget({ widget, value, publish }) {
 
   return (
     <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
-      {/* DIN-Rail Contact Schematic */}
+      {/* DIN-Rail Electromagnetic Coil + SPDT Contact Schematic */}
       <button
         type="button"
         onClick={toggle}
-        className="w-full max-w-[175px] h-14 rounded-xl bg-muted/40 border border-border hover:border-primary/40 px-2 py-1 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
-        title={isOn ? 'Click to open contact' : 'Click to close contact'}
+        className="hw-well w-full max-w-[190px] h-16 rounded-xl hover:border-primary/40 px-2 py-1 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
+        title={isOn ? 'Click to open NO contact' : 'Click to energize coil & close NO'}
       >
-        <svg viewBox="0 0 160 52" className="w-full h-full">
-          {/* Left Terminal COM */}
-          <line x1="12" y1="34" x2="48" y2="34" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="2.5" strokeLinecap="round" />
-          <circle cx="48" cy="34" r="4" fill={isOn ? '#a3e635' : '#8b8d83'} />
-          <text x="14" y="47" fontSize="8" fontFamily="var(--font-mono)" fill="#b5b6ad">COM</text>
+        <svg viewBox="0 0 180 56" className="w-full h-full">
+          {/* Coil A1-A2 */}
+          <line x1="8" y1="28" x2="20" y2="28" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="1.5" />
+          <rect x="20" y="16" width="24" height="24" rx="2" fill="rgba(240,240,232,0.05)" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="1.5" />
+          <line x1="20" y1="36" x2="44" y2="20" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="1.5" />
+          <text x="12" y="13" fontSize="7" fontFamily="var(--font-mono)" fill="#b5b6ad">A1</text>
+          <text x="12" y="50" fontSize="7" fontFamily="var(--font-mono)" fill="#b5b6ad">A2</text>
 
-          {/* Mechanical Armature Contact */}
+          {/* Magnetic Coupling Line */}
+          <line x1="46" y1="28" x2="72" y2="28" stroke={isOn ? '#a3e635' : 'rgba(240,240,232,0.2)'} strokeWidth="1" strokeDasharray="3 2" />
+
+          {/* COM Common Lug */}
+          <line x1="60" y1="28" x2="78" y2="28" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="2.2" strokeLinecap="round" />
+          <circle cx="78" cy="28" r="3.5" fill={isOn ? '#a3e635' : '#8b8d83'} />
+          <text x="64" y="42" fontSize="7" fontFamily="var(--font-mono)" fill="#b5b6ad">COM</text>
+
+          {/* NC Top Contact (closed when idle) */}
+          <circle cx="136" cy="14" r="3.2" fill={!isOn ? '#f59e0b' : '#585a53'} />
+          <line x1="136" y1="14" x2="170" y2="14" stroke={!isOn ? '#f59e0b' : '#585a53'} strokeWidth="1.8" strokeLinecap="round" />
+          <text x="150" y="10" fontSize="7" fontFamily="var(--font-mono)" fill="#b5b6ad">NC</text>
+
+          {/* NO Bottom Contact (closed when energized) */}
+          <circle cx="136" cy="42" r="3.2" fill={isOn ? '#a3e635' : '#585a53'} />
+          <line x1="136" y1="42" x2="170" y2="42" stroke={isOn ? '#a3e635' : '#585a53'} strokeWidth="1.8" strokeLinecap="round" />
+          <text x="150" y="52" fontSize="7" fontFamily="var(--font-mono)" fill="#b5b6ad">NO</text>
+
+          {/* SPDT Moving Armature Blade */}
           <line
-            x1="48" y1="34"
-            x2={isOn ? 112 : 106} y2={isOn ? 34 : 16}
+            x1="78" y1="28"
+            x2="136" y2={isOn ? 42 : 14}
             stroke={isOn ? '#a3e635' : '#f59e0b'}
-            strokeWidth="3"
+            strokeWidth="2.8"
             strokeLinecap="round"
-            style={{ transition: 'all 0.22s ease' }}
+            style={{ transition: 'all 0.2s ease' }}
           />
-
-          {/* Right Terminal NO */}
-          <circle cx="112" cy="34" r="4" fill={isOn ? '#a3e635' : '#8b8d83'} />
-          <line x1="112" y1="34" x2="148" y2="34" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="2.5" strokeLinecap="round" />
-          <text x="130" y="47" fontSize="8" fontFamily="var(--font-mono)" fill="#b5b6ad">NO</text>
         </svg>
       </button>
 
       <button
         type="button"
         onClick={toggle}
-        className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold border transition-all cursor-pointer ${
-          isOn
-            ? 'bg-primary/12 border-primary/35 text-primary'
-            : 'bg-muted border-border text-muted-foreground hover:text-foreground'
+        className={`hw-keycap px-3.5 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
+          isOn ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
         }`}
       >
         {isOn ? `${config.label.toUpperCase()} CLOSED` : `${config.label.toUpperCase()} OPEN`}
@@ -1086,7 +1133,7 @@ function RelayWidget({ widget, value, publish }) {
   );
 }
 
-// ─── Dimmer Widget ─────────────────────────────────────────────────────────────
+// ─── Dimmer Widget (LCD + Live PWM Square Wave + Console Fader) ──────────────
 function DimmerWidget({ widget, publish }) {
   const [pct, setPct] = useState(0);
   const updatePct = (v) => {
@@ -1106,15 +1153,28 @@ function DimmerWidget({ widget, publish }) {
   }[widget.type] || { icon: Lightbulb, label: 'Level' };
 
   const IconComponent = config.icon;
+  const hiW = (pct / 100) * 24;
+  const pwmPath = pct <= 0
+    ? 'M 2,14 L 58,14'
+    : pct >= 100
+      ? 'M 2,4 L 58,4'
+      : `M 2,14 L 4,14 L 4,4 L ${(4 + hiW).toFixed(1)},4 L ${(4 + hiW).toFixed(1)},14 L 30,14 L 30,4 L ${(30 + hiW).toFixed(1)},4 L ${(30 + hiW).toFixed(1)},14 L 58,14`;
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <IconComponent size={18} className="text-primary shrink-0" />
-          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">{config.label}</span>
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      <div className="hw-lcd rounded-xl px-2.5 py-1.5 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <IconComponent size={16} className="text-primary shrink-0" />
+          <div className="min-w-0">
+            <span className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider block truncate">{config.label}</span>
+            <span className="text-xl font-black font-mono tabular-nums text-primary leading-none">{pct}%</span>
+          </div>
         </div>
-        <span className="text-2xl font-black font-mono tabular-nums text-primary">{pct}%</span>
+        {/* Live PWM Duty Waveform */}
+        <svg viewBox="0 0 60 18" className="w-14 h-5 shrink-0">
+          <line x1="2" y1="9" x2="58" y2="9" stroke="rgba(240,240,232,0.12)" strokeWidth="0.75" strokeDasharray="2 2" />
+          <path d={pwmPath} fill="none" stroke="#a3e635" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
+        </svg>
       </div>
 
       <LedBarGraph pct={pct} />
@@ -1128,10 +1188,10 @@ function DimmerWidget({ widget, publish }) {
             key={v}
             type="button"
             onClick={() => updatePct(v)}
-            className={`flex-1 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+            className={`hw-keycap flex-1 py-1 rounded-md text-[10px] font-mono font-bold cursor-pointer ${
               pct === v
-                ? 'bg-primary/15 border-primary/40 text-primary'
-                : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+                ? 'hw-keycap-active'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {v}%
@@ -1142,7 +1202,7 @@ function DimmerWidget({ widget, publish }) {
   );
 }
 
-// ─── RGB Strip Widget (8-Diode NeoPixel Carrier) ──────────────────────────────
+// ─── RGB Strip Widget (8-SMD 5050 NeoPixel PCB Carrier) ────────────────────────
 function RGBWidget({ widget, publish }) {
   const [color, setColor] = useState('#a3e635');
   const [brightness, setBrightness] = useState(100);
@@ -1177,46 +1237,58 @@ function RGBWidget({ widget, publish }) {
   const presets = ['#a3e635','#38BDF8','#F59E0B','#EF4444','#A855F7','#EC4899','#06B6D4','#F8FAFC'];
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2.5 min-h-0 text-left">
-      {/* 8-LED Strip Carrier Preview */}
-      <div className="bg-background border border-border rounded-xl px-2.5 py-2 flex items-center justify-between gap-1 shadow-inner">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="w-4 h-4 rounded-full border border-white/15 transition-all"
-            style={{
-              backgroundColor: color,
-              opacity: Math.max(0.18, scale),
-              boxShadow: brightness > 10 ? `0 0 ${Math.round(4 + 6 * scale)}px ${color}` : 'none',
-            }}
-          />
-        ))}
+    <div className="flex flex-col h-full justify-center gap-2 min-h-0 text-left">
+      {/* Matte PCB Carrier with SMD 5050 LED Packages */}
+      <div className="hw-well rounded-xl px-2 py-2 flex items-center justify-between gap-1">
+        <div className="flex flex-col text-[6px] font-mono leading-tight text-muted-foreground/70 pr-1 border-r border-border shrink-0">
+          <span>5V</span>
+          <span>DI</span>
+          <span>GND</span>
+        </div>
+        <div className="flex-1 flex items-center justify-between gap-1 pl-1">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="w-4 h-4 rounded-[3px] bg-card border border-border/90 flex items-center justify-center shrink-0"
+            >
+              <div
+                className="w-2.5 h-2.5 rounded-full transition-all"
+                style={{
+                  backgroundColor: color,
+                  opacity: Math.max(0.18, scale),
+                  boxShadow: brightness > 10 ? `0 0 ${Math.round(4 + 6 * scale)}px ${color}` : 'none',
+                }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg border border-border overflow-hidden flex-shrink-0 shadow-sm cursor-pointer"
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-lg border border-border overflow-hidden flex-shrink-0 shadow-inner cursor-pointer"
           style={{ background: color }} title="Click to pick custom color">
           <input type="color" value={color} onChange={handleColorChange}
             className="w-full h-full opacity-0 cursor-pointer" />
         </div>
-        <div className="flex-1 flex items-center justify-between text-[10px] font-mono bg-muted/40 border border-border rounded-lg px-2 py-1">
+        <div className="hw-lcd flex-1 flex items-center justify-between text-[10px] font-mono tabular-nums rounded-lg px-2 py-1.5">
           <span className="text-red-400">R:{Math.round(r * scale)}</span>
           <span className="text-primary">G:{Math.round(g * scale)}</span>
           <span className="text-sky-400">B:{Math.round(b * scale)}</span>
+          <span className="text-muted-foreground hidden sm:inline">{color.toUpperCase()}</span>
         </div>
       </div>
 
       <div className="flex gap-1.5 flex-wrap">
         {presets.map(c => (
           <button key={c} type="button" onClick={() => { setColor(c); emit(c, brightness); }}
-            className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${color === c ? 'border-foreground scale-110' : 'border-border hover:scale-105'}`}
+            className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${color === c ? 'border-foreground scale-110 ring-1 ring-primary' : 'border-border hover:scale-105'}`}
             style={{ background: c }} />
         ))}
       </div>
 
       <div>
         <div className="flex justify-between mb-1">
-          <span className="text-[10px] text-muted-foreground">Brightness</span>
+          <span className="text-[10px] font-mono text-muted-foreground uppercase">Intensity</span>
           <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{brightness}%</span>
         </div>
         <input type="range" min="0" max="100" value={brightness} onChange={handleBrightness}
@@ -1226,7 +1298,7 @@ function RGBWidget({ widget, publish }) {
   );
 }
 
-// ─── Scene Widget ─────────────────────────────────────────────────────────────
+// ─── Scene Widget (Tactile Hardware Mode Keys) ────────────────────────────────
 function SceneWidget({ widget, publish }) {
   const [active, setActive] = useState(null);
   const scenes = widget.scenes || [
@@ -1242,20 +1314,25 @@ function SceneWidget({ widget, publish }) {
 
   return (
     <div className="flex flex-col h-full justify-center gap-2 text-left">
-      {scenes.map(scene => {
+      {scenes.map((scene, idx) => {
         const isActive = active === scene.key;
         return (
           <button
             key={scene.key}
             type="button"
             onClick={() => handleScene(scene)}
-            className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
+            className={`hw-keycap w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer ${
               isActive
-                ? 'bg-primary/12 border-primary/35 text-primary shadow-sm'
-                : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                ? 'hw-keycap-active'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <span>{scene.label}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-primary/70 font-bold">
+                {String(idx + 1).padStart(2, '0')}
+              </span>
+              <span>{scene.label}</span>
+            </div>
             {isActive && <Check size={13} className="text-primary" />}
           </button>
         );
@@ -1264,7 +1341,7 @@ function SceneWidget({ widget, publish }) {
   );
 }
 
-// ─── Scheduler Widget ─────────────────────────────────────────────────────────
+// ─── Scheduler Widget (Digital Timer Relay) ────────────────────────────────────
 function SchedulerWidget({ widget, publish }) {
   const [onTime, setOnTime] = useState(widget.onTime || '08:00');
   const [offTime, setOffTime] = useState(widget.offTime || '14:00');
@@ -1285,11 +1362,14 @@ function SchedulerWidget({ widget, publish }) {
   }, [enabled, onTime, offTime, publish, widget.topic]);
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2.5 text-left">
-      <div className="flex items-center justify-between bg-muted/40 border border-border rounded-lg px-2.5 py-1.5">
-        <div className="flex items-center gap-1.5">
-          <span className={`text-[10px] font-mono font-bold uppercase ${enabled ? 'text-primary' : 'text-muted-foreground'}`}>
+    <div className="flex flex-col h-full justify-center gap-2 text-left">
+      <div className="hw-lcd rounded-xl px-2.5 py-1.5 flex items-center justify-between">
+        <div>
+          <span className={`text-[10px] font-mono font-bold uppercase block ${enabled ? 'text-primary' : 'text-muted-foreground'}`}>
             {enabled ? 'Schedule Active' : 'Schedule Paused'}
+          </span>
+          <span className="text-[10px] font-mono text-foreground/80 tabular-nums">
+            {onTime} → {offTime}
           </span>
         </div>
         <button
@@ -1301,16 +1381,16 @@ function SchedulerWidget({ widget, publish }) {
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="hw-well rounded-xl p-2 space-y-1.5">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono w-9 text-primary font-bold">ON</span>
+          <span className="text-[10px] font-mono w-8 text-primary font-bold">ON</span>
           <input type="time" value={onTime} onChange={e => setOnTime(e.target.value)}
-            className="flex-1 bg-input border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-primary/50 text-primary" />
+            className="flex-1 bg-input border border-border rounded-lg px-2.5 py-1 text-xs font-mono tabular-nums focus:outline-none focus:border-primary/50 text-primary" />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono w-9 text-red-400 font-bold">OFF</span>
+          <span className="text-[10px] font-mono w-8 text-red-400 font-bold">OFF</span>
           <input type="time" value={offTime} onChange={e => setOffTime(e.target.value)}
-            className="flex-1 bg-input border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-primary/50 text-primary" />
+            className="flex-1 bg-input border border-border rounded-lg px-2.5 py-1 text-xs font-mono tabular-nums focus:outline-none focus:border-primary/50 text-primary" />
         </div>
       </div>
     </div>
@@ -1321,7 +1401,7 @@ function SchedulerWidget({ widget, publish }) {
 // ─── STEM LAB WIDGETS ─────────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Servo Widget (180° Calibrated Protractor Dial) ────────────────────────────
+// ─── Servo Widget (180° Calibrated Protractor Dial + Pulse Readout) ────────────
 function ServoWidget({ widget, publish }) {
   const [angle, setAngle] = useState(90);
   const updateAngle = (v) => {
@@ -1331,34 +1411,40 @@ function ServoWidget({ widget, publish }) {
 
   const rad = (angle - 90) * (Math.PI / 180);
   const armX = 80 + 44 * Math.sin(rad);
-  const armY = 78 - 44 * Math.cos(rad);
+  const armY = 76 - 44 * Math.cos(rad);
   const semiArcLen = 169.65; // Math.PI * 54
+  const pulseUs = Math.round(500 + (angle / 180) * 2000);
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
-      <div className="flex items-center justify-between gap-2">
-        <div className="relative w-36 h-[86px] mx-auto">
-          <svg viewBox="0 0 160 94" className="w-full h-full">
-            {/* Protractor ticks every 15° (0..180) */}
-            {Array.from({ length: 13 }).map((_, i) => {
-              const deg = i * 15 - 90;
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      <div className="hw-well rounded-xl p-2 flex items-center justify-between gap-2">
+        <div className="relative w-36 h-[86px] shrink-0">
+          <svg viewBox="0 0 160 98" className="w-full h-full">
+            {/* 25 graduated protractor ticks every 7.5° */}
+            {Array.from({ length: 25 }).map((_, i) => {
+              const deg = i * 7.5 - 90;
               const tRad = (deg * Math.PI) / 180;
-              const isMajor = i % 3 === 0;
-              const r1 = isMajor ? 58 : 60;
+              const isMajor = i % 6 === 0;
+              const r1 = isMajor ? 56 : i % 3 === 0 ? 59 : 61;
               const r2 = 64;
               return (
                 <line
                   key={i}
-                  x1={80 + r1 * Math.sin(tRad)} y1={78 - r1 * Math.cos(tRad)}
-                  x2={80 + r2 * Math.sin(tRad)} y2={78 - r2 * Math.cos(tRad)}
-                  stroke={isMajor ? 'rgba(240,240,232,0.45)' : 'rgba(240,240,232,0.18)'}
-                  strokeWidth={isMajor ? 1.5 : 1}
+                  x1={80 + r1 * Math.sin(tRad)} y1={76 - r1 * Math.cos(tRad)}
+                  x2={80 + r2 * Math.sin(tRad)} y2={76 - r2 * Math.cos(tRad)}
+                  stroke={isMajor ? 'rgba(240,240,232,0.5)' : 'rgba(240,240,232,0.18)'}
+                  strokeWidth={isMajor ? 1.5 : 0.9}
                 />
               );
             })}
-            <path d="M 26 78 A 54 54 0 0 1 134 78" fill="none" stroke="rgba(240,240,232,0.12)" strokeWidth="6" strokeLinecap="round" />
+            {/* Metal-gear servo body silhouette */}
+            <rect x="64" y="74" width="32" height="18" rx="3" fill="rgba(240,240,232,0.06)" stroke="rgba(240,240,232,0.2)" strokeWidth="1" />
+            <circle cx="68" cy="83" r="1.5" fill="rgba(240,240,232,0.35)" />
+            <circle cx="92" cy="83" r="1.5" fill="rgba(240,240,232,0.35)" />
+
+            <path d="M 26 76 A 54 54 0 0 1 134 76" fill="none" stroke="rgba(240,240,232,0.1)" strokeWidth="6" strokeLinecap="round" />
             <path
-              d="M 26 78 A 54 54 0 0 1 134 78"
+              d="M 26 76 A 54 54 0 0 1 134 76"
               fill="none"
               stroke="#a3e635"
               strokeWidth="6"
@@ -1367,20 +1453,21 @@ function ServoWidget({ widget, publish }) {
               strokeDashoffset={semiArcLen * (1 - angle / 180)}
               style={{ transition: 'stroke-dashoffset 0.15s ease' }}
             />
-            {/* Servo Horn */}
-            <line x1="80" y1="78" x2={armX} y2={armY} stroke="#e2e8d8" strokeWidth="4.5" strokeLinecap="round" />
-            <line x1="80" y1="78" x2={armX} y2={armY} stroke="#a3e635" strokeWidth="2" strokeLinecap="round" />
-            <circle cx={armX} cy={armY} r="3.5" fill="#f0f0e8" stroke="#a3e635" strokeWidth="1.5" />
-            <circle cx="80" cy="78" r="8" fill="#1a1b18" stroke="#8b8d83" strokeWidth="2" />
-            <circle cx="80" cy="78" r="3" fill="#a3e635" />
-            <text x="16" y="88" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">0°</text>
+            {/* Machined Servo Horn */}
+            <line x1="80" y1="76" x2={armX} y2={armY} stroke="#d5d8ca" strokeWidth="5.5" strokeLinecap="round" />
+            <line x1="80" y1="76" x2={armX} y2={armY} stroke="#a3e635" strokeWidth="2" strokeLinecap="round" />
+            <circle cx={armX} cy={armY} r="3.2" fill="#1a1b18" stroke="#a3e635" strokeWidth="1.5" />
+            <circle cx="80" cy="76" r="7.5" fill="#1a1b18" stroke="#8b8d83" strokeWidth="1.75" />
+            <circle cx="80" cy="76" r="2.5" fill="#a3e635" />
+            <text x="15" y="86" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">0°</text>
             <text x="80" y="10" textAnchor="middle" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">90°</text>
-            <text x="142" y="88" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">180°</text>
+            <text x="143" y="86" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">180°</text>
           </svg>
         </div>
-        <div className="text-right shrink-0">
-          <span className="text-2xl font-black font-mono tabular-nums text-primary">{angle}°</span>
-          <p className="text-[9px] font-mono text-muted-foreground uppercase">Servo Pos</p>
+        <div className="hw-lcd rounded-lg px-2.5 py-2 text-right flex-1 min-w-0">
+          <span className="text-xl font-black font-mono tabular-nums text-primary block leading-none">{angle}°</span>
+          <span className="text-[10px] font-mono tabular-nums text-muted-foreground block mt-1">{pulseUs} µs</span>
+          <span className="text-[8px] font-mono text-primary/70 uppercase tracking-wider block mt-0.5">PWM SERVO</span>
         </div>
       </div>
 
@@ -1393,10 +1480,10 @@ function ServoWidget({ widget, publish }) {
             key={a}
             type="button"
             onClick={() => updateAngle(a)}
-            className={`flex-1 py-0.5 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+            className={`hw-keycap flex-1 py-1 rounded-md text-[10px] font-mono font-bold cursor-pointer ${
               angle === a
-                ? 'bg-primary/15 border-primary/40 text-primary'
-                : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+                ? 'hw-keycap-active'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {a}°
@@ -1407,7 +1494,7 @@ function ServoWidget({ widget, publish }) {
   );
 }
 
-// ─── DC Motor Widget ──────────────────────────────────────────────────────────
+// ─── DC Motor Widget (4-Pole Commutator Rotor + Direction Bridge) ─────────────
 function DCMotorWidget({ widget, publish }) {
   const [speed, setSpeed] = useState(0);
   const [forward, setForward] = useState(true);
@@ -1419,33 +1506,45 @@ function DCMotorWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <RotateCw
-            size={22}
-            className={`text-primary shrink-0 ${speed > 0 ? 'animate-spin' : ''}`}
-            style={{
-              animationDuration: speed > 0 ? `${Math.max(0.22, 1.2 - speed / 240)}s` : '1s',
-              animationDirection: forward ? 'normal' : 'reverse',
-            }}
-          />
-          <div>
-            <span className="text-2xl font-black font-mono tabular-nums text-primary">{speed}</span>
-            <p className="text-[9px] font-mono text-muted-foreground uppercase">PWM / <span className="text-primary">255</span></p>
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Spinning 4-Pole Commutator Rotor */}
+          <div className="hw-well w-11 h-11 rounded-full flex items-center justify-center shrink-0">
+            <svg
+              viewBox="0 0 40 40"
+              className={`w-9 h-9 ${speed > 0 ? 'animate-spin' : ''}`}
+              style={{
+                animationDuration: speed > 0 ? `${Math.max(0.22, 1.25 - speed / 235)}s` : '1s',
+                animationDirection: forward ? 'normal' : 'reverse',
+              }}
+            >
+              <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(240,240,232,0.16)" strokeWidth="1.5" />
+              <line x1="20" y1="6" x2="20" y2="34" stroke="#a3e635" strokeWidth="3" strokeLinecap="round" />
+              <line x1="6" y1="20" x2="34" y2="20" stroke="#a3e635" strokeWidth="3" strokeLinecap="round" />
+              <circle cx="20" cy="20" r="5" fill="#1a1b18" stroke="#a3e635" strokeWidth="1.75" />
+              <circle cx="20" cy="20" r="2" fill="#f0f0e8" />
+            </svg>
+          </div>
+          <div className="hw-lcd rounded-lg px-2.5 py-1 min-w-0">
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-black font-mono tabular-nums text-primary leading-none">{speed}</span>
+              <span className="text-[9px] font-mono text-primary/70 tabular-nums">{Math.round((speed / 255) * 100)}%</span>
+            </div>
+            <p className="text-[8px] font-mono text-muted-foreground uppercase mt-0.5">PWM / <span className="text-primary">255</span></p>
           </div>
         </div>
 
-        <div className="flex gap-1">
+        <div className="flex gap-1 shrink-0">
           <button type="button" onClick={() => { setForward(true); publish(widget.topic, `F,${speed}`); }}
-            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer ${
-              forward ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+            className={`hw-keycap px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
+              forward ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
             }`}>
             FWD
           </button>
           <button type="button" onClick={() => { setForward(false); publish(widget.topic, `R,${speed}`); }}
-            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer ${
-              !forward ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+            className={`hw-keycap px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
+              !forward ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
             }`}>
             REV
           </button>
@@ -1456,14 +1555,14 @@ function DCMotorWidget({ widget, publish }) {
         className="w-full hw-slider" />
 
       <button type="button" onClick={() => { setSpeed(0); publish(widget.topic, 'STOP'); }}
-        className="w-full py-1.5 rounded-lg text-[11px] font-mono font-bold bg-red-500/12 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer">
+        className="hw-keycap w-full py-1.5 rounded-lg text-[10px] font-mono font-bold border-red-500/35 text-red-400 hover:bg-red-500/15 hover:border-red-400 cursor-pointer">
         EMERGENCY STOP
       </button>
     </div>
   );
 }
 
-// ─── Stepper Widget ───────────────────────────────────────────────────────────
+// ─── Stepper Widget (Step Pulse Generator & Revolution LCD) ────────────────────
 function StepperWidget({ widget, publish }) {
   const [steps, setSteps] = useState(200);
   const [speed, setSpeed] = useState(50);
@@ -1473,18 +1572,24 @@ function StepperWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      <div className="hw-lcd rounded-xl px-2.5 py-1 flex items-center justify-between text-[10px] font-mono">
+        <span className="text-primary font-bold tabular-nums">{steps} STEPS</span>
+        <span className="text-muted-foreground tabular-nums">{(steps / 200).toFixed(2)} REV</span>
+        <span className="text-primary font-bold tabular-nums">{speed} RPM</span>
+      </div>
+
+      <div className="flex items-center gap-1.5">
         <button type="button" onClick={() => setSteps(v => Math.max(1, v - 10))}
-          className="w-8 h-8 rounded-lg bg-muted border border-border text-primary font-mono font-bold hover:bg-secondary transition-colors cursor-pointer">-10</button>
+          className="hw-keycap w-9 h-8 rounded-lg text-primary font-mono font-bold text-xs cursor-pointer">-10</button>
         <input type="number" value={steps} onChange={e => setSteps(Number(e.target.value))}
           className="flex-1 bg-input border border-border rounded-lg py-1 text-center text-sm font-mono tabular-nums font-bold focus:outline-none focus:border-primary/50 text-primary" />
         <button type="button" onClick={() => setSteps(v => v + 10)}
-          className="w-8 h-8 rounded-lg bg-muted border border-border text-primary font-mono font-bold hover:bg-secondary transition-colors cursor-pointer">+10</button>
+          className="hw-keycap w-9 h-8 rounded-lg text-primary font-mono font-bold text-xs cursor-pointer">+10</button>
       </div>
       <div>
         <div className="flex justify-between mb-1">
-          <label className="text-[10px] text-muted-foreground">Speed</label>
+          <label className="text-[10px] font-mono text-muted-foreground uppercase">Pulse Rate</label>
           <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{speed} RPM</span>
         </div>
         <input type="range" min="1" max="200" value={speed} onChange={e => setSpeed(Number(e.target.value))}
@@ -1492,11 +1597,11 @@ function StepperWidget({ widget, publish }) {
       </div>
       <div className="flex gap-2">
         <button type="button" onClick={() => sendCmd('CCW')}
-          className="flex-1 py-1.5 rounded-lg text-xs font-mono font-bold bg-muted/50 border border-border text-foreground hover:bg-muted transition-all cursor-pointer">
+          className="hw-keycap flex-1 py-1.5 rounded-lg text-xs font-mono font-bold text-foreground cursor-pointer">
           ↺ CCW
         </button>
         <button type="button" onClick={() => sendCmd('CW')}
-          className="flex-1 py-1.5 rounded-lg text-xs font-mono font-bold bg-primary/15 border border-primary/40 text-primary hover:bg-primary/25 transition-all cursor-pointer">
+          className="hw-keycap hw-keycap-active flex-1 py-1.5 rounded-lg text-xs font-mono font-bold cursor-pointer">
           ↻ CW
         </button>
       </div>
@@ -1504,7 +1609,7 @@ function StepperWidget({ widget, publish }) {
   );
 }
 
-// ─── PWM Fan Widget (Turbine Rotor) ───────────────────────────────────────────
+// ─── PWM Fan Widget (5-Blade Axial Fan Shroud) ───────────────────────────────
 function PWMFanWidget({ widget, value, publish }) {
   const [fanSpeed, setFanSpeed] = useState(0);
   const temp = value !== undefined ? parseFloat(value) : null;
@@ -1515,24 +1620,44 @@ function PWMFanWidget({ widget, value, publish }) {
   };
 
   const tempColor = temp !== null ? (temp > 40 ? '#ef4444' : '#a3e635') : '#b5b6ad';
+  const estRpm = Math.round((fanSpeed / 255) * 3200);
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <Wind
-            size={22}
-            className={`text-primary shrink-0 ${fanSpeed > 0 ? 'animate-spin' : ''}`}
-            style={{ animationDuration: fanSpeed > 0 ? `${Math.max(0.25, 1.8 - fanSpeed / 150)}s` : '2s' }}
-          />
-          <div>
-            <span className="text-2xl font-black font-mono tabular-nums text-primary">{fanSpeed}</span>
-            <p className="text-[9px] font-mono text-muted-foreground uppercase">PWM / <span className="text-primary">255</span></p>
+        <div className="flex items-center gap-2 min-w-0">
+          {/* 5-Blade Axial Fan Shroud */}
+          <div className="hw-well w-11 h-11 rounded-xl flex items-center justify-center shrink-0 relative">
+            <svg
+              viewBox="0 0 44 44"
+              className={`w-9 h-9 ${fanSpeed > 0 ? 'animate-spin' : ''}`}
+              style={{ animationDuration: fanSpeed > 0 ? `${Math.max(0.2, 1.5 - fanSpeed / 180)}s` : '2s' }}
+            >
+              {[0, 72, 144, 216, 288].map(deg => (
+                <path
+                  key={deg}
+                  d="M22,22 C25,13 31,9 30,5 C26,4 20,9 22,22 Z"
+                  fill="rgba(163,230,53,0.75)"
+                  stroke="#a3e635"
+                  strokeWidth="0.7"
+                  transform={`rotate(${deg} 22 22)`}
+                />
+              ))}
+              <circle cx="22" cy="22" r="5.5" fill="#1a1b18" stroke="#a3e635" strokeWidth="1.5" />
+              <circle cx="22" cy="22" r="2" fill="#a3e635" />
+            </svg>
+          </div>
+          <div className="hw-lcd rounded-lg px-2.5 py-1 min-w-0">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl font-black font-mono tabular-nums text-primary leading-none">{fanSpeed}</span>
+              <span className="text-[9px] font-mono text-primary/80 tabular-nums">{estRpm} RPM</span>
+            </div>
+            <p className="text-[8px] font-mono text-muted-foreground uppercase mt-0.5">PWM / <span className="text-primary">255</span></p>
           </div>
         </div>
 
         {temp !== null && (
-          <div className="flex items-center gap-1.5 bg-muted border border-border rounded-lg px-2.5 py-1">
+          <div className="hw-lcd flex items-center gap-1.5 rounded-lg px-2 py-1 shrink-0">
             <Thermometer size={12} style={{ color: tempColor }} />
             <span className="text-xs font-black font-mono tabular-nums" style={{ color: tempColor }}>{temp.toFixed(1)}°C</span>
           </div>
@@ -1545,8 +1670,8 @@ function PWMFanWidget({ widget, value, publish }) {
       <div className="flex gap-1">
         {[0, 64, 128, 192, 255].map(v => (
           <button key={v} type="button" onClick={() => updateFan(v)}
-            className={`flex-1 py-1 rounded-md text-[10px] font-mono font-bold border transition-all cursor-pointer ${
-              fanSpeed === v ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+            className={`hw-keycap flex-1 py-1 rounded-md text-[10px] font-mono font-bold cursor-pointer ${
+              fanSpeed === v ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
             }`}>{v === 0 ? 'OFF' : v === 255 ? 'MAX' : `${Math.round(v / 255 * 100)}%`}</button>
         ))}
       </div>
@@ -1554,34 +1679,34 @@ function PWMFanWidget({ widget, value, publish }) {
   );
 }
 
-// ─── Curtain Widget ───────────────────────────────────────────────────────────
+// ─── Curtain Widget (Calibrated Track & Pleated Drape Actuator) ──────────────
 function CurtainWidget({ widget, publish }) {
   const [openPct, setOpenPct] = useState(0);
 
   const goTo = (v) => { setOpenPct(v); publish(widget.topic, String(v)); };
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
-      <div className="relative w-full h-11 bg-background border border-border rounded-xl overflow-hidden shadow-inner">
-        <div className="absolute top-1.5 left-1 right-1 h-0.5 bg-muted-foreground/40" />
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      <div className="hw-well relative w-full h-12 rounded-xl overflow-hidden">
+        <div className="absolute top-1.5 left-1.5 right-1.5 h-1 rounded-full bg-muted-foreground/30" />
         {/* Left pleated drape */}
         <div
-          className="absolute top-0 left-0 h-full border-r border-primary/40 transition-all duration-300"
+          className="absolute top-0 left-0 h-full border-r border-primary/45 transition-all duration-300"
           style={{
             width: `${(100 - openPct) / 2}%`,
-            background: 'repeating-linear-gradient(90deg, rgba(163,230,53,0.2) 0px, rgba(163,230,53,0.2) 5px, rgba(20,22,19,0.5) 5px, rgba(20,22,19,0.5) 9px)',
+            background: 'repeating-linear-gradient(90deg, rgba(163,230,53,0.22) 0px, rgba(163,230,53,0.22) 4px, rgba(20,22,19,0.65) 4px, rgba(20,22,19,0.65) 8px)',
           }}
         />
         {/* Right pleated drape */}
         <div
-          className="absolute top-0 right-0 h-full border-l border-primary/40 transition-all duration-300"
+          className="absolute top-0 right-0 h-full border-l border-primary/45 transition-all duration-300"
           style={{
             width: `${(100 - openPct) / 2}%`,
-            background: 'repeating-linear-gradient(90deg, rgba(163,230,53,0.2) 0px, rgba(163,230,53,0.2) 5px, rgba(20,22,19,0.5) 5px, rgba(20,22,19,0.5) 9px)',
+            background: 'repeating-linear-gradient(90deg, rgba(163,230,53,0.22) 0px, rgba(163,230,53,0.22) 4px, rgba(20,22,19,0.65) 4px, rgba(20,22,19,0.65) 8px)',
           }}
         />
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-card/90 border border-border text-primary">
+          <span className="hw-lcd text-[10px] font-mono font-bold tabular-nums px-2.5 py-0.5 rounded-md text-primary">
             {openPct}% OPEN
           </span>
         </div>
@@ -1591,9 +1716,9 @@ function CurtainWidget({ widget, publish }) {
         className="w-full hw-slider" />
 
       <div className="flex gap-1.5">
-        <button type="button" onClick={() => goTo(0)} className="flex-1 py-1 rounded-lg text-[10px] font-semibold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">Closed</button>
-        <button type="button" onClick={() => goTo(50)} className="flex-1 py-1 rounded-lg text-[10px] font-semibold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">Half</button>
-        <button type="button" onClick={() => goTo(100)} className="flex-1 py-1 rounded-lg text-[10px] font-semibold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">Open</button>
+        <button type="button" onClick={() => goTo(0)} className={`hw-keycap flex-1 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${openPct === 0 ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'}`}>Closed</button>
+        <button type="button" onClick={() => goTo(50)} className={`hw-keycap flex-1 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${openPct === 50 ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'}`}>Half</button>
+        <button type="button" onClick={() => goTo(100)} className={`hw-keycap flex-1 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${openPct === 100 ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'}`}>Open</button>
       </div>
     </div>
   );
@@ -1603,7 +1728,7 @@ function CurtainWidget({ widget, publish }) {
 // ─── SECURITY WIDGETS ─────────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Door Lock Widget (Physical Deadbolt Latch) ───────────────────────────────
+// ─── Door Lock Widget (Heavy Solenoid Deadbolt Assembly) ──────────────────────
 function DoorLockWidget({ widget, value, publish }) {
   const isLocked = value !== 'OPEN' && value !== '0';
   const [countdown, setCountdown] = useState(null);
@@ -1634,27 +1759,32 @@ function DoorLockWidget({ widget, value, publish }) {
       <button
         type="button"
         onClick={toggle}
-        className="w-28 h-14 rounded-xl bg-muted/50 border border-border hover:border-primary/40 p-1.5 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
+        className="hw-well w-32 h-14 rounded-xl hover:border-primary/40 p-1.5 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
         title={isLocked ? 'Click to unlock (10s auto-lock)' : 'Locked / Open'}
       >
-        <svg viewBox="0 0 110 48" className="w-full h-full">
-          {/* Lock chassis */}
-          <rect x="6" y="8" width="48" height="32" rx="4" fill="rgba(240,240,232,0.08)" stroke="rgba(240,240,232,0.3)" strokeWidth="1.5" />
-          {/* Steel deadbolt */}
+        <svg viewBox="0 0 124 48" className="w-full h-full">
+          {/* Solenoid Deadbolt Housing */}
+          <rect x="6" y="7" width="54" height="34" rx="4" fill="rgba(240,240,232,0.06)" stroke="rgba(240,240,232,0.28)" strokeWidth="1.5" />
+          <circle cx="12" cy="13" r="1.5" fill="rgba(240,240,232,0.35)" />
+          <circle cx="12" cy="35" r="1.5" fill="rgba(240,240,232,0.35)" />
+          {/* Return spring coils */}
+          <path d="M18,24 L22,19 L26,29 L30,19 L34,29 L38,24" fill="none" stroke="rgba(240,240,232,0.3)" strokeWidth="1.2" />
+          {/* Hardened steel deadbolt */}
           <rect
-            x={isLocked ? 52 : 34} y="16" width="32" height="16" rx="2"
+            x={isLocked ? 56 : 36} y="16" width="38" height="16" rx="2"
             fill={isLocked ? '#ef4444' : '#a3e635'}
             style={{ transition: 'x 0.25s ease, fill 0.2s ease' }}
           />
-          {/* Door strike plate */}
-          <rect x="78" y="8" width="24" height="32" rx="3" fill="rgba(240,240,232,0.05)" stroke="rgba(240,240,232,0.22)" strokeWidth="1.5" />
+          {/* Door strike pocket */}
+          <rect x="90" y="7" width="26" height="34" rx="3" fill="rgba(240,240,232,0.04)" stroke="rgba(240,240,232,0.22)" strokeWidth="1.5" />
+          <rect x="92" y="14" width="14" height="20" rx="2" fill="rgba(0,0,0,0.55)" />
         </svg>
       </button>
 
-      <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+      <span className={`hw-lcd inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-3 py-0.5 rounded-md ${
         isLocked
-          ? 'bg-red-500/12 border-red-500/30 text-red-400'
-          : 'bg-primary/12 border-primary/30 text-primary'
+          ? 'border-red-500/35 text-red-400'
+          : 'border-primary/40 text-primary'
       }`}>
         <Lock size={10} className={isLocked ? 'text-red-400' : 'text-primary'} />
         {isLocked ? 'LOCKED' : 'UNLOCKED'}
@@ -1662,17 +1792,17 @@ function DoorLockWidget({ widget, value, publish }) {
 
       {countdown !== null && (
         <div className="w-full max-w-[140px] space-y-1">
-          <div className="h-1 bg-muted rounded-full overflow-hidden">
+          <div className="hw-well h-1.5 rounded-full overflow-hidden">
             <div className="h-full bg-amber-400 transition-all duration-1000" style={{ width: `${(countdown / 10) * 100}%` }} />
           </div>
-          <p className="text-[9px] text-center text-muted-foreground font-mono">Auto-lock in <span className="text-primary font-bold">{countdown}s</span></p>
+          <p className="text-[9px] text-center text-muted-foreground font-mono">Auto-lock in <span className="text-primary font-bold tabular-nums">{countdown}s</span></p>
         </div>
       )}
     </div>
   );
 }
 
-// ─── Buzzer Widget (Industrial Push-to-Test Alarm) ─────────────────────────────
+// ─── Buzzer Widget (Piezo Acoustic Capsule + Wave Radiators) ───────────────────
 function BuzzerWidget({ widget, publish }) {
   const [active, setActive] = useState(false);
 
@@ -1683,26 +1813,41 @@ function BuzzerWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+    <div className="flex flex-col h-full items-center justify-center gap-2 text-left">
       <button
         type="button"
         onClick={trigger}
-        className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-150 select-none active:scale-90 cursor-pointer ${
-          active
-            ? 'bg-red-500/20 text-red-400 shadow-[0_0_16px_rgba(239,68,68,0.45)]'
-            : 'bg-transparent text-primary hover:scale-105'
+        className={`hw-well relative w-24 h-14 rounded-xl flex items-center justify-center transition-all duration-150 select-none active:scale-95 cursor-pointer ${
+          active ? 'border-red-400/60 shadow-[0_0_16px_rgba(239,68,68,0.3)]' : 'hover:border-primary/40'
+        }`}
+        title="Click to sound piezo buzzer"
+      >
+        <svg viewBox="0 0 88 48" className="w-full h-full">
+          {/* Piezo Capsule */}
+          <circle cx="44" cy="24" r="15" fill="rgba(240,240,232,0.06)" stroke={active ? '#ef4444' : '#a3e635'} strokeWidth="1.8" />
+          <circle cx="44" cy="24" r="9" fill="#141512" stroke="rgba(240,240,232,0.22)" strokeWidth="1" />
+          <circle cx="44" cy="24" r="3.5" fill={active ? '#ef4444' : '#a3e635'} />
+          {/* Acoustic wave arcs */}
+          <path d="M23 16 A 12 12 0 0 0 23 32" fill="none" stroke={active ? '#ef4444' : 'rgba(163,230,53,0.4)'} strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M18 11 A 19 19 0 0 0 18 37" fill="none" stroke={active ? '#ef4444' : 'rgba(163,230,53,0.2)'} strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M65 16 A 12 12 0 0 1 65 32" fill="none" stroke={active ? '#ef4444' : 'rgba(163,230,53,0.4)'} strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M70 11 A 19 19 0 0 1 70 37" fill="none" stroke={active ? '#ef4444' : 'rgba(163,230,53,0.2)'} strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onClick={trigger}
+        className={`hw-keycap px-3 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
+          active ? 'border-red-400 text-red-400' : 'text-primary'
         }`}
       >
-        <Bell size={26} />
+        PULSE BEEP
       </button>
-      <span className="text-[10px] font-mono text-muted-foreground">
-        PULSE <code className="px-1.5 py-0.5 rounded bg-muted border border-border text-primary">BEEP</code>
-      </span>
     </div>
   );
 }
 
-// ─── Pan-Tilt Widget (2-Axis Radar Reticle Viewfinder) ────────────────────────
+// ─── Pan-Tilt Widget (Optical Gimbal Reticle Viewfinder) ──────────────────────
 function PanTiltWidget({ widget, publish }) {
   const [pan, setPan] = useState(90);
   const [tilt, setTilt] = useState(90);
@@ -1720,21 +1865,31 @@ function PanTiltWidget({ widget, publish }) {
   };
 
   const center = () => { setPan(90); setTilt(90); publish(widget.topic, 'CENTER'); };
+  const retLeft = `${(pan / 180) * 80 + 10}%`;
+  const retTop = `${(tilt / 180) * 76 + 12}%`;
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
-      {/* 2-Axis Crosshair Reticle */}
-      <div className="relative w-full h-16 bg-background border border-border rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
-        <div className="absolute inset-x-0 top-1/2 h-px bg-primary/20" />
-        <div className="absolute inset-y-0 left-1/2 w-px bg-primary/20" />
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      {/* Optical Tracking Gimbal Viewfinder */}
+      <div className="hw-well relative w-full h-[68px] rounded-xl overflow-hidden flex items-center justify-center">
+        {/* Corner brackets */}
+        <span className="absolute top-1.5 left-1.5 w-2 h-2 border-t border-l border-primary/45 pointer-events-none" />
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 border-t border-r border-primary/45 pointer-events-none" />
+        <span className="absolute bottom-1.5 left-1.5 w-2 h-2 border-b border-l border-primary/45 pointer-events-none" />
+        <span className="absolute bottom-1.5 right-1.5 w-2 h-2 border-b border-r border-primary/45 pointer-events-none" />
+
+        {/* Dynamic X/Y tracking crosshairs */}
+        <div className="absolute inset-x-0 h-px bg-primary/25 transition-all duration-100 pointer-events-none" style={{ top: retTop }} />
+        <div className="absolute inset-y-0 w-px bg-primary/25 transition-all duration-100 pointer-events-none" style={{ left: retLeft }} />
+
         <div
-          className="absolute w-3 h-3 rounded-full bg-primary border-2 border-primary-foreground transition-all duration-100 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            left: `${(pan / 180) * 80 + 10}%`,
-            top: `${(tilt / 180) * 76 + 12}%`,
-          }}
-        />
-        <span className="absolute bottom-1 right-2 text-[9px] font-mono text-primary font-bold">
+          className="absolute w-3.5 h-3.5 rounded-full bg-primary/25 border border-primary flex items-center justify-center transition-all duration-100 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          style={{ left: retLeft, top: retTop }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+        </div>
+
+        <span className="hw-lcd absolute bottom-1 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono tabular-nums text-primary font-bold">
           {pan}°, {tilt}°
         </span>
       </div>
@@ -1742,21 +1897,21 @@ function PanTiltWidget({ widget, publish }) {
       <div className="space-y-1.5">
         <div>
           <div className="flex justify-between mb-0.5">
-            <label className="text-[10px] text-muted-foreground">Pan</label>
+            <label className="text-[10px] font-mono text-muted-foreground uppercase">Pan X</label>
             <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{pan}°</span>
           </div>
           <input type="range" min="0" max="180" value={pan} onChange={handlePan} className="w-full hw-slider" />
         </div>
         <div>
           <div className="flex justify-between mb-0.5">
-            <label className="text-[10px] text-muted-foreground">Tilt</label>
+            <label className="text-[10px] font-mono text-muted-foreground uppercase">Tilt Y</label>
             <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{tilt}°</span>
           </div>
           <input type="range" min="0" max="180" value={tilt} onChange={handleTilt} className="w-full hw-slider" />
         </div>
       </div>
 
-      <button type="button" onClick={center} className="w-full py-1 rounded-lg text-[10px] font-mono font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">
+      <button type="button" onClick={center} className="hw-keycap w-full py-1 rounded-lg text-[10px] font-mono font-bold text-muted-foreground hover:text-foreground cursor-pointer">
         Center Camera (<span className="text-primary">90°, 90°</span>)
       </button>
     </div>
@@ -1767,7 +1922,7 @@ function PanTiltWidget({ widget, publish }) {
 // ─── AGRICULTURE WIDGETS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Pump Widget (Centrifugal Impeller + Chronograph) ────────────────────────
+// ─── Pump Widget (Centrifugal Volute Impeller + Chronograph) ─────────────────
 function PumpWidget({ widget, value, publish }) {
   const isOn = value === '1' || value === 'ON';
   const [runtime, setRuntime] = useState(0);
@@ -1787,36 +1942,53 @@ function PumpWidget({ widget, value, publish }) {
   const fmt = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 
   return (
-    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+    <div className="flex flex-col h-full items-center justify-center gap-2 text-left">
       <button
         type="button"
         onClick={toggle}
-        className="p-2 flex items-center justify-center cursor-pointer transition-transform active:scale-95 bg-transparent border-0"
+        className="hw-well w-16 h-14 rounded-2xl flex items-center justify-center cursor-pointer transition-transform active:scale-95 hover:border-primary/40"
         title={isOn ? 'Click to stop pump' : 'Click to start pump'}
       >
-        <Droplets size={28} className="text-primary" />
+        <svg viewBox="0 0 56 48" className="w-14 h-12">
+          {/* Inlet & discharge nozzles */}
+          <rect x="24" y="2" width="8" height="8" rx="1.5" fill="rgba(240,240,232,0.1)" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="1.2" />
+          <circle cx="28" cy="26" r="17" fill="#141512" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="1.75" />
+          {/* 4-Vane Impeller */}
+          <g className={isOn ? 'animate-spin' : ''} style={{ transformOrigin: '28px 26px', animationDuration: '0.7s' }}>
+            {[0, 90, 180, 270].map(deg => (
+              <path
+                key={deg}
+                d="M28,26 Q34,17 28,12"
+                fill="none"
+                stroke={isOn ? '#a3e635' : '#8b8d83'}
+                strokeWidth="2.8"
+                strokeLinecap="round"
+                transform={`rotate(${deg} 28 26)`}
+              />
+            ))}
+          </g>
+          <circle cx="28" cy="26" r="4" fill="#1a1b18" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="1.5" />
+        </svg>
       </button>
 
-      <div className="flex items-center gap-2">
-        <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
-          isOn ? 'bg-primary/12 border-primary/30 text-primary' : 'bg-muted border-border text-muted-foreground'
+      <div className="flex items-center gap-1.5">
+        <span className={`hw-lcd inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-md ${
+          isOn ? 'border-primary/40 text-primary' : 'text-muted-foreground'
         }`}>
           {isOn ? 'PUMPING' : 'STOPPED'}
         </span>
-        {isOn && (
-          <span className="text-[10px] font-mono tabular-nums font-bold text-primary bg-muted border border-border px-2 py-0.5 rounded-md">
-            {fmt(runtime)}
-          </span>
-        )}
+        <span className="hw-lcd text-[10px] font-mono tabular-nums font-bold text-primary px-2 py-0.5 rounded-md">
+          {fmt(runtime)}
+        </span>
       </div>
 
       <button
         type="button"
         onClick={toggle}
-        className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+        className={`hw-keycap px-3.5 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
           isOn
-            ? 'bg-red-500/12 border-red-500/30 text-red-400 hover:bg-red-500/20'
-            : 'bg-primary/12 border-primary/30 text-primary hover:bg-primary/20'
+            ? 'border-red-500/40 text-red-400 hover:bg-red-500/15'
+            : 'hw-keycap-active'
         }`}
       >
         {isOn ? 'STOP PUMP' : 'START PUMP'}
@@ -1825,7 +1997,7 @@ function PumpWidget({ widget, value, publish }) {
   );
 }
 
-// ─── Valve Widget (Solenoid Flow Pipe Schematic) ───────────────────────────────
+// ─── Valve Widget (Industrial Flanged Solenoid Pipe Schematic) ────────────────
 function ValveWidget({ widget, value, publish }) {
   const isOpen = value === '1' || value === 'OPEN';
   const toggle = () => publish(widget.topic, isOpen ? 'CLOSE' : 'OPEN');
@@ -1835,24 +2007,27 @@ function ValveWidget({ widget, value, publish }) {
       <button
         type="button"
         onClick={toggle}
-        className="w-28 h-14 rounded-xl bg-muted/40 border border-border hover:border-primary/40 p-1 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
+        className="hw-well w-32 h-14 rounded-xl hover:border-primary/40 p-1 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
         title={isOpen ? 'Click to close valve' : 'Click to open valve'}
       >
-        <svg viewBox="0 0 110 52" className="w-full h-full">
+        <svg viewBox="0 0 116 52" className="w-full h-full">
+          {/* Pipe flanges */}
+          <rect x="4" y="21" width="5" height="18" rx="1.5" fill="rgba(240,240,232,0.14)" stroke="rgba(240,240,232,0.3)" strokeWidth="1" />
+          <rect x="107" y="21" width="5" height="18" rx="1.5" fill="rgba(240,240,232,0.14)" stroke="rgba(240,240,232,0.3)" strokeWidth="1" />
           {/* Pipe body */}
-          <rect x="4" y="25" width="102" height="10" rx="3" fill="rgba(240,240,232,0.08)" stroke={isOpen ? '#a3e635' : '#8b8d83'} strokeWidth="1.5" />
-          {/* Flow stream when open */}
+          <rect x="9" y="24.5" width="98" height="11" rx="2" fill="rgba(240,240,232,0.06)" stroke={isOpen ? '#a3e635' : '#8b8d83'} strokeWidth="1.5" />
+          {/* Live animated flow stream when open */}
           {isOpen && (
-            <line x1="8" y1="30" x2="102" y2="30" stroke="#a3e635" strokeWidth="2.5" strokeDasharray="6 4" />
+            <line x1="12" y1="30" x2="104" y2="30" stroke="#a3e635" strokeWidth="2.4" strokeDasharray="6 4" className="hw-flow" />
           )}
           {/* Valve body */}
-          <circle cx="55" cy="30" r="10" fill="#1a1b18" stroke={isOpen ? '#a3e635' : '#ef4444'} strokeWidth="2" />
-          <line x1="55" y1="20" x2="55" y2="11" stroke={isOpen ? '#a3e635' : '#ef4444'} strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="58" cy="30" r="10" fill="#141512" stroke={isOpen ? '#a3e635' : '#ef4444'} strokeWidth="2" />
+          <line x1="58" y1="20" x2="58" y2="11" stroke={isOpen ? '#a3e635' : '#ef4444'} strokeWidth="2.5" strokeLinecap="round" />
           {/* Quarter-turn handle */}
           <rect
-            x="44" y="7" width="22" height="5" rx="2.5"
+            x="47" y="7" width="22" height="5" rx="2.5"
             fill={isOpen ? '#a3e635' : '#ef4444'}
-            transform={isOpen ? '' : 'rotate(90 55 9.5)'}
+            transform={isOpen ? '' : 'rotate(90 58 9.5)'}
             style={{ transition: 'transform 0.25s ease, fill 0.2s ease' }}
           />
         </svg>
@@ -1861,10 +2036,10 @@ function ValveWidget({ widget, value, publish }) {
       <button
         type="button"
         onClick={toggle}
-        className={`px-3.5 py-1 rounded-lg text-[10px] font-mono font-bold border transition-all active:scale-95 cursor-pointer ${
+        className={`hw-keycap px-3.5 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
           isOpen
-            ? 'bg-primary/12 border-primary/35 text-primary'
-            : 'bg-red-500/12 border-red-500/35 text-red-400'
+            ? 'hw-keycap-active'
+            : 'border-red-500/40 text-red-400 hover:border-red-400'
         }`}
       >
         {isOpen ? 'OPEN — CLOSE' : 'CLOSED — OPEN'}
@@ -1873,7 +2048,7 @@ function ValveWidget({ widget, value, publish }) {
   );
 }
 
-// ─── Smart Irrigation Widget ───────────────────────────────────────────────────
+// ─── Smart Irrigation Widget (Soil Telemetry + Auto Threshold Controller) ─────
 function IrrigationWidget({ widget, value, publish }) {
   const moisture = value !== undefined ? parseFloat(value) : null;
   const [threshold, setThreshold] = useState(widget.threshold || 30);
@@ -1898,31 +2073,31 @@ function IrrigationWidget({ widget, value, publish }) {
 
   return (
     <div className="flex flex-col h-full justify-center gap-2 min-h-0 px-0.5 text-left">
-      <div className="bg-muted/40 border border-border rounded-xl p-2.5">
-        <div className="flex justify-between mb-1.5">
-          <span className="text-[10px] font-semibold text-muted-foreground">Soil Moisture</span>
-          <span className="text-[11px] font-mono tabular-nums font-bold" style={{ color: moistureColor }}>
+      <div className="hw-well rounded-xl p-2.5">
+        <div className="flex justify-between items-baseline mb-1.5">
+          <span className="text-[10px] font-mono uppercase text-muted-foreground">Soil Moisture</span>
+          <span className="hw-lcd px-2 py-0.5 rounded text-[11px] font-mono tabular-nums font-bold" style={{ color: moistureColor }}>
             {moisture !== null ? `${moisture.toFixed(0)}%` : 'N/A'}
           </span>
         </div>
-        <div className="relative h-2 bg-secondary rounded-full overflow-hidden">
+        <div className="relative h-2.5 bg-background border border-border rounded-full overflow-hidden">
           <div className="h-full rounded-full transition-all duration-500" style={{
             width: `${Math.min(100, moisture || 0)}%`,
             background: moistureColor
           }} />
-          <div className="absolute top-0 bottom-0 w-0.5 bg-primary" style={{ left: `${threshold}%` }} />
+          <div className="absolute top-0 bottom-0 w-0.5 bg-foreground" style={{ left: `${threshold}%` }} />
         </div>
-        <p className="text-[9px] font-mono text-muted-foreground text-right mt-1">Trigger &lt; <span className="text-primary font-bold">{threshold}%</span></p>
+        <p className="text-[9px] font-mono text-muted-foreground text-right mt-1">Trigger &lt; <span className="text-primary font-bold tabular-nums">{threshold}%</span></p>
       </div>
 
       <div className="flex gap-1.5">
         <button type="button" onClick={() => setMode('manual')}
-          className={`flex-1 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
-            mode === 'manual' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+          className={`hw-keycap flex-1 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
+            mode === 'manual' ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
           }`}>Manual</button>
         <button type="button" onClick={() => setMode('auto')}
-          className={`flex-1 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
-            mode === 'auto' ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+          className={`hw-keycap flex-1 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
+            mode === 'auto' ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
           }`}>Auto</button>
       </div>
 
@@ -1930,22 +2105,22 @@ function IrrigationWidget({ widget, value, publish }) {
         <>
           <div>
             <div className="flex justify-between mb-0.5">
-              <label className="text-[10px] text-muted-foreground">Threshold</label>
+              <label className="text-[10px] font-mono text-muted-foreground uppercase">Threshold</label>
               <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{threshold}%</span>
             </div>
             <input type="range" min="10" max="80" value={threshold} onChange={e => setThreshold(Number(e.target.value))}
               className="w-full hw-slider" />
           </div>
-          <div className={`text-[10px] text-center py-1 rounded-lg font-mono font-bold border ${
-            pumpOn ? 'bg-primary/15 border-primary/30 text-primary' : 'bg-muted text-muted-foreground border-border'
+          <div className={`hw-lcd text-[10px] text-center py-1 rounded-lg font-mono font-bold ${
+            pumpOn ? 'border-primary/40 text-primary' : 'text-muted-foreground'
           }`}>{pumpOn ? 'AUTO-IRRIGATING' : 'MOISTURE SUFFICIENT'}</div>
         </>
       ) : (
         <button
           type="button"
           onClick={() => { setPumpOn(v => !v); publish(widget.topic, pumpOn ? 'OFF' : 'ON'); }}
-          className={`w-full py-1.5 rounded-xl text-xs font-bold border transition-all active:scale-95 cursor-pointer ${
-            pumpOn ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted text-foreground hover:bg-secondary border-border'
+          className={`hw-keycap w-full py-1.5 rounded-xl text-xs font-mono font-bold cursor-pointer ${
+            pumpOn ? 'hw-keycap-active' : 'text-foreground'
           }`}>
           {pumpOn ? 'Stop Irrigation' : 'Start Irrigation'}
         </button>
@@ -1958,7 +2133,7 @@ function IrrigationWidget({ widget, value, publish }) {
 // ─── ADVANCED TOOL WIDGETS ────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── OLED Display Widget (Authentic 0.96" SSD1306 PCB Bezel) ─────────────────
+// ─── OLED Display Widget (Authentic 0.96" SSD1306 PCB Module + Pin Header) ───
 function OLEDWidget({ widget, publish }) {
   const [text, setText] = useState('');
   const [sent, setSent] = useState('');
@@ -1972,18 +2147,27 @@ function OLEDWidget({ widget, publish }) {
   return (
     <div className="flex flex-col h-full justify-center gap-2 text-left">
       {/* SSD1306 PCB Module Bezel */}
-      <div className="relative rounded-xl bg-background border border-primary/25 p-2 shadow-inner">
+      <div className="hw-well relative rounded-xl p-2">
         {/* 4 Corner Brass Mounting Pads */}
-        <span className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
-        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
-        <span className="absolute bottom-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
-        <span className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
+        <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-amber-400/75 border border-amber-200/30" />
+        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-400/75 border border-amber-200/30" />
+        <span className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-amber-400/75 border border-amber-200/30" />
+        <span className="absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-400/75 border border-amber-200/30" />
 
-        <div className="flex items-center justify-center mb-1">
-          <span className="text-[8px] font-mono tracking-[0.18em] text-muted-foreground uppercase">SSD1306 · <span className="text-primary">128×64</span> I2C</span>
+        {/* 4-Pin I2C Header Silkscreen */}
+        <div className="flex items-center justify-center gap-2.5 mb-1">
+          {['GND', 'VCC', 'SCL', 'SDA'].map(pin => (
+            <span key={pin} className="inline-flex items-center gap-0.5 text-[7px] font-mono text-muted-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-300/80 inline-block" />
+              {pin}
+            </span>
+          ))}
         </div>
 
-        <div className="hw-oled-screen rounded-lg px-3 py-2.5 min-h-[44px] flex items-center justify-center">
+        <div className="hw-oled-screen rounded-lg px-3 py-2 min-h-[42px] flex flex-col items-center justify-center">
+          <span className="text-[7px] font-mono tracking-[0.2em] text-primary/50 uppercase mb-0.5">
+            SSD1306 · 128×64
+          </span>
           <p className="font-mono text-primary text-xs sm:text-sm text-center break-all tracking-wider">
             {sent || <span className="opacity-45">READY_</span>}
           </p>
@@ -2008,7 +2192,7 @@ function OLEDWidget({ widget, publish }) {
       <div className="flex flex-wrap gap-1">
         {['HELLO', 'READY', 'TEST', 'CLEAR'].map(preset => (
           <button key={preset} type="button" onClick={() => { setText(preset); publish(widget.topic, preset); setSent(preset); }}
-            className="flex-1 text-[9px] px-2 py-1 rounded-md bg-muted/60 border border-border text-muted-foreground hover:text-foreground transition-all font-mono cursor-pointer">
+            className="hw-keycap flex-1 text-[9px] px-2 py-1 rounded-md text-muted-foreground hover:text-primary font-mono cursor-pointer">
             {preset}
           </button>
         ))}
@@ -2017,7 +2201,7 @@ function OLEDWidget({ widget, publish }) {
   );
 }
 
-// ─── Numeric Input Widget ─────────────────────────────────────────────────────
+// ─── Numeric Input Widget (Precision Setpoint Encoder) ───────────────────────
 function NumericInputWidget({ widget, publish }) {
   const min = widget.minVal ?? 0;
   const max = widget.maxVal ?? 100;
@@ -2031,21 +2215,25 @@ function NumericInputWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
-      <div className="bg-muted/40 border border-border rounded-xl py-1.5 px-3 text-center">
-        <span className="text-3xl font-black font-mono tabular-nums text-primary">{val}</span>
-        <span className="text-[10px] font-mono text-muted-foreground ml-1">{widget.unit || ''}</span>
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      <div className="hw-lcd rounded-xl py-1.5 px-3 flex items-center justify-between gap-2">
+        <span className="text-[8px] font-mono text-muted-foreground uppercase">MIN <span className="text-primary">{min}</span></span>
+        <div className="text-center">
+          <span className="text-2xl font-black font-mono tabular-nums text-primary leading-none">{val}</span>
+          {widget.unit && <span className="text-[10px] font-mono text-muted-foreground ml-1">{widget.unit}</span>}
+        </div>
+        <span className="text-[8px] font-mono text-muted-foreground uppercase">MAX <span className="text-primary">{max}</span></span>
       </div>
       <div className="flex gap-1.5">
         <button type="button" onClick={() => send(val - step)}
-          className="flex-1 py-1.5 rounded-lg text-sm font-black bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer">−</button>
+          className="hw-keycap flex-1 py-1.5 rounded-lg text-sm font-mono font-black text-foreground cursor-pointer">−</button>
         <input
           type="number" value={val} min={min} max={max} step={step}
           onChange={e => send(Number(e.target.value))}
           className="w-20 text-center bg-input border border-border rounded-lg py-1.5 text-sm font-mono tabular-nums font-bold focus:outline-none focus:border-primary/50 text-primary"
         />
         <button type="button" onClick={() => send(val + step)}
-          className="flex-1 py-1.5 rounded-lg text-sm font-black bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer">+</button>
+          className="hw-keycap flex-1 py-1.5 rounded-lg text-sm font-mono font-black text-foreground cursor-pointer">+</button>
       </div>
       <input type="range" min={min} max={max} step={step} value={val} onChange={e => send(Number(e.target.value))}
         className="w-full hw-slider" />
@@ -2053,7 +2241,7 @@ function NumericInputWidget({ widget, publish }) {
   );
 }
 
-// ─── Dropdown Widget ──────────────────────────────────────────────────────────
+// ─── Dropdown Widget (Bank Selector Keys) ──────────────────────────────────────
 function DropdownWidget({ widget, publish }) {
   const options = widget.options || ['Auto', 'Manual', 'Test', 'Off'];
   const [selected, setSelected] = useState(options[0]);
@@ -2065,18 +2253,21 @@ function DropdownWidget({ widget, publish }) {
 
   return (
     <div className="flex flex-col h-full justify-center gap-1.5 overflow-y-auto scrollbar-thin text-left">
-      {options.map(opt => {
+      {options.map((opt, idx) => {
         const isSel = selected === opt;
         return (
           <button
             key={opt}
             type="button"
             onClick={() => handleSelect(opt)}
-            className={`w-full py-1.5 px-3 rounded-lg text-xs font-semibold border transition-all flex items-center justify-between cursor-pointer ${
-              isSel ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/60'
+            className={`hw-keycap w-full py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-between cursor-pointer ${
+              isSel ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <span>{opt}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-mono text-primary/70 font-bold">{String(idx + 1).padStart(2, '0')}</span>
+              <span>{opt}</span>
+            </div>
             {isSel && <Check size={13} className="text-primary" />}
           </button>
         );
@@ -2085,7 +2276,7 @@ function DropdownWidget({ widget, publish }) {
   );
 }
 
-// ─── Momentary Button Widget ───────────────────────────────────────────────────
+// ─── Momentary Button Widget (Recessed Collar Pushbutton) ──────────────────────
 function MomentaryWidget({ widget, publish }) {
   const [pressed, setPressed] = useState(false);
   const payload = widget.payload || 'TRIGGER';
@@ -2097,37 +2288,35 @@ function MomentaryWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-center gap-2 text-left">
-      <button
-        type="button"
-        onClick={trigger}
-        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-150 select-none active:scale-90 cursor-pointer ${
-          pressed
-            ? 'bg-primary/20 text-primary shadow-[0_0_16px_rgba(163,230,53,0.4)]'
-            : 'bg-transparent text-primary hover:scale-105'
-        }`}
-      >
-        <Zap size={24} />
-      </button>
-      <p className="text-[10px] font-mono text-muted-foreground">
-        TX: <code className="text-primary bg-muted px-1.5 py-0.5 rounded border border-border">{payload}</code>
+    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+      <div className="hw-well w-16 h-16 rounded-full p-1.5 flex items-center justify-center">
+        <button
+          type="button"
+          onClick={trigger}
+          className={`hw-keycap w-full h-full rounded-full flex items-center justify-center select-none cursor-pointer ${
+            pressed ? 'hw-keycap-active scale-95' : 'text-primary'
+          }`}
+          title={`Send ${payload}`}
+        >
+          <Zap size={22} />
+        </button>
+      </div>
+      <p className="hw-lcd px-2.5 py-0.5 rounded-md text-[10px] font-mono text-muted-foreground">
+        TX: <span className="text-primary font-bold">{payload}</span>
       </p>
     </div>
   );
 }
 
 const DP_BTN_BASE =
-  'flex items-center justify-center w-11 h-11 rounded-xl border transition-all duration-150 cursor-pointer select-none active:scale-95';
-const DP_BTN_IDLE = 'bg-gradient-to-b from-secondary to-background/90 border-border text-primary hover:border-primary/40 shadow-sm';
-const DP_BTN_GLOW =
-  'bg-primary/20 border-primary/60 text-primary font-black shadow-[0_0_12px_rgba(163,230,53,0.3)]';
+  'hw-keycap flex items-center justify-center w-11 h-11 rounded-xl cursor-pointer select-none';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
   return (
     <button
       type="button"
-      className={`${DP_BTN_BASE} ${lit ? DP_BTN_GLOW : DP_BTN_IDLE}`}
+      className={`${DP_BTN_BASE} ${lit ? 'hw-keycap-active' : 'text-primary'}`}
       onMouseDown={() => onPress(cmd)}
       onMouseUp={onRelease}
       onMouseLeave={() => activeCmd === cmd && onRelease()}
@@ -2139,7 +2328,7 @@ function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   );
 }
 
-// ─── D-Pad Widget (Industrial Tactile Jog Pad) ────────────────────────────────
+// ─── D-Pad Widget (Industrial Tactile Jog Deck) ───────────────────────────────
 function DPadWidget({ widget, publish }) {
   const [active, setActive] = useState(null);
   const timeoutRef = useRef(null);
@@ -2165,17 +2354,17 @@ function DPadWidget({ widget, publish }) {
 
   return (
     <div className="flex flex-col h-full items-center justify-center gap-2 text-left">
-      <div className="p-2.5 rounded-2xl bg-muted/35 border border-border shadow-inner flex flex-col items-center gap-1.5">
+      <div className="hw-well p-2.5 rounded-2xl flex flex-col items-center gap-1.5">
         <DPadDirButton cmd="FORWARD" icon={ChevronUp} activeCmd={active} onPress={press} onRelease={release} />
         <div className="flex gap-1.5">
           <DPadDirButton cmd="LEFT" icon={ChevronLeft} activeCmd={active} onPress={press} onRelease={release} />
           <button
             type="button"
             onClick={sendStop}
-            className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer select-none active:scale-90 ${
+            className={`hw-keycap w-11 h-11 rounded-full flex items-center justify-center cursor-pointer select-none ${
               active === 'STOP'
-                ? 'bg-red-500/25 border-red-400 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.4)]'
-                : 'bg-red-500/12 border-red-500/30 text-red-400 hover:bg-red-500/20'
+                ? 'border-red-400 bg-red-500/25 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.4)]'
+                : 'border-red-500/35 text-red-400 hover:border-red-400'
             }`}
             title="Send STOP"
           >
@@ -2186,8 +2375,8 @@ function DPadWidget({ widget, publish }) {
         <DPadDirButton cmd="BACK" icon={ChevronDown} activeCmd={active} onPress={press} onRelease={release} />
       </div>
 
-      <span className={`text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
-        active ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 text-muted-foreground border-border'
+      <span className={`hw-lcd text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-md ${
+        active ? 'border-primary/40 text-primary' : 'text-muted-foreground'
       }`}>
         CMD: {active || 'IDLE'}
       </span>
@@ -2195,7 +2384,7 @@ function DPadWidget({ widget, publish }) {
   );
 }
 
-// ─── Joystick Widget (Recessed Calibration Gimbal Well) ────────────────────────
+// ─── Joystick Widget (Recessed Anodized Gimbal + Vector Trace) ─────────────────
 function JoystickWidget({ widget, publish }) {
   const rootRef = useRef(null);
   const activeRef = useRef(null);
@@ -2264,7 +2453,7 @@ function JoystickWidget({ widget, publish }) {
     <div className="flex flex-col h-full items-center justify-center min-h-0 gap-2 text-left">
       <div
         ref={rootRef}
-        className="relative w-36 h-36 rounded-full border border-border bg-background shadow-inner touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
+        className="hw-well relative w-36 h-36 rounded-full touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
         onPointerDown={(e) => {
           e.currentTarget.setPointerCapture(e.pointerId);
           applyPointer(e.clientX, e.clientY);
@@ -2282,13 +2471,23 @@ function JoystickWidget({ widget, publish }) {
         <div className="absolute inset-x-3 top-1/2 h-px bg-white/[0.06] pointer-events-none" />
         <div className="absolute inset-y-3 left-1/2 w-px bg-white/[0.06] pointer-events-none" />
         <div className="absolute inset-[20%] rounded-full border border-dashed border-primary/35 pointer-events-none" />
+        <div className="absolute inset-[36%] rounded-full border border-white/[0.06] pointer-events-none" />
 
-        {/* Machined Dome Thumbstick */}
+        {/* Live Vector Force Trace */}
+        <svg viewBox="0 0 144 144" className="absolute inset-0 w-full h-full pointer-events-none">
+          <line
+            x1="72" y1="72" x2={72 + knob.x} y2={72 + knob.y}
+            stroke="#a3e635" strokeWidth="2" strokeLinecap="round"
+            opacity={knobLit ? 0.85 : 0.2}
+          />
+        </svg>
+
+        {/* Machined Knurled Thumbstick Dome */}
         <div
           className={`absolute w-12 h-12 rounded-full border transition-all duration-75 flex items-center justify-center ${
             knobLit
               ? 'bg-primary/25 border-primary scale-95 shadow-[0_0_16px_rgba(163,230,53,0.4)]'
-              : 'bg-gradient-to-b from-secondary to-background border-border shadow-lg'
+              : 'bg-gradient-to-b from-secondary via-muted to-background border-border shadow-lg'
           }`}
           style={{
             left: `calc(50% + ${knob.x}px)`,
@@ -2296,7 +2495,9 @@ function JoystickWidget({ widget, publish }) {
             transform: 'translate(-50%, -50%)',
           }}
         >
-          <div className={`w-3 h-3 rounded-full ${knobLit ? 'bg-primary' : 'bg-muted-foreground/50'}`} />
+          <div className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center">
+            <div className={`w-2.5 h-2.5 rounded-full ${knobLit ? 'bg-primary' : 'bg-muted-foreground/50'}`} />
+          </div>
         </div>
 
         <span className="absolute top-1.5 left-1/2 -translate-x-1/2 text-[8px] font-mono text-muted-foreground font-bold pointer-events-none">F</span>
@@ -2305,8 +2506,8 @@ function JoystickWidget({ widget, publish }) {
         <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[8px] font-mono text-muted-foreground font-bold pointer-events-none">R</span>
       </div>
 
-      <span className={`text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
-        active ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 text-muted-foreground border-border'
+      <span className={`hw-lcd text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-md ${
+        active ? 'border-primary/40 text-primary' : 'text-muted-foreground'
       }`}>
         DIR: {active || 'IDLE'}
       </span>
@@ -2314,7 +2515,7 @@ function JoystickWidget({ widget, publish }) {
   );
 }
 
-// ─── Robot Arm Widget (Calibrated 2D Kinematics Bay) ───────────────────────────
+// ─── Robot Arm Widget (CAD 2D Kinematics Bay + Live XY Telemetry) ──────────────
 function RobotArmWidget({ widget, publish }) {
   const [joints, setJoints] = useState({ base: 90, shoulder: 90, elbow: 90 });
 
@@ -2340,30 +2541,49 @@ function RobotArmWidget({ widget, publish }) {
   const shoulderAngle = ((joints.shoulder - 90) * Math.PI) / 180 + baseAngle;
   const elbowAngle = ((joints.elbow - 90) * Math.PI) / 180 + shoulderAngle;
   const L1 = 36, L2 = 28;
-  const x0 = 60, y0 = 78;
+  const x0 = 65, y0 = 78;
   const x1 = x0 + L1 * Math.sin(shoulderAngle);
   const y1 = y0 - L1 * Math.cos(shoulderAngle);
   const x2 = x1 + L2 * Math.sin(elbowAngle);
   const y2 = y1 - L2 * Math.cos(elbowAngle);
+  const relX = Math.round(x2 - x0);
+  const relY = Math.round(y0 - y2);
 
   return (
     <div className="flex flex-col h-full min-h-0 justify-center gap-2 text-left">
-      <div className="flex justify-center bg-background border border-border rounded-xl py-1 shadow-inner">
-        <svg width="120" height="86" viewBox="0 0 120 90">
-          <line x1="10" y1="84" x2="110" y2="84" stroke="rgba(240,240,232,0.18)" strokeWidth="1" />
-          <rect x="44" y="79" width="32" height="6" rx="3" fill="rgba(240,240,232,0.12)" stroke="rgba(240,240,232,0.3)" strokeWidth="1" />
-          <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#a3e635" strokeWidth="4.5" strokeLinecap="round" />
-          <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#a3e635" strokeWidth="3.5" strokeLinecap="round" />
-          <circle cx={x0} cy={y0} r="5" fill="#1a1b18" stroke="#a3e635" strokeWidth="2" />
-          <circle cx={x1} cy={y1} r="4.5" fill="#1a1b18" stroke="#a3e635" strokeWidth="2" />
+      <div
+        className="hw-well relative flex justify-center rounded-xl py-1 px-2 overflow-hidden"
+        style={{
+          backgroundImage:
+            'linear-gradient(to right, rgba(240,240,232,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(240,240,232,0.03) 1px, transparent 1px)',
+          backgroundSize: '12px 12px',
+        }}
+      >
+        <svg width="130" height="86" viewBox="0 0 130 90">
+          {/* Maximum reach arc guide */}
+          <path d="M 8 78 A 57 57 0 0 1 122 78" fill="none" stroke="rgba(163,230,53,0.14)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="8" y1="84" x2="122" y2="84" stroke="rgba(240,240,232,0.2)" strokeWidth="1" />
+          <rect x="49" y="79" width="32" height="6" rx="3" fill="rgba(240,240,232,0.1)" stroke="rgba(240,240,232,0.3)" strokeWidth="1" />
+          {/* Link 1 */}
+          <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#d5d8ca" strokeWidth="5.5" strokeLinecap="round" />
+          <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#a3e635" strokeWidth="2" strokeLinecap="round" />
+          {/* Link 2 */}
+          <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#d5d8ca" strokeWidth="4.5" strokeLinecap="round" />
+          <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#a3e635" strokeWidth="1.75" strokeLinecap="round" />
+          {/* Bolted rotary joints */}
+          <circle cx={x0} cy={y0} r="5.5" fill="#1a1b18" stroke="#a3e635" strokeWidth="2" />
+          <circle cx={x1} cy={y1} r="4.8" fill="#1a1b18" stroke="#a3e635" strokeWidth="2" />
           <circle cx={x2} cy={y2} r="3.5" fill="#a3e635" />
         </svg>
+        <span className="hw-lcd absolute top-1 right-1.5 px-1.5 py-0.5 rounded text-[8px] font-mono tabular-nums text-primary">
+          X:{relX} Y:{relY}
+        </span>
       </div>
-      <div className="space-y-1.5 px-1">
+      <div className="space-y-1.5 px-0.5">
         {arms.map(a => (
           <div key={a.key}>
             <div className="flex justify-between mb-0.5">
-              <label className="text-[9px] font-bold text-muted-foreground">{a.label}</label>
+              <label className="text-[9px] font-mono uppercase text-muted-foreground">{a.label}</label>
               <span className="text-[9px] font-mono tabular-nums font-bold text-primary">{joints[a.key]}°</span>
             </div>
             <input type="range" min={a.range[0]} max={a.range[1]} value={joints[a.key]}
@@ -2374,14 +2594,14 @@ function RobotArmWidget({ widget, publish }) {
         ))}
       </div>
       <button type="button" onClick={center}
-        className="w-full py-1.5 rounded-lg text-[10px] font-mono font-bold bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer">
+        className="hw-keycap w-full py-1.5 rounded-lg text-[10px] font-mono font-bold text-foreground cursor-pointer">
         Center Arm (<span className="text-primary">90°, 90°, 90°</span>)
       </button>
     </div>
   );
 }
 
-// ─── Gripper Widget ───────────────────────────────────────────────────────────
+// ─── Gripper Widget (Rack & Pinion Parallel Jaw Actuator) ──────────────────────
 function GripperWidget({ widget, publish }) {
   const [openPct, setOpenPct] = useState(100);
   const [force, setForce] = useState(50);
@@ -2397,21 +2617,28 @@ function GripperWidget({ widget, publish }) {
     publish(widget.topic, `POS,${v},${force}`);
   };
 
-  const jawGap = (openPct / 100) * 28;
+  const jawGap = (openPct / 100) * 30;
+  const lx = 50 - jawGap / 2 - 12;
+  const rx = 50 + jawGap / 2;
 
   return (
-    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
-      <div className="flex justify-center bg-background border border-border rounded-xl py-1 shadow-inner">
-        <svg width="90" height="54" viewBox="0 0 90 60">
-          <rect x="30" y="24" width="30" height="16" rx="4" fill="rgba(240,240,232,0.08)" stroke="rgba(240,240,232,0.28)" strokeWidth="1.5" />
-          <rect x={45 - jawGap / 2 - 14} y="10" width="14" height="14" rx="3" fill="rgba(163,230,53,0.22)" stroke="#a3e635" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
-          <rect x={45 + jawGap / 2} y="10" width="14" height="14" rx="3" fill="rgba(163,230,53,0.22)" stroke="#a3e635" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
-          <text x="45" y="36" textAnchor="middle" fontSize="8" fill="#a3e635" fontFamily="var(--font-mono)" fontWeight="bold">{openPct}%</text>
+    <div className="flex flex-col h-full justify-center gap-2 px-0.5 text-left">
+      <div className="hw-well flex justify-center rounded-xl py-1.5">
+        <svg width="100" height="54" viewBox="0 0 100 60">
+          {/* Linear guide rail */}
+          <rect x="14" y="29" width="72" height="4" rx="2" fill="rgba(240,240,232,0.12)" />
+          {/* Left serrated jaw */}
+          <rect x={lx} y="9" width="12" height="20" rx="2" fill="rgba(163,230,53,0.2)" stroke="#a3e635" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
+          {/* Right serrated jaw */}
+          <rect x={rx} y="9" width="12" height="20" rx="2" fill="rgba(163,230,53,0.2)" stroke="#a3e635" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
+          {/* Actuator housing */}
+          <rect x="33" y="26" width="34" height="20" rx="4" fill="#141512" stroke="rgba(240,240,232,0.28)" strokeWidth="1.5" />
+          <text x="50" y="39" textAnchor="middle" fontSize="8" fill="#a3e635" fontFamily="var(--font-mono)" fontWeight="bold">{openPct}%</text>
         </svg>
       </div>
       <div>
         <div className="flex justify-between mb-0.5">
-          <label className="text-[10px] text-muted-foreground">Gripper Opening</label>
+          <label className="text-[10px] font-mono uppercase text-muted-foreground">Jaw Stroke</label>
           <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{openPct}%</span>
         </div>
         <input type="range" min="0" max="100" value={openPct} onChange={e => handleOpen(Number(e.target.value))}
@@ -2419,7 +2646,7 @@ function GripperWidget({ widget, publish }) {
       </div>
       <div>
         <div className="flex justify-between mb-0.5">
-          <label className="text-[10px] text-muted-foreground">Grip Force</label>
+          <label className="text-[10px] font-mono uppercase text-muted-foreground">Clamp Force</label>
           <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{force}%</span>
         </div>
         <input type="range" min="10" max="100" value={force} onChange={e => setForce(Number(e.target.value))}
@@ -2427,11 +2654,11 @@ function GripperWidget({ widget, publish }) {
       </div>
       <div className="flex gap-2">
         <button type="button" onClick={() => sendGrip(true)}
-          className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer">
+          className="hw-keycap flex-1 py-1.5 rounded-lg text-xs font-mono font-bold text-foreground cursor-pointer">
           Release
         </button>
         <button type="button" onClick={() => sendGrip(false)}
-          className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-primary/15 border border-primary/40 text-primary hover:bg-primary/25 transition-all active:scale-95 cursor-pointer">
+          className="hw-keycap hw-keycap-active flex-1 py-1.5 rounded-lg text-xs font-mono font-bold cursor-pointer">
           Grip
         </button>
       </div>
@@ -2439,7 +2666,7 @@ function GripperWidget({ widget, publish }) {
   );
 }
 
-// ─── Omni/Mecanum Drive Widget ────────────────────────────────────────────────
+// ─── Omni/Mecanum Drive Widget (Vector Gimbal + Yaw Keys) ────────────────────
 function OmniDriveWidget({ widget, publish }) {
   const rootRef = useRef(null);
   const activeRef = useRef(null);
@@ -2492,7 +2719,7 @@ function OmniDriveWidget({ widget, publish }) {
       <div className="flex gap-3 items-center justify-center min-h-0">
         <div
           ref={rootRef}
-          className="relative w-32 h-32 rounded-full border border-border bg-background shadow-inner touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center flex-shrink-0"
+          className="hw-well relative w-32 h-32 rounded-full touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center flex-shrink-0"
           onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); applyPointer(e.clientX, e.clientY); }}
           onPointerMove={e => { if (!e.currentTarget.hasPointerCapture(e.pointerId)) return; applyPointer(e.clientX, e.clientY); }}
           onPointerUp={e => { try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {} endPointer(); }}
@@ -2501,9 +2728,16 @@ function OmniDriveWidget({ widget, publish }) {
           <div className="absolute inset-x-3 top-1/2 h-px bg-white/[0.06] pointer-events-none" />
           <div className="absolute inset-y-3 left-1/2 w-px bg-white/[0.06] pointer-events-none" />
           <div className="absolute inset-[18%] rounded-full border border-dashed border-primary/35 pointer-events-none" />
+          <svg viewBox="0 0 128 128" className="absolute inset-0 w-full h-full pointer-events-none">
+            <line
+              x1="64" y1="64" x2={64 + knob.x} y2={64 + knob.y}
+              stroke="#a3e635" strokeWidth="2" strokeLinecap="round"
+              opacity={knobLit ? 0.85 : 0.2}
+            />
+          </svg>
           <div
             className={`absolute w-11 h-11 rounded-full border transition-all duration-75 flex items-center justify-center ${
-              knobLit ? 'bg-primary/25 border-primary scale-95 shadow-[0_0_16px_rgba(163,230,53,0.4)]' : 'bg-gradient-to-b from-secondary to-background border-border'
+              knobLit ? 'bg-primary/25 border-primary scale-95 shadow-[0_0_16px_rgba(163,230,53,0.4)]' : 'bg-gradient-to-b from-secondary via-muted to-background border-border shadow-md'
             }`}
             style={{ left: `calc(50% + ${knob.x}px)`, top: `calc(50% + ${knob.y}px)`, transform: 'translate(-50%,-50%)' }}
           >
@@ -2516,25 +2750,25 @@ function OmniDriveWidget({ widget, publish }) {
         </div>
         <div className="flex flex-col gap-1.5">
           <button type="button" onClick={() => setRotateCmd(1)}
-            className={`w-9 h-9 rounded-lg border flex items-center justify-center text-xs font-bold transition-all active:scale-90 cursor-pointer ${
-              rotate > 0 ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+            className={`hw-keycap w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold cursor-pointer ${
+              rotate > 0 ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
             }`}>
             ↻
           </button>
           <button type="button" onClick={() => setRotateCmd(0)}
-            className="w-9 h-9 rounded-lg border border-border bg-muted/40 text-muted-foreground text-[9px] font-black hover:text-foreground transition-all active:scale-90 cursor-pointer">
+            className="hw-keycap w-9 h-9 rounded-lg text-muted-foreground text-[9px] font-black hover:text-foreground cursor-pointer">
             ■
           </button>
           <button type="button" onClick={() => setRotateCmd(-1)}
-            className={`w-9 h-9 rounded-lg border flex items-center justify-center text-xs font-bold transition-all active:scale-90 cursor-pointer ${
-              rotate < 0 ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+            className={`hw-keycap w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold cursor-pointer ${
+              rotate < 0 ? 'hw-keycap-active' : 'text-muted-foreground hover:text-foreground'
             }`}>
             ↺
           </button>
         </div>
       </div>
-      <span className={`text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full border text-center ${
-        active ? 'bg-primary/15 border-primary/40 text-primary' : 'bg-muted/40 text-muted-foreground border-border'
+      <span className={`hw-lcd text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-md text-center ${
+        active ? 'border-primary/40 text-primary' : 'text-muted-foreground'
       }`}>
         {active || 'IDLE'}{rotate !== 0 ? (rotate > 0 ? ' + CW' : ' + CCW') : ''}
       </span>
@@ -2542,7 +2776,7 @@ function OmniDriveWidget({ widget, publish }) {
   );
 }
 
-// ─── Dual Motor Speed Widget ──────────────────────────────────────────────────
+// ─── Dual Motor Speed Widget (Differential Telemetry + Center-Zero Bars) ──────
 function RobotSpeedWidget({ widget, publish }) {
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(0);
@@ -2557,36 +2791,56 @@ function RobotSpeedWidget({ widget, publish }) {
     { label: 'STOP', l: 0, r: 0 },
   ];
 
+  const renderBiBar = (val) => {
+    const halfPct = (Math.abs(val) / 255) * 50;
+    const isRev = val < 0;
+    return (
+      <div className="hw-well relative h-1.5 rounded-full overflow-hidden my-1">
+        <span className="absolute left-1/2 top-0 bottom-0 w-px bg-foreground/30 z-10" />
+        <div
+          className="absolute top-0 bottom-0 transition-all duration-100"
+          style={{
+            left: isRev ? `${50 - halfPct}%` : '50%',
+            width: `${halfPct}%`,
+            backgroundColor: isRev ? '#f59e0b' : '#a3e635',
+          }}
+        />
+      </div>
+    );
+  };
+
   return (
-    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
+    <div className="flex flex-col h-full justify-center gap-1.5 px-0.5 text-left">
       <div>
-        <div className="flex justify-between mb-1">
-          <label className="text-[10px] text-muted-foreground font-bold">◀ Left Motor</label>
+        <div className="flex justify-between">
+          <label className="text-[10px] font-mono text-muted-foreground font-bold uppercase">◀ Left Drive</label>
           <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{left}</span>
         </div>
+        {renderBiBar(left)}
         <input type="range" min="-255" max="255" value={left}
           onChange={e => { const v = Number(e.target.value); setLeft(v); send(v, right); }}
           className="w-full hw-slider" />
       </div>
       <div>
-        <div className="flex justify-between mb-1">
-          <label className="text-[10px] text-muted-foreground font-bold">Right Motor ▶</label>
+        <div className="flex justify-between">
+          <label className="text-[10px] font-mono text-muted-foreground font-bold uppercase">Right Drive ▶</label>
           <span className="text-[10px] font-mono tabular-nums font-bold text-primary">{right}</span>
         </div>
+        {renderBiBar(right)}
         <input type="range" min="-255" max="255" value={right}
           onChange={e => { const v = Number(e.target.value); setRight(v); send(left, v); }}
           className="w-full hw-slider" />
       </div>
-      <div className="flex gap-1">
+      <div className="flex gap-1 pt-0.5">
         {presets.map(p => (
           <button key={p.label} type="button"
             onClick={() => { setLeft(p.l); setRight(p.r); send(p.l, p.r); }}
-            className="flex-1 py-1 rounded-lg text-[10px] font-mono font-bold bg-muted border border-border text-muted-foreground hover:text-primary transition-all active:scale-95 cursor-pointer">
+            className="hw-keycap flex-1 py-1 rounded-lg text-[10px] font-mono font-bold text-muted-foreground hover:text-primary cursor-pointer">
             {p.label}
           </button>
         ))}
       </div>
-      <div className="text-[10px] text-center text-primary font-mono tabular-nums bg-muted/40 rounded-lg py-0.5 border border-border font-bold">
+      <div className="hw-lcd text-[10px] text-center text-primary font-mono tabular-nums rounded-lg py-0.5 font-bold">
         L{left} / R{right}
       </div>
     </div>
@@ -2728,9 +2982,15 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
   const hasTelemetry = value !== undefined && value !== null && value !== '';
 
   return (
-    <div className="hw-panel h-full bg-card border border-border hover:border-white/15 rounded-xl transition-all duration-200 group flex flex-col relative overflow-hidden">
-      {/* Single Unified Instrument Bezel Header */}
-      <div className="px-3 py-2 border-b border-border/80 bg-muted/25 flex items-center justify-between gap-2 shrink-0" dir="ltr">
+    <div className="hw-panel h-full border border-border hover:border-primary/25 rounded-xl transition-all duration-200 group flex flex-col relative overflow-hidden">
+      {/* 4 Corner Machined Chassis Screws */}
+      <span className="hw-screw absolute top-1.5 left-1.5 z-10 opacity-75" />
+      <span className="hw-screw absolute top-1.5 right-1.5 z-10 opacity-75" />
+      <span className="hw-screw absolute bottom-1.5 left-1.5 z-10 opacity-75" />
+      <span className="hw-screw absolute bottom-1.5 right-1.5 z-10 opacity-75" />
+
+      {/* Anodized Instrument Faceplate Header */}
+      <div className="px-3.5 py-2 border-b border-border/90 bg-black/20 flex items-center justify-between gap-2 shrink-0" dir="ltr">
         <div className="flex items-center gap-1.5 min-w-0">
           <div
             className="drag-handle cursor-grab active:cursor-grabbing p-1 -ml-0.5 text-primary/80 hover:text-primary transition-colors flex items-center justify-center shrink-0 touch-none select-none"
@@ -2739,26 +2999,26 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
             <GripVertical size={13} className="text-primary pointer-events-none" />
           </div>
           <MetaIcon size={13} className="text-primary shrink-0" />
-          <span className="text-xs font-bold text-foreground truncate">{widget.name}</span>
+          <span className="text-xs font-bold tracking-tight text-foreground truncate">{widget.name}</span>
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
           <span
-            className="text-[10px] font-mono text-muted-foreground bg-background/60 border border-border px-1.5 py-0.5 rounded truncate max-w-[105px]"
+            className="hw-lcd text-[9.5px] font-mono text-muted-foreground px-1.5 py-0.5 rounded truncate max-w-[105px]"
             title={widget.topic}
           >
             {widget.topic}
           </span>
           <button
             onClick={() => onEdit(widget)}
-            className="opacity-0 group-hover:opacity-80 hover:!opacity-100 hover:text-primary transition-all text-primary p-1 rounded hover:bg-muted cursor-pointer"
+            className="opacity-0 group-hover:opacity-85 hover:!opacity-100 hover:text-primary transition-all text-primary p-1 rounded cursor-pointer"
             title="Edit Tool"
           >
             <SlidersHorizontal size={12} className="text-primary" />
           </button>
           <button
             onClick={() => onRemove(widget.id)}
-            className="opacity-0 group-hover:opacity-80 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground p-1 rounded hover:bg-red-500/10 cursor-pointer"
+            className="opacity-0 group-hover:opacity-85 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground p-1 rounded cursor-pointer"
             title="Remove Tool"
           >
             <Trash2 size={12} />
