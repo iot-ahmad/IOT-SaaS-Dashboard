@@ -84,51 +84,46 @@ export default function Header({
   const isSimulator = activeTool === 'simulator';
 
   return (
-    <header className={`flex items-center justify-between border-b border-border bg-card/50 bg-background/50 backdrop-blur-sm sticky top-0 z-10 transition-all ${
-      isSimulator ? 'py-2 px-4 md:px-6' : 'py-4 px-6 md:px-8'
+    <header className={`flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-10 transition-all ${
+      isSimulator ? 'py-2 px-4 md:px-6' : 'py-3.5 px-6 md:px-8'
     }`}>
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
         <button
           onClick={toggleMobileMenu}
-          style={{ color: 'var(--foreground)' }}
-          className="md:hidden hover:text-primary p-1 transition-colors"
+          className="md:hidden text-foreground hover:text-primary p-1.5 rounded-lg hover:bg-muted/60 transition-colors cursor-pointer"
           title="Open menu"
         >
-          <Menu size={22} />
+          <Menu size={20} />
         </button>
 
         {/* Desktop sidebar toggle */}
         <button
           onClick={onToggleSidebar}
-          style={{ color: 'var(--muted-foreground)', background: 'transparent' }}
-          className="hidden md:flex items-center justify-center hover:text-primary transition-colors p-1 hover:bg-[var(--muted)]"
+          className="hidden md:flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-muted/60 cursor-pointer"
           title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+          {isSidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
         </button>
 
         <div>
-          <h1 className={`${isSimulator ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'} font-bold text-foreground tracking-tight leading-tight`}>
+          <h1 className={`${isSimulator ? 'text-base md:text-lg' : 'text-lg md:text-xl'} font-bold text-foreground tracking-tight leading-tight`}>
             {title}
           </h1>
           {!isSimulator && (
-            <p className="text-xs md:text-sm mt-0.5 text-zinc-500 dark:text-zinc-400">{subtitle}</p>
+            <p className="text-xs mt-0.5 text-muted-foreground">{subtitle}</p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
-
-
+      <div className="flex items-center gap-2 sm:gap-2.5">
         {/* Direct Messages Button */}
         <button
           onClick={() => setIsMessagingOpen(true)}
-          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
-          className="relative flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-foreground transition-colors cursor-pointer"
+          className="relative h-9 flex items-center gap-2 px-3 rounded-lg bg-muted/60 hover:bg-muted border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="Direct Messages"
         >
-          <MessageSquare size={16} />
+          <MessageSquare size={15} />
           <span className="hidden sm:inline">Messages</span>
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md">
@@ -140,35 +135,40 @@ export default function Header({
         {/* Projects Community Button */}
         <button
           onClick={() => navigate('/hub')}
-          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
-          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-foreground transition-colors cursor-pointer"
+          className="h-9 flex items-center gap-2 px-3 rounded-lg bg-muted/60 hover:bg-muted border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="Project Hub"
         >
-          <Globe size={16} />
+          <Globe size={15} />
           <span className="hidden sm:inline">Project Hub</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
-          className="p-2 hover:text-foreground transition-colors cursor-pointer"
+          className="h-9 w-9 flex items-center justify-center rounded-lg bg-muted/60 hover:bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="Toggle Theme"
         >
-          {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          {isDark ? <Sun size={15} /> : <Moon size={15} />}
         </button>
 
-        {/* MQTT Status */}
+        {/* MQTT Broker Status Pill */}
         <div
           title={isConnected
-            ? (mqttMode === 'private' ? 'Connected to private isolated MQTT broker' : 'Connected to shared demo broker (for education & simulation only)')
+            ? (mqttMode === 'private' ? 'Connected to private isolated EMQX MQTT broker (TLS 8883)' : 'Connected to shared demo broker (for education & simulation only)')
             : 'Disconnected from MQTT broker'}
-          style={isConnected
-          ? { background: 'rgba(91, 140, 110, 0.12)', border: '1px solid var(--border)', color: '#5B8C6E', borderRadius: 'var(--radius)' }
-          : { background: 'rgba(184, 92, 92, 0.12)', border: '1px solid var(--border)', color: '#B85C5C', borderRadius: 'var(--radius)' }
-        } className="hidden lg:flex items-center gap-2 px-3 py-2 text-xs font-medium">
-          {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
-          <span className="hidden xl:inline">{isConnected ? 'MQTT Connected' : 'Disconnected'}</span>
+          className={`hidden lg:flex h-9 items-center gap-2 px-3 rounded-lg border text-xs font-medium ${
+            isConnected
+              ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
+              : 'bg-red-500/10 border-red-500/25 text-red-400'
+          }`}
+        >
+          <span className={`w-2 h-2 rounded-full shrink-0 ${
+            isConnected ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-red-500 hw-led-err'
+          }`} />
+          {isConnected ? <Wifi size={13} /> : <WifiOff size={13} />}
+          <span className="hidden xl:inline font-mono text-[11px] font-semibold">
+            {isConnected ? (mqttMode === 'private' ? 'EMQX Isolated' : 'Demo Broker') : 'Broker Offline'}
+          </span>
         </div>
       </div>
     </header>

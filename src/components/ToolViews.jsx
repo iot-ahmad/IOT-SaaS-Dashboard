@@ -7,7 +7,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 
 const Card = ({ children, className = '' }) => (
-  <div className={`bg-card/[0.02] border border-border rounded-2xl p-6 backdrop-blur-md hover:bg-card/[0.04] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-slate-300 dark:border-white/20 ${className}`}>
+  <div className={`hw-panel bg-card border border-border rounded-xl p-5 transition-all duration-200 hover:border-white/15 ${className}`}>
     {children}
   </div>
 );
@@ -551,63 +551,88 @@ export const AutomationsToolView = ({ publish, userUID }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Workflow Automations</h2>
+      <div className="flex justify-between items-center gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">Workflow Automations</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Autonomous IF → THEN rules triggered by real-time MQTT sensor updates</p>
+        </div>
         <button
           onClick={() => setShowAddModal(true)}
-          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-          className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20 text-sm cursor-pointer"
         >
-          <Zap size={18} /> New Rule
+          <Zap size={16} /> New Rule
         </button>
       </div>
 
-
-
       {loading ? (
-        <div className="text-muted-foreground text-sm">Loading...</div>
+        <div className="text-muted-foreground text-sm">Loading automations...</div>
       ) : autos.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">No automations yet. Click "New Rule" to create one.</div>
+        <div className="hw-panel bg-card border border-border rounded-xl text-center py-12 text-muted-foreground text-sm">
+          No automations yet. Click "New Rule" to create one.
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {autos.map(auto => (
-            <Card key={auto.id} className="relative group">
-              <button onClick={() => handleDelete(auto.id)} className="absolute top-4 right-4 text-muted-foreground hover:text-red-400 opacity-0 md:group-hover:opacity-100 transition-opacity p-1 bg-card/5 rounded-md backdrop-blur-md z-10 hidden md:block">
-                <Trash2 size={16} />
-              </button>
-              <button onClick={() => handleDelete(auto.id)} className="absolute top-4 right-14 text-muted-foreground hover:text-red-400 p-1 md:hidden">
-                <Trash2 size={16} />
-              </button>
-              <div className="flex justify-between items-start mb-4 pr-6">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-xl ${auto.active ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground dark:text-white/30'}`}>
-                    <Zap size={20} />
+            <Card key={auto.id} className="relative group flex flex-col justify-between gap-4">
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+                    auto.active
+                      ? 'bg-primary/12 border-primary/25 text-primary'
+                      : 'bg-muted border-border text-muted-foreground'
+                  }`}>
+                    <Zap size={18} />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-sm">{auto.name}</h3>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{auto.rule}</p>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-sm text-foreground truncate">{auto.name}</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{auto.rule}</p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => toggleAuto(auto.id)}
-                  className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${auto.active ? 'bg-primary' : 'bg-slate-300 dark:bg-card/20'}`}
-                >
-                  <div className={`w-4 h-4 rounded-full bg-card transition-transform duration-300 ${auto.active ? 'translate-x-4' : 'translate-x-0'}`} />
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => toggleAuto(auto.id)}
+                    className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 flex-shrink-0 cursor-pointer ${
+                      auto.active ? 'bg-emerald-500' : 'bg-muted border border-border'
+                    }`}
+                    title={auto.active ? 'Disable rule' : 'Enable rule'}
+                  >
+                    <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${auto.active ? 'translate-x-5' : 'translate-x-0'}`} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(auto.id)}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                    title="Delete rule"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
-              <div className="space-y-2 mb-4 relative z-0">
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="text-muted-foreground dark:text-white/30">Trigger:</span>
+
+              {/* IF -> THEN Flow Blocks */}
+              <div className="space-y-2">
+                <div className="bg-muted/40 border border-border rounded-lg p-2.5 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/25">
+                      IF
+                    </span>
+                    <span className="text-[11px] font-mono font-semibold text-foreground">
+                      {auto.operator} {auto.value}
+                    </span>
+                  </div>
                   <CopyTopicButton topic={auto.trigger} userUID={userUID} />
                 </div>
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="text-muted-foreground dark:text-white/30">Action:</span>
+
+                <div className="bg-muted/40 border border-border rounded-lg p-2.5 flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 shrink-0">
+                    THEN
+                  </span>
                   <CopyTopicButton topic={auto.action} userUID={userUID} />
                 </div>
               </div>
-              <div className="flex justify-between text-[11px] text-muted-foreground dark:text-white/30 border-t border-border pt-3">
+
+              <div className="flex justify-between text-[11px] text-muted-foreground font-mono border-t border-border pt-3">
                 <span>Last ran: {auto.lastRan}</span>
-                <span>Used: {auto.usage}</span>
+                <span>Runs: {auto.usage}</span>
               </div>
             </Card>
           ))}
@@ -615,26 +640,25 @@ export const AutomationsToolView = ({ publish, userUID }) => {
       )}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
-          <div className="absolute inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
-          <div className="bg-card dark:bg-[#0a0b0d] border border-border p-6 rounded-2xl w-full max-w-md relative text-foreground">
-            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
+          <div className="hw-panel bg-card border border-border p-6 rounded-2xl w-full max-w-md relative text-foreground shadow-2xl">
+            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               <X size={20} />
             </button>
-            <h3 className="text-xl font-bold mb-4">New Automation Rule</h3>
+            <h3 className="text-lg font-bold mb-4">New Automation Rule</h3>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Rule Name</label>
-                <input required name="name" placeholder="e.g. Turn on light at night" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                <input required name="name" placeholder="e.g. Turn on light at night" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-1">
                   <label className="block text-xs text-muted-foreground mb-1">Trigger Metric</label>
-                  <input required name="trigger" placeholder="e.g. Temp" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                  <input required name="trigger" placeholder="e.g. Temp" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
                 </div>
                 <div className="col-span-1">
                   <label className="block text-xs text-muted-foreground mb-1">Condition</label>
-                  <select required name="operator" className="w-full bg-muted dark:bg-[#13151a] border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50">
+                  <select required name="operator" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50">
                     <option>&gt;</option>
                     <option>&lt;</option>
                     <option>=</option>
@@ -642,25 +666,24 @@ export const AutomationsToolView = ({ publish, userUID }) => {
                 </div>
                 <div className="col-span-1">
                   <label className="block text-xs text-muted-foreground mb-1">Value</label>
-                  <input required name="value" placeholder="e.g. 30" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                  <input required name="value" placeholder="e.g. 30" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Trigger Topic</label>
-                <input required name="triggerTopic" placeholder="e.g. sensor/temp" className="w-full font-mono bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                <input required name="triggerTopic" placeholder="e.g. sensor/temp" className="w-full font-mono bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
               </div>
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Action Description</label>
-                <input required name="action" placeholder="e.g. Turn Fan ON" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                <input required name="action" placeholder="e.g. Turn Fan ON" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
               </div>
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Action Topic Payload (Topic:Payload)</label>
-                <input required name="actionTopic" placeholder="e.g. actuator/fan:ON" className="w-full font-mono bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                <input required name="actionTopic" placeholder="e.g. actuator/fan:ON" className="w-full font-mono bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
               </div>
               <button
                 type="submit"
-                style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-                className="w-full font-bold py-2.5 hover:opacity-90 transition-opacity shadow-lg mt-2"
+                className="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors shadow-sm mt-2 cursor-pointer"
               >
                 Save Rule
               </button>
@@ -751,63 +774,67 @@ export const AlertsView = ({ userUID }) => {
 
   const getIcon = (type) => {
     switch (type) {
-      case 'critical': return { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-400/10' };
-      case 'warning': return { icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-400/10' };
-      case 'success': return { icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/10' };
-      default: return { icon: Info, color: 'text-primary', bg: 'bg-primary/10' };
+      case 'critical': return { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/12 border-red-500/25', accent: 'border-l-2 border-l-red-500', badge: 'CRITICAL' };
+      case 'warning': return { icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/12 border-amber-500/25', accent: 'border-l-2 border-l-amber-500', badge: 'WARNING' };
+      case 'success': return { icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/12 border-emerald-500/25', accent: 'border-l-2 border-l-emerald-500', badge: 'SUCCESS' };
+      default: return { icon: Info, color: 'text-sky-400', bg: 'bg-sky-500/12 border-sky-500/25', accent: 'border-l-2 border-l-sky-500', badge: 'INFO' };
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-xl font-bold">System Alerts</h2>
-        <div className="flex bg-secondary dark:bg-card/5 p-1 rounded-xl">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">System Alerts</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Hardware fault diagnostics and threshold notifications</p>
+        </div>
+        <div className="flex bg-muted border border-border p-1 rounded-xl">
           <button 
             onClick={() => setActiveTab('history')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'history' ? 'bg-card dark:bg-card/10 text-foreground shadow-sm' : 'text-muted-foreground hover:text-slate-700 dark:hover:text-white/70'}`}
+            className={`px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${activeTab === 'history' ? 'bg-card text-foreground shadow-sm border border-border' : 'text-muted-foreground hover:text-foreground'}`}
           >
             History
           </button>
           <button 
             onClick={() => setActiveTab('rules')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'rules' ? 'bg-card dark:bg-card/10 text-foreground shadow-sm' : 'text-muted-foreground hover:text-slate-700 dark:hover:text-white/70'}`}
+            className={`px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${activeTab === 'rules' ? 'bg-card text-foreground shadow-sm border border-border' : 'text-muted-foreground hover:text-foreground'}`}
           >
             Alert Rules
           </button>
         </div>
       </div>
 
-
-
       {loading ? (
         <div className="text-muted-foreground text-sm">Loading alerts...</div>
       ) : activeTab === 'history' ? (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">{alerts.length} alerts</span>
+            <span className="text-xs font-mono text-muted-foreground">{alerts.length} alerts</span>
             {alerts.length > 0 && (
-              <button onClick={clearAllAlerts} className="text-sm text-red-500 hover:text-red-400 transition-colors">Clear All</button>
+              <button onClick={clearAllAlerts} className="text-xs font-semibold text-red-400 hover:text-red-300 transition-colors cursor-pointer">Clear All</button>
             )}
           </div>
           {alerts.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">No new alerts.</div>
+            <div className="hw-panel bg-card border border-border rounded-xl text-center py-12 text-muted-foreground text-sm">No new alerts.</div>
           ) : (
             <div className="space-y-3">
               {alerts.map(alert => {
-                const { icon: Icon, color, bg } = getIcon(alert.type);
+                const { icon: Icon, color, bg, accent, badge } = getIcon(alert.type);
                 return (
-                  <div key={alert.id} className="p-4 rounded-xl border border-border flex items-center justify-between bg-card/[0.02] hover:bg-card/[0.04] transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-2 rounded-lg ${bg} ${color}`}>
-                        <Icon size={18} />
+                  <div key={alert.id} className={`hw-panel p-4 rounded-xl border border-border ${accent} flex items-center justify-between gap-3 bg-card hover:border-white/15 transition-colors`}>
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className={`w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 ${bg} ${color}`}>
+                        <Icon size={16} />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">{alert.msg}</p>
-                        <p className="text-xs text-muted-foreground dark:text-white/30">{alert.time}</p>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border ${bg} ${color}`}>{badge}</span>
+                          <p className="text-sm font-semibold text-foreground">{alert.msg}</p>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{alert.time}</p>
                       </div>
                     </div>
-                    <button onClick={() => dismissAlert(alert.id)} className="text-xs text-muted-foreground dark:text-white/30 hover:text-foreground transition-colors">Dismiss</button>
+                    <button onClick={() => dismissAlert(alert.id)} className="text-xs font-medium text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-lg hover:bg-muted transition-colors shrink-0 cursor-pointer">Dismiss</button>
                   </div>
                 );
               })}
@@ -819,36 +846,34 @@ export const AlertsView = ({ userUID }) => {
           <div className="flex justify-end">
             <button
               onClick={() => setShowAddModal(true)}
-              style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-              className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20 text-sm cursor-pointer"
             >
-              <Bell size={16} /> New Alert Rule
+              <Bell size={15} /> New Alert Rule
             </button>
           </div>
           {rules.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">No alert rules configured.</div>
+            <div className="hw-panel bg-card border border-border rounded-xl text-center py-12 text-muted-foreground text-sm">No alert rules configured.</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {rules.map(rule => (
-                <div key={rule.id} className="p-5 rounded-xl border border-border bg-card/[0.02] relative group">
-                  <button onClick={() => deleteRule(rule.id)} className="absolute top-4 right-4 text-muted-foreground hover:text-red-400 opacity-0 md:group-hover:opacity-100 transition-opacity p-1 bg-card/5 rounded-md backdrop-blur-md z-10 md:block hidden">
-                    <Trash2 size={16} />
-                  </button>
-                  <button onClick={() => deleteRule(rule.id)} className="absolute top-4 right-14 text-muted-foreground hover:text-red-400 p-1 md:hidden">
-                    <Trash2 size={16} />
-                  </button>
-                  <div className="flex justify-between items-start mb-3 pr-6">
-                    <h3 className="font-bold text-sm">{rule.name}</h3>
-                    <button 
-                      onClick={() => toggleRule(rule.id)}
-                      className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${rule.active ? 'bg-primary' : 'bg-slate-300 dark:bg-card/20'}`}
-                    >
-                      <div className={`w-4 h-4 rounded-full bg-card transition-transform duration-300 ${rule.active ? 'translate-x-4' : 'translate-x-0'}`} />
-                    </button>
+                <div key={rule.id} className="hw-panel p-5 rounded-xl border border-border bg-card relative group hover:border-white/15 transition-colors">
+                  <div className="flex justify-between items-start mb-3 gap-2">
+                    <h3 className="font-bold text-sm text-foreground">{rule.name}</h3>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button 
+                        onClick={() => toggleRule(rule.id)}
+                        className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 flex-shrink-0 cursor-pointer ${rule.active ? 'bg-emerald-500' : 'bg-muted border border-border'}`}
+                      >
+                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${rule.active ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </button>
+                      <button onClick={() => deleteRule(rule.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer" title="Delete rule">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-foreground/90/50">Condition: <span className="font-medium text-foreground">{rule.condition}</span></p>
-                    <p className="text-xs text-foreground/90/50">Topic: <span className="font-mono text-foreground">{rule.topic}</span></p>
+                  <div className="space-y-1.5 pt-2 border-t border-border">
+                    <p className="text-xs text-muted-foreground">Condition: <span className="font-semibold text-foreground">{rule.condition}</span></p>
+                    <p className="text-xs text-muted-foreground">Topic: <span className="font-mono text-primary">{rule.topic}</span></p>
                   </div>
                 </div>
               ))}
@@ -858,30 +883,29 @@ export const AlertsView = ({ userUID }) => {
       )}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
-          <div className="absolute inset-0 bg-slate-900/40 bg-background/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
-          <div className="bg-card dark:bg-[#0a0b0d] border border-border p-6 rounded-2xl w-full max-w-md relative text-foreground">
-            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
+          <div className="hw-panel bg-card border border-border p-6 rounded-2xl w-full max-w-md relative text-foreground shadow-2xl">
+            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               <X size={20} />
             </button>
-            <h3 className="text-xl font-bold mb-4">New Alert Rule</h3>
+            <h3 className="text-lg font-bold mb-4">New Alert Rule</h3>
             <form onSubmit={handleAddRule} className="space-y-4">
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Rule Name</label>
-                <input required name="name" placeholder="e.g. Critical Temp Alert" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                <input required name="name" placeholder="e.g. Critical Temp Alert" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
               </div>
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Topic to Monitor</label>
-                <input required name="topic" placeholder="e.g. sensor/greenhouse/temp" className="w-full font-mono bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                <input required name="topic" placeholder="e.g. sensor/greenhouse/temp" className="w-full font-mono bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-1">
                   <label className="block text-xs text-muted-foreground mb-1">Metric</label>
-                  <input required name="metric" placeholder="e.g. Temp" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                  <input required name="metric" placeholder="e.g. Temp" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
                 </div>
                 <div className="col-span-1">
                   <label className="block text-xs text-muted-foreground mb-1">Condition</label>
-                  <select required name="operator" className="w-full bg-muted dark:bg-[#13151a] border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50">
+                  <select required name="operator" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50">
                     <option>&gt;</option>
                     <option>&lt;</option>
                     <option>=</option>
@@ -889,13 +913,12 @@ export const AlertsView = ({ userUID }) => {
                 </div>
                 <div className="col-span-1">
                   <label className="block text-xs text-muted-foreground mb-1">Value</label>
-                  <input required name="value" placeholder="e.g. 40" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" />
+                  <input required name="value" placeholder="e.g. 40" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
                 </div>
               </div>
               <button
                 type="submit"
-                style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-                className="w-full font-bold py-2.5 hover:opacity-90 transition-opacity shadow-lg mt-2"
+                className="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors shadow-sm mt-2 cursor-pointer"
               >
                 Save Alert Rule
               </button>
@@ -910,59 +933,98 @@ export const AlertsView = ({ userUID }) => {
 
 
 // ==================== LIVE TERMINAL ====================
-export const LiveTerminal = ({ messages, isConnected }) => {
+export const LiveTerminal = ({ messages, isConnected, isSidebarCollapsed = false }) => {
   const scrollRef = useRef(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [filter, setFilter] = useState('all'); // 'all' | 'incoming' | 'outgoing'
 
   useEffect(() => {
     if (isExpanded && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isExpanded]);
+  }, [messages, isExpanded, filter]);
 
-  const colorMap = {
-    incoming: 'text-primary/80',
-    outgoing: 'text-primary/80',
-    system: 'text-white/50',
-    error: 'text-red-400',
-  };
+  const filteredMessages = filter === 'all'
+    ? messages
+    : messages.filter(m => m.type === filter);
+
+  const rxCount = messages.filter(m => m.type === 'incoming').length;
+  const txCount = messages.filter(m => m.type === 'outgoing').length;
 
   return (
-    <div className={`fixed bottom-0 left-0 md:left-64 right-0 z-40 bg-[#0a0b0d]/95 backdrop-blur-md border-t border-border transition-all duration-300 ${isExpanded ? 'h-36' : 'h-10'}`}>
-      <button 
+    <div className={`fixed bottom-0 left-0 ${isSidebarCollapsed ? 'md:left-16' : 'md:left-64'} right-0 z-40 bg-[#080b10]/95 backdrop-blur-md border-t border-border transition-all duration-300 ${isExpanded ? 'h-52' : 'h-10'}`}>
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-4 py-2 hover:bg-card/5 transition-colors"
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsExpanded(!isExpanded); }}
+        className="w-full h-10 flex items-center justify-between px-4 hover:bg-white/[0.03] transition-colors cursor-pointer select-none"
       >
-        <div className="flex items-center gap-2">
-          <Terminal size={14} className="text-primary" />
-          <span className="text-xs font-bold text-foreground/60">Live Terminal</span>
-          <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-primary animate-pulse' : 'bg-red-400'}`}></span>
-          <span className="text-[10px] text-muted-foreground/50 hidden sm:inline">▶ MQTT publishes</span>
+        <div className="flex items-center gap-2.5">
+          <Terminal size={14} className="text-sky-400" />
+          <span className="text-xs font-bold text-slate-200 tracking-wide">Live MQTT Bus</span>
+          <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-red-500 hw-led-err'}`} />
+
+          {/* Interactive Bus Filters */}
+          <div className="hidden sm:flex items-center gap-1 ml-2 bg-white/[0.04] border border-white/[0.08] rounded-md p-0.5">
+            {[
+              { id: 'all', label: 'All' },
+              { id: 'incoming', label: 'RX' },
+              { id: 'outgoing', label: 'TX' },
+            ].map(f => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilter(f.id);
+                  if (!isExpanded) setIsExpanded(true);
+                }}
+                className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer ${
+                  filter === f.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-[10px] text-muted-foreground dark:text-white/30">
-            {messages.filter(m => m.type === 'outgoing').length} out · {messages.length} total
+
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">
+            <span className="text-emerald-400">RX {rxCount}</span> · <span className="text-sky-400">TX {txCount}</span> · {messages.length} total
           </span>
-          <div className="text-muted-foreground hover:text-white">
+          <div className="text-slate-400 hover:text-white">
             {isExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
           </div>
         </div>
-      </button>
+      </div>
 
       {isExpanded && (
-        <div ref={scrollRef} className="h-24 overflow-y-auto px-4 py-2 font-mono text-[11px] space-y-0.5 border-t border-border">
-          {messages.length === 0 && (
-            <p className="text-muted-foreground/60 italic">Waiting for MQTT messages from ESP32...</p>
+        <div ref={scrollRef} className="h-40 overflow-y-auto px-4 py-2.5 font-mono text-[11px] space-y-1 bg-[#06090d] border-t border-border scrollbar-thin">
+          {filteredMessages.length === 0 && (
+            <p className="text-slate-500 italic">Waiting for MQTT packets from ESP32 or dashboard...</p>
           )}
-          {messages.map(msg => (
-            <div key={msg.id} className="flex gap-2">
-              <span className="text-muted-foreground/60 flex-shrink-0">{msg.timestamp}</span>
-              <span className={`${colorMap[msg.type] || 'text-foreground/90/50'}`}>
-                {msg.type === 'incoming' ? '◀' : msg.type === 'outgoing' ? '▶' : '●'}
-              </span>
-              <span className="text-foreground/70">{msg.text}</span>
-            </div>
-          ))}
+          {filteredMessages.map(msg => {
+            const badge =
+              msg.type === 'incoming'
+                ? <span className="px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 font-bold shrink-0">RX ◀</span>
+                : msg.type === 'outgoing'
+                  ? <span className="px-1.5 py-0.2 rounded bg-sky-500/15 text-sky-400 font-bold shrink-0">TX ▶</span>
+                  : msg.type === 'error'
+                    ? <span className="px-1.5 py-0.2 rounded bg-red-500/15 text-red-400 font-bold shrink-0">ERR ✕</span>
+                    : <span className="px-1.5 py-0.2 rounded bg-slate-500/15 text-slate-400 font-bold shrink-0">SYS ●</span>;
+
+            return (
+              <div key={msg.id} className="flex items-center gap-2 leading-relaxed">
+                <span className="text-slate-500 flex-shrink-0">{msg.timestamp}</span>
+                {badge}
+                <span className="text-slate-200 break-all">{msg.text}</span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

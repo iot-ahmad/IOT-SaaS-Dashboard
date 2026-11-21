@@ -361,6 +361,8 @@ const DEFAULT_TOPICS = {
 function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
   const [step, setStep] = useState('category'); // category | config
   const [selectedItem, setSelectedItem] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCat, setActiveCat] = useState('all');
   const [form, setForm] = useState({
     name: '', topic: '', dataKey: '', unit: '°C', maxVal: 100,
     minVal: 0, step: 1, defaultVal: 0,
@@ -421,53 +423,108 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
     onClose();
   };
 
+  const filteredCategories = CATEGORIES
+    .filter(cat => activeCat === 'all' || cat.id === activeCat)
+    .map(cat => ({
+      ...cat,
+      items: cat.items.filter(item => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase();
+        return item.label.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q) || item.type.toLowerCase().includes(q);
+      }),
+    }))
+    .filter(cat => cat.items.length > 0);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-card border border-border rounded-2xl w-full max-w-xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="hw-panel relative bg-card border border-border rounded-2xl w-full max-w-2xl shadow-2xl animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/30 shrink-0">
           <div>
-            <h2 className="font-bold text-lg">Add Tool</h2>
-            {step === 'config' && (
-              <button onClick={() => setStep('category')} className="text-xs text-muted-foreground hover:text-foreground mt-0.5 transition-colors">
-                ← Back to categories
+            <h2 className="font-bold text-base text-foreground">Add Hardware Instrument</h2>
+            {step === 'config' ? (
+              <button onClick={() => setStep('category')} className="text-xs text-primary hover:underline mt-0.5 transition-colors cursor-pointer">
+                ← Back to hardware catalog
               </button>
+            ) : (
+              <p className="text-xs text-muted-foreground mt-0.5">Select a sensor, actuator, display, or robotics instrument</p>
             )}
           </div>
-          <button onClick={onClose} className="text-muted-foreground dark:text-white/30 hover:text-foreground transition-colors p-1">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors p-1 cursor-pointer">
             <X size={20} />
           </button>
         </div>
 
+        {/* Search + Category Pills */}
+        {step === 'category' && (
+          <div className="px-6 pt-4 pb-3 border-b border-border bg-muted/15 space-y-2.5 shrink-0">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search instruments (e.g. Gauge, Relay, Servo, OLED, Stepper...)"
+              className="w-full bg-input border border-border rounded-xl py-2 px-3.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
+            />
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-thin">
+              <button
+                type="button"
+                onClick={() => setActiveCat('all')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
+                  activeCat === 'all'
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-muted/50 text-muted-foreground border-border hover:text-foreground'
+                }`}
+              >
+                All
+              </button>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveCat(cat.id)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
+                    activeCat === cat.id
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-muted/50 text-muted-foreground border-border hover:text-foreground'
+                  }`}
+                >
+                  {cat.label.split('&')[0].trim()}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Body */}
         <div className="p-6 overflow-y-auto flex-1 scrollbar-thin">
           {step === 'category' ? (
-            <div className="space-y-4">
-              {CATEGORIES.map(cat => {
+            <div className="space-y-5">
+              {filteredCategories.length === 0 ? (
+                <p className="text-center text-xs text-muted-foreground py-8">No matching instruments found.</p>
+              ) : filteredCategories.map(cat => {
                 const CatIcon = cat.icon;
                 return (
                   <div key={cat.id}>
-                    <div className={`flex items-center gap-2 mb-2 ${cat.accent}`}>
-                      <CatIcon size={14} />
-                      <span className="text-xs font-bold uppercase tracking-wider">{cat.label}</span>
+                    <div className="flex items-center gap-2 mb-2.5 text-muted-foreground">
+                      <CatIcon size={13} className="text-primary" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider">{cat.label}</span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {cat.items.map(item => {
                         const ItemIcon = item.icon;
                         return (
                           <button
                             key={item.type}
                             onClick={() => handleSelectItem(item)}
-                            className="flex items-start gap-3 p-3 rounded-xl border border-border bg-muted/20 hover:bg-muted/50 transition-all text-left"
+                            className="flex items-start gap-3 p-3 rounded-xl border border-border bg-muted/25 hover:bg-muted/60 hover:border-primary/35 transition-all text-left cursor-pointer group"
                           >
-                            <div className="mt-0.5 p-1.5 rounded-lg bg-muted text-muted-foreground">
-                              <ItemIcon size={16} />
+                            <div className="mt-0.5 p-2 rounded-lg bg-muted border border-border text-muted-foreground group-hover:text-primary group-hover:border-primary/30 transition-colors">
+                              <ItemIcon size={15} />
                             </div>
-                            <div>
-                              <p className="font-semibold text-sm text-foreground">{item.label}</p>
-                              <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</p>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-xs text-foreground truncate">{item.label}</p>
+                              <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug line-clamp-2">{item.desc}</p>
                             </div>
                           </button>
                         );
@@ -482,7 +539,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               <div>
                 <label className="text-xs text-muted-foreground block mb-1">Widget Name</label>
                 <input
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-border transition-colors"
+                  className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Front Temperature"
@@ -496,7 +553,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                   <span className="text-[9px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-bold uppercase tracking-wider border border-border">Required</span>
                 </label>
                 <input
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-border transition-colors"
+                  className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm font-mono text-foreground focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.dataKey}
                   onChange={e => setForm(f => ({ ...f, dataKey: e.target.value.replace(/\s/g, '_') }))}
                   placeholder="e.g. temperature_1"
@@ -516,7 +573,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               <div>
                 <label className="text-xs text-muted-foreground block mb-1">MQTT Topic</label>
                 <input
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50 transition-colors"
+                  className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm font-mono text-foreground focus:outline-none focus:border-primary/50 transition-colors"
                   value={form.topic}
                   onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
                   placeholder="e.g. car/move"
@@ -526,12 +583,12 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs text-muted-foreground block mb-1">Unit</label>
-                    <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
+                    <input className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors"
                       value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} placeholder="°C" />
                   </div>
                   <div>
                     <label className="text-xs text-muted-foreground block mb-1">Max Value</label>
-                    <input type="number" className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
+                    <input type="number" className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors"
                       value={form.maxVal} onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))} />
                   </div>
                 </div>
@@ -540,24 +597,24 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-2">
                     <div><label className="text-xs text-muted-foreground block mb-1">Min</label>
-                      <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.minVal} onChange={e => setForm(f => ({ ...f, minVal: e.target.value }))} /></div>
+                      <input type="number" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" value={form.minVal} onChange={e => setForm(f => ({ ...f, minVal: e.target.value }))} /></div>
                     <div><label className="text-xs text-muted-foreground block mb-1">Max</label>
-                      <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.maxVal} onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))} /></div>
+                      <input type="number" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" value={form.maxVal} onChange={e => setForm(f => ({ ...f, maxVal: e.target.value }))} /></div>
                     <div><label className="text-xs text-muted-foreground block mb-1">Step</label>
-                      <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.step} onChange={e => setForm(f => ({ ...f, step: e.target.value }))} /></div>
+                      <input type="number" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" value={form.step} onChange={e => setForm(f => ({ ...f, step: e.target.value }))} /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div><label className="text-xs text-muted-foreground block mb-1">Default Value</label>
-                      <input type="number" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.defaultVal} onChange={e => setForm(f => ({ ...f, defaultVal: e.target.value }))} /></div>
+                      <input type="number" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" value={form.defaultVal} onChange={e => setForm(f => ({ ...f, defaultVal: e.target.value }))} /></div>
                     <div><label className="text-xs text-muted-foreground block mb-1">Unit</label>
-                      <input className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50" value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} placeholder="°C" /></div>
+                      <input className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} placeholder="°C" /></div>
                   </div>
                 </div>
               )}
               {selectedItem.type === 'dropdown' && (
                 <div>
                   <label className="text-xs text-muted-foreground block mb-1">Options (comma separated)</label>
-                  <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50"
+                  <input className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm font-mono text-foreground focus:outline-none focus:border-primary/50"
                     value={form.options} onChange={e => setForm(f => ({ ...f, options: e.target.value }))} placeholder="Auto,Manual,Test,Off" />
                   <p className="text-[10px] text-muted-foreground mt-1">Enter options separated by commas</p>
                 </div>
@@ -565,37 +622,36 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               {selectedItem.type === 'momentary' && (
                 <div>
                   <label className="text-xs text-muted-foreground block mb-1">Payload on Press</label>
-                  <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50"
+                  <input className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm font-mono text-foreground focus:outline-none focus:border-primary/50"
                     value={form.payload} onChange={e => setForm(f => ({ ...f, payload: e.target.value }))} placeholder="TRIGGER" />
                 </div>
               )}
               {selectedItem.type === 'scheduler' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div><label className="text-xs text-muted-foreground block mb-1">ON Time</label>
-                    <input type="time" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50 font-mono text-foreground" value={form.onTime} onChange={e => setForm(f => ({ ...f, onTime: e.target.value }))} /></div>
+                    <input type="time" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50 font-mono text-foreground" value={form.onTime} onChange={e => setForm(f => ({ ...f, onTime: e.target.value }))} /></div>
                   <div><label className="text-xs text-muted-foreground block mb-1">OFF Time</label>
-                    <input type="time" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50 font-mono text-foreground" value={form.offTime} onChange={e => setForm(f => ({ ...f, offTime: e.target.value }))} /></div>
+                    <input type="time" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50 font-mono text-foreground" value={form.offTime} onChange={e => setForm(f => ({ ...f, offTime: e.target.value }))} /></div>
                 </div>
               )}
               {selectedItem.type === 'oled' && (
                 <div>
                   <label className="text-xs text-muted-foreground block mb-1">Max Characters</label>
-                  <input type="number" className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50"
+                  <input type="number" className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm text-foreground focus:outline-none focus:border-primary/50"
                     value={form.maxChars} onChange={e => setForm(f => ({ ...f, maxChars: e.target.value }))} min={8} max={128} />
                 </div>
               )}
               {selectedItem.type === 'irrigation' && (
                 <div>
                   <label className="text-xs text-muted-foreground block mb-1">Auto-Irrigation Threshold (Moisture %)</label>
-                  <input type="number" className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50"
+                  <input type="number" className="w-full bg-input border border-border rounded-xl py-2.5 px-4 text-sm text-foreground focus:outline-none focus:border-primary/50"
                     value={form.threshold} onChange={e => setForm(f => ({ ...f, threshold: e.target.value }))} min={10} max={80} />
                 </div>
               )}
               <button
                 onClick={handleAdd}
                 disabled={!form.dataKey.trim()}
-                style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-                className="w-full disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 mt-2"
+                className="w-full bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-xl transition-all shadow-sm hover:bg-primary/90 active:scale-[0.99] mt-2 cursor-pointer"
               >
                 Add to dashboard
               </button>
@@ -718,8 +774,7 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
           <button
             onClick={handleSave}
             disabled={!form.dataKey.trim()}
-            style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-            className="w-full disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 mt-2"
+            className="w-full bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-xl transition-all shadow-sm hover:bg-primary/90 active:scale-[0.99] mt-2 cursor-pointer"
           >
             Save changes
           </button>
@@ -729,238 +784,305 @@ function EditToolModal({ widget, onClose, onSave, userUID }) {
   );
 }
 
+// ─── Shared 12-Segment Hardware LED Bar Meter ─────────────────────────────────
+function LedBarGraph({ pct, accent = 'cyan' }) {
+  const clamped = Math.min(100, Math.max(0, pct || 0));
+  const activeCount = Math.round((clamped / 100) * 12);
+  return (
+    <div className="grid grid-cols-12 gap-1 w-full">
+      {Array.from({ length: 12 }).map((_, idx) => {
+        const lit = idx < activeCount;
+        let bgClass = 'bg-muted border-border';
+        if (lit) {
+          if (idx >= 10) bgClass = 'bg-red-500 border-red-400 shadow-[0_0_6px_rgba(239,68,68,0.55)]';
+          else if (idx >= 8) bgClass = 'bg-amber-400 border-amber-300 shadow-[0_0_6px_rgba(245,158,11,0.45)]';
+          else bgClass = accent === 'emerald'
+            ? 'bg-emerald-400 border-emerald-300 shadow-[0_0_6px_rgba(52,211,153,0.45)]'
+            : 'bg-sky-400 border-sky-300 shadow-[0_0_6px_rgba(56,189,248,0.45)]';
+        }
+        return (
+          <div
+            key={idx}
+            className={`h-2 rounded-[2px] border transition-colors duration-150 ${bgClass}`}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Gauge Widget ─────────────────────────────────────────────────────────────
 function GaugeWidget({ widget, value, history = [] }) {
   const num = value !== undefined ? parseFloat(value) : NaN;
   const hasData = Number.isFinite(num);
+  const maxVal = Number(widget.maxVal) || 100;
   const pct = hasData
-    ? Math.min(100, Math.max(0, (num / widget.maxVal) * 100))
+    ? Math.min(100, Math.max(0, (num / maxVal) * 100))
     : 0;
-  // Bright eye-catching colors for gauge ring
-  const ringColor = pct > 80 ? '#EF4444' : '#38BDF8';
-
+  const ringColor = pct > 85 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#38bdf8';
   const chartData = history.map((y, i) => ({ i, v: y }));
 
+  const cx = 80;
+  const cy = 72;
+  const r = 52;
+  const arcLen = 217.817; // 2 * PI * 52 * (240 / 360)
+
   return (
-    <div className="flex flex-col h-full gap-2 min-h-0 text-left">
-      {/* Header Info */}
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Activity size={16} className="text-muted-foreground" />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
+    <div className="flex flex-col h-full justify-center items-center gap-1 min-h-0 text-left">
+      {hasData ? (
+        <>
+          {/* 240° Industrial Arc Dial */}
+          <div className="relative w-36 h-[104px] flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 160 116" className="w-full h-full overflow-visible">
+              {/* Outer 13 tick marks (-120° to +120°) */}
+              {Array.from({ length: 13 }).map((_, i) => {
+                const deg = -120 + i * 20;
+                const rad = (deg * Math.PI) / 180;
+                const isMajor = i % 3 === 0;
+                const r1 = isMajor ? 58 : 60;
+                const r2 = 64;
+                const x1 = cx + r1 * Math.sin(rad);
+                const y1 = cy - r1 * Math.cos(rad);
+                const x2 = cx + r2 * Math.sin(rad);
+                const y2 = cy - r2 * Math.cos(rad);
+                return (
+                  <line
+                    key={i}
+                    x1={x1} y1={y1} x2={x2} y2={y2}
+                    stroke={isMajor ? 'rgba(148,163,184,0.65)' : 'rgba(148,163,184,0.28)'}
+                    strokeWidth={isMajor ? 1.75 : 1}
+                    strokeLinecap="round"
+                  />
+                );
+              })}
 
-      <div className="flex-1 flex flex-col items-center justify-center gap-2 min-h-0 w-full relative">
-        {hasData ? (
-          <>
-            {/* Gauge Circular Visual */}
-            <div className="relative w-28 h-28 flex items-center justify-center my-1 flex-shrink-0">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle cx="56" cy="56" r="48" className="stroke-muted/30" strokeWidth="6" fill="none" />
-                <circle 
-                  cx="56" cy="56" r="48" 
-                  className="transition-all duration-700 ease-out" 
-                  stroke={ringColor}
-                  strokeWidth="6" fill="none" 
-                  strokeDasharray="301.6" 
-                  strokeDashoffset={301.6 - (301.6 * pct) / 100}
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center">
-                <div className="text-2xl font-black tracking-tight text-foreground">
-                  {num.toFixed(1)}
-                </div>
-                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">{widget.unit || ''}</span>
-              </div>
-            </div>
+              {/* Recessed track arc */}
+              <path
+                d="M 34.97 98 A 52 52 0 1 1 125.03 98"
+                fill="none"
+                stroke="rgba(148,163,184,0.16)"
+                strokeWidth="8"
+                strokeLinecap="round"
+              />
 
-            {/* Sparkline chart */}
-            {chartData.length > 1 && (
-              <div className="h-12 flex-1 min-h-[32px] mt-1 -mx-4 w-[calc(100%+2rem)] sm:w-full sm:mx-0 overflow-hidden opacity-60 hover:opacity-100 transition-opacity">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 2, right: 4, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id={`grad_${widget.id}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={ringColor} stopOpacity={0.25}/>
-                        <stop offset="100%" stopColor={ringColor} stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <YAxis domain={['auto', 'auto']} hide width={0} />
-                    <Area type="monotone" dataKey="v" stroke={ringColor} strokeWidth={2} fill={`url(#grad_${widget.id})`} dot={false} isAnimationActive={false} />
-                  </AreaChart>
-                </ResponsiveContainer>
+              {/* Active luminous value arc */}
+              <path
+                d="M 34.97 98 A 52 52 0 1 1 125.03 98"
+                fill="none"
+                stroke={ringColor}
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={arcLen}
+                strokeDashoffset={arcLen - (arcLen * pct) / 100}
+                style={{ transition: 'stroke-dashoffset 0.55s ease-out, stroke 0.3s ease' }}
+              />
+
+              {/* Scale Min/Max Micro-Labels */}
+              <text x="26" y="111" textAnchor="middle" fontSize="9" fill="#8b97ad" fontFamily="monospace">0</text>
+              <text x="134" y="111" textAnchor="middle" fontSize="9" fill="#8b97ad" fontFamily="monospace">{maxVal}</text>
+            </svg>
+
+            <div className="absolute inset-0 flex flex-col items-center justify-center pt-3 pointer-events-none">
+              <div className="text-2xl font-black font-mono tabular-nums tracking-tight text-foreground leading-none">
+                {num.toFixed(1)}
               </div>
-            )}
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center gap-2.5 py-4 my-auto">
-            <div className="relative flex items-center justify-center">
-              <div className="relative w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center">
-                <Radio className="text-muted-foreground animate-pulse" size={14} />
-              </div>
+              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                {widget.unit || ''}
+              </span>
             </div>
-            <span className="text-[11px] text-muted-foreground font-medium tracking-wide animate-pulse">Waiting for data...</span>
           </div>
-        )}
-      </div>
+
+          {/* Sparkline Telemetry Trend */}
+          {chartData.length > 1 && (
+            <div className="h-11 flex-1 min-h-[28px] w-full overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 2, right: 2, left: 2, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id={`grad_${widget.id}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={ringColor} stopOpacity={0.28} />
+                      <stop offset="100%" stopColor={ringColor} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <YAxis domain={['auto', 'auto']} hide width={0} />
+                  <Area type="monotone" dataKey="v" stroke={ringColor} strokeWidth={1.75} fill={`url(#grad_${widget.id})`} dot={false} isAnimationActive={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-2 py-3 my-auto">
+          <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center">
+            <Radio className="text-muted-foreground animate-pulse" size={15} />
+          </div>
+          <span className="text-[11px] font-mono text-muted-foreground tracking-wide">Waiting for telemetry...</span>
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── Switch Widget ────────────────────────────────────────────────────────────
+// ─── Switch Widget (Physical Illuminated Rocker Switch) ───────────────────────
 function SwitchWidget({ widget, value, publish }) {
   const isOn = value === '1' || value === 'ON' || value === 'true';
-
   const toggle = () => publish(widget.topic, isOn ? 'OFF' : 'ON');
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Zap size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
-        {/* Status indicator */}
-        <div className="absolute top-0 right-2 flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full ${isOn ? 'bg-[#22C55E] shadow-sm shadow-[#22C55E]' : 'bg-[#EF4444]'}`} />
-          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-[#22C55E]' : 'text-muted-foreground/70'}`}>
-            {isOn ? 'ACTIVE' : 'IDLE'}
-          </span>
-        </div>
-
-        {/* Button body */}
+    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+      <button
+        type="button"
+        onClick={toggle}
+        title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
+        className="w-24 h-14 rounded-xl bg-muted/80 border border-border p-1.5 shadow-inner cursor-pointer transition-all active:scale-[0.97]"
+      >
         <div
-          className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
+          className={`w-full h-full rounded-lg border flex flex-col items-center justify-between py-1.5 px-2 transition-all duration-200 ${
             isOn
-              ? 'bg-[#22C55E]/20 border-[#22C55E]/40 scale-95 text-[#22C55E] shadow-lg shadow-[#22C55E]/20'
-              : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
+              ? 'bg-gradient-to-b from-emerald-500/25 to-emerald-600/10 border-emerald-500/45 shadow-[0_2px_12px_rgba(34,197,94,0.22)]'
+              : 'bg-gradient-to-b from-secondary to-background/80 border-border'
           }`}
-          onClick={toggle}
-          title={isOn ? 'Click to turn OFF' : 'Click to turn ON'}
         >
-          <Zap size={28} className={isOn ? 'text-[#22C55E]' : 'text-muted-foreground/60'} />
+          <span className={`text-[9px] font-mono font-black ${isOn ? 'text-emerald-400' : 'text-muted-foreground/50'}`}>I</span>
+          <div className={`w-8 h-1 rounded-full transition-all ${isOn ? 'bg-emerald-400 hw-led-on' : 'bg-slate-600/60'}`} />
+          <span className={`text-[9px] font-mono font-black ${!isOn ? 'text-foreground/70' : 'text-muted-foreground/40'}`}>O</span>
         </div>
-      </div>
+      </button>
+
+      <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+        isOn
+          ? 'bg-emerald-500/12 border-emerald-500/30 text-emerald-400'
+          : 'bg-muted border-border text-muted-foreground'
+      }`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${isOn ? 'bg-emerald-400 hw-led-on' : 'bg-slate-500'}`} />
+        {isOn ? 'ENERGIZED' : 'STANDBY'}
+      </span>
     </div>
   );
 }
 
-// ─── Slider Widget (Servo) ────────────────────────────────────────────────────
+// ─── Slider Widget (Servo / Speed) ────────────────────────────────────────────
 function SliderWidget({ widget, publish }) {
   const max = widget.type === 'speed' ? 255 : 180;
   const [val, setVal] = useState(0);
 
-  const handleChange = (e) => {
-    const v = Number(e.target.value);
+  const updateVal = (v) => {
     setVal(v);
     publish(widget.topic, String(v));
   };
 
-  const color = '#38BDF8';
-  const label = widget.type === 'speed' ? 'Speed' : 'Angle';
-  const Icon = widget.type === 'speed' ? Car : SlidersHorizontal;
+  const label = widget.type === 'speed' ? 'SPEED' : 'ANGLE';
+  const pct = (val / max) * 100;
+  const presets = widget.type === 'speed' ? [0, 64, 128, 192, 255] : [0, 45, 90, 135, 180];
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Icon size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
+    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
+      <div className="flex justify-between items-baseline">
+        <span className="text-2xl font-black font-mono tabular-nums tracking-tight text-foreground">
+          {val}
+          {widget.type !== 'speed' && <span className="text-sm text-muted-foreground ml-0.5">°</span>}
+        </span>
+        <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider">
+          {label} / {max}
         </span>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center gap-4 px-1">
-        <div className="flex justify-between items-baseline">
-          <span className="text-3xl font-black font-mono tracking-tight text-foreground">{val}</span>
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{label} / {max}</span>
-        </div>
-        
-        {/* Styled Premium Slider */}
-        <div className="relative w-full flex items-center">
-          <input
-            type="range"
-            min="0"
-            max={max}
-            value={val}
-            onChange={handleChange}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-            style={{ 
-              accentColor: color,
-            }}
-          />
-        </div>
+      <LedBarGraph pct={pct} />
+
+      <input
+        type="range"
+        min="0"
+        max={max}
+        value={val}
+        onChange={e => updateVal(Number(e.target.value))}
+        className="w-full hw-slider"
+      />
+
+      <div className="flex gap-1">
+        {presets.map(p => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => updateVal(p)}
+            className={`flex-1 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+              val === p
+                ? 'bg-sky-500/15 border-sky-500/40 text-sky-400'
+                : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            {p}
+          </button>
+        ))}
       </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ─── CLASSROOM WIDGETS ────────────────────────────────────────────────────────
+// ─── CLASSROOM & INDUSTRIAL OUTPUT WIDGETS ─────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Relay Widget ─────────────────────────────────────────────────────────────
+// ─── Relay Widget (DIN-Rail Schematic Contact) ────────────────────────────────
 function RelayWidget({ widget, value, publish }) {
   const isOn = value === '1' || value === 'ON' || value === 'true';
   const toggle = () => publish(widget.topic, isOn ? 'OFF' : 'ON');
 
   const config = {
-    relay:          { icon: Power,    label: 'Relay' },
-    mosfet:         { icon: Cpu,      label: 'MOSFET' },
-    solenoid:       { icon: Zap,      label: 'Solenoid' },
-    optocoupler:    { icon: Shield,   label: 'Optocoupler' },
-    solenoid_valve: { icon: Droplets, label: 'Valve' },
-    latch:          { icon: Lock,     label: 'Latch' },
-    elec_lock:      { icon: Lock,     label: 'Lock' },
-  }[widget.type] || { icon: Power,    label: 'Relay' };
-
-  const IconComponent = config.icon;
+    relay:          { label: 'Relay' },
+    mosfet:         { label: 'MOSFET' },
+    solenoid:       { label: 'Solenoid' },
+    optocoupler:    { label: 'Optocoupler' },
+    solenoid_valve: { label: 'Valve' },
+    latch:          { label: 'Latch' },
+    elec_lock:      { label: 'Lock' },
+  }[widget.type] || { label: 'Relay' };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <IconComponent size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 relative">
-        <div className="absolute top-0 right-2 flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full transition-all ${isOn ? 'bg-[#22C55E] shadow-sm shadow-[#22C55E]' : 'bg-[#EF4444]'}`} />
-          <span className={`text-[9px] font-extrabold uppercase ${isOn ? 'text-[#22C55E]' : 'text-muted-foreground/70'}`}>
-            {isOn ? 'ACTIVE' : 'IDLE'}
-          </span>
-        </div>
-        <div
-          className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
-            isOn
-              ? 'bg-[#22C55E]/15 border-[#22C55E]/40 scale-95 text-[#22C55E] shadow-lg shadow-[#22C55E]/20'
-              : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
-          }`}
-          onClick={toggle}
-        >
-          <IconComponent size={28} className={isOn ? 'text-[#22C55E]' : 'text-muted-foreground/60'} />
-        </div>
-        <span className={`text-[10px] font-bold px-3 py-0.5 rounded-full border ${
-          isOn ? 'bg-[#22C55E]/15 text-[#22C55E] border-[#22C55E]/30' : 'bg-muted text-muted-foreground/70 border-border'
-        }`}>{isOn ? `${config.label.toUpperCase()} CLOSED` : `${config.label.toUpperCase()} OPEN`}</span>
-      </div>
+    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+      {/* DIN-Rail Contact Schematic */}
+      <button
+        type="button"
+        onClick={toggle}
+        className="w-full max-w-[175px] h-14 rounded-xl bg-muted/40 border border-border hover:border-white/20 px-2 py-1 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
+        title={isOn ? 'Click to open contact' : 'Click to close contact'}
+      >
+        <svg viewBox="0 0 160 52" className="w-full h-full">
+          {/* COIL indicator */}
+          <circle cx="14" cy="12" r="3.5" fill={isOn ? '#22c55e' : '#475569'} />
+          <text x="22" y="15" fontSize="8" fontFamily="monospace" fill="#8b97ad">COIL</text>
+
+          {/* Left Terminal COM */}
+          <line x1="12" y1="34" x2="48" y2="34" stroke={isOn ? '#22c55e' : '#64748b'} strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="48" cy="34" r="4" fill={isOn ? '#22c55e' : '#64748b'} />
+          <text x="14" y="47" fontSize="8" fontFamily="monospace" fill="#8b97ad">COM</text>
+
+          {/* Mechanical Armature Contact */}
+          <line
+            x1="48" y1="34"
+            x2={isOn ? 112 : 106} y2={isOn ? 34 : 16}
+            stroke={isOn ? '#22c55e' : '#f59e0b'}
+            strokeWidth="3"
+            strokeLinecap="round"
+            style={{ transition: 'all 0.22s ease' }}
+          />
+
+          {/* Right Terminal NO */}
+          <circle cx="112" cy="34" r="4" fill={isOn ? '#22c55e' : '#64748b'} />
+          <line x1="112" y1="34" x2="148" y2="34" stroke={isOn ? '#22c55e' : '#64748b'} strokeWidth="2.5" strokeLinecap="round" />
+          <text x="130" y="47" fontSize="8" fontFamily="monospace" fill="#8b97ad">NO</text>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        onClick={toggle}
+        className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+          isOn
+            ? 'bg-emerald-500/12 border-emerald-500/35 text-emerald-400'
+            : 'bg-muted border-border text-muted-foreground hover:text-foreground'
+        }`}
+      >
+        {isOn ? `${config.label.toUpperCase()} CLOSED` : `${config.label.toUpperCase()} OPEN`}
+      </button>
     </div>
   );
 }
@@ -968,8 +1090,7 @@ function RelayWidget({ widget, value, publish }) {
 // ─── Dimmer Widget ─────────────────────────────────────────────────────────────
 function DimmerWidget({ widget, publish }) {
   const [pct, setPct] = useState(0);
-  const handleChange = (e) => {
-    const v = Number(e.target.value);
+  const updatePct = (v) => {
     setPct(v);
     publish(widget.topic, String(v));
   };
@@ -986,42 +1107,47 @@ function DimmerWidget({ widget, publish }) {
   }[widget.type] || { icon: Lightbulb, label: 'Level' };
 
   const IconComponent = config.icon;
-  const accentHex = '#38BDF8';
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <IconComponent size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        <div className="flex items-center justify-center">
-          <div className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-muted/40 border border-border">
-            <IconComponent size={24} className={pct > 0 ? 'text-[#38BDF8]' : 'text-muted-foreground/40'} />
+    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-all ${
+            pct > 0 ? 'bg-sky-500/15 border-sky-500/35 text-sky-400' : 'bg-muted border-border text-muted-foreground'
+          }`}>
+            <IconComponent size={16} />
           </div>
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">{config.label}</span>
         </div>
-        <div className="flex justify-between items-baseline">
-          <span className="text-3xl font-black font-mono tracking-tight text-foreground">
-            {pct}%
-          </span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{config.label}</span>
-        </div>
-        <div className="w-full">
-          <input type="range" min="0" max="100" value={pct} onChange={handleChange}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-            style={{ accentColor: accentHex }} />
-        </div>
+        <span className="text-2xl font-black font-mono tabular-nums text-foreground">{pct}%</span>
+      </div>
+
+      <LedBarGraph pct={pct} />
+
+      <input type="range" min="0" max="100" value={pct} onChange={e => updatePct(Number(e.target.value))}
+        className="w-full hw-slider" />
+
+      <div className="flex gap-1">
+        {[0, 25, 50, 75, 100].map(v => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => updatePct(v)}
+            className={`flex-1 py-1 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+              pct === v
+                ? 'bg-sky-500/15 border-sky-500/40 text-sky-400'
+                : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            {v}%
+          </button>
+        ))}
       </div>
     </div>
   );
 }
 
-// ─── RGB Strip Widget ─────────────────────────────────────────────────────────
+// ─── RGB Strip Widget (8-Diode NeoPixel Carrier) ──────────────────────────────
 function RGBWidget({ widget, publish }) {
   const [color, setColor] = useState('#38BDF8');
   const [brightness, setBrightness] = useState(100);
@@ -1033,62 +1159,73 @@ function RGBWidget({ widget, publish }) {
     return { r, g, b };
   };
 
-  const handleColorChange = (e) => {
-    setColor(e.target.value);
-    const { r, g, b } = hexToRgb(e.target.value);
-    const scale = brightness / 100;
+  const emit = (hexVal, brightVal) => {
+    const { r, g, b } = hexToRgb(hexVal);
+    const scale = brightVal / 100;
     publish(widget.topic, `${Math.round(r*scale)},${Math.round(g*scale)},${Math.round(b*scale)}`);
+  };
+
+  const handleColorChange = (e) => {
+    const c = e.target.value;
+    setColor(c);
+    emit(c, brightness);
   };
 
   const handleBrightness = (e) => {
     const v = Number(e.target.value);
     setBrightness(v);
-    const { r, g, b } = hexToRgb(color);
-    const scale = v / 100;
-    publish(widget.topic, `${Math.round(r*scale)},${Math.round(g*scale)},${Math.round(b*scale)}`);
+    emit(color, v);
   };
 
+  const { r, g, b } = hexToRgb(color);
+  const scale = brightness / 100;
   const presets = ['#38BDF8','#22C55E','#F59E0B','#EF4444','#A855F7','#EC4899','#06B6D4','#F8FAFC'];
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Palette size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+    <div className="flex flex-col h-full justify-center gap-2.5 min-h-0 text-left">
+      {/* 8-LED Strip Carrier Preview */}
+      <div className="bg-[#080c12] border border-border rounded-xl px-2.5 py-2 flex items-center justify-between gap-1 shadow-inner">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-4 h-4 rounded-full border border-white/15 transition-all"
+            style={{
+              backgroundColor: color,
+              opacity: Math.max(0.18, scale),
+              boxShadow: brightness > 10 ? `0 0 ${Math.round(4 + 6 * scale)}px ${color}` : 'none',
+            }}
+          />
+        ))}
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-2.5 min-h-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl border border-border overflow-hidden flex-shrink-0 shadow-sm"
-            style={{ background: color }}>
-            <input type="color" value={color} onChange={handleColorChange}
-              className="w-full h-full opacity-0 cursor-pointer" />
-          </div>
-          <div className="flex-1">
-            <p className="text-[10px] text-muted-foreground mb-0.5">Click to pick color</p>
-            <p className="text-xs font-mono font-bold text-foreground">{color.toUpperCase()}</p>
-          </div>
+
+      <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-lg border border-border overflow-hidden flex-shrink-0 shadow-sm cursor-pointer"
+          style={{ background: color }} title="Click to pick custom color">
+          <input type="color" value={color} onChange={handleColorChange}
+            className="w-full h-full opacity-0 cursor-pointer" />
         </div>
-        <div className="flex gap-1.5 flex-wrap">
-          {presets.map(c => (
-            <button key={c} onClick={() => { setColor(c); handleColorChange({ target: { value: c } }); }}
-              className={`w-6 h-6 rounded-lg border transition-all ${ color === c ? 'border-foreground scale-110 shadow-md' : 'border-border hover:scale-105'}`}
-              style={{ background: c }} />
-          ))}
+        <div className="flex-1 flex items-center justify-between text-[10px] font-mono bg-muted/40 border border-border rounded-lg px-2 py-1">
+          <span className="text-red-400">R:{Math.round(r * scale)}</span>
+          <span className="text-emerald-400">G:{Math.round(g * scale)}</span>
+          <span className="text-sky-400">B:{Math.round(b * scale)}</span>
         </div>
-        <div>
-          <div className="flex justify-between mb-1">
-            <span className="text-[10px] text-muted-foreground">Brightness</span>
-            <span className="text-[10px] font-mono font-bold text-foreground">{brightness}%</span>
-          </div>
-          <input type="range" min="0" max="100" value={brightness} onChange={handleBrightness}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-            style={{ accentColor: '#38BDF8' }} />
+      </div>
+
+      <div className="flex gap-1.5 flex-wrap">
+        {presets.map(c => (
+          <button key={c} type="button" onClick={() => { setColor(c); emit(c, brightness); }}
+            className={`w-5 h-5 rounded-md border transition-all cursor-pointer ${color === c ? 'border-foreground scale-110' : 'border-border hover:scale-105'}`}
+            style={{ background: c }} />
+        ))}
+      </div>
+
+      <div>
+        <div className="flex justify-between mb-1">
+          <span className="text-[10px] text-muted-foreground">Brightness</span>
+          <span className="text-[10px] font-mono tabular-nums font-bold text-foreground">{brightness}%</span>
         </div>
+        <input type="range" min="0" max="100" value={brightness} onChange={handleBrightness}
+          className="w-full hw-slider" />
       </div>
     </div>
   );
@@ -1109,34 +1246,25 @@ function SceneWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Cpu size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-2">
-        {scenes.map(scene => (
+    <div className="flex flex-col h-full justify-center gap-2 text-left">
+      {scenes.map(scene => {
+        const isActive = active === scene.key;
+        return (
           <button
             key={scene.key}
+            type="button"
             onClick={() => handleScene(scene)}
-            className={`w-full py-2.5 px-3 rounded-xl border text-xs font-bold transition-all ${
-              active === scene.key
-                ? 'bg-muted border-border text-foreground font-extrabold shadow-sm'
-                : 'bg-muted/20 border-border text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
+              isActive
+                ? 'bg-primary/12 border-primary/35 text-foreground shadow-sm'
+                : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/60'
             }`}
           >
-            {scene.label}
+            <span>{scene.label}</span>
+            <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-400 hw-led-on' : 'bg-slate-600/50'}`} />
           </button>
-        ))}
-        {active && (
-          <p className="text-[10px] text-center text-muted-foreground">Active Mode: {scenes.find(s => s.key === active)?.label}</p>
-        )}
-      </div>
+        );
+      })}
     </div>
   );
 }
@@ -1162,34 +1290,33 @@ function SchedulerWidget({ widget, publish }) {
   }, [enabled, onTime, offTime, publish, widget.topic]);
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Calendar size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full justify-center gap-2.5 text-left">
+      <div className="flex items-center justify-between bg-muted/40 border border-border rounded-lg px-2.5 py-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className={`w-2 h-2 rounded-full ${enabled ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-slate-500'}`} />
+          <span className={`text-[10px] font-mono font-bold uppercase ${enabled ? 'text-emerald-400' : 'text-muted-foreground'}`}>
+            {enabled ? 'Schedule Active' : 'Schedule Paused'}
+          </span>
         </div>
         <button
+          type="button"
           onClick={() => setEnabled(v => !v)}
-          className={`w-10 h-5 rounded-full p-0.5 transition-colors duration-300 ${ enabled ? 'bg-[#22C55E]' : 'bg-muted' }`}
+          className={`w-10 h-5 rounded-full p-0.5 transition-colors duration-200 cursor-pointer ${enabled ? 'bg-emerald-500' : 'bg-muted border border-border'}`}
         >
-          <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-300 ${ enabled ? 'translate-x-5' : 'translate-x-0' }`} />
+          <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${enabled ? 'translate-x-5' : 'translate-x-0'}`} />
         </button>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-3">
+
+      <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] w-12 text-[#22C55E] font-bold">ON:</span>
+          <span className="text-[10px] font-mono w-9 text-emerald-400 font-bold">ON</span>
           <input type="time" value={onTime} onChange={e => setOnTime(e.target.value)}
-            className="flex-1 bg-muted border border-border rounded-lg px-2 py-1.5 text-sm font-mono focus:outline-none focus:border-border text-foreground" />
+            className="flex-1 bg-input border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-primary/50 text-foreground" />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] w-12 text-[#EF4444] font-bold">OFF:</span>
+          <span className="text-[10px] font-mono w-9 text-red-400 font-bold">OFF</span>
           <input type="time" value={offTime} onChange={e => setOffTime(e.target.value)}
-            className="flex-1 bg-muted border border-border rounded-lg px-2 py-1.5 text-sm font-mono focus:outline-none focus:border-border text-foreground" />
-        </div>
-        <div className={`text-[10px] text-center py-1.5 rounded-lg font-bold border border-border ${
-          enabled ? 'bg-[#22C55E]/15 text-[#22C55E] border-[#22C55E]/30' : 'bg-muted/40 text-muted-foreground'
-        }`}>
-          {enabled ? 'Schedule Active' : 'Schedule Paused'}
+            className="flex-1 bg-input border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-primary/50 text-foreground" />
         </div>
       </div>
     </div>
@@ -1200,50 +1327,87 @@ function SchedulerWidget({ widget, publish }) {
 // ─── STEM LAB WIDGETS ─────────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Servo Widget ─────────────────────────────────────────────────────────────
+// ─── Servo Widget (180° Calibrated Protractor Dial) ────────────────────────────
 function ServoWidget({ widget, publish }) {
   const [angle, setAngle] = useState(90);
-  const handleChange = (e) => {
-    const v = Number(e.target.value);
+  const updateAngle = (v) => {
     setAngle(v);
     publish(widget.topic, String(v));
   };
 
   const rad = (angle - 90) * (Math.PI / 180);
-  const armX = 50 + 30 * Math.sin(rad);
-  const armY = 50 - 30 * Math.cos(rad);
+  const armX = 80 + 44 * Math.sin(rad);
+  const armY = 78 - 44 * Math.cos(rad);
+  const semiArcLen = 169.65; // Math.PI * 54
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Wrench size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-2 px-1">
-        {/* Arm visual */}
-        <div className="flex justify-center">
-          <svg width="80" height="60" viewBox="0 0 100 70">
-            <circle cx="50" cy="55" r="12" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
-            <circle cx="50" cy="55" r="5" fill="#38BDF8" />
-            <line x1="50" y1="55" x2={armX} y2={armY + 5} stroke="#38BDF8" strokeWidth="3" strokeLinecap="round" />
-            <circle cx={armX} cy={armY + 5} r="4" fill="#9CA3AF" />
+    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
+      <div className="flex items-center justify-between gap-2">
+        <div className="relative w-36 h-[86px] mx-auto">
+          <svg viewBox="0 0 160 94" className="w-full h-full">
+            {/* Protractor ticks every 15° (0..180) */}
+            {Array.from({ length: 13 }).map((_, i) => {
+              const deg = i * 15 - 90;
+              const tRad = (deg * Math.PI) / 180;
+              const isMajor = i % 3 === 0;
+              const r1 = isMajor ? 58 : 60;
+              const r2 = 64;
+              return (
+                <line
+                  key={i}
+                  x1={80 + r1 * Math.sin(tRad)} y1={78 - r1 * Math.cos(tRad)}
+                  x2={80 + r2 * Math.sin(tRad)} y2={78 - r2 * Math.cos(tRad)}
+                  stroke={isMajor ? 'rgba(148,163,184,0.65)' : 'rgba(148,163,184,0.28)'}
+                  strokeWidth={isMajor ? 1.5 : 1}
+                />
+              );
+            })}
+            <path d="M 26 78 A 54 54 0 0 1 134 78" fill="none" stroke="rgba(148,163,184,0.16)" strokeWidth="6" strokeLinecap="round" />
+            <path
+              d="M 26 78 A 54 54 0 0 1 134 78"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeDasharray={semiArcLen}
+              strokeDashoffset={semiArcLen * (1 - angle / 180)}
+              style={{ transition: 'stroke-dashoffset 0.15s ease' }}
+            />
+            {/* Servo Horn */}
+            <line x1="80" y1="78" x2={armX} y2={armY} stroke="#e2e8f0" strokeWidth="4.5" strokeLinecap="round" />
+            <line x1="80" y1="78" x2={armX} y2={armY} stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
+            <circle cx={armX} cy={armY} r="3.5" fill="#f8fafc" stroke="#38bdf8" strokeWidth="1.5" />
+            <circle cx="80" cy="78" r="8" fill="#1e293b" stroke="#64748b" strokeWidth="2" />
+            <circle cx="80" cy="78" r="3" fill="#38bdf8" />
+            <text x="16" y="88" fontSize="8" fontFamily="monospace" fill="#8b97ad">0°</text>
+            <text x="80" y="10" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="#8b97ad">90°</text>
+            <text x="142" y="88" fontSize="8" fontFamily="monospace" fill="#8b97ad">180°</text>
           </svg>
         </div>
-        <div className="flex justify-between items-baseline">
-          <span className="text-2xl font-black font-mono text-foreground">{angle}°</span>
-          <span className="text-[10px] text-muted-foreground">0° — 180°</span>
+        <div className="text-right shrink-0">
+          <span className="text-2xl font-black font-mono tabular-nums text-foreground">{angle}°</span>
+          <p className="text-[9px] font-mono text-muted-foreground uppercase">Servo Pos</p>
         </div>
-        <input type="range" min="0" max="180" value={angle} onChange={handleChange}
-          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#38BDF8' }} />
-        <div className="flex justify-between text-[9px] text-muted-foreground/60">
-          <span>0°</span><span>90°</span><span>180°</span>
-        </div>
+      </div>
+
+      <input type="range" min="0" max="180" value={angle} onChange={e => updateAngle(Number(e.target.value))}
+        className="w-full hw-slider" />
+
+      <div className="flex gap-1">
+        {[0, 45, 90, 135, 180].map(a => (
+          <button
+            key={a}
+            type="button"
+            onClick={() => updateAngle(a)}
+            className={`flex-1 py-0.5 rounded-md text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+              angle === a
+                ? 'bg-sky-500/15 border-sky-500/40 text-sky-400'
+                : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {a}°
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -1261,44 +1425,50 @@ function DCMotorWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <RotateCw size={16} className={speed > 0 ? 'animate-spin text-[#38BDF8]' : ''} style={{ animationDuration: speed > 0 ? `${1 - speed/300}s` : '1s' }} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <div className={`w-10 h-10 rounded-full border flex items-center justify-center ${
+            speed > 0 ? 'bg-sky-500/12 border-sky-500/35 text-sky-400' : 'bg-muted border-border text-muted-foreground'
+          }`}>
+            <RotateCw
+              size={20}
+              className={speed > 0 ? 'animate-spin' : ''}
+              style={{
+                animationDuration: speed > 0 ? `${Math.max(0.22, 1.2 - speed / 240)}s` : '1s',
+                animationDirection: forward ? 'normal' : 'reverse',
+              }}
+            />
+          </div>
+          <div>
+            <span className="text-2xl font-black font-mono tabular-nums text-foreground">{speed}</span>
+            <p className="text-[9px] font-mono text-muted-foreground uppercase">PWM / 255</p>
+          </div>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        {/* Direction toggle */}
-        <div className="flex gap-2">
-          <button onClick={() => { setForward(true); publish(widget.topic, `F,${speed}`); }}
-            className={`flex-1 py-1.5 rounded-xl text-xs font-bold border transition-all ${
-              forward ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
+
+        <div className="flex gap-1">
+          <button type="button" onClick={() => { setForward(true); publish(widget.topic, `F,${speed}`); }}
+            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+              forward ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
             }`}>
-            ▶ Forward
+            FWD
           </button>
-          <button onClick={() => { setForward(false); publish(widget.topic, `R,${speed}`); }}
-            className={`flex-1 py-1.5 rounded-xl text-xs font-bold border transition-all ${
-              !forward ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
+          <button type="button" onClick={() => { setForward(false); publish(widget.topic, `R,${speed}`); }}
+            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+              !forward ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
             }`}>
-            ◀ Reverse
+            REV
           </button>
         </div>
-        <div className="flex justify-between items-baseline">
-          <span className="text-2xl font-black font-mono text-foreground">{speed}</span>
-          <span className="text-[10px] text-muted-foreground">Speed / 255</span>
-        </div>
-        <input type="range" min="0" max="255" value={speed} onChange={handleSpeed}
-          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#38BDF8' }} />
-        <button onClick={() => { setSpeed(0); publish(widget.topic, 'STOP'); }}
-          className="w-full py-1.5 rounded-xl text-xs font-bold bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#EF4444] hover:bg-[#EF4444]/25 transition-all">
-          STOP
-        </button>
       </div>
+
+      <input type="range" min="0" max="255" value={speed} onChange={handleSpeed}
+        className="w-full hw-slider" />
+
+      <button type="button" onClick={() => { setSpeed(0); publish(widget.topic, 'STOP'); }}
+        className="w-full py-1.5 rounded-lg text-[11px] font-mono font-bold bg-red-500/12 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer">
+        EMERGENCY STOP
+      </button>
     </div>
   );
 }
@@ -1313,99 +1483,86 @@ function StepperWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Gauge size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={() => setSteps(v => Math.max(1, v - 10))}
+          className="w-8 h-8 rounded-lg bg-muted border border-border text-foreground font-mono font-bold hover:bg-secondary transition-colors cursor-pointer">-10</button>
+        <input type="number" value={steps} onChange={e => setSteps(Number(e.target.value))}
+          className="flex-1 bg-input border border-border rounded-lg py-1 text-center text-sm font-mono tabular-nums font-bold focus:outline-none focus:border-primary/50 text-foreground" />
+        <button type="button" onClick={() => setSteps(v => v + 10)}
+          className="w-8 h-8 rounded-lg bg-muted border border-border text-foreground font-mono font-bold hover:bg-secondary transition-colors cursor-pointer">+10</button>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-2.5 px-1">
-        <div>
-          <label className="text-[10px] text-muted-foreground mb-1 block">Steps</label>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setSteps(v => Math.max(1, v - 10))}
-              className="w-8 h-8 rounded-lg bg-muted border border-border text-foreground font-bold hover:bg-secondary transition-colors">-</button>
-            <input type="number" value={steps} onChange={e => setSteps(Number(e.target.value))}
-              className="flex-1 bg-muted border border-border rounded-lg py-1.5 text-center text-sm font-mono font-bold focus:outline-none focus:border-border text-foreground" />
-            <button onClick={() => setSteps(v => v + 10)}
-              className="w-8 h-8 rounded-lg bg-muted border border-border text-foreground font-bold hover:bg-secondary transition-colors">+</button>
-          </div>
+      <div>
+        <div className="flex justify-between mb-1">
+          <label className="text-[10px] text-muted-foreground">Speed</label>
+          <span className="text-[10px] font-mono tabular-nums font-bold text-foreground">{speed} RPM</span>
         </div>
-        <div>
-          <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground">Speed</label>
-            <span className="text-[10px] font-mono font-bold text-foreground">{speed} RPM</span>
-          </div>
-          <input type="range" min="1" max="200" value={speed} onChange={e => setSpeed(Number(e.target.value))}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-            style={{ accentColor: '#38BDF8' }} />
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => sendCmd('CW')}
-            className="flex-1 py-2 rounded-xl text-xs font-bold bg-muted/40 border border-border text-foreground hover:bg-muted transition-all">
-            ↻ CW
-          </button>
-          <button onClick={() => sendCmd('CCW')}
-            className="flex-1 py-2 rounded-xl text-xs font-bold bg-muted/40 border border-border text-foreground hover:bg-muted transition-all">
-            ↺ CCW
-          </button>
-        </div>
+        <input type="range" min="1" max="200" value={speed} onChange={e => setSpeed(Number(e.target.value))}
+          className="w-full hw-slider" />
+      </div>
+      <div className="flex gap-2">
+        <button type="button" onClick={() => sendCmd('CCW')}
+          className="flex-1 py-1.5 rounded-lg text-xs font-mono font-bold bg-muted/50 border border-border text-foreground hover:bg-muted transition-all cursor-pointer">
+          ↺ CCW
+        </button>
+        <button type="button" onClick={() => sendCmd('CW')}
+          className="flex-1 py-1.5 rounded-lg text-xs font-mono font-bold bg-sky-500/12 border border-sky-500/35 text-sky-400 hover:bg-sky-500/20 transition-all cursor-pointer">
+          ↻ CW
+        </button>
       </div>
     </div>
   );
 }
 
-// ─── PWM Fan Widget ───────────────────────────────────────────────────────────
+// ─── PWM Fan Widget (Turbine Rotor) ───────────────────────────────────────────
 function PWMFanWidget({ widget, value, publish }) {
   const [fanSpeed, setFanSpeed] = useState(0);
   const temp = value !== undefined ? parseFloat(value) : null;
 
-  const handleFan = (e) => {
-    const v = Number(e.target.value);
+  const updateFan = (v) => {
     setFanSpeed(v);
     publish(widget.topic, String(v));
   };
 
-  const tempColor = temp !== null ? (temp > 40 ? '#EF4444' : '#38BDF8') : '#6b7280';
+  const tempColor = temp !== null ? (temp > 40 ? '#ef4444' : '#38bdf8') : '#8b97ad';
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Wind size={16} className={fanSpeed > 0 ? 'animate-spin text-[#38BDF8]' : ''} style={{ animationDuration: fanSpeed > 0 ? `${2 - fanSpeed/140}s` : '2s' }} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <div className={`w-10 h-10 rounded-full border flex items-center justify-center ${
+            fanSpeed > 0 ? 'bg-sky-500/12 border-sky-500/35 text-sky-400' : 'bg-muted border-border text-muted-foreground'
+          }`}>
+            <Wind
+              size={20}
+              className={fanSpeed > 0 ? 'animate-spin' : ''}
+              style={{ animationDuration: fanSpeed > 0 ? `${Math.max(0.25, 1.8 - fanSpeed / 150)}s` : '2s' }}
+            />
+          </div>
+          <div>
+            <span className="text-2xl font-black font-mono tabular-nums text-foreground">{fanSpeed}</span>
+            <p className="text-[9px] font-mono text-muted-foreground uppercase">PWM / 255</p>
+          </div>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        {/* Temp reading */}
+
         {temp !== null && (
-          <div className="flex items-center justify-between bg-muted border border-border rounded-xl px-3 py-2">
-            <Thermometer size={14} style={{ color: tempColor }} />
-            <span className="text-sm font-black font-mono" style={{ color: tempColor }}>{temp.toFixed(1)}°C</span>
+          <div className="flex items-center gap-1.5 bg-muted border border-border rounded-lg px-2.5 py-1">
+            <Thermometer size={12} style={{ color: tempColor }} />
+            <span className="text-xs font-black font-mono tabular-nums" style={{ color: tempColor }}>{temp.toFixed(1)}°C</span>
           </div>
         )}
-        <div className="flex justify-between items-baseline">
-          <span className="text-2xl font-black font-mono text-foreground">{fanSpeed}</span>
-          <span className="text-[10px] text-muted-foreground">PWM / 255</span>
-        </div>
-        <input type="range" min="0" max="255" value={fanSpeed} onChange={handleFan}
-          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#38BDF8' }} />
-        <div className="flex gap-1.5">
-          {[0, 64, 128, 192, 255].map(v => (
-            <button key={v} onClick={() => { setFanSpeed(v); publish(widget.topic, String(v)); }}
-              className={`flex-1 py-1 rounded-lg text-[9px] font-bold border transition-all ${
-                fanSpeed === v ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black' : 'bg-muted/30 border-border text-muted-foreground hover:bg-muted'
-              }`}>{v === 0 ? 'OFF' : v === 255 ? 'MAX' : `${Math.round(v/255*100)}%`}</button>
-          ))}
-        </div>
+      </div>
+
+      <input type="range" min="0" max="255" value={fanSpeed} onChange={e => updateFan(Number(e.target.value))}
+        className="w-full hw-slider" />
+
+      <div className="flex gap-1">
+        {[0, 64, 128, 192, 255].map(v => (
+          <button key={v} type="button" onClick={() => updateFan(v)}
+            className={`flex-1 py-1 rounded-md text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+              fanSpeed === v ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+            }`}>{v === 0 ? 'OFF' : v === 255 ? 'MAX' : `${Math.round(v / 255 * 100)}%`}</button>
+        ))}
       </div>
     </div>
   );
@@ -1415,49 +1572,42 @@ function PWMFanWidget({ widget, value, publish }) {
 function CurtainWidget({ widget, publish }) {
   const [openPct, setOpenPct] = useState(0);
 
-  const handleChange = (e) => {
-    const v = Number(e.target.value);
-    setOpenPct(v);
-    publish(widget.topic, String(v));
-  };
-
   const goTo = (v) => { setOpenPct(v); publish(widget.topic, String(v)); };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Blinds size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
+      <div className="relative w-full h-11 bg-[#090d14] border border-border rounded-xl overflow-hidden shadow-inner">
+        <div className="absolute top-1.5 left-1 right-1 h-0.5 bg-slate-600/50" />
+        {/* Left pleated drape */}
+        <div
+          className="absolute top-0 left-0 h-full border-r border-sky-400/40 transition-all duration-300"
+          style={{
+            width: `${(100 - openPct) / 2}%`,
+            background: 'repeating-linear-gradient(90deg, rgba(56,189,248,0.22) 0px, rgba(56,189,248,0.22) 5px, rgba(15,23,42,0.45) 5px, rgba(15,23,42,0.45) 9px)',
+          }}
+        />
+        {/* Right pleated drape */}
+        <div
+          className="absolute top-0 right-0 h-full border-l border-sky-400/40 transition-all duration-300"
+          style={{
+            width: `${(100 - openPct) / 2}%`,
+            background: 'repeating-linear-gradient(90deg, rgba(56,189,248,0.22) 0px, rgba(56,189,248,0.22) 5px, rgba(15,23,42,0.45) 5px, rgba(15,23,42,0.45) 9px)',
+          }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-background/80 border border-border text-foreground">
+            {openPct}% OPEN
+          </span>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        {/* Curtain visual */}
-        <div className="relative w-full h-12 bg-muted border border-border rounded-xl overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-0.5 bg-border" />
-          </div>
-          {/* Left curtain */}
-          <div className="absolute top-0 left-0 h-full bg-[#38BDF8]/20 border-r border-[#38BDF8]/40 transition-all duration-500"
-            style={{ width: `${(100 - openPct) / 2}%` }} />
-          {/* Right curtain */}
-          <div className="absolute top-0 right-0 h-full bg-[#38BDF8]/20 border-l border-[#38BDF8]/40 transition-all duration-500"
-            style={{ width: `${(100 - openPct) / 2}%` }} />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[10px] font-bold text-foreground">{openPct}% Open</span>
-          </div>
-        </div>
-        <input type="range" min="0" max="100" value={openPct} onChange={handleChange}
-          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
-          style={{ accentColor: '#38BDF8' }} />
-        <div className="flex gap-2">
-          <button onClick={() => goTo(0)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">Closed</button>
-          <button onClick={() => goTo(50)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">Half</button>
-          <button onClick={() => goTo(100)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">Open</button>
-        </div>
+
+      <input type="range" min="0" max="100" value={openPct} onChange={e => goTo(Number(e.target.value))}
+        className="w-full hw-slider" />
+
+      <div className="flex gap-1.5">
+        <button type="button" onClick={() => goTo(0)} className="flex-1 py-1 rounded-lg text-[10px] font-semibold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">Closed</button>
+        <button type="button" onClick={() => goTo(50)} className="flex-1 py-1 rounded-lg text-[10px] font-semibold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">Half</button>
+        <button type="button" onClick={() => goTo(100)} className="flex-1 py-1 rounded-lg text-[10px] font-semibold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">Open</button>
       </div>
     </div>
   );
@@ -1467,7 +1617,7 @@ function CurtainWidget({ widget, publish }) {
 // ─── SECURITY WIDGETS ─────────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Door Lock Widget ─────────────────────────────────────────────────────────
+// ─── Door Lock Widget (Physical Deadbolt Latch) ───────────────────────────────
 function DoorLockWidget({ widget, value, publish }) {
   const isLocked = value !== 'OPEN' && value !== '0';
   const [countdown, setCountdown] = useState(null);
@@ -1478,7 +1628,7 @@ function DoorLockWidget({ widget, value, publish }) {
       publish(widget.topic, 'OPEN');
     } else {
       publish(widget.topic, 'OPEN');
-      clearTimeout(timerRef.current);
+      clearInterval(timerRef.current);
       setCountdown(10);
       let c = 10;
       timerRef.current = setInterval(() => {
@@ -1494,41 +1644,50 @@ function DoorLockWidget({ widget, value, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Lock size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full items-center justify-center gap-2 text-left">
+      <button
+        type="button"
+        onClick={toggle}
+        className="w-28 h-14 rounded-xl bg-muted/50 border border-border hover:border-white/20 p-1.5 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
+        title={isLocked ? 'Click to unlock (10s auto-lock)' : 'Locked / Open'}
+      >
+        <svg viewBox="0 0 110 48" className="w-full h-full">
+          {/* Lock chassis */}
+          <rect x="6" y="8" width="48" height="32" rx="4" fill="rgba(148,163,184,0.12)" stroke="rgba(148,163,184,0.35)" strokeWidth="1.5" />
+          {/* Steel deadbolt */}
+          <rect
+            x={isLocked ? 52 : 34} y="16" width="32" height="16" rx="2"
+            fill={isLocked ? '#ef4444' : '#22c55e'}
+            style={{ transition: 'x 0.25s ease, fill 0.2s ease' }}
+          />
+          {/* Door strike plate */}
+          <rect x="78" y="8" width="24" height="32" rx="3" fill="rgba(148,163,184,0.08)" stroke="rgba(148,163,184,0.28)" strokeWidth="1.5" />
+          <circle cx="18" cy="24" r="3" fill={isLocked ? '#ef4444' : '#22c55e'} />
+        </svg>
+      </button>
+
+      <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+        isLocked
+          ? 'bg-red-500/12 border-red-500/30 text-red-400'
+          : 'bg-emerald-500/12 border-emerald-500/30 text-emerald-400'
+      }`}>
+        <Lock size={10} />
+        {isLocked ? 'LOCKED' : 'UNLOCKED'}
+      </span>
+
+      {countdown !== null && (
+        <div className="w-full max-w-[140px] space-y-1">
+          <div className="h-1 bg-muted rounded-full overflow-hidden">
+            <div className="h-full bg-amber-400 transition-all duration-1000" style={{ width: `${(countdown / 10) * 100}%` }} />
+          </div>
+          <p className="text-[9px] text-center text-muted-foreground font-mono">Auto-lock in {countdown}s</p>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-3">
-        <div
-          onClick={toggle}
-          className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
-            isLocked
-              ? 'bg-[#EF4444]/15 border-[#EF4444]/40 text-[#EF4444] shadow-lg shadow-[#EF4444]/15'
-              : 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E] shadow-lg shadow-[#22C55E]/15'
-          }`}
-        >
-          <Lock size={28} className={isLocked ? 'text-[#EF4444]' : 'text-[#22C55E]'} />
-        </div>
-        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
-          isLocked
-            ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#EF4444]'
-            : 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]'
-        }`}>{isLocked ? 'Locked' : 'Unlocked'}</span>
-        {countdown !== null && (
-          <span className="text-[10px] text-muted-foreground font-mono">Auto-lock in {countdown}s</span>
-        )}
-      </div>
+      )}
     </div>
   );
 }
 
-// ─── Buzzer Widget ─────────────────────────────────────────────────────────────
+// ─── Buzzer Widget (Industrial Push-to-Test Alarm) ─────────────────────────────
 function BuzzerWidget({ widget, publish }) {
   const [active, setActive] = useState(false);
 
@@ -1539,36 +1698,31 @@ function BuzzerWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Bell size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+      <div className="relative p-1.5 rounded-full bg-muted/60 border border-border shadow-inner">
+        {active && (
+          <span className="absolute inset-0 rounded-full border-2 border-red-400/60 animate-ping pointer-events-none" />
+        )}
+        <button
+          type="button"
+          onClick={trigger}
+          className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-150 border select-none active:scale-90 cursor-pointer ${
+            active
+              ? 'bg-red-500/25 border-red-400 text-red-400 shadow-[0_0_16px_rgba(239,68,68,0.45)]'
+              : 'bg-gradient-to-b from-secondary to-background border-border hover:border-red-500/40 text-muted-foreground hover:text-red-400'
+          }`}
+        >
+          <Bell size={22} />
+        </button>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-3">
-        <div className="relative">
-          <button
-            onClick={trigger}
-            className={`relative w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-150 border select-none active:scale-90 ${
-              active
-                ? 'bg-[#EF4444]/25 border-[#EF4444]/50 text-[#EF4444] shadow-lg shadow-[#EF4444]/25'
-                : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
-            }`}
-          >
-            <Bell size={28} className={active ? 'text-[#EF4444]' : 'text-muted-foreground/60'} />
-          </button>
-        </div>
-        <span className="text-[10px] text-muted-foreground">Press to send BEEP</span>
-      </div>
+      <span className="text-[10px] font-mono text-muted-foreground">
+        PULSE <code className="px-1.5 py-0.5 rounded bg-muted border border-border text-foreground">BEEP</code>
+      </span>
     </div>
   );
 }
 
-// ─── Pan-Tilt Widget ──────────────────────────────────────────────────────────
+// ─── Pan-Tilt Widget (2-Axis Radar Reticle Viewfinder) ────────────────────────
 function PanTiltWidget({ widget, publish }) {
   const [pan, setPan] = useState(90);
   const [tilt, setTilt] = useState(90);
@@ -1588,46 +1742,43 @@ function PanTiltWidget({ widget, publish }) {
   const center = () => { setPan(90); setTilt(90); publish(widget.topic, 'CENTER'); };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Camera size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
+    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
+      {/* 2-Axis Crosshair Reticle */}
+      <div className="relative w-full h-16 bg-[#080c12] border border-border rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+        <div className="absolute inset-x-0 top-1/2 h-px bg-sky-500/20" />
+        <div className="absolute inset-y-0 left-1/2 w-px bg-sky-500/20" />
+        <div
+          className="absolute w-3 h-3 rounded-full bg-sky-400 border-2 border-white hw-led-cyan transition-all duration-100 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            left: `${(pan / 180) * 80 + 10}%`,
+            top: `${(tilt / 180) * 76 + 12}%`,
+          }}
+        />
+        <span className="absolute bottom-1 right-2 text-[9px] font-mono text-sky-400/75">
+          {pan}°, {tilt}°
         </span>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        {/* Visual indicator */}
-        <div className="flex justify-center">
-          <div className="relative w-14 h-14 bg-muted border border-border rounded-full flex items-center justify-center">
-            <Camera size={16} className="text-[#38BDF8]" style={{
-              transform: `rotateX(${(tilt-90)*0.3}deg) rotateY(${(pan-90)*0.3}deg)`
-            }} />
-            <div className="absolute inset-1.5 rounded-full border border-dashed border-[#38BDF8]/40" />
-          </div>
-        </div>
+
+      <div className="space-y-1.5">
         <div>
-          <div className="flex justify-between mb-1">
+          <div className="flex justify-between mb-0.5">
             <label className="text-[10px] text-muted-foreground">Pan</label>
-            <span className="text-[10px] font-mono font-bold text-foreground">{pan}°</span>
+            <span className="text-[10px] font-mono tabular-nums font-bold text-foreground">{pan}°</span>
           </div>
-          <input type="range" min="0" max="180" value={pan} onChange={handlePan}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
+          <input type="range" min="0" max="180" value={pan} onChange={handlePan} className="w-full hw-slider" />
         </div>
         <div>
-          <div className="flex justify-between mb-1">
+          <div className="flex justify-between mb-0.5">
             <label className="text-[10px] text-muted-foreground">Tilt</label>
-            <span className="text-[10px] font-mono font-bold text-foreground">{tilt}°</span>
+            <span className="text-[10px] font-mono tabular-nums font-bold text-foreground">{tilt}°</span>
           </div>
-          <input type="range" min="0" max="180" value={tilt} onChange={handleTilt}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
+          <input type="range" min="0" max="180" value={tilt} onChange={handleTilt} className="w-full hw-slider" />
         </div>
-        <button onClick={center} className="w-full py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">
-          Center Camera (90°, 90°)
-        </button>
       </div>
+
+      <button type="button" onClick={center} className="w-full py-1 rounded-lg text-[10px] font-mono font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer">
+        Center Camera (90°, 90°)
+      </button>
     </div>
   );
 }
@@ -1636,7 +1787,7 @@ function PanTiltWidget({ widget, publish }) {
 // ─── AGRICULTURE WIDGETS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Pump Widget ──────────────────────────────────────────────────────────────
+// ─── Pump Widget (Centrifugal Impeller + Chronograph) ────────────────────────
 function PumpWidget({ widget, value, publish }) {
   const isOn = value === '1' || value === 'ON';
   const [runtime, setRuntime] = useState(0);
@@ -1656,69 +1807,93 @@ function PumpWidget({ widget, value, publish }) {
   const fmt = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Droplets size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-3">
-        <div onClick={toggle} className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 border ${
+    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+      <button
+        type="button"
+        onClick={toggle}
+        className={`w-14 h-14 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all duration-200 ${
           isOn
-            ? 'bg-[#22C55E]/15 border-[#22C55E]/40 scale-95 text-[#22C55E] shadow-lg shadow-[#22C55E]/20'
-            : 'bg-muted/30 border-border hover:bg-muted text-muted-foreground'
+            ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-400 shadow-[0_0_16px_rgba(34,197,94,0.28)]'
+            : 'bg-muted/50 border-border hover:border-white/20 text-muted-foreground'
+        }`}
+        title={isOn ? 'Click to stop pump' : 'Click to start pump'}
+      >
+        <Droplets size={24} className={isOn ? 'animate-pulse text-emerald-400' : ''} />
+      </button>
+
+      <div className="flex items-center gap-2">
+        <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+          isOn ? 'bg-emerald-500/12 border-emerald-500/30 text-emerald-400' : 'bg-muted border-border text-muted-foreground'
         }`}>
-          <Droplets size={28} className={isOn ? 'text-[#22C55E]' : 'text-muted-foreground/60'} />
-        </div>
-        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
-          isOn ? 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]' : 'bg-muted text-muted-foreground border-border'
-        }`}>{isOn ? 'Running' : 'Stopped'}</span>
-        {isOn && <span className="text-[10px] font-mono text-muted-foreground">{fmt(runtime)}</span>}
+          <span className={`w-1.5 h-1.5 rounded-full ${isOn ? 'bg-emerald-400 hw-led-on' : 'bg-slate-500'}`} />
+          {isOn ? 'PUMPING' : 'STOPPED'}
+        </span>
+        {isOn && (
+          <span className="text-[10px] font-mono tabular-nums text-foreground bg-muted border border-border px-2 py-0.5 rounded-md">
+            {fmt(runtime)}
+          </span>
+        )}
       </div>
+
+      <button
+        type="button"
+        onClick={toggle}
+        className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+          isOn
+            ? 'bg-red-500/12 border-red-500/30 text-red-400 hover:bg-red-500/20'
+            : 'bg-primary/12 border-primary/30 text-primary hover:bg-primary/20'
+        }`}
+      >
+        {isOn ? 'STOP PUMP' : 'START PUMP'}
+      </button>
     </div>
   );
 }
 
-// ─── Valve Widget ──────────────────────────────────────────────────────────────
+// ─── Valve Widget (Solenoid Flow Pipe Schematic) ───────────────────────────────
 function ValveWidget({ widget, value, publish }) {
   const isOpen = value === '1' || value === 'OPEN';
   const toggle = () => publish(widget.topic, isOpen ? 'CLOSE' : 'OPEN');
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Wrench size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-3">
-        {/* Valve visual */}
-        <div className="relative w-14 h-14">
-          <svg viewBox="0 0 64 64" className="w-full h-full">
-            <rect x="4" y="28" width="56" height="8" rx="4" fill="rgba(255,255,255,0.06)" stroke={isOpen ? '#22C55E' : '#EF4444'} strokeWidth="1.5" />
-            <circle cx="32" cy="32" r="10" fill="rgba(255,255,255,0.08)" stroke={isOpen ? '#22C55E' : '#EF4444'} strokeWidth="1.5" />
-            <line x1="32" y1="22" x2="32" y2="14" stroke={isOpen ? '#22C55E' : '#EF4444'} strokeWidth="2" strokeLinecap="round" />
-            <rect x="26" y="10" width="12" height="5" rx="2" fill={isOpen ? '#22C55E' : '#EF4444'}
-              transform={isOpen ? 'rotate(90 32 12.5)' : ''} style={{ transition: 'all 0.3s' }} />
-          </svg>
-        </div>
-        <button onClick={toggle}
-          className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
-            isOpen
-              ? 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E]'
-              : 'bg-[#EF4444]/15 border-[#EF4444]/40 text-[#EF4444]'
-          }`}>
-          {isOpen ? 'Open — Close' : 'Closed — Open'}
-        </button>
-      </div>
+    <div className="flex flex-col h-full items-center justify-center gap-2.5 text-left">
+      <button
+        type="button"
+        onClick={toggle}
+        className="w-28 h-14 rounded-xl bg-muted/40 border border-border hover:border-white/20 p-1 flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
+        title={isOpen ? 'Click to close valve' : 'Click to open valve'}
+      >
+        <svg viewBox="0 0 110 52" className="w-full h-full">
+          {/* Pipe body */}
+          <rect x="4" y="25" width="102" height="10" rx="3" fill="rgba(148,163,184,0.12)" stroke={isOpen ? '#22c55e' : '#64748b'} strokeWidth="1.5" />
+          {/* Flow stream when open */}
+          {isOpen && (
+            <line x1="8" y1="30" x2="102" y2="30" stroke="#38bdf8" strokeWidth="2.5" strokeDasharray="6 4" />
+          )}
+          {/* Valve body */}
+          <circle cx="55" cy="30" r="10" fill="#121620" stroke={isOpen ? '#22c55e' : '#ef4444'} strokeWidth="2" />
+          <line x1="55" y1="20" x2="55" y2="11" stroke={isOpen ? '#22c55e' : '#ef4444'} strokeWidth="2.5" strokeLinecap="round" />
+          {/* Quarter-turn handle */}
+          <rect
+            x="44" y="7" width="22" height="5" rx="2.5"
+            fill={isOpen ? '#22c55e' : '#ef4444'}
+            transform={isOpen ? '' : 'rotate(90 55 9.5)'}
+            style={{ transition: 'transform 0.25s ease, fill 0.2s ease' }}
+          />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        onClick={toggle}
+        className={`px-3.5 py-1 rounded-lg text-[10px] font-mono font-bold border transition-all active:scale-95 cursor-pointer ${
+          isOpen
+            ? 'bg-emerald-500/12 border-emerald-500/35 text-emerald-400'
+            : 'bg-red-500/12 border-red-500/35 text-red-400'
+        }`}
+      >
+        {isOpen ? 'OPEN — CLOSE' : 'CLOSED — OPEN'}
+      </button>
     </div>
   );
 }
@@ -1743,77 +1918,63 @@ function IrrigationWidget({ widget, value, publish }) {
   }, [moisture, threshold, mode]);
 
   const moistureColor = moisture !== null
-    ? (moisture < threshold ? '#EF4444' : '#22C55E')
-    : '#6b7280';
+    ? (moisture < threshold ? '#ef4444' : '#22c55e')
+    : '#8b97ad';
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Sprout size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full justify-center gap-2 min-h-0 px-0.5 text-left">
+      <div className="bg-muted/40 border border-border rounded-xl p-2.5">
+        <div className="flex justify-between mb-1.5">
+          <span className="text-[10px] font-semibold text-muted-foreground">Soil Moisture</span>
+          <span className="text-[11px] font-mono tabular-nums font-bold" style={{ color: moistureColor }}>
+            {moisture !== null ? `${moisture.toFixed(0)}%` : 'N/A'}
+          </span>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+        <div className="relative h-2 bg-secondary rounded-full overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-500" style={{
+            width: `${Math.min(100, moisture || 0)}%`,
+            background: moistureColor
+          }} />
+          <div className="absolute top-0 bottom-0 w-0.5 bg-sky-400" style={{ left: `${threshold}%` }} />
+        </div>
+        <p className="text-[9px] font-mono text-muted-foreground text-right mt-1">Trigger &lt; {threshold}%</p>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-2.5 min-h-0">
-        {/* Moisture bar */}
-        <div className="bg-muted border border-border rounded-xl p-2.5">
-          <div className="flex justify-between mb-1.5">
-            <span className="text-[10px] text-muted-foreground">Soil Moisture</span>
-            <span className="text-[10px] font-mono font-bold" style={{ color: moistureColor }}>
-              {moisture !== null ? `${moisture.toFixed(0)}%` : 'N/A'}
-            </span>
-          </div>
-          <div className="h-2 bg-secondary rounded-full overflow-hidden">
-            <div className="h-full rounded-full transition-all duration-500" style={{
-              width: `${Math.min(100, moisture || 0)}%`,
-              background: moistureColor
-            }} />
-          </div>
-          {/* Threshold marker */}
-          <div className="relative mt-1">
-            <div className="absolute top-0 w-0.5 h-3 bg-[#38BDF8] -translate-x-1/2" style={{ left: `${threshold}%` }} />
-            <p className="text-[9px] text-muted-foreground text-right">Threshold: {threshold}%</p>
-          </div>
-        </div>
-        {/* Mode + Threshold */}
-        <div className="flex gap-2">
-          <button onClick={() => setMode('manual')}
-            className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-              mode === 'manual' ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
-            }`}>Manual</button>
-          <button onClick={() => setMode('auto')}
-            className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-              mode === 'auto' ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
-            }`}>Auto</button>
-        </div>
-        {mode === 'auto' && (
+
+      <div className="flex gap-1.5">
+        <button type="button" onClick={() => setMode('manual')}
+          className={`flex-1 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+            mode === 'manual' ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+          }`}>Manual</button>
+        <button type="button" onClick={() => setMode('auto')}
+          className={`flex-1 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+            mode === 'auto' ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
+          }`}>Auto</button>
+      </div>
+
+      {mode === 'auto' ? (
+        <>
           <div>
-            <div className="flex justify-between mb-1">
-              <label className="text-[10px] text-muted-foreground">Trigger Threshold</label>
-              <span className="text-[10px] font-mono font-bold text-foreground">{threshold}%</span>
+            <div className="flex justify-between mb-0.5">
+              <label className="text-[10px] text-muted-foreground">Threshold</label>
+              <span className="text-[10px] font-mono tabular-nums font-bold text-foreground">{threshold}%</span>
             </div>
             <input type="range" min="10" max="80" value={threshold} onChange={e => setThreshold(Number(e.target.value))}
-              className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
+              className="w-full hw-slider" />
           </div>
-        )}
-        {mode === 'manual' && (
-          <button
-            onClick={() => { setPumpOn(v => !v); publish(widget.topic, pumpOn ? 'OFF' : 'ON'); }}
-            className={`w-full py-2 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
-              pumpOn ? 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E]' : 'bg-muted text-muted-foreground hover:text-foreground border-border'
-            }`}>
-            {pumpOn ? 'Stop Irrigation' : 'Start Irrigation'}
-          </button>
-        )}
-        {mode === 'auto' && (
-          <div className={`text-[10px] text-center py-1 rounded-lg font-bold border ${
-            pumpOn ? 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]' : 'bg-muted text-muted-foreground border-border'
-          }`}>{pumpOn ? 'Auto-Irrigating' : 'Moisture Sufficient'}</div>
-        )}
-      </div>
+          <div className={`text-[10px] text-center py-1 rounded-lg font-mono font-bold border ${
+            pumpOn ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : 'bg-muted text-muted-foreground border-border'
+          }`}>{pumpOn ? 'AUTO-IRRIGATING' : 'MOISTURE SUFFICIENT'}</div>
+        </>
+      ) : (
+        <button
+          type="button"
+          onClick={() => { setPumpOn(v => !v); publish(widget.topic, pumpOn ? 'OFF' : 'ON'); }}
+          className={`w-full py-1.5 rounded-xl text-xs font-bold border transition-all active:scale-95 cursor-pointer ${
+            pumpOn ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'bg-muted text-foreground hover:bg-secondary border-border'
+          }`}>
+          {pumpOn ? 'Stop Irrigation' : 'Start Irrigation'}
+        </button>
+      )}
     </div>
   );
 }
@@ -1822,7 +1983,7 @@ function IrrigationWidget({ widget, value, publish }) {
 // ─── ADVANCED TOOL WIDGETS ────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── OLED Display Widget ──────────────────────────────────────────────────────
+// ─── OLED Display Widget (Authentic 0.96" SSD1306 PCB Bezel) ─────────────────
 function OLEDWidget({ widget, publish }) {
   const [text, setText] = useState('');
   const [sent, setSent] = useState('');
@@ -1834,45 +1995,48 @@ function OLEDWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Monitor size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full justify-center gap-2 text-left">
+      {/* SSD1306 PCB Module Bezel */}
+      <div className="relative rounded-xl bg-[#0b1320] border border-sky-500/25 p-2 shadow-inner">
+        {/* 4 Corner Brass Mounting Pads */}
+        <span className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
+        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
+        <span className="absolute bottom-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
+        <span className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400/75" />
+
+        <div className="flex items-center justify-center mb-1">
+          <span className="text-[8px] font-mono tracking-[0.18em] text-slate-500 uppercase">SSD1306 · 128×64 I2C</span>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-3">
-        {/* OLED preview */}
-        <div className="bg-black/90 rounded-xl border border-border p-3 min-h-[52px] flex items-center justify-center">
-          <p className="font-mono text-muted-foreground text-sm text-center break-all">
-            {sent || <span className="opacity-30">OLED Display...</span>}
+
+        <div className="hw-oled-screen rounded-lg px-3 py-2.5 min-h-[44px] flex items-center justify-center">
+          <p className="font-mono text-sky-400 text-xs sm:text-sm text-center break-all tracking-wider">
+            {sent || <span className="opacity-35">READY_</span>}
           </p>
         </div>
-        <div className="flex gap-2">
-          <input
-            value={text}
-            onChange={e => setText(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSend()}
-            placeholder="Text to display..."
-            maxLength={widget.maxChars || 32}
-            className="flex-1 bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-border text-foreground font-mono"
-          />
-          <button onClick={handleSend}
-            className="px-4 rounded-xl text-xs font-bold bg-muted border border-border text-foreground hover:bg-muted/70 transition-all active:scale-95">
-            Send
+      </div>
+
+      <div className="flex gap-1.5">
+        <input
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSend()}
+          placeholder="Text to display..."
+          maxLength={widget.maxChars || 32}
+          className="flex-1 bg-input border border-border rounded-lg py-1.5 px-2.5 text-xs focus:outline-none focus:border-primary/50 text-foreground font-mono"
+        />
+        <button type="button" onClick={handleSend}
+          className="px-3 rounded-lg text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-95 cursor-pointer">
+          Send
+        </button>
+      </div>
+
+      <div className="flex flex-wrap gap-1">
+        {['HELLO', 'READY', 'TEST', 'CLEAR'].map(preset => (
+          <button key={preset} type="button" onClick={() => { setText(preset); publish(widget.topic, preset); setSent(preset); }}
+            className="flex-1 text-[9px] px-2 py-1 rounded-md bg-muted/60 border border-border text-muted-foreground hover:text-foreground transition-all font-mono cursor-pointer">
+            {preset}
           </button>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {['HELLO', 'READY', 'TEST', 'CLEAR'].map(preset => (
-            <button key={preset} onClick={() => { setText(preset); publish(widget.topic, preset); setSent(preset); }}
-              className="text-[9px] px-2.5 py-1 rounded-lg bg-muted border border-border text-muted-foreground hover:text-foreground transition-all font-mono">
-              {preset}
-            </button>
-          ))}
-        </div>
+        ))}
       </div>
     </div>
   );
@@ -1892,38 +2056,24 @@ function NumericInputWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Hash size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
+      <div className="bg-muted/40 border border-border rounded-xl py-1.5 px-3 text-center">
+        <span className="text-3xl font-black font-mono tabular-nums text-foreground">{val}</span>
+        <span className="text-[10px] font-mono text-muted-foreground ml-1">{widget.unit || ''}</span>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        <div className="text-center">
-          <span className="text-4xl font-black font-mono text-foreground">{val}</span>
-          <span className="text-[10px] text-muted-foreground ml-1">{widget.unit || ''}</span>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => send(val - step)}
-            className="flex-1 py-2 rounded-xl text-sm font-black bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95">−</button>
-          <input
-            type="number" value={val} min={min} max={max} step={step}
-            onChange={e => send(Number(e.target.value))}
-            className="w-20 text-center bg-muted border border-border rounded-xl py-2 text-sm font-mono font-bold focus:outline-none focus:border-border text-foreground"
-          />
-          <button onClick={() => send(val + step)}
-            className="flex-1 py-2 rounded-xl text-sm font-black bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95">+</button>
-        </div>
-        <input type="range" min={min} max={max} step={step} value={val} onChange={e => send(Number(e.target.value))}
-          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
-        <div className="flex justify-between text-[9px] text-muted-foreground/50 font-mono">
-          <span>{min}</span><span>{max}</span>
-        </div>
+      <div className="flex gap-1.5">
+        <button type="button" onClick={() => send(val - step)}
+          className="flex-1 py-1.5 rounded-lg text-sm font-black bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer">−</button>
+        <input
+          type="number" value={val} min={min} max={max} step={step}
+          onChange={e => send(Number(e.target.value))}
+          className="w-20 text-center bg-input border border-border rounded-lg py-1.5 text-sm font-mono tabular-nums font-bold focus:outline-none focus:border-primary/50 text-foreground"
+        />
+        <button type="button" onClick={() => send(val + step)}
+          className="flex-1 py-1.5 rounded-lg text-sm font-black bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer">+</button>
       </div>
+      <input type="range" min={min} max={max} step={step} value={val} onChange={e => send(Number(e.target.value))}
+        className="w-full hw-slider" />
     </div>
   );
 }
@@ -1939,35 +2089,23 @@ function DropdownWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <AlignJustify size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-center gap-2">
-        <div className="flex items-center justify-between bg-muted border border-border rounded-xl px-3 py-2 transition-all">
-          <span className="text-sm font-bold text-foreground">{selected}</span>
-          <div className="w-2.5 h-2.5 rounded-full bg-[#38BDF8] shadow-sm shadow-[#38BDF8]" />
-        </div>
-        <div className="space-y-1.5">
-          {options.map(opt => (
-            <button
-              key={opt}
-              onClick={() => handleSelect(opt)}
-              className={`w-full py-2 px-3 rounded-xl text-xs font-bold border border-border transition-all text-left ${
-                selected === opt ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/20 text-muted-foreground hover:text-foreground hover:bg-muted/50'
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="flex flex-col h-full justify-center gap-1.5 overflow-y-auto scrollbar-thin text-left">
+      {options.map(opt => {
+        const isSel = selected === opt;
+        return (
+          <button
+            key={opt}
+            type="button"
+            onClick={() => handleSelect(opt)}
+            className={`w-full py-1.5 px-3 rounded-lg text-xs font-semibold border transition-all flex items-center justify-between cursor-pointer ${
+              isSel ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/60'
+            }`}
+          >
+            <span>{opt}</span>
+            <span className={`w-2 h-2 rounded-full ${isSel ? 'bg-sky-400 hw-led-cyan' : 'bg-slate-600/50'}`} />
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -1984,40 +2122,32 @@ function MomentaryWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Zap size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-3">
+    <div className="flex flex-col h-full items-center justify-center gap-2 text-left">
+      <div className="p-1.5 rounded-full bg-muted/60 border border-border shadow-inner">
         <button
+          type="button"
           onClick={trigger}
-          className={`relative w-18 h-18 rounded-full border flex items-center justify-center transition-all duration-150 select-none active:scale-90 font-bold text-sm ${
+          className={`w-14 h-14 rounded-full border flex items-center justify-center transition-all duration-150 select-none active:scale-90 cursor-pointer ${
             pressed
-              ? 'bg-[#38BDF8]/25 border-[#38BDF8]/50 scale-95 text-[#38BDF8] shadow-lg shadow-[#38BDF8]/20'
-              : 'bg-muted/40 border-border hover:bg-muted text-muted-foreground hover:text-foreground'
+              ? 'bg-sky-500/25 border-sky-400 text-sky-400 shadow-[0_0_16px_rgba(56,189,248,0.45)]'
+              : 'bg-gradient-to-b from-secondary to-background border-border hover:border-sky-500/40 text-muted-foreground hover:text-sky-400'
           }`}
         >
-          <Zap size={24} className="text-current" />
+          <Zap size={20} />
         </button>
-        <div className="text-center">
-          <p className="text-[10px] text-muted-foreground">Sends: <code className="font-mono text-foreground bg-muted px-1.5 py-0.5 rounded text-[9px] border border-border">{payload}</code></p>
-        </div>
       </div>
+      <p className="text-[10px] font-mono text-muted-foreground">
+        TX: <code className="text-foreground bg-muted px-1.5 py-0.5 rounded border border-border">{payload}</code>
+      </p>
     </div>
   );
 }
 
 const DP_BTN_BASE =
-  'flex items-center justify-center w-12 h-12 rounded-xl border transition-all duration-150 cursor-pointer select-none active:scale-95';
-const DP_BTN_IDLE = 'bg-muted/30 border-border text-foreground hover:bg-muted';
+  'flex items-center justify-center w-11 h-11 rounded-xl border transition-all duration-150 cursor-pointer select-none active:scale-95';
+const DP_BTN_IDLE = 'bg-gradient-to-b from-secondary to-background/90 border-border text-foreground hover:border-white/25 shadow-sm';
 const DP_BTN_GLOW =
-  'bg-[#38BDF8]/20 border-[#38BDF8]/50 text-[#38BDF8] font-black shadow-md shadow-[#38BDF8]/20';
+  'bg-sky-500/20 border-sky-400/60 text-sky-400 font-black shadow-[0_0_12px_rgba(56,189,248,0.3)]';
 
 function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
   const lit = activeCmd === cmd;
@@ -2031,12 +2161,12 @@ function DPadDirButton({ cmd, icon: Icon, activeCmd, onPress, onRelease }) {
       onTouchStart={(e) => { e.preventDefault(); onPress(cmd); }}
       onTouchEnd={onRelease}
     >
-      <Icon size={20} />
+      <Icon size={19} />
     </button>
   );
 }
 
-// ─── D-Pad Widget ─────────────────────────────────────────────────────────────
+// ─── D-Pad Widget (Industrial Tactile Jog Pad) ────────────────────────────────
 function DPadWidget({ widget, publish }) {
   const [active, setActive] = useState(null);
   const timeoutRef = useRef(null);
@@ -2061,43 +2191,38 @@ function DPadWidget({ widget, publish }) {
   };
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Gamepad2 size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-
-      <div className="flex-1 flex flex-col items-center justify-center gap-1.5 my-1">
+    <div className="flex flex-col h-full items-center justify-center gap-2 text-left">
+      <div className="p-2.5 rounded-2xl bg-muted/35 border border-border shadow-inner flex flex-col items-center gap-1.5">
         <DPadDirButton cmd="FORWARD" icon={ChevronUp} activeCmd={active} onPress={press} onRelease={release} />
         <div className="flex gap-1.5">
           <DPadDirButton cmd="LEFT" icon={ChevronLeft} activeCmd={active} onPress={press} onRelease={release} />
           <button
             type="button"
             onClick={sendStop}
-            className={`${DP_BTN_BASE} ${active === 'STOP' ? 'bg-[#EF4444]/20 border-[#EF4444]/40 text-[#EF4444] shadow-md shadow-[#EF4444]/20' : DP_BTN_IDLE}`}
+            className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer select-none active:scale-90 ${
+              active === 'STOP'
+                ? 'bg-red-500/25 border-red-400 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.4)]'
+                : 'bg-red-500/12 border-red-500/30 text-red-400 hover:bg-red-500/20'
+            }`}
             title="Send STOP"
           >
-            <span className="text-[9px] font-black tracking-tighter">STOP</span>
+            <span className="text-[9px] font-mono font-black tracking-tighter">STOP</span>
           </button>
           <DPadDirButton cmd="RIGHT" icon={ChevronRight} activeCmd={active} onPress={press} onRelease={release} />
         </div>
         <DPadDirButton cmd="BACK" icon={ChevronDown} activeCmd={active} onPress={press} onRelease={release} />
-        <div className="mt-1 flex items-center gap-1.5">
-          <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border ${active ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8]' : 'bg-muted/40 text-muted-foreground border-border'}`}>
-            CMD: {active || 'IDLE'}
-          </span>
-        </div>
       </div>
+
+      <span className={`text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+        active ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 text-muted-foreground border-border'
+      }`}>
+        CMD: {active || 'IDLE'}
+      </span>
     </div>
   );
 }
 
-// ─── Joystick Widget (same MQTT commands as D-Pad) ───────────────────────────
+// ─── Joystick Widget (Recessed Calibration Gimbal Well) ────────────────────────
 function JoystickWidget({ widget, publish }) {
   const rootRef = useRef(null);
   const activeRef = useRef(null);
@@ -2163,69 +2288,60 @@ function JoystickWidget({ widget, publish }) {
   const knobLit = active != null;
 
   return (
-    <div className="flex flex-col h-full gap-2 min-h-0 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Move size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
+    <div className="flex flex-col h-full items-center justify-center min-h-0 gap-2 text-left">
+      <div
+        ref={rootRef}
+        className="relative w-36 h-36 rounded-full border border-border bg-[#080c12] shadow-inner touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          applyPointer(e.clientX, e.clientY);
+        }}
+        onPointerMove={(e) => {
+          if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+          applyPointer(e.clientX, e.clientY);
+        }}
+        onPointerUp={(e) => {
+          try { e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* noop */ }
+          endPointer();
+        }}
+        onPointerCancel={endPointer}
+      >
+        <div className="absolute inset-x-3 top-1/2 h-px bg-white/[0.06] pointer-events-none" />
+        <div className="absolute inset-y-3 left-1/2 w-px bg-white/[0.06] pointer-events-none" />
+        <div className="absolute inset-[20%] rounded-full border border-dashed border-sky-400/35 pointer-events-none" />
 
-      <div className="flex-1 flex flex-col items-center justify-center min-h-0 gap-2 relative">
+        {/* Machined Dome Thumbstick */}
         <div
-          ref={rootRef}
-          className="relative w-36 h-36 rounded-full border border-border bg-muted/20 touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
-          onPointerDown={(e) => {
-            e.currentTarget.setPointerCapture(e.pointerId);
-            applyPointer(e.clientX, e.clientY);
+          className={`absolute w-12 h-12 rounded-full border transition-all duration-75 flex items-center justify-center ${
+            knobLit
+              ? 'bg-sky-500/25 border-sky-400 scale-95 shadow-[0_0_16px_rgba(56,189,248,0.45)]'
+              : 'bg-gradient-to-b from-secondary to-background border-white/15 shadow-lg'
+          }`}
+          style={{
+            left: `calc(50% + ${knob.x}px)`,
+            top: `calc(50% + ${knob.y}px)`,
+            transform: 'translate(-50%, -50%)',
           }}
-          onPointerMove={(e) => {
-            if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
-            applyPointer(e.clientX, e.clientY);
-          }}
-          onPointerUp={(e) => {
-            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* noop */ }
-            endPointer();
-          }}
-          onPointerCancel={endPointer}
         >
-          {/* Dash ring inside */}
-          <div className="absolute inset-[20%] rounded-full border border-dashed border-[#38BDF8]/40 pointer-events-none" />
-          
-          {/* Knob */}
-          <div
-            className={`absolute w-12 h-12 rounded-full border transition-all duration-75 flex items-center justify-center ${
-              knobLit
-                ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 scale-95 shadow-lg shadow-[#38BDF8]/30'
-                : 'bg-muted/60 border-border'
-            }`}
-            style={{
-              left: `calc(50% + ${knob.x}px)`,
-              top: `calc(50% + ${knob.y}px)`,
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
-            <div className={`w-3.5 h-3.5 rounded-full ${knobLit ? 'bg-[#38BDF8] shadow-sm shadow-[#38BDF8]' : 'bg-muted-foreground/30'}`} />
-          </div>
-
-          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] text-muted-foreground font-extrabold uppercase pointer-events-none">F</span>
-          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] text-muted-foreground font-extrabold uppercase pointer-events-none">B</span>
-          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground font-extrabold uppercase pointer-events-none">L</span>
-          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground font-extrabold uppercase pointer-events-none">R</span>
+          <div className={`w-3 h-3 rounded-full ${knobLit ? 'bg-sky-400 hw-led-cyan' : 'bg-slate-500'}`} />
         </div>
 
-        <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border ${active ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8]' : 'bg-muted/40 text-muted-foreground border-border'}`}>
-          DIR: {active || 'IDLE'}
-        </span>
+        <span className="absolute top-1.5 left-1/2 -translate-x-1/2 text-[8px] font-mono text-muted-foreground font-bold pointer-events-none">F</span>
+        <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[8px] font-mono text-muted-foreground font-bold pointer-events-none">B</span>
+        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[8px] font-mono text-muted-foreground font-bold pointer-events-none">L</span>
+        <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[8px] font-mono text-muted-foreground font-bold pointer-events-none">R</span>
       </div>
+
+      <span className={`text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+        active ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 text-muted-foreground border-border'
+      }`}>
+        DIR: {active || 'IDLE'}
+      </span>
     </div>
   );
 }
 
-// ─── Robot Arm Widget (3 servo joints) ─────────────────────────────────────
+// ─── Robot Arm Widget (Calibrated 2D Kinematics Bay) ───────────────────────────
 function RobotArmWidget({ widget, publish }) {
   const [joints, setJoints] = useState({ base: 90, shoulder: 90, elbow: 90 });
 
@@ -2247,7 +2363,6 @@ function RobotArmWidget({ widget, publish }) {
     { key: 'elbow',    label: 'Elbow',     range: [0, 135] },
   ];
 
-  // Simple 2D arm preview
   const baseAngle = ((joints.base - 90) * Math.PI) / 180;
   const shoulderAngle = ((joints.shoulder - 90) * Math.PI) / 180 + baseAngle;
   const elbowAngle = ((joints.elbow - 90) * Math.PI) / 180 + shoulderAngle;
@@ -2259,49 +2374,36 @@ function RobotArmWidget({ widget, publish }) {
   const y2 = y1 - L2 * Math.cos(elbowAngle);
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Bot size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+    <div className="flex flex-col h-full min-h-0 justify-center gap-2 text-left">
+      <div className="flex justify-center bg-[#080c12] border border-border rounded-xl py-1 shadow-inner">
+        <svg width="120" height="86" viewBox="0 0 120 90">
+          <line x1="10" y1="84" x2="110" y2="84" stroke="rgba(148,163,184,0.2)" strokeWidth="1" />
+          <rect x="44" y="79" width="32" height="6" rx="3" fill="rgba(148,163,184,0.18)" stroke="rgba(148,163,184,0.35)" strokeWidth="1" />
+          <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#38bdf8" strokeWidth="4.5" strokeLinecap="round" />
+          <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#34d399" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx={x0} cy={y0} r="5" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+          <circle cx={x1} cy={y1} r="4.5" fill="#1e293b" stroke="#34d399" strokeWidth="2" />
+          <circle cx={x2} cy={y2} r="3.5" fill="#facc15" />
+        </svg>
       </div>
-      <div className="flex-1 flex flex-col min-h-0 gap-2">
-        {/* SVG arm preview */}
-        <div className="flex justify-center">
-          <svg width="120" height="90" viewBox="0 0 120 90">
-            <rect x="44" y="80" width="32" height="6" rx="3" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-            <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="#38BDF8" strokeWidth="4" strokeLinecap="round"/>
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#34D399" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx={x0} cy={y0} r="5" fill="#38BDF8"/>
-            <circle cx={x1} cy={y1} r="4" fill="#34D399"/>
-            <circle cx={x2} cy={y2} r="3" fill="#FACC15"/>
-          </svg>
-        </div>
-        {/* Joint sliders */}
-        <div className="space-y-2 px-1">
-          {arms.map(a => (
-            <div key={a.key}>
-              <div className="flex justify-between mb-0.5">
-                <label className="text-[9px] font-bold text-muted-foreground">{a.label}</label>
-                <span className="text-[9px] font-mono font-bold text-[#38BDF8]">{joints[a.key]}°</span>
-              </div>
-              <input type="range" min={a.range[0]} max={a.range[1]} value={joints[a.key]}
-                onChange={e => setJoint(a.key, Number(e.target.value))}
-                className="w-full h-1 rounded-lg appearance-none cursor-pointer bg-secondary"
-                style={{ accentColor: '#38BDF8' }}
-              />
+      <div className="space-y-1.5 px-1">
+        {arms.map(a => (
+          <div key={a.key}>
+            <div className="flex justify-between mb-0.5">
+              <label className="text-[9px] font-bold text-muted-foreground">{a.label}</label>
+              <span className="text-[9px] font-mono tabular-nums font-bold text-sky-400">{joints[a.key]}°</span>
             </div>
-          ))}
-        </div>
-        <button onClick={center}
-          className="w-full py-1.5 rounded-xl text-[10px] font-bold bg-muted border border-border text-foreground hover:bg-muted/70 transition-all active:scale-95">
-          Center Arm (90°, 90°, 90°)
-        </button>
+            <input type="range" min={a.range[0]} max={a.range[1]} value={joints[a.key]}
+              onChange={e => setJoint(a.key, Number(e.target.value))}
+              className="w-full hw-slider"
+            />
+          </div>
+        ))}
       </div>
+      <button type="button" onClick={center}
+        className="w-full py-1.5 rounded-lg text-[10px] font-mono font-bold bg-muted border border-border text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer">
+        Center Arm (90°, 90°, 90°)
+      </button>
     </div>
   );
 }
@@ -2325,54 +2427,40 @@ function GripperWidget({ widget, publish }) {
   const jawGap = (openPct / 100) * 28;
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Hand size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+    <div className="flex flex-col h-full justify-center gap-2.5 px-1 text-left">
+      <div className="flex justify-center bg-[#080c12] border border-border rounded-xl py-1 shadow-inner">
+        <svg width="90" height="54" viewBox="0 0 90 60">
+          <rect x="30" y="24" width="30" height="16" rx="4" fill="rgba(148,163,184,0.12)" stroke="rgba(148,163,184,0.3)" strokeWidth="1.5" />
+          <rect x={45 - jawGap / 2 - 14} y="10" width="14" height="14" rx="3" fill="rgba(56,189,248,0.25)" stroke="#38bdf8" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
+          <rect x={45 + jawGap / 2} y="10" width="14" height="14" rx="3" fill="rgba(56,189,248,0.25)" stroke="#38bdf8" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
+          <text x="45" y="36" textAnchor="middle" fontSize="8" fill="#38bdf8" fontFamily="monospace" fontWeight="bold">{openPct}%</text>
+        </svg>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-3 px-1">
-        {/* Gripper SVG */}
-        <div className="flex justify-center">
-          <svg width="90" height="60" viewBox="0 0 90 60">
-            <rect x="30" y="24" width="30" height="16" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
-            <rect x={45 - jawGap / 2 - 14} y="10" width="14" height="14" rx="3" fill="rgba(56,189,248,0.25)" stroke="#38BDF8" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
-            <rect x={45 + jawGap / 2} y="10" width="14" height="14" rx="3" fill="rgba(56,189,248,0.25)" stroke="#38BDF8" strokeWidth="1.5" style={{ transition: 'all 0.2s' }}/>
-            <text x="45" y="38" textAnchor="middle" fontSize="8" fill="#38BDF8" fontWeight="bold">{openPct}%</text>
-          </svg>
+      <div>
+        <div className="flex justify-between mb-0.5">
+          <label className="text-[10px] text-muted-foreground">Gripper Opening</label>
+          <span className="text-[10px] font-mono tabular-nums font-bold text-sky-400">{openPct}%</span>
         </div>
-        {/* Open % */}
-        <div>
-          <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground">Gripper Opening</label>
-            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{openPct}%</span>
-          </div>
-          <input type="range" min="0" max="100" value={openPct} onChange={e => handleOpen(Number(e.target.value))}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
+        <input type="range" min="0" max="100" value={openPct} onChange={e => handleOpen(Number(e.target.value))}
+          className="w-full hw-slider" />
+      </div>
+      <div>
+        <div className="flex justify-between mb-0.5">
+          <label className="text-[10px] text-muted-foreground">Grip Force</label>
+          <span className="text-[10px] font-mono tabular-nums font-bold text-sky-400">{force}%</span>
         </div>
-        {/* Force */}
-        <div>
-          <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground">Grip Force</label>
-            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{force}%</span>
-          </div>
-          <input type="range" min="10" max="100" value={force} onChange={e => setForce(Number(e.target.value))}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => sendGrip(true)}
-            className="flex-1 py-2 rounded-xl text-xs font-bold bg-[#38BDF8]/15 border border-[#38BDF8]/40 text-[#38BDF8] hover:bg-[#38BDF8]/25 transition-all active:scale-95 shadow-sm">
-            Release
-          </button>
-          <button onClick={() => sendGrip(false)}
-            className="flex-1 py-2 rounded-xl text-xs font-bold bg-[#38BDF8]/15 border border-[#38BDF8]/40 text-[#38BDF8] hover:bg-[#38BDF8]/25 transition-all active:scale-95 shadow-sm">
-            Grip
-          </button>
-        </div>
+        <input type="range" min="10" max="100" value={force} onChange={e => setForce(Number(e.target.value))}
+          className="w-full hw-slider" />
+      </div>
+      <div className="flex gap-2">
+        <button type="button" onClick={() => sendGrip(true)}
+          className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-sky-500/15 border border-sky-500/40 text-sky-400 hover:bg-sky-500/25 transition-all active:scale-95 cursor-pointer">
+          Release
+        </button>
+        <button type="button" onClick={() => sendGrip(false)}
+          className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/25 transition-all active:scale-95 cursor-pointer">
+          Grip
+        </button>
       </div>
     </div>
   );
@@ -2427,62 +2515,53 @@ function OmniDriveWidget({ widget, publish }) {
   const knobLit = active != null;
 
   return (
-    <div className="flex flex-col h-full gap-2 min-h-0 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Navigation size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
-        </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
-      </div>
-      <div className="flex-1 flex gap-3 items-center justify-center min-h-0">
-        {/* Joystick */}
+    <div className="flex flex-col h-full items-center justify-center gap-2 min-h-0 text-left">
+      <div className="flex gap-3 items-center justify-center min-h-0">
         <div
           ref={rootRef}
-          className="relative w-32 h-32 rounded-full border border-border bg-muted/20 touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center flex-shrink-0"
+          className="relative w-32 h-32 rounded-full border border-border bg-[#080c12] shadow-inner touch-none select-none cursor-grab active:cursor-grabbing flex items-center justify-center flex-shrink-0"
           onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); applyPointer(e.clientX, e.clientY); }}
           onPointerMove={e => { if (!e.currentTarget.hasPointerCapture(e.pointerId)) return; applyPointer(e.clientX, e.clientY); }}
           onPointerUp={e => { try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {} endPointer(); }}
           onPointerCancel={endPointer}
         >
-          <div className="absolute inset-[18%] rounded-full border border-dashed border-[#38BDF8]/40 pointer-events-none" />
+          <div className="absolute inset-x-3 top-1/2 h-px bg-white/[0.06] pointer-events-none" />
+          <div className="absolute inset-y-3 left-1/2 w-px bg-white/[0.06] pointer-events-none" />
+          <div className="absolute inset-[18%] rounded-full border border-dashed border-sky-400/35 pointer-events-none" />
           <div
             className={`absolute w-11 h-11 rounded-full border transition-all duration-75 flex items-center justify-center ${
-              knobLit ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 scale-95 shadow-lg shadow-[#38BDF8]/30' : 'bg-muted/60 border-border'
+              knobLit ? 'bg-sky-500/25 border-sky-400 scale-95 shadow-[0_0_16px_rgba(56,189,248,0.4)]' : 'bg-gradient-to-b from-secondary to-background border-white/15'
             }`}
             style={{ left: `calc(50% + ${knob.x}px)`, top: `calc(50% + ${knob.y}px)`, transform: 'translate(-50%,-50%)' }}
           >
-            <div className={`w-3 h-3 rounded-full ${knobLit ? 'bg-[#38BDF8] shadow-sm shadow-[#38BDF8]' : 'bg-muted-foreground/30'}`} />
+            <div className={`w-3 h-3 rounded-full ${knobLit ? 'bg-sky-400 hw-led-cyan' : 'bg-slate-500'}`} />
           </div>
-          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">F</span>
-          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">B</span>
-          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">L</span>
-          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[7px] text-muted-foreground font-black pointer-events-none">R</span>
+          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[7px] font-mono text-muted-foreground font-black pointer-events-none">F</span>
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[7px] font-mono text-muted-foreground font-black pointer-events-none">B</span>
+          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[7px] font-mono text-muted-foreground font-black pointer-events-none">L</span>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[7px] font-mono text-muted-foreground font-black pointer-events-none">R</span>
         </div>
-        {/* Rotation controls */}
-        <div className="flex flex-col gap-2">
-          <button onClick={() => setRotateCmd(1)}
-            className={`w-10 h-10 rounded-xl border border-border flex items-center justify-center text-xs font-bold transition-all active:scale-90 ${
-              rotate > 0 ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 text-[#38BDF8] shadow-md shadow-[#38BDF8]/20' : 'bg-muted/30 text-muted-foreground hover:text-foreground'
+        <div className="flex flex-col gap-1.5">
+          <button type="button" onClick={() => setRotateCmd(1)}
+            className={`w-9 h-9 rounded-lg border flex items-center justify-center text-xs font-bold transition-all active:scale-90 cursor-pointer ${
+              rotate > 0 ? 'bg-sky-500/20 border-sky-500/50 text-sky-400' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
             }`}>
             ↻
           </button>
-          <button onClick={() => setRotateCmd(0)}
-            className="w-10 h-10 rounded-xl border border-border bg-muted/30 text-muted-foreground text-[9px] font-black hover:text-foreground transition-all active:scale-90">
+          <button type="button" onClick={() => setRotateCmd(0)}
+            className="w-9 h-9 rounded-lg border border-border bg-muted/40 text-muted-foreground text-[9px] font-black hover:text-foreground transition-all active:scale-90 cursor-pointer">
             ■
           </button>
-          <button onClick={() => setRotateCmd(-1)}
-            className={`w-10 h-10 rounded-xl border border-border flex items-center justify-center text-xs font-bold transition-all active:scale-90 ${
-              rotate < 0 ? 'bg-[#38BDF8]/20 border-[#38BDF8]/50 text-[#38BDF8] shadow-md shadow-[#38BDF8]/20' : 'bg-muted/30 text-muted-foreground hover:text-foreground'
+          <button type="button" onClick={() => setRotateCmd(-1)}
+            className={`w-9 h-9 rounded-lg border flex items-center justify-center text-xs font-bold transition-all active:scale-90 cursor-pointer ${
+              rotate < 0 ? 'bg-sky-500/20 border-sky-500/50 text-sky-400' : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground'
             }`}>
             ↺
           </button>
         </div>
       </div>
-      <span className={`text-[8px] font-bold px-2.5 py-0.5 rounded-full border text-center ${
-        active ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8]' : 'bg-muted/40 text-muted-foreground border-border'
+      <span className={`text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full border text-center ${
+        active ? 'bg-sky-500/15 border-sky-500/40 text-sky-400' : 'bg-muted/40 text-muted-foreground border-border'
       }`}>
         {active || 'IDLE'}{rotate !== 0 ? (rotate > 0 ? ' + CW' : ' + CCW') : ''}
       </span>
@@ -2506,60 +2585,99 @@ function RobotSpeedWidget({ widget, publish }) {
   ];
 
   return (
-    <div className="flex flex-col h-full gap-2 text-left">
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2 text-foreground">
-          <Gauge size={16} />
-          <span className="text-sm font-black tracking-wide truncate">{widget.name}</span>
+    <div className="flex flex-col h-full justify-center gap-2 px-1 text-left">
+      <div>
+        <div className="flex justify-between mb-1">
+          <label className="text-[10px] text-muted-foreground font-bold">◀ Left Motor</label>
+          <span className="text-[10px] font-mono tabular-nums font-bold text-sky-400">{left}</span>
         </div>
-        <span className="text-[9px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border truncate max-w-[50%]">
-          {widget.topic}
-        </span>
+        <input type="range" min="-255" max="255" value={left}
+          onChange={e => { const v = Number(e.target.value); setLeft(v); send(v, right); }}
+          className="w-full hw-slider" />
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-2.5 px-1">
-        {/* Left motor */}
-        <div>
-          <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground font-bold">◀ Left Motor</label>
-            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{left}</span>
-          </div>
-          <input type="range" min="-255" max="255" value={left}
-            onChange={e => { const v = Number(e.target.value); setLeft(v); send(v, right); }}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
+      <div>
+        <div className="flex justify-between mb-1">
+          <label className="text-[10px] text-muted-foreground font-bold">Right Motor ▶</label>
+          <span className="text-[10px] font-mono tabular-nums font-bold text-sky-400">{right}</span>
         </div>
-        {/* Right motor */}
-        <div>
-          <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground font-bold">Right Motor ▶</label>
-            <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{right}</span>
-          </div>
-          <input type="range" min="-255" max="255" value={right}
-            onChange={e => { const v = Number(e.target.value); setRight(v); send(left, v); }}
-            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }}/>
-        </div>
-        {/* Quick presets */}
-        <div className="flex gap-1.5">
-          {presets.map(p => (
-            <button key={p.label}
-              onClick={() => { setLeft(p.l); setRight(p.r); send(p.l, p.r); }}
-              className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all active:scale-95">
-              {p.label}
-            </button>
-          ))}
-        </div>
-        <div className="text-[9px] text-center text-[#38BDF8] font-mono bg-muted rounded-lg py-1 border border-border font-bold">
-          L{left} / R{right}
-        </div>
+        <input type="range" min="-255" max="255" value={right}
+          onChange={e => { const v = Number(e.target.value); setRight(v); send(left, v); }}
+          className="w-full hw-slider" />
+      </div>
+      <div className="flex gap-1">
+        {presets.map(p => (
+          <button key={p.label} type="button"
+            onClick={() => { setLeft(p.l); setRight(p.r); send(p.l, p.r); }}
+            className="flex-1 py-1 rounded-lg text-[10px] font-mono font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all active:scale-95 cursor-pointer">
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <div className="text-[10px] text-center text-sky-400 font-mono tabular-nums bg-muted/40 rounded-lg py-0.5 border border-border font-bold">
+        L{left} / R{right}
       </div>
     </div>
   );
 }
 
-// ─── Widget Card Shell ────────────────────────────────────────────────────────
+// ─── Unified Instrument Metadata for WidgetCard Top Bezel ─────────────────────
+const WIDGET_META_MAP = {
+  gauge:           { icon: Activity,          accent: 'text-sky-400' },
+  switch:          { icon: Zap,               accent: 'text-emerald-400' },
+  slider:          { icon: SlidersHorizontal, accent: 'text-sky-400' },
+  speed:           { icon: Car,               accent: 'text-sky-400' },
+  dpad:            { icon: Gamepad2,          accent: 'text-sky-400' },
+  joystick:        { icon: Move,              accent: 'text-sky-400' },
+  robot_arm:       { icon: Bot,               accent: 'text-sky-400' },
+  gripper:         { icon: Hand,              accent: 'text-sky-400' },
+  omni_drive:      { icon: Navigation,        accent: 'text-sky-400' },
+  robot_speed:     { icon: Gauge,             accent: 'text-sky-400' },
+  relay:           { icon: Power,             accent: 'text-emerald-400' },
+  mosfet:          { icon: Cpu,               accent: 'text-emerald-400' },
+  solenoid:        { icon: Zap,               accent: 'text-emerald-400' },
+  optocoupler:     { icon: Shield,            accent: 'text-emerald-400' },
+  solenoid_valve:  { icon: Droplets,          accent: 'text-emerald-400' },
+  elec_lock:       { icon: Lock,              accent: 'text-amber-400' },
+  latch:           { icon: Lock,              accent: 'text-amber-400' },
+  dimmer:          { icon: Lightbulb,         accent: 'text-sky-400' },
+  dcmotor_speed:   { icon: RotateCw,          accent: 'text-sky-400' },
+  fan_speed:       { icon: Wind,              accent: 'text-sky-400' },
+  dac:             { icon: Activity,          accent: 'text-sky-400' },
+  bldc:            { icon: Play,              accent: 'text-sky-400' },
+  linear_actuator: { icon: Blinds,            accent: 'text-sky-400' },
+  single_led:      { icon: Lightbulb,         accent: 'text-sky-400' },
+  fluid_pump:      { icon: Droplets,          accent: 'text-sky-400' },
+  rgb:             { icon: Palette,           accent: 'text-purple-400' },
+  neopixel:        { icon: Palette,           accent: 'text-purple-400' },
+  scene:           { icon: Cpu,               accent: 'text-primary' },
+  scheduler:       { icon: Calendar,          accent: 'text-emerald-400' },
+  servo:           { icon: Wrench,            accent: 'text-sky-400' },
+  dcmotor:         { icon: RotateCw,          accent: 'text-sky-400' },
+  stepper:         { icon: Gauge,             accent: 'text-sky-400' },
+  pwmfan:          { icon: Wind,              accent: 'text-sky-400' },
+  curtain:         { icon: Blinds,            accent: 'text-sky-400' },
+  doorlock:        { icon: Lock,              accent: 'text-amber-400' },
+  buzzer:          { icon: Bell,              accent: 'text-red-400' },
+  speaker:         { icon: Bell,              accent: 'text-red-400' },
+  pantilt:         { icon: Camera,            accent: 'text-sky-400' },
+  pump:            { icon: Droplets,          accent: 'text-emerald-400' },
+  valve:           { icon: Wrench,            accent: 'text-emerald-400' },
+  irrigation:      { icon: Sprout,            accent: 'text-emerald-400' },
+  oled:            { icon: Monitor,           accent: 'text-sky-400' },
+  seven_segment:   { icon: Monitor,           accent: 'text-sky-400' },
+  led_matrix:      { icon: Monitor,           accent: 'text-sky-400' },
+  bus_controller:  { icon: Monitor,           accent: 'text-sky-400' },
+  numericInput:    { icon: Hash,              accent: 'text-sky-400' },
+  dropdown:        { icon: AlignJustify,      accent: 'text-sky-400' },
+  momentary:       { icon: Zap,               accent: 'text-sky-400' },
+  ir_sender:       { icon: Zap,               accent: 'text-sky-400' },
+  rf_sender:       { icon: Zap,               accent: 'text-sky-400' },
+};
+
+// ─── Unified Hardware Instrument Card Shell ───────────────────────────────────
 function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) {
   const renderContent = () => {
     switch (widget.type) {
-      // Original widgets
       case 'gauge':    return <GaugeWidget    widget={widget} value={value}  history={gaugeHistory} />;
       case 'switch':   return <SwitchWidget   widget={widget} value={value}  publish={publish} />;
       case 'slider':   return <SliderWidget   widget={widget}                publish={publish} />;
@@ -2567,7 +2685,6 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
       case 'joystick': return <JoystickWidget widget={widget}                publish={publish} />;
       case 'speed':    return <SliderWidget   widget={widget}                publish={publish} />;
 
-      // ── Digital Outputs (ON/OFF) ──
       case 'relay':
       case 'mosfet':
       case 'solenoid':
@@ -2577,7 +2694,6 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
       case 'latch':
         return <RelayWidget widget={widget} value={value} publish={publish} />;
 
-      // ── Analog/PWM Outputs (slider 0-100%) ──
       case 'dimmer':
       case 'dcmotor_speed':
       case 'fan_speed':
@@ -2588,41 +2704,34 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
       case 'fluid_pump':
         return <DimmerWidget widget={widget} publish={publish} />;
 
-      // ── RGB/Addressable LEDs ──
       case 'rgb':
       case 'neopixel':
         return <RGBWidget widget={widget} publish={publish} />;
 
-      // ── Motors ──
       case 'servo':           return <ServoWidget   widget={widget}               publish={publish} />;
       case 'dcmotor':         return <DCMotorWidget widget={widget}               publish={publish} />;
       case 'stepper':         return <StepperWidget widget={widget}               publish={publish} />;
       case 'pwmfan':          return <PWMFanWidget  widget={widget} value={value} publish={publish} />;
       case 'curtain':         return <CurtainWidget widget={widget}               publish={publish} />;
 
-      // ── Scene / Scheduler ──
       case 'scene':           return <SceneWidget     widget={widget} publish={publish} />;
       case 'scheduler':       return <SchedulerWidget widget={widget} publish={publish} />;
 
-      // ── Security ──
       case 'doorlock':        return <DoorLockWidget widget={widget} value={value} publish={publish} />;
       case 'buzzer':
       case 'speaker':
         return <BuzzerWidget widget={widget} publish={publish} />;
       case 'pantilt':         return <PanTiltWidget  widget={widget}               publish={publish} />;
 
-      // ── Agriculture ──
       case 'pump':            return <PumpWidget       widget={widget} value={value} publish={publish} />;
       case 'valve':           return <ValveWidget      widget={widget} value={value} publish={publish} />;
       case 'irrigation':      return <IrrigationWidget widget={widget} value={value} publish={publish} />;
 
-      // ── Displays ──
       case 'oled':
       case 'seven_segment':
       case 'led_matrix':
         return <OLEDWidget widget={widget} publish={publish} />;
 
-      // ── Advanced Tools ──
       case 'numericInput':    return <NumericInputWidget widget={widget} publish={publish} />;
       case 'dropdown':        return <DropdownWidget     widget={widget} publish={publish} />;
       case 'momentary':
@@ -2630,10 +2739,8 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
       case 'rf_sender':
         return <MomentaryWidget widget={widget} publish={publish} />;
 
-      // ── Communications ──
       case 'bus_controller':  return <OLEDWidget widget={widget} publish={publish} />;
 
-      // ── Robotics ──
       case 'robot_arm':   return <RobotArmWidget   widget={widget} publish={publish} />;
       case 'gripper':     return <GripperWidget     widget={widget} publish={publish} />;
       case 'omni_drive':  return <OmniDriveWidget   widget={widget} publish={publish} />;
@@ -2643,30 +2750,46 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
     }
   };
 
+  const meta = WIDGET_META_MAP[widget.type] || { icon: Cpu, accent: 'text-muted-foreground' };
+  const MetaIcon = meta.icon;
+  const hasTelemetry = value !== undefined && value !== null && value !== '';
+
   return (
-    <div className="h-full bg-card border border-border rounded-xl transition-all duration-200 group flex flex-col relative overflow-hidden p-3">
-      {/* Header row with Drag Handle (Left) and Action Buttons (Right) */}
-      <div className="flex justify-between items-center mb-1 flex-shrink-0" dir="ltr">
-        {/* Left side: Drag Handle */}
-        <div
-          className="drag-handle cursor-grab active:cursor-grabbing p-1 rounded-md border border-border bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center justify-center"
-          title="Drag to move widget"
-        >
-          <Move size={12} />
+    <div className="hw-panel h-full bg-card border border-border hover:border-white/15 rounded-xl transition-all duration-200 group flex flex-col relative overflow-hidden">
+      {/* Single Unified Instrument Bezel Header */}
+      <div className="px-3 py-2 border-b border-border/80 bg-muted/25 flex items-center justify-between gap-2 shrink-0" dir="ltr">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div
+            className="drag-handle cursor-grab active:cursor-grabbing p-0.5 rounded text-muted-foreground/70 hover:text-foreground transition-colors flex items-center justify-center shrink-0"
+            title="Drag to move instrument"
+          >
+            <GripVertical size={13} />
+          </div>
+          <span
+            className={`w-1.5 h-1.5 rounded-full shrink-0 ${hasTelemetry ? 'bg-emerald-500 hw-led-on' : 'bg-slate-600/60'}`}
+            title={hasTelemetry ? 'Live MQTT telemetry active' : 'No live payload yet'}
+          />
+          <MetaIcon size={13} className={`${meta.accent} shrink-0`} />
+          <span className="text-xs font-bold text-foreground truncate">{widget.name}</span>
         </div>
 
-        {/* Right side: Action Buttons */}
-        <div className="flex gap-0.5">
+        <div className="flex items-center gap-1 shrink-0">
+          <span
+            className="text-[10px] font-mono text-muted-foreground bg-background/60 border border-border px-1.5 py-0.5 rounded truncate max-w-[105px]"
+            title={widget.topic}
+          >
+            {widget.topic}
+          </span>
           <button
             onClick={() => onEdit(widget)}
-            className="opacity-0 group-hover:opacity-70 hover:!opacity-100 hover:text-foreground transition-all text-muted-foreground p-1"
+            className="opacity-0 group-hover:opacity-80 hover:!opacity-100 hover:text-foreground transition-all text-muted-foreground p-1 rounded hover:bg-muted cursor-pointer"
             title="Edit Tool"
           >
             <SlidersHorizontal size={12} />
           </button>
           <button
             onClick={() => onRemove(widget.id)}
-            className="opacity-0 group-hover:opacity-70 hover:!opacity-100 hover:text-[#B85C5C] transition-all text-muted-foreground p-1"
+            className="opacity-0 group-hover:opacity-80 hover:!opacity-100 hover:text-red-400 transition-all text-muted-foreground p-1 rounded hover:bg-red-500/10 cursor-pointer"
             title="Remove Tool"
           >
             <Trash2 size={12} />
@@ -2674,8 +2797,8 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
         </div>
       </div>
 
-      {/* Widget content (not draggable) */}
-      <div className="no-drag flex-1 min-h-0 overflow-hidden">
+      {/* Tactile Instrument Canvas */}
+      <div className="no-drag flex-1 min-h-0 p-3 flex flex-col overflow-hidden">
         {renderContent()}
       </div>
     </div>
@@ -2802,17 +2925,21 @@ export default function UniversalController({ deviceStates, publish, storageScop
 
   return (
     <div className="relative" ref={containerRef}>
-      {/* Header bar */}
-      <div className="flex justify-between items-center gap-4 mb-6 flex-wrap">
-        <div className="flex items-center gap-2">
+      {/* Workbench Header Toolbar */}
+      <div className="flex justify-between items-center gap-3 mb-4 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted border border-border text-[11px] font-mono font-semibold text-foreground">
+            <Cpu size={13} className="text-primary" />
+            {widgets.length} Instrument{widgets.length !== 1 ? 's' : ''}
+          </span>
           {esp32Prefix && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-muted border border-border text-xs font-semibold text-foreground">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Target ESP32: {esp32Prefix}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-[11px] font-mono font-semibold text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 hw-led-on animate-pulse" />
+              Target: {esp32Prefix}
             </div>
           )}
           {customTitle && (
-            <span className="text-xs font-bold text-muted-foreground hidden sm:inline">
+            <span className="text-xs font-semibold text-muted-foreground hidden sm:inline">
               {customTitle}
             </span>
           )}
@@ -2822,7 +2949,7 @@ export default function UniversalController({ deviceStates, publish, storageScop
             <button
               type="button"
               onClick={resetToProjectPreset}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/70 hover:bg-muted text-foreground font-bold text-xs transition-all shadow-sm active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/70 hover:bg-muted text-foreground font-semibold text-xs transition-all active:scale-95 cursor-pointer"
               title="Restore or load all preset widgets and sensors for this project"
             >
               <RotateCcw size={13} />
@@ -2832,54 +2959,68 @@ export default function UniversalController({ deviceStates, publish, storageScop
           <button
             type="button"
             onClick={() => setShowModal(true)}
-            style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-            className="flex items-center gap-2 px-4 py-2 font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-95 rounded-xl"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold text-xs sm:text-sm hover:bg-primary/90 transition-all shadow-sm shadow-primary/20 active:scale-95 cursor-pointer"
           >
-            <Plus size={16} />
+            <Plus size={15} />
             Add Tool
           </button>
         </div>
       </div>
 
-      {widgets.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Gamepad2 size={48} className="text-muted-foreground dark:text-white/10 mb-4" />
-          <p className="text-muted-foreground dark:text-white/30 text-lg font-medium">No tools yet</p>
-          <p className="text-muted-foreground/60 text-sm mt-1">Use Add Tool to place sensors, actuators, or RC controls</p>
-        </div>
-      ) : (
-        mounted && (
-          <ResponsiveGridLayout
-            className="layout"
-            layouts={layouts}
-            width={width}
-            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-            cols={COLS_BY_BP}
-            rowHeight={80}
-            draggableHandle=".drag-handle"
-            draggableCancel=".no-drag"
-            isDraggable
-            isResizable
-            compactType="vertical"
-            onLayoutChange={onLayoutChange}
-            margin={[16, 16]}
-            useCSSTransforms
-          >
-            {widgets.map(widget => (
-              <div key={widget.id}>
-                <WidgetCard
-                  widget={widget}
-                  value={deviceStates?.[widget.topic]}
-                  publish={publish}
-                  onRemove={removeWidget}
-                  onEdit={setEditingWidget}
-                  gaugeHistory={gaugeHistory[widget.topic]}
-                />
-              </div>
-            ))}
-          </ResponsiveGridLayout>
-        )
-      )}
+      {/* Engineering Dot-Grid Workbench Surface */}
+      <div className="workbench-grid rounded-2xl border border-border/80 bg-background/40 p-2 sm:p-3 min-h-[380px]">
+        {widgets.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-card border border-border flex items-center justify-center mb-4 text-muted-foreground">
+              <Gamepad2 size={26} />
+            </div>
+            <p className="text-foreground text-base font-bold">No instruments placed yet</p>
+            <p className="text-muted-foreground text-xs mt-1 max-w-sm">
+              Add tactile gauges, switches, relays, OLED screens, or robotics controls to your IoT workbench.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="mt-5 flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
+            >
+              <Plus size={14} />
+              Add First Instrument
+            </button>
+          </div>
+        ) : (
+          mounted && (
+            <ResponsiveGridLayout
+              className="layout"
+              layouts={layouts}
+              width={width}
+              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+              cols={COLS_BY_BP}
+              rowHeight={80}
+              draggableHandle=".drag-handle"
+              draggableCancel=".no-drag"
+              isDraggable
+              isResizable
+              compactType="vertical"
+              onLayoutChange={onLayoutChange}
+              margin={[14, 14]}
+              useCSSTransforms
+            >
+              {widgets.map(widget => (
+                <div key={widget.id}>
+                  <WidgetCard
+                    widget={widget}
+                    value={deviceStates?.[widget.topic]}
+                    publish={publish}
+                    onRemove={removeWidget}
+                    onEdit={setEditingWidget}
+                    gaugeHistory={gaugeHistory[widget.topic]}
+                  />
+                </div>
+              ))}
+            </ResponsiveGridLayout>
+          )
+        )}
+      </div>
 
       {showModal && (
         <AddToolModal onClose={() => setShowModal(false)} onAdd={addWidget} userUID={userUID || storageScopeId} esp32Prefix={esp32Prefix} />

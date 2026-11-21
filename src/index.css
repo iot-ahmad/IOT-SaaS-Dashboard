@@ -22,18 +22,18 @@
   --popover: #ececec;
   --popover-foreground: #14161a;
 
-  /* Primary: Muted Corporate Slate Blue */
-  --primary: #0666b9;
+  /* Primary: Crisp Corporate Blue */
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --ring: #0666b9;
+  --ring: #2563eb;
   --accent: #f3f4f6;
-  --accent-foreground: #0666b9;
+  --accent-foreground: #2563eb;
   
   --sidebar-accent: #f3f4f6;
-  --sidebar-accent-foreground: #0666b9;
-  --sidebar-primary: #0666b9;
+  --sidebar-accent-foreground: #2563eb;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #0666b9;
+  --sidebar-ring: #2563eb;
 
   /* Semantic status: Bright & Eye-catching */
   --destructive: #ef4444;
@@ -57,36 +57,36 @@
 
 }
 
-/* ── Design Tokens: Dark Mode (Muted / Corporate — Stripe/Linear/Notion) ── */
+/* ── Design Tokens: Dark Mode (Precision Industrial IoT Workbench) ── */
 .dark {
-  --background: #0d0f14; /* Crisp dark slate canvas */
-  --foreground: #f1f5f9; /* Clean off-white for headings */
+  --background: #0b0e14;
+  --foreground: #f1f5f9;
 
-  --card: #13161f; /* Quiet surface tile */
+  --card: #121620;
   --card-foreground: #f1f5f9;
-  --sidebar: #10131a;
+  --sidebar: #0e1118;
   --sidebar-foreground: #f1f5f9;
-  --sidebar-border: rgba(255, 255, 255, 0.08); /* Single neutral border */
-  --border: rgba(255, 255, 255, 0.08); /* Crisp 1px subtle border */
-  --input: #171b26;
-  --muted: #1a1e29;
-  --muted-foreground: #94a3b8; /* Balanced slate-gray for secondary text */
-  --secondary: #1e2330;
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #141925;
+  --muted: #181d29;
+  --muted-foreground: #8b97ad;
+  --secondary: #1d2332;
   --secondary-foreground: #f1f5f9;
-  --popover: #151922;
+  --popover: #141925;
   --popover-foreground: #f1f5f9;
 
-  /* Primary: Clean Corporate Slate Blue */
-  --primary: #0a72cc;
+  /* Primary: Precision Cobalt Blue */
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --ring: #0a72cc;
-  --accent: #1a1e29;
+  --ring: #3b82f6;
+  --accent: #181d29;
   --accent-foreground: #f1f5f9;
-  --sidebar-accent: #1a1e29;
+  --sidebar-accent: #181d29;
   --sidebar-accent-foreground: #f1f5f9;
-  --sidebar-primary: #0a72cc;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #0a72cc;
+  --sidebar-ring: #3b82f6;
 
   /* Semantic status: Bright & Eye-catching */
   --destructive: #ef4444;
@@ -157,16 +157,108 @@
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: var(--letter-spacing);
   }
-
-  [class*="shadow"],
-  [class*="bg-card"],
-  [class*="rounded-2xl"],
-  [class*="rounded-3xl"] {
-    box-shadow: none !important;
-  }
 }
 
 @layer utilities {
+
+  /* ── Realistic Hardware Instrument Chassis & Primitives ── */
+  .hw-panel {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
+  }
+
+  .dark .hw-panel {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 24px -10px rgba(0, 0, 0, 0.45);
+  }
+
+  .workbench-grid {
+    background-image: radial-gradient(rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .hw-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .hw-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: linear-gradient(145deg, #f8fafc, #94a3b8);
+    border: 2px solid #38bdf8;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(56, 189, 248, 0.15);
+    cursor: grab;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .hw-slider::-webkit-slider-thumb:hover,
+  .hw-slider::-webkit-slider-thumb:active {
+    transform: scale(1.12);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.65), 0 0 0 4px rgba(56, 189, 248, 0.25);
+  }
+
+  .hw-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: linear-gradient(145deg, #f8fafc, #94a3b8);
+    border: 2px solid #38bdf8;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(56, 189, 248, 0.15);
+    cursor: grab;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .hw-oled-screen {
+    background: #040a10;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(56, 189, 248, 0.04) 0px,
+      rgba(56, 189, 248, 0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(56, 189, 248, 0.18);
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.55);
+  }
+
+  .hw-led-on {
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+  }
+
+  .hw-led-cyan {
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  }
+
+  .hw-led-err {
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.22);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.4);
+  }
 
   /* ── Arabic RTL text block ── */
   .rtl-text {
@@ -220,7 +312,7 @@
   .react-grid-item.react-grid-placeholder {
     background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
     border: 1px dashed color-mix(in srgb, var(--primary) 40%, transparent) !important;
-    border-radius: 0 !important;
+    border-radius: 0.75rem !important;
     opacity: 1 !important;
   }
 

@@ -650,6 +650,11 @@ function Dashboard({ user, logout }) {
           workspaces={customWorkspaces} 
           onAddWorkspace={handleAddWorkspace} 
           setActiveWorkspace={handleSetWorkspace} 
+          isConnected={isConnected}
+          mqttMode={mqttMode}
+          deviceStates={deviceStates}
+          automations={automations}
+          onOpenTool={handleSetTool}
         />
       );
     }
@@ -685,6 +690,11 @@ function Dashboard({ user, logout }) {
         workspaces={customWorkspaces} 
         onAddWorkspace={handleAddWorkspace} 
         setActiveWorkspace={setActiveWorkspace} 
+        isConnected={isConnected}
+        mqttMode={mqttMode}
+        deviceStates={deviceStates}
+        automations={automations}
+        onOpenTool={handleSetTool}
       />
     );
   };
@@ -744,7 +754,7 @@ function Dashboard({ user, logout }) {
         </div>
 
         {activeTool !== 'simulator' && (
-          <LiveTerminal messages={messages} isConnected={isConnected} />
+          <LiveTerminal messages={messages} isConnected={isConnected} isSidebarCollapsed={isSidebarCollapsed} />
         )}
       </main>
     </div>

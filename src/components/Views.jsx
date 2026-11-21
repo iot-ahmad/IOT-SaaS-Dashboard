@@ -6,8 +6,10 @@ import {
   GreenhouseTempCard, 
   AutomationsCard 
 } from './Cards';
-import ESP32Model from './ESP32Model';
-import { Zap, Users, Thermometer, Briefcase, Plus, X, Gamepad2, Cpu } from 'lucide-react';
+import {
+  Zap, Users, Thermometer, Briefcase, Plus, X, Gamepad2, Cpu,
+  Wifi, WifiOff, Activity, Columns, ChevronRight, Layers
+} from 'lucide-react';
 
 const Card = ({ children, className = '' }) => (
   <div style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--card-foreground)' }}
@@ -67,48 +69,43 @@ const OnboardingWizard = () => {
   ];
 
   return (
-    <div className="bg-card border border-border rounded-xl p-6 sm:p-8 relative overflow-hidden mt-6 shadow-sm">
-      <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
-        <span className="px-3 py-1 rounded-md bg-muted border border-border text-xs font-semibold text-muted-foreground tracking-wide uppercase">
-          Quick Start Guide
+    <div className="hw-panel bg-card border border-border rounded-xl p-6 sm:p-7 relative overflow-hidden">
+      <div className="max-w-3xl mx-auto text-center mb-7">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted border border-border text-[10px] font-bold text-muted-foreground tracking-[0.12em] uppercase">
+          Quick Start Pipeline
         </span>
-        <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-3">
-          Welcome to IOT365 Smart Platform
+        <h3 className="text-lg sm:text-xl font-bold text-foreground mt-2.5">
+          Welcome to IOT365 Smart Workbench
         </h3>
-        <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
-          Follow these four simple steps to connect your ESP32 board and start controlling it within minutes
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 leading-relaxed">
+          Follow these four simple steps to connect your ESP32 board and start streaming telemetry in minutes
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 relative">
         {/* Connection line between steps (desktop only) */}
-        <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-px bg-border z-0" />
+        <div className="hidden lg:block absolute top-[26px] left-[12%] right-[12%] h-px bg-border z-0" />
 
         {steps.map((step, idx) => {
           const StepIcon = step.icon;
           return (
             <div key={idx} className="flex flex-col items-center text-center group z-10 relative">
-              {/* Step circle */}
-              <div
-                style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--foreground)', borderRadius: 'var(--radius)' }}
-                className="w-14 h-14 flex items-center justify-center transition-transform duration-200"
-              >
-                <StepIcon size={22} className="text-muted-foreground" />
+              <div className="w-13 h-13 rounded-xl bg-muted border border-border flex items-center justify-center group-hover:border-primary/40 transition-colors">
+                <StepIcon size={20} className="text-primary" />
               </div>
               
-              {/* Step number badge */}
-              <span className="mt-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted border border-border text-muted-foreground font-mono">
-                STEP 0{step.number}
+              <span className="mt-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted/80 border border-border text-muted-foreground font-mono">
+                0{step.number}
               </span>
 
-              <h4 className="text-sm font-bold text-foreground mt-3 mb-0.5">
+              <h4 className="text-sm font-bold text-foreground mt-2.5 mb-0.5">
                 {step.title}
               </h4>
               <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">
                 {step.subTitle}
               </span>
               
-              <p className="text-xs text-muted-foreground mt-2 leading-relaxed max-w-[200px] md:max-w-none">
+              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed max-w-[220px] lg:max-w-none">
                 {step.desc}
               </p>
             </div>
@@ -119,7 +116,16 @@ const OnboardingWizard = () => {
   );
 };
 
-export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => {
+export const HomeView = ({
+  workspaces,
+  onAddWorkspace,
+  setActiveWorkspace,
+  isConnected = false,
+  mqttMode = 'demo',
+  deviceStates = {},
+  automations = [],
+  onOpenTool,
+}) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEsp32, setNewEsp32] = useState('');
@@ -135,17 +141,130 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
   };
 
   const customWorkspaces = workspaces?.filter(ws => ws.isCustom) || [];
+  const activeTopicsCount = Object.keys(deviceStates || {}).length;
+  const activeRulesCount = (automations || []).filter(a => a.active).length;
 
   return (
-    <div className="relative min-h-[600px] w-full">
-      <ESP32Model />
-      <div className="relative z-10 space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-foreground">Your Projects</h2>
+    <div className="relative w-full space-y-6">
+      {/* ── Operations KPI Strip ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Workspaces</p>
+            <p className="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">{customWorkspaces.length}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Universal Controller ready</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Layers size={18} />
+          </div>
+        </div>
+
+        <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">MQTT Cloud Broker</p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`w-2 h-2 rounded-full shrink-0 ${isConnected ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-red-500 hw-led-err'}`} />
+              <p className="text-lg font-bold text-foreground">{isConnected ? 'Connected' : 'Offline'}</p>
+            </div>
+            <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
+              {mqttMode === 'private' ? 'EMQX TLS 8883 · ACL' : 'Shared Demo Broker'}
+            </p>
+          </div>
+          <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+            isConnected ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
+          }`}>
+            {isConnected ? <Wifi size={18} /> : <WifiOff size={18} />}
+          </div>
+        </div>
+
+        <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Live Telemetry Topics</p>
+            <p className="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">{activeTopicsCount}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Active streaming channels</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0">
+            <Activity size={18} />
+          </div>
+        </div>
+
+        <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Active Rules</p>
+            <p className="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">{activeRulesCount}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Automation triggers enabled</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+            <Zap size={18} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Quick Launch Hardware Bar ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button
+          type="button"
+          onClick={() => setActiveWorkspace('controller')}
+          className="hw-panel bg-card border border-border hover:border-primary/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Gamepad2 size={18} />
+            </div>
+            <div className="min-w-0">
+              <h4 className="text-sm font-bold text-foreground truncate">Universal Controller</h4>
+              <p className="text-xs text-muted-foreground truncate">Launch tactile sensors, switches & robotics</p>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onOpenTool?.('simulator')}
+          className="hw-panel bg-card border border-border hover:border-sky-500/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0">
+              <Columns size={18} />
+            </div>
+            <div className="min-w-0">
+              <h4 className="text-sm font-bold text-foreground truncate">Wokwi Simulator</h4>
+              <p className="text-xs text-muted-foreground truncate">Split-screen virtual ESP32 testbench</p>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-muted-foreground group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onOpenTool?.('devices')}
+          className="hw-panel bg-card border border-border hover:border-emerald-500/40 rounded-xl p-4 flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+              <Cpu size={18} />
+            </div>
+            <div className="min-w-0">
+              <h4 className="text-sm font-bold text-foreground truncate">Connected Devices</h4>
+              <p className="text-xs text-muted-foreground truncate">Inspect GPIO hardware & telemetry charts</p>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-muted-foreground group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </button>
+      </div>
+
+      {/* ── Your Projects Grid ── */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Your Projects</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Custom IoT control workspaces synchronized to your cloud account</p>
+          </div>
           <button
+            type="button"
             onClick={() => setShowAddModal(true)}
-            style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 'var(--radius)' }}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer border border-border"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors cursor-pointer shadow-sm shadow-primary/20"
           >
             <Plus size={16} />
             <span>Add Project</span>
@@ -155,27 +274,29 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
         {customWorkspaces.length === 0 ? (
           <OnboardingWizard />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {customWorkspaces.map(ws => (
               <button
                 key={ws.id}
+                type="button"
                 onClick={() => setActiveWorkspace(ws.id)}
-                style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--card-foreground)', borderRadius: 'var(--radius)' }}
-                className="text-left border p-6 hover:bg-muted/30 transition-colors duration-150 group cursor-pointer"
+                className="hw-panel relative overflow-hidden bg-card border border-border hover:border-primary/40 rounded-xl p-5 text-left transition-all duration-150 group cursor-pointer"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <div style={{ background: 'var(--muted)', color: 'var(--foreground)', borderRadius: 'var(--radius)' }} className="w-10 h-10 flex items-center justify-center border border-border">
-                      <Gamepad2 size={20} className="text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h3 style={{ color: 'var(--foreground)' }} className="text-base font-semibold transition-colors">{ws.name}</h3>
-                      <p style={{ color: 'var(--muted-foreground)' }} className="text-xs mt-1 font-mono">
-                        {ws.esp32Prefix ? `Target: ${ws.esp32Prefix}` : 'Universal Control'}
-                      </p>
-                    </div>
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/70 to-sky-400/70 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-muted border border-border flex items-center justify-center text-primary shrink-0">
+                    <Gamepad2 size={19} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-md bg-muted border border-border text-muted-foreground">
+                      <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-slate-500'}`} />
+                      {ws.esp32Prefix ? `Target: ${ws.esp32Prefix}` : 'Global UID'}
+                    </span>
+                    <ChevronRight size={15} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </div>
+                <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">{ws.name}</h3>
+                <p className="text-xs text-muted-foreground mt-1">Click to open hardware workbench & live controls</p>
               </button>
             ))}
           </div>
@@ -185,36 +306,34 @@ export const HomeView = ({ workspaces, onAddWorkspace, setActiveWorkspace }) => 
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
-          <div style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: 'var(--radius)' }} className="border p-6 w-full max-w-sm relative z-10 shadow-lg">
-            <button onClick={() => setShowAddModal(false)} style={{ color: 'var(--muted-foreground)' }} className="absolute top-4 right-4 hover:text-foreground transition-colors cursor-pointer">
+          <div className="hw-panel bg-card border border-border rounded-2xl p-6 w-full max-w-sm relative z-10 text-foreground shadow-xl">
+            <button onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               <X size={18} />
             </button>
             <h3 className="text-lg font-bold mb-4">New Project</h3>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label style={{ color: 'var(--muted-foreground)' }} className="block text-xs mb-1">Project Name</label>
+                <label className="block text-xs text-muted-foreground mb-1">Project Name</label>
                 <input
                   autoFocus
                   required
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
                   placeholder="e.g. Smart Car, Weather Station..."
-                  style={{ background: 'var(--input)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: 'var(--radius)' }}
-                  className="w-full border py-2 px-3 text-sm focus:outline-none"
+                  className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50"
                 />
               </div>
               <div>
-                <label style={{ color: 'var(--muted-foreground)' }} className="block text-xs mb-1">ESP32 Target UID (Optional)</label>
+                <label className="block text-xs text-muted-foreground mb-1">ESP32 Target UID (Optional)</label>
                 <input
                   value={newEsp32}
                   onChange={e => setNewEsp32(e.target.value)}
                   placeholder="e.g. ESP_A1B2C3"
-                  style={{ background: 'var(--input)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: 'var(--radius)' }}
-                  className="w-full border py-2 px-3 text-sm focus:outline-none"
+                  className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm font-mono text-foreground focus:outline-none focus:border-primary/50"
                 />
-                <p style={{ color: 'var(--muted-foreground)' }} className="text-[10px] mt-1">If provided, widgets in this project will automatically target this specific ESP32.</p>
+                <p className="text-[10px] text-muted-foreground mt-1">If provided, widgets in this project will automatically target this specific ESP32.</p>
               </div>
-              <button type="submit" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 'var(--radius)' }} className="w-full font-semibold py-2.5 hover:opacity-90 transition-opacity cursor-pointer border border-border text-sm">
+              <button type="submit" className="w-full bg-primary text-primary-foreground font-semibold py-2.5 rounded-xl hover:bg-primary/90 transition-colors cursor-pointer text-sm shadow-sm">
                 Create Project
               </button>
             </form>

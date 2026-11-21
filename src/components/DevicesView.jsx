@@ -133,8 +133,8 @@ function CopyBtn({ text }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all max-w-[260px] truncate
-        ${copied ? 'bg-primary/20 text-primary' : 'bg-card/5 text-white/40 hover:bg-card/10 hover:text-white/70'}`}
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono border transition-all max-w-[260px] truncate cursor-pointer
+        ${copied ? 'bg-primary/15 border-primary/30 text-primary' : 'bg-muted/60 border-border text-muted-foreground hover:bg-muted hover:text-foreground'}`}
     >
       {copied ? <Check size={10} /> : <Copy size={10} />}
       <span className="truncate">{text}</span>
@@ -152,10 +152,13 @@ function StatusBadge({ ts, isLive }) {
   const offline = !isLive && (isNaN(diff) || diff > 45);
   const label = isLive ? 'Online' : diff < 5 ? 'Just now' : diff < 60 ? `${diff}s ago` : diff < 3600 ? `${Math.floor(diff/60)}m ago` : `${Math.floor(diff/3600)}h ago`;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
-      ${offline ? 'bg-red-500/10 text-red-500 dark:text-red-400' : 'bg-primary/10 text-primary font-bold'}`}>
-      {offline ? <WifiOff size={10} /> : <Wifi size={10} className="animate-pulse" />}
-      {offline ? 'Offline' : label}
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border
+      ${offline
+        ? 'bg-muted text-muted-foreground border-border'
+        : 'bg-emerald-500/12 text-emerald-400 border-emerald-500/25'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${offline ? 'bg-slate-500' : 'bg-emerald-500 hw-led-on animate-pulse'}`} />
+      {offline ? <WifiOff size={10} /> : <Wifi size={10} />}
+      <span>{offline ? 'Offline' : label}</span>
     </span>
   );
 }
@@ -164,10 +167,10 @@ function StatusBadge({ ts, isLive }) {
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#111] border border-border rounded-xl px-4 py-2 text-sm shadow-xl">
-      <p className="text-white/40 text-xs mb-1">{label}</p>
+    <div className="bg-popover border border-border rounded-xl px-3.5 py-2 text-xs shadow-xl">
+      <p className="text-muted-foreground font-mono text-[10px] mb-1">{label}</p>
       {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color }}>{p.name}: <span className="font-bold text-white">{p.value}</span></p>
+        <p key={i} style={{ color: p.color }} className="font-medium">{p.name}: <span className="font-bold font-mono text-foreground">{p.value}</span></p>
       ))}
     </div>
   );
@@ -190,15 +193,15 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
     XLSX.writeFile(wb, `${slugify(device.name)}_readings.xlsx`);
   };
 
-  const gridProps = { strokeDasharray: '3 3', stroke: 'rgba(255,255,255,0.05)' };
-  const xProps = { dataKey: 'time', tick: { fontSize: 10, fill: 'rgba(255,255,255,0.3)' } };
-  const yProps = { tick: { fontSize: 10, fill: 'rgba(255,255,255,0.3)' } };
+  const gridProps = { strokeDasharray: '3 3', stroke: 'rgba(148,163,184,0.12)' };
+  const xProps = { dataKey: 'time', tick: { fontSize: 10, fill: '#8b97ad' } };
+  const yProps = { tick: { fontSize: 10, fill: '#8b97ad' } };
   const radarData = data.slice(-8).map((r, i) => ({ subject: r.time, value: r.value }));
 
   const renderChart = () => {
     if (!hasData) return (
-      <div className="h-[220px] flex items-center justify-center text-white/20 text-sm">
-        Waiting for MQTT data from ESP32...
+      <div className="h-[220px] flex items-center justify-center text-muted-foreground text-xs font-mono">
+        Waiting for MQTT telemetry from ESP32...
       </div>
     );
     switch (chartType) {
@@ -232,8 +235,8 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
           <ResponsiveContainer width="100%" height={220}>
             <ScatterChart margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
               <CartesianGrid {...gridProps} />
-              <XAxis dataKey="time" name="Time" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} />
-              <YAxis dataKey="value" name="Value" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} />
+              <XAxis dataKey="time" name="Time" tick={{ fontSize: 10, fill: '#8b97ad' }} />
+              <YAxis dataKey="value" name="Value" tick={{ fontSize: 10, fill: '#8b97ad' }} />
               <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3' }} />
               <Scatter data={data} fill="var(--chart-3)" name="Reading" />
             </ScatterChart>
@@ -243,8 +246,8 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
         return (
           <ResponsiveContainer width="100%" height={220}>
             <RadarChart data={radarData}>
-              <PolarGrid stroke="rgba(255,255,255,0.08)" />
-              <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.3)' }} />
+              <PolarGrid stroke="rgba(148,163,184,0.16)" />
+              <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: '#8b97ad' }} />
               <Radar name="Reading" dataKey="value" stroke="var(--chart-4)" fill="var(--chart-4)" fillOpacity={0.25} />
               <Tooltip content={<CustomTooltip />} />
             </RadarChart>
@@ -274,28 +277,28 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
   };
 
   return (
-    <div className="mt-4 space-y-3">
+    <div className="mt-2 space-y-3">
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[['Avg', avg], ['Max', max], ['Min', min]].map(([label, val]) => (
-          <div key={label} className="bg-card/[0.03] border border-border rounded-xl p-3 text-center">
-            <p className="text-[10px] text-white/40 uppercase mb-1">{label}</p>
-            <p className="text-xl font-bold text-white">{val}</p>
+          <div key={label} className="bg-muted/40 border border-border rounded-xl p-3 text-center">
+            <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-0.5">{label}</p>
+            <p className="text-lg font-bold font-mono tabular-nums text-foreground">{val}</p>
           </div>
         ))}
       </div>
 
       {/* Chart Type Selector */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-1.5 flex-wrap">
         {CHART_TYPES.map(ct => (
           <button
             key={ct.id}
             onClick={() => onChartTypeChange(device.id, ct.id)}
             title={ct.desc}
-            className={`text-xs px-3 py-1.5 rounded-lg transition-all border ${
+            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border cursor-pointer ${
               chartType === ct.id
-                ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border bg-card/5 text-white/40 hover:border-white/20 hover:text-white/70'
+                ? 'border-primary/40 bg-primary/15 text-primary'
+                : 'border-border bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
             {ct.label}
@@ -304,14 +307,14 @@ function SensorChartPanel({ device, readings, onChartTypeChange }) {
       </div>
 
       {/* Chart */}
-      <div className="bg-card/[0.02] border border-border rounded-2xl p-4">
+      <div className="bg-muted/25 border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Activity size={14} className="text-primary" />
-            <span className="text-xs font-semibold text-white/60">Live Readings</span>
-            <span className="text-[10px] text-white/30">· {data.length} points</span>
+            <span className="text-xs font-semibold text-foreground">Live Readings</span>
+            <span className="text-[10px] font-mono text-muted-foreground">· {data.length} pts</span>
           </div>
-          <button onClick={exportXLSX} className="flex items-center gap-1.5 text-xs text-white/50 hover:text-primary transition-colors bg-card/5 px-3 py-1.5 rounded-lg">
+          <button onClick={exportXLSX} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors bg-muted border border-border px-3 py-1.5 rounded-lg cursor-pointer">
             <Download size={12} /> Export Excel
           </button>
         </div>
@@ -354,22 +357,21 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Sibling backdrop overlay to avoid nesting backdrop-filter with overflow-y-scroll child */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="bg-[#0d0e10] border border-border rounded-2xl w-full max-w-md relative shadow-2xl">
+      <div className="hw-panel bg-card border border-border rounded-2xl w-full max-w-md relative shadow-2xl overflow-hidden text-foreground">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
-            <h3 className="text-lg font-bold">Add New Device</h3>
-            <p className="text-xs text-white/40 mt-0.5">Step {step} of 2</p>
+            <h3 className="text-base font-bold">Add New Device</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Step {step} of 2</p>
           </div>
-          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
             <X size={20} />
           </button>
         </div>
 
         {/* Progress bar */}
-        <div className="h-1 bg-card/5">
+        <div className="h-1 bg-muted">
           <div className="h-full bg-primary transition-all duration-500" style={{ width: step === 1 ? '50%' : '100%' }} />
         </div>
 
@@ -378,31 +380,31 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
             <>
               {/* Device Name */}
               <div>
-                <label className="block text-xs text-white/50 mb-1.5 font-medium">Device Name *</label>
+                <label className="block text-xs text-muted-foreground mb-1.5 font-medium">Device Name *</label>
                 <input
                   autoFocus
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="e.g. Temperature Sensor, Relay 1..."
-                  className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm"
+                  className="w-full bg-input border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-foreground"
                 />
               </div>
 
               {/* Device Type */}
               <div>
-                <label className="block text-xs text-white/50 mb-1.5 font-medium">Device Type *</label>
+                <label className="block text-xs text-muted-foreground mb-1.5 font-medium">Device Type *</label>
                 <div className="space-y-2">
                   {DEVICE_TYPES.map(t => (
                     <button
                       key={t.value}
                       onClick={() => setType(t.value)}
-                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm cursor-pointer
                         ${type === t.value
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border bg-card/5 text-white/60 hover:border-white/20'}`}
+                          ? 'border-primary/40 bg-primary/10 text-primary'
+                          : 'border-border bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                     >
-                      <span className="font-medium">{t.label}</span>
-                      <span className="block text-[11px] mt-0.5 opacity-60">{t.desc}</span>
+                      <span className="font-semibold">{t.label}</span>
+                      <span className="block text-[11px] mt-0.5 opacity-80">{t.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -411,7 +413,7 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
               <button
                 onClick={() => name.trim() && setStep(2)}
                 disabled={!name.trim()}
-                className="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-40"
+                className="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-40 cursor-pointer"
               >
                 Next →
               </button>
@@ -420,11 +422,11 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
             <>
               {/* GPIO Pin Selection */}
               <div>
-                <label className="block text-xs text-white/50 mb-1.5 font-medium">GPIO Pin *</label>
+                <label className="block text-xs text-muted-foreground mb-1.5 font-medium">GPIO Pin *</label>
                 <select
                   value={pin}
                   onChange={e => setPin(e.target.value)}
-                  className="w-full bg-[#0a0b0d] border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white"
+                  className="w-full bg-input border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-foreground"
                 >
                   <option value="">— Select a Pin —</option>
                   {GPIO_OPTIONS.map(g => (
@@ -432,42 +434,42 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
                   ))}
                 </select>
                 {pin && (
-                  <p className="text-[11px] mt-1.5 text-white/50">
+                  <p className="text-[11px] mt-1.5 text-muted-foreground">
                     {GPIO_OPTIONS.find(g => g.value === pin)?.type === 'adc'
-                      ? '⚠ ADC pin — suitable for analog sensors (0–4095 range)'
-                      : '✓ Digital pin — suitable for relays, DHT, digital sensors'}
+                      ? 'ADC pin — suitable for analog sensors (0–4095 range)'
+                      : 'Digital pin — suitable for relays, DHT, digital sensors'}
                   </p>
                 )}
               </div>
 
               {/* MQTT Topic */}
               <div>
-                <label className="block text-xs text-white/50 mb-1.5 font-medium">MQTT Topic Suffix</label>
+                <label className="block text-xs text-muted-foreground mb-1.5 font-medium">MQTT Topic Suffix</label>
                 <input
                   value={topicSuffix}
                   onChange={e => setTopicSuffix(e.target.value.replace(/\s/g, '_'))}
-                  className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono"
+                  className="w-full bg-input border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-foreground"
                 />
-                <p className="text-[11px] text-white/30 mt-1.5">Full MQTT topic (auto-generated):</p>
-                <div className="mt-1 flex items-center gap-2 bg-card/5 rounded-lg px-3 py-2">
+                <p className="text-[11px] text-muted-foreground mt-1.5">Full MQTT topic (auto-generated):</p>
+                <div className="mt-1 flex items-center gap-2 bg-muted/60 border border-border rounded-lg px-3 py-2">
                   <CircuitBoard size={12} className="text-primary flex-shrink-0" />
                   <span className="text-[11px] font-mono text-primary break-all">{fullTopic}</span>
                 </div>
               </div>
 
               {/* Summary */}
-              <div className="bg-card/[0.03] border border-border rounded-xl p-4 space-y-2 text-sm">
-                <p className="text-white/40 text-xs font-semibold uppercase mb-2">Summary</p>
+              <div className="bg-muted/35 border border-border rounded-xl p-4 space-y-2 text-xs">
+                <p className="text-muted-foreground font-semibold uppercase mb-2">Summary</p>
                 {[['Name', name], ['Type', type], ['Pin', pin || '—'], ['Topic', topicSuffix || '—']].map(([k, v]) => (
                   <div key={k} className="flex justify-between">
-                    <span className="text-white/40">{k}</span>
-                    <span className="text-white font-medium">{v}</span>
+                    <span className="text-muted-foreground">{k}</span>
+                    <span className="text-foreground font-mono font-medium">{v}</span>
                   </div>
                 ))}
               </div>
 
               <div className="flex gap-3">
-                <button onClick={() => setStep(1)} className="flex-1 bg-card/5 border border-border text-white/70 font-bold py-2.5 rounded-xl hover:bg-card/10 transition-colors">
+                <button onClick={() => setStep(1)} className="flex-1 bg-muted border border-border text-foreground font-semibold py-2.5 rounded-xl hover:bg-muted/80 transition-colors cursor-pointer">
                   ← Back
                 </button>
                 <Button
@@ -477,7 +479,7 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
                   variant="solid"
                   className="flex-1 mx-0 rounded-xl py-2.5 disabled:opacity-40"
                 >
-                  Add Device ✓
+                  Add Device
                 </Button>
               </div>
             </>
@@ -557,22 +559,22 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
                 <div 
                   key={i} 
                   className={`p-3 rounded-xl border flex items-center justify-between gap-2 transition-all ${
-                    isAdded ? 'bg-white/[0.03] border-white/15' : 'bg-muted/30 border-border'
+                    isAdded ? 'bg-primary/10 border-primary/25' : 'bg-muted/40 border-border'
                   }`}
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="font-bold text-xs text-foreground truncate">{dev.name}</span>
                       {isAdded && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-white/60">Added ✓</span>
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Added</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
-                      <span className="bg-background px-1.5 py-0.5 rounded border border-border/60">{dev.pin}</span>
+                      <span className="bg-background px-1.5 py-0.5 rounded border border-border">{dev.pin}</span>
                       <span className="truncate text-primary">{dev.topic}</span>
                     </div>
                   </div>
-                  <span className="text-[9px] font-bold px-2 py-0.5 rounded shrink-0 bg-white/[0.06] text-white/50 border border-white/[0.08]">
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded shrink-0 bg-muted text-muted-foreground border border-border">
                     {dev.type}
                   </span>
                 </div>
@@ -719,13 +721,40 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
     XLSX.writeFile(wb, `iot_devices_${new Date().toLocaleDateString().replace(/\//g,'-')}.xlsx`);
   };
 
-  const typeIcon = (type) => {
-    if (type === 'Sensor') return <Thermometer size={14} className="text-white/50" />;
-    if (type === 'Actuator') return <Zap size={14} className="text-white/50" />;
-    return <CircuitBoard size={14} className="text-white/50" />;
+  const typeIconBadge = (type) => {
+    if (type === 'Sensor') {
+      return (
+        <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center shrink-0">
+          <Thermometer size={16} />
+        </div>
+      );
+    }
+    if (type === 'Actuator') {
+      return (
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+          <Zap size={16} />
+        </div>
+      );
+    }
+    return (
+      <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+        <CircuitBoard size={16} />
+      </div>
+    );
   };
 
   const existingTopicsSet = new Set(devices.map(d => d.topic));
+  const nowSnapshot = Date.now();
+  const onlineDevicesCount = devices.filter(d => {
+    const topicSuffix = d.topic?.includes('/') ? d.topic.split('/').slice(1).join('/') : d.topic;
+    const leafTopic = d.topic?.split('/').pop();
+    const liveVal = deviceStates?.[d.topic] ?? deviceStates?.[`${userUID}/${d.topic}`] ?? deviceStates?.[topicSuffix] ?? deviceStates?.[leafTopic];
+    if (liveVal !== undefined && liveVal !== null && liveVal !== '') return true;
+    const ts = lastSeen?.[d.topic] || lastSeen?.[topicSuffix] || d.lastSeen;
+    return ts && (nowSnapshot - ts) / 1000 <= 45;
+  }).length;
+  const sensorCount = devices.filter(d => d.type === 'Sensor').length;
+  const actuatorMotorCount = devices.filter(d => d.type !== 'Sensor').length;
 
   return (
     <div className="space-y-6">
@@ -733,16 +762,16 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-wrap">
         <div>
           <h2 className="text-xl font-bold text-foreground">Connected Devices</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">{devices.length} device{devices.length !== 1 ? 's' : ''} registered</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Manage ESP32 pins, MQTT topics, and real-time telemetry logs</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Button
             type="button"
             variant="outline"
             onClick={() => setShowPresetsModal(true)}
-            className="mx-0 flex items-center gap-1.5 rounded-xl text-sm px-3.5 py-2 border-primary/40 text-primary hover:bg-primary/10 font-bold shadow-sm"
+            className="mx-0 flex items-center gap-1.5 rounded-xl text-xs sm:text-sm px-3.5 py-2 border-primary/40 text-primary hover:bg-primary/10 font-bold"
           >
-            <Layers size={16} className="text-primary" />
+            <Layers size={15} className="text-primary" />
             Project Presets
           </Button>
           <Button
@@ -750,27 +779,50 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
             variant="ghost"
             neon={false}
             onClick={exportAllXLSX}
-            className="mx-0 flex items-center gap-2 rounded-xl text-sm px-4 py-2"
+            className="mx-0 flex items-center gap-2 rounded-xl text-xs sm:text-sm px-3.5 py-2 border border-border"
           >
-            <Download size={16} /> Export All
+            <Download size={15} /> Export All
           </Button>
           <Button
             type="button"
             variant="solid"
             onClick={() => setShowAdd(true)}
-            className="mx-0 flex items-center gap-2 rounded-xl text-sm px-4 py-2"
+            className="mx-0 flex items-center gap-2 rounded-xl text-xs sm:text-sm px-4 py-2"
           >
-            <Plus size={18} /> Add Device
+            <Plus size={16} /> Add Device
           </Button>
+        </div>
+      </div>
+
+      {/* Fleet Summary Strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="hw-panel bg-card border border-border rounded-xl p-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Devices</p>
+          <p className="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">{devices.length}</p>
+        </div>
+        <div className="hw-panel bg-card border border-border rounded-xl p-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Online Now</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className={`w-2 h-2 rounded-full ${onlineDevicesCount > 0 ? 'bg-emerald-500 hw-led-on animate-pulse' : 'bg-slate-500'}`} />
+            <p className="text-2xl font-bold font-mono tabular-nums text-foreground">{onlineDevicesCount}</p>
+          </div>
+        </div>
+        <div className="hw-panel bg-card border border-border rounded-xl p-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Sensors</p>
+          <p className="text-2xl font-bold font-mono tabular-nums text-sky-400 mt-1">{sensorCount}</p>
+        </div>
+        <div className="hw-panel bg-card border border-border rounded-xl p-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Actuators & Motors</p>
+          <p className="text-2xl font-bold font-mono tabular-nums text-emerald-400 mt-1">{actuatorMotorCount}</p>
         </div>
       </div>
 
       {/* Quick Presets Banner if user has few devices */}
       {devices.length <= 2 && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20 shadow-sm">
+        <div className="hw-panel flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-primary/5 border border-primary/20">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
-              <Cpu size={20} className="text-primary" />
+            <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
+              <Cpu size={19} className="text-primary" />
             </div>
             <div>
               <h4 className="text-sm font-bold text-foreground">Quick Setup for Live Simulator Testing</h4>
@@ -780,13 +832,13 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <button
               onClick={() => handleImportPreset(PROJECT_DEVICE_PRESETS[0].devices)}
-              className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow-sm transition-all active:scale-95"
+              className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:bg-primary/90 shadow-sm transition-all active:scale-95 cursor-pointer"
             >
               + Add All-In-One Station (11 Devices)
             </button>
             <button
               onClick={() => setShowPresetsModal(true)}
-              className="px-3 py-2 rounded-xl bg-muted border border-border text-foreground font-medium text-xs hover:bg-muted/80 transition-all"
+              className="px-3 py-2 rounded-xl bg-muted border border-border text-foreground font-medium text-xs hover:bg-muted/80 transition-all cursor-pointer"
             >
               More Projects
             </button>
@@ -796,23 +848,23 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={15} />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full bg-muted border border-border rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:border-primary/50 text-sm text-foreground placeholder:text-muted-foreground dark:placeholder:text-white/30"
-          placeholder="Search devices..."
+          className="w-full bg-input border border-border rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:border-primary/50 text-sm text-foreground placeholder:text-muted-foreground"
+          placeholder="Search devices by name or type..."
         />
       </div>
 
       {/* Empty state */}
       {filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center bg-background dark:bg-card/[0.02] border border-border rounded-2xl">
-          <CircuitBoard size={40} className="text-muted-foreground dark:text-white/10 mb-4" />
-          <h3 className="text-lg font-bold text-muted-foreground dark:text-white/40">
+        <div className="hw-panel flex flex-col items-center justify-center py-16 text-center bg-card border border-border rounded-xl">
+          <CircuitBoard size={38} className="text-muted-foreground/40 mb-3" />
+          <h3 className="text-base font-bold text-foreground">
             {search ? 'No devices match your search' : 'No Devices Yet'}
           </h3>
-          <p className="text-sm text-muted-foreground dark:text-white/25 mt-2 max-w-sm">
+          <p className="text-xs text-muted-foreground mt-1.5 max-w-sm">
             {!search && 'Click "+ Add Device" to register your first ESP32 sensor or actuator.'}
           </p>
         </div>
@@ -831,28 +883,26 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
           const latestReading = isLive ? liveVal : readings[device.topic]?.slice(-1)[0]?.value ?? readings[topicSuffix]?.slice(-1)[0]?.value;
 
           return (
-            <div key={device.id} className="bg-card dark:bg-card/[0.02] border border-border rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-300 dark:hover:border-white/20 shadow-sm dark:shadow-none">
+            <div key={device.id} className="hw-panel bg-card border border-border rounded-xl overflow-hidden transition-all duration-200 hover:border-white/15">
               {/* Row */}
-              <div className="flex items-center gap-4 px-5 py-4">
+              <div className="flex items-center gap-4 px-5 py-4 flex-wrap sm:flex-nowrap">
                 {/* Icon */}
-                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
-                  {typeIcon(device.type)}
-                </div>
+                {typeIconBadge(device.type)}
 
                 {/* Name + type */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-sm text-foreground">{device.name}</span>
-                    <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{device.type}</span>
+                    <span className="text-[10px] font-medium bg-muted text-muted-foreground border border-border px-2 py-0.5 rounded-full">{device.type}</span>
                     {isSensor && latestReading !== undefined && (
-                      <span className="text-xs bg-primary/10 text-primary border border-primary/20 px-2.5 py-0.5 rounded-full font-mono font-bold animate-fadeIn">
+                      <span className="text-xs bg-primary/12 text-primary border border-primary/25 px-2.5 py-0.5 rounded-full font-mono font-bold tabular-nums animate-fadeIn">
                         {latestReading}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-1 flex-wrap">
+                  <div className="flex items-center gap-2.5 mt-1.5 flex-wrap">
                     <CopyBtn text={`${userUID}/${device.topic}`} />
-                    <span className="text-[10px] font-mono text-white/30 bg-card/5 px-2 py-0.5 rounded">{device.pin}</span>
+                    <span className="text-[10px] font-mono font-semibold text-foreground/80 bg-muted border border-border px-2 py-0.5 rounded">{device.pin}</span>
                   </div>
                 </div>
 
@@ -866,7 +916,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
                   {isSensor && (
                     <button
                       onClick={() => setExpandedId(expanded ? null : device.id)}
-                      className={`p-2 rounded-lg transition-colors text-sm ${expanded ? 'bg-primary/10 text-primary' : 'text-white/30 hover:text-white hover:bg-card/5'}`}
+                      className={`p-2 rounded-lg transition-colors cursor-pointer ${expanded ? 'bg-primary/15 text-primary border border-primary/25' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                       title="View Chart"
                     >
                       <BarChart2 size={16} />
@@ -874,7 +924,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
                   )}
                   <button
                     onClick={() => handleDelete(device.id)}
-                    className="p-2 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    className="p-2 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
                     title="Delete Device"
                   >
                     <Trash2 size={16} />
@@ -884,7 +934,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
 
               {/* Expanded chart panel */}
               {expanded && isSensor && (
-                <div className="px-5 pb-5 border-t border-border pt-4">
+                <div className="px-5 pb-5 border-t border-border pt-4 bg-muted/15">
                   <SensorChartPanel device={device} readings={readings} onChartTypeChange={handleChartTypeChange} />
                 </div>
               )}
