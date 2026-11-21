@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useMessaging } from '../../context/MessagingContext';
 import SupportModal from '../SupportModal';
+import { BrandLogo } from '../ui/BrandLogo';
 
 export default function CommunityLayout({ user, logout, children }) {
   const navigate = useNavigate();
@@ -81,11 +82,7 @@ export default function CommunityLayout({ user, logout, children }) {
             onClick={() => navigate('/hub')}
             className="flex items-center gap-2.5 cursor-pointer focus:outline-none"
           >
-            <img 
-              src={isDark ? "/logo_horizontal.svg" : "/logo_horizontal_light.svg"} 
-              alt="IOT365 Logo" 
-              className="h-7 w-auto object-contain" 
-            />
+            <BrandLogo className="h-7 w-auto" />
             <span className="text-[10px] text-primary font-semibold bg-muted border border-border px-2 py-0.5 rounded-md hidden sm:inline-block">
               Community
             </span>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
 import SupportModal from './SupportModal';
+import { BrandLogo } from './ui/BrandLogo';
 
 const iconMap = {
   Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard, Globe, Columns
@@ -69,12 +70,11 @@ export default function Sidebar({
 
       {/* Brand Logo */}
       <div className={`pt-4 pb-4 border-b border-sidebar-border flex items-center transition-all duration-300 ${isCollapsed ? 'px-2 justify-center' : 'px-4 justify-start'}`}>
-        <img 
-          src={isCollapsed ? (isDark ? "/logo_icon.svg" : "/logo_icon_light.svg") : (isDark ? "/logo_horizontal.svg" : "/logo_horizontal_light.svg")} 
-          alt="IOT365 Logo" 
-          className={`object-contain flex-shrink-0 transition-all duration-300 ${
+        <BrandLogo
+          variant={isCollapsed ? 'icon' : 'horizontal'}
+          className={`flex-shrink-0 transition-all duration-300 ${
             isCollapsed ? 'w-6 h-6' : 'w-28 h-7'
-          }`} 
+          }`}
         />
       </div>
 

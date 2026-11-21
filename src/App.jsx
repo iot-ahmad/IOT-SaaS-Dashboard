@@ -28,6 +28,12 @@ import ProjectPublisher from './components/ProjectPublisher';
 import ProjectDetail from './components/ProjectDetail';
 import UserProfile from './components/UserProfile';
 import ProfilePage from './components/ProfilePage';
+import { BrandLogo, FAVICON_DATA_URI } from './components/ui/BrandLogo';
+
+if (typeof document !== 'undefined') {
+  const faviconLink = document.querySelector("link[rel~='icon']");
+  if (faviconLink) faviconLink.href = FAVICON_DATA_URI;
+}
 import SupportModal from './components/SupportModal';
 import { MessagingProvider, useMessaging } from './context/MessagingContext';
 import MessagingModal from './components/messaging/MessagingModal';
@@ -91,7 +97,7 @@ function HubLayout({ children, user, logout }) {
         {/* Logo + nav links */}
         <div className="flex items-center gap-6">
           <button onClick={() => navigate('/hub')} className="flex items-center cursor-pointer">
-            <img src={isDark ? "/logo_horizontal.svg" : "/logo_horizontal_light.svg"} alt="IOT365" className="w-24 h-6 object-contain" />
+            <BrandLogo className="w-24 h-6" />
           </button>
 
           {/* Nav links */}

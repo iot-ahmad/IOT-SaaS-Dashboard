@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ArrowLeft, Loader2, LayoutDashboard, Cpu, Zap, BellRing } from 'lucide-react';
 import { WaveBackground } from './ui/WaveBackground';
 import SupportModal from './SupportModal';
+import { BrandLogo } from './ui/BrandLogo';
 
 /* ─── White-toned Google G icon ─────────────────────────────────────── */
 const GoogleIcon = () => (
@@ -85,7 +86,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
       <header className="fixed top-0 left-0 right-0 z-20 w-full px-6 py-6 md:px-12 flex items-center justify-between">
         {/* Left: Brand */}
         <div className="flex items-center select-none">
-          <img src="/logo_horizontal.svg" alt="IOT365" className="w-24 h-6 object-contain" />
+          <BrandLogo className="w-24 h-6" />
         </div>
 
         {/* Middle: Links */}
@@ -129,11 +130,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
                 {/* Large Outline/Solid Typography Title */}
                 <div className="flex flex-col items-center mb-8">
-                  <img 
-                    src="/logo_horizontal.svg" 
-                    alt="IOT365 Logo" 
-                    className="w-64 sm:w-80 md:w-[400px] h-auto object-contain select-none mb-3" 
-                  />
+                  <BrandLogo className="w-64 sm:w-80 md:w-[400px] h-auto select-none mb-3" />
                   <h1 
                     className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none select-none uppercase"
                     style={{ 

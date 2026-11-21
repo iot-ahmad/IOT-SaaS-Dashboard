@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Copy, Check, Send, RefreshCw, Bot, Paperclip, Plus, ArrowUp, Cpu, Zap, Globe, Terminal, Play, CircleUserRound } from 'lucide-react';
 import { getDefaultBrokerHost, getRootCaForHost } from '../config/mqttSecurity';
+import { BrandLogo } from './ui/BrandLogo';
 
 /* ── tiny copy button ─────────────────────────────────────────────────────── */
 function CopyBtn({ text }) {
@@ -294,7 +295,7 @@ Mandatory Response & Security Rules:
       <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between shrink-0 rounded-t-3xl">
         <div className="flex items-center gap-4">
           <div className="w-11 h-11 flex items-center justify-center shrink-0 overflow-hidden">
-            <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain" />
+            <BrandLogo className="w-full h-full" />
           </div>
           <div className="text-left">
             <h2 className="font-extrabold text-foreground text-base">IOT365 Smart Assistant</h2>
@@ -331,7 +332,7 @@ Mandatory Response & Security Rules:
           >
             {msg.sender === 'bot' && (
               <div className="w-8 h-8 flex items-center justify-center shrink-0 self-start overflow-hidden">
-                <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain" />
+                <BrandLogo className="w-full h-full" />
               </div>
             )}
 
@@ -353,7 +354,7 @@ Mandatory Response & Security Rules:
         {isTyping && (
           <div className="flex gap-3 mr-auto max-w-[80%]">
             <div className="w-8 h-8 flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="/robot_logo.svg" alt="Bot" className="w-full h-full object-contain" />
+              <BrandLogo className="w-full h-full" />
             </div>
             <div className="p-4 bg-card border border-border rounded-2xl rounded-tl-none flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '0ms' }} />
