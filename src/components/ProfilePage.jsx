@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User, Globe, Camera, Copy, Check, Shield, Bell, Link as LinkIcon,
-  CreditCard, Lock, Smartphone, Mail, Activity, Cpu, X,
+  CreditCard, Lock, Mail, Activity, Cpu, X,
   AlertCircle, Edit3, ChevronRight, ExternalLink, Server,
 } from 'lucide-react';
 import {
@@ -606,16 +606,6 @@ export default function ProfilePage({ user, userUID, logout, onOpenConnection })
                         className="bg-muted hover:bg-secondary text-foreground text-sm font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 border border-border">
                         {loading ? 'Updating...' : 'Update Password'}
                       </button>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-border pt-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="text-sm font-bold flex items-center gap-2"><Smartphone size={14} className="text-muted-foreground" /> Two-Factor Auth (2FA)</h4>
-                        <p className="text-xs text-muted-foreground mt-1">Add an extra layer of security to your account.</p>
-                      </div>
-                      <button className="bg-primary/20 text-primary text-sm font-bold py-1.5 px-3 rounded-lg hover:bg-primary/30 transition-colors">Enable</button>
                     </div>
                   </div>
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db } from '../../firebase';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, where, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import {
   Search, Cpu, Eye, ThumbsUp, Copy, Plus, Calendar,
   Zap, Leaf, Bot, Home, Wifi, Thermometer, LayoutGrid, TrendingUp, Star,
-  Layers, Filter
+  Layers, Filter, Bookmark
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -38,6 +38,62 @@ export default function ExploreProjects({ user }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [sortBy, setSortBy] = useState('popular');
+  const [savedMap, setSavedMap] = useState({});
+  const [savingIds, setSavingIds] = useState({});
+
+  useEffect(() => {
+    if (!user?.uid || !db) {
+      setSavedMap({});
+      return;
+    }
+    const q = query(collection(db, 'saved_projects'), where('userId', '==', user.uid));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const nextMap = {};
+        snap.docs.forEach((d) => {
+          const data = d.data();
+          if (data.projectId) nextMap[data.projectId] = d.id;
+        });
+        setSavedMap(nextMap);
+      },
+      () => setSavedMap({}),
+    );
+    return () => unsub();
+  }, [user?.uid]);
+
+  const handleToggleSave = async (e, proj) => {
+    e.stopPropagation();
+    if (!user?.uid) {
+      navigate('/login');
+      return;
+    }
+    if (savingIds[proj.id]) return;
+    setSavingIds((prev) => ({ ...prev, [proj.id]: true }));
+    try {
+      const existingDocId = savedMap[proj.id];
+      if (existingDocId) {
+        await deleteDoc(doc(db, 'saved_projects', existingDocId));
+      } else {
+        await setDoc(doc(db, 'saved_projects', `${user.uid}_${proj.id}`), {
+          userId: user.uid,
+          projectId: proj.id,
+          title: proj.title || 'Untitled Project',
+          summary: proj.summary || '',
+          difficulty: formatDifficulty(proj.difficulty),
+          ownerName: proj.ownerName || 'Developer',
+          ownerUsername: proj.ownerUsername || '',
+          thumbnail: proj.images?.[0] || '',
+          componentsList: proj.componentsList || [],
+          savedAt: new Date().toISOString(),
+        });
+      }
+    } catch (err) {
+      console.error('Failed to toggle bookmark:', err);
+    } finally {
+      setSavingIds((prev) => ({ ...prev, [proj.id]: false }));
+    }
+  };
 
   useEffect(() => {
     const q = searchParams.get('q');
@@ -292,6 +348,19 @@ export default function ExploreProjects({ user }) {
                     <span className="flex items-center gap-1"><Eye size={10} className="text-primary" /> {proj.metrics?.views || 0}</span>
                     <span className="flex items-center gap-1"><ThumbsUp size={10} className="text-primary" /> {proj.metrics?.likes || 0}</span>
                     <span className="flex items-center gap-1"><Copy size={10} className="text-primary" /> {proj.timesUsedAsTemplate || proj.metrics?.clones || 0}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleSave(e, proj)}
+                      disabled={Boolean(savingIds[proj.id])}
+                      title={savedMap[proj.id] ? 'Remove from saved' : 'Save project'}
+                      className="p-1 rounded-md hover:bg-muted transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <Bookmark
+                        size={12}
+                        className="text-primary"
+                        fill={savedMap[proj.id] ? 'currentColor' : 'none'}
+                      />
+                    </button>
                   </div>
                 </div>
 

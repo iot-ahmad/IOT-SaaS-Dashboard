@@ -8,6 +8,8 @@ import {
 import { useMessaging } from '../../context/MessagingContext';
 import SupportModal from '../SupportModal';
 import { BrandLogo } from '../ui/BrandLogo';
+import { db } from '../../firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 export default function CommunityLayout({ user, logout, children }) {
   const navigate = useNavigate();
@@ -18,7 +20,25 @@ export default function CommunityLayout({ user, logout, children }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSupport, setShowSupport] = useState(false);
+  const [unreadNotifsCount, setUnreadNotifsCount] = useState(0);
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!user?.uid || !db) {
+      setUnreadNotifsCount(0);
+      return;
+    }
+    const q = query(collection(db, 'notifications'), where('recipientId', '==', user.uid));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const count = snap.docs.filter((d) => d.data().isUnread !== false).length;
+        setUnreadNotifsCount(count);
+      },
+      () => setUnreadNotifsCount(0),
+    );
+    return () => unsub();
+  }, [user?.uid]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -44,7 +64,7 @@ export default function CommunityLayout({ user, logout, children }) {
     { label: 'Discussions & Q&A', path: '/hub/discussions', icon: HelpCircle },
     { label: 'Saved Projects', path: '/hub/saved', icon: Bookmark },
     { label: 'Direct Messages', action: () => setIsMessagingOpen(true), icon: MessageSquare, badge: unreadCount },
-    { label: 'Notifications', path: '/hub/notifications', icon: Bell, badge: 2 },
+    { label: 'Notifications', path: '/hub/notifications', icon: Bell, badge: unreadNotifsCount },
     { label: 'Profile', path: user?.username ? `/${user.username}` : (user?.displayName ? `/${user.displayName.toLowerCase().replace(/\s+/g, '_')}` : '/profile'), icon: User },
   ];
 

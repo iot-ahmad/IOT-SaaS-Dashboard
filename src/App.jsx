@@ -1,35 +1,44 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import AuthPage from './components/AuthPage';
 import { HomeView } from './components/Views';
-import UniversalController from './components/UniversalController';
-import { DevicesView, AutomationsToolView, AlertsView, LiveTerminal } from './components/ToolViews';
-import NewDevicesView from './components/DevicesView';
-import DeveloperGuide from './components/DeveloperGuide';
-import SimulatorView from './components/SimulatorView';
-import MqttConnectionView from './components/MqttConnectionView';
+import { AutomationsToolView, AlertsView, LiveTerminal } from './components/ToolViews';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
-import { Loader2, MessageSquare } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
 import { persistPortalMode } from './config/portals';
 
-import CommunityLayout from './components/community/CommunityLayout';
-import CommunityFeed from './components/community/CommunityFeed';
-import ExploreProjects from './components/community/ExploreProjects';
-import DiscussionsView from './components/community/DiscussionsView';
-import SavedProjects from './components/community/SavedProjects';
-import NotificationsView from './components/community/NotificationsView';
-import ProjectPublisher from './components/ProjectPublisher';
-import ProjectDetail from './components/ProjectDetail';
-import UserProfile from './components/UserProfile';
-import ProfilePage from './components/ProfilePage';
 import { BrandLogo, FAVICON_DATA_URI } from './components/ui/BrandLogo';
+import { MessagingProvider } from './context/MessagingContext';
+
+const AuthPage = lazy(() => import('./components/AuthPage'));
+const UniversalController = lazy(() => import('./components/UniversalController'));
+const NewDevicesView = lazy(() => import('./components/DevicesView'));
+const DeveloperGuide = lazy(() => import('./components/DeveloperGuide'));
+const SimulatorView = lazy(() => import('./components/SimulatorView'));
+const MqttConnectionView = lazy(() => import('./components/MqttConnectionView'));
+const ProfilePage = lazy(() => import('./components/ProfilePage'));
+const CommunityLayout = lazy(() => import('./components/community/CommunityLayout'));
+const CommunityFeed = lazy(() => import('./components/community/CommunityFeed'));
+const ExploreProjects = lazy(() => import('./components/community/ExploreProjects'));
+const DiscussionsView = lazy(() => import('./components/community/DiscussionsView'));
+const SavedProjects = lazy(() => import('./components/community/SavedProjects'));
+const NotificationsView = lazy(() => import('./components/community/NotificationsView'));
+const ProjectPublisher = lazy(() => import('./components/ProjectPublisher'));
+const ProjectDetail = lazy(() => import('./components/ProjectDetail'));
+const UserProfile = lazy(() => import('./components/UserProfile'));
+const MessagingModal = lazy(() => import('./components/messaging/MessagingModal'));
+
+const RouteLoader = () => (
+  <div className="min-h-[40vh] flex items-center justify-center">
+    <Loader2 className="text-primary animate-spin" size={28} />
+  </div>
+);
 
 if (typeof document !== 'undefined') {
   document.documentElement.classList.add('dark');
@@ -37,197 +46,10 @@ if (typeof document !== 'undefined') {
   const faviconLink = document.querySelector("link[rel~='icon']");
   if (faviconLink) faviconLink.href = FAVICON_DATA_URI;
 }
-import SupportModal from './components/SupportModal';
-import { MessagingProvider, useMessaging } from './context/MessagingContext';
-import MessagingModal from './components/messaging/MessagingModal';
-
-/**
- * Standalone layout wrapper for the public Hub section.
- * Renders a top nav with branding and optional user actions.
- * Accessible to both authenticated users and anonymous guests.
- *
- * @param {{ children: React.ReactNode, user: object|null, logout: function }} props
- */
-function HubLayout({ children, user, logout }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { unreadCount = 0, setIsMessagingOpen = () => {} } = useMessaging();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showSupport, setShowSupport] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isDropdownOpen]);
-
-  return (
-    <div className="relative min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30 overflow-x-hidden">
-
-
-      {/* ─── Top Navbar ─── */}
-      <header className="relative z-40 flex items-center justify-between py-3 px-6 md:px-12 border-b border-border bg-card/60 bg-background/60 backdrop-blur-md sticky top-0">
-
-        {/* Logo + nav links */}
-        <div className="flex items-center gap-6">
-          <button onClick={() => navigate('/hub')} className="flex items-center cursor-pointer">
-            <BrandLogo className="w-24 h-6" />
-          </button>
-
-          {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-1">
-            <button
-              onClick={() => navigate('/hub')}
-              className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary/15 transition-all cursor-pointer"
-            >
-              Browse Projects
-            </button>
-            {user && (
-              <button
-                onClick={() => navigate('/hub/new')}
-                className="text-xs font-semibold text-muted-foreground hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer"
-              >
-                + Publish Project
-              </button>
-            )}
-          </nav>
-        </div>
-
-        {/* Middle: Centered branding text (only on /hub) */}
-        {location.pathname === '/hub' && (
-          <div className="hidden lg:flex flex-col items-center text-center absolute left-1/2 -translate-x-1/2 select-none pointer-events-none">
-            <h1 className="text-sm font-black text-foreground leading-tight">
-              <span className="text-primary">IOT365</span> Platform
-            </h1>
-            <p className="text-[10px] text-muted-foreground truncate max-w-md mt-0.5">
-              Discover Arduino & ESP32 projects — share, learn, and build.
-            </p>
-          </div>
-        )}
-
-        {/* Right side actions */}
-        <div className="flex items-center gap-2.5">
-          {user ? (
-            // ── Logged-in user actions ──
-            <div className="flex items-center gap-2">
-              {/* Direct Messages Button */}
-              <button
-                onClick={() => setIsMessagingOpen(true)}
-                className="relative p-2 rounded-xl bg-transparent border-0 text-primary hover:bg-muted/40 transition-colors cursor-pointer"
-                title="Direct Messages"
-              >
-                <MessageSquare size={15} className="text-primary" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md tabular-nums">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Back to dashboard */}
-              <button
-                onClick={() => navigate('/')}
-                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 rounded-xl border border-border hover:border-primary/40 bg-card/50 dark:bg-card/5 cursor-pointer"
-              >
-                Dashboard
-              </button>
-
-              {/* User avatar + dropdown */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setIsDropdownOpen(prev => !prev)}
-                  className="flex items-center gap-1.5 cursor-pointer"
-                >
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full object-cover border-2 border-primary/30 hover:border-primary/60 transition-all" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center text-primary text-xs font-bold uppercase">
-                      {(user.displayName || user.email || 'U').charAt(0)}
-                    </div>
-                  )}
-                </button>
-                {/* Dropdown */}
-                <div className={`absolute top-full right-0 mt-2 w-44 bg-popover border border-border rounded-2xl shadow-xl shadow-black/20 transition-all duration-200 overflow-hidden z-50 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                  <div className="px-3 py-2.5 border-b border-border">
-                    <p className="text-[11px] font-bold text-foreground truncate">{user.displayName || 'User'}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
-                  </div>
-                  <button
-                    onClick={() => { navigate('/'); setIsDropdownOpen(false); }}
-                    className="w-full text-left text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
-                  >
-                    Dashboard
-                  </button>
-                  <button
-                    onClick={() => { navigate('/hub/new'); setIsDropdownOpen(false); }}
-                    className="w-full text-left text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
-                  >
-                    Publish New Project
-                  </button>
-                  <div className="border-t border-border">
-                    <button
-                      onClick={() => { logout(); setIsDropdownOpen(false); }}
-                      className="w-full text-left text-xs text-red-400 hover:text-red-500 hover:bg-red-500/5 px-3 py-2 transition-colors cursor-pointer"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // ── Guest actions ──
-            <button
-              onClick={() => navigate('/login')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-primary/10 cursor-pointer"
-            >
-              Sign In
-            </button>
-          )}
-        </div>
-      </header>
-
-      {/* ─── Page Content ─── */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-5 overflow-y-auto">
-        {children}
-      </main>
-
-      {/* ─── Footer ─── */}
-      <footer className="relative z-10 border-t border-border py-4 px-6 md:px-12 bg-card/40 bg-background/40 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[10px] text-muted-foreground/60 font-mono">
-            IOT365 · Smart Hardware Developer Community
-          </p>
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/hub')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Projects</button>
-            {user ? (
-              <button onClick={() => navigate('/hub/new')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Publish Project</button>
-            ) : (
-              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Join Community</button>
-            )}
-            <button onClick={() => setShowSupport(true)} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Support</button>
-          </div>
-        </div>
-      </footer>
-      <SupportModal isOpen={showSupport} onClose={() => setShowSupport(false)} />
-    </div>
-  );
-}
 
 /**
  * Root application component.
  * Handles auth state loading, portal persistence, and top-level route definitions.
- * Delegates authenticated dashboard rendering to <Dashboard /> and
- * public hub pages to <HubLayout />.
  */
 function App() {
   const {
@@ -257,93 +79,99 @@ function App() {
   return (
     <MessagingProvider user={user}>
       <BrowserRouter>
-        <Routes>
-          {/* Auth page path */}
-          <Route path="/login" element={
-            !user ? (
-              <AuthPage
-                loginWithGoogle={loginWithGoogle}
-                error={authError}
-                setError={setError}
-              />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } />
+        <Suspense fallback={<RouteLoader />}>
+          <Routes>
+            {/* Auth page path */}
+            <Route path="/login" element={
+              !user ? (
+                <AuthPage
+                  loginWithGoogle={loginWithGoogle}
+                  error={authError}
+                  setError={setError}
+                />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            } />
 
-          {/* ── Community Hub Routes (Figma Spec) ── */}
-          <Route path="/hub" element={
-            <CommunityLayout user={user} logout={logout}>
-              <CommunityFeed user={user} />
-            </CommunityLayout>
-          } />
-
-          <Route path="/hub/explore" element={
-            <CommunityLayout user={user} logout={logout}>
-              <ExploreProjects user={user} />
-            </CommunityLayout>
-          } />
-
-          <Route path="/hub/new" element={
-            user ? (
+            {/* ── Community Hub Routes (Figma Spec) ── */}
+            <Route path="/hub" element={
               <CommunityLayout user={user} logout={logout}>
-                <ProjectPublisher user={user} />
+                <CommunityFeed user={user} />
               </CommunityLayout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          } />
+            } />
 
-          <Route path="/hub/project/:projectId" element={
-            <CommunityLayout user={user} logout={logout}>
-              <ProjectDetail currentUser={user} />
-            </CommunityLayout>
-          } />
+            <Route path="/hub/explore" element={
+              <CommunityLayout user={user} logout={logout}>
+                <ExploreProjects user={user} />
+              </CommunityLayout>
+            } />
 
-          <Route path="/hub/discussions" element={
-            <CommunityLayout user={user} logout={logout}>
-              <DiscussionsView user={user} />
-            </CommunityLayout>
-          } />
+            <Route path="/hub/new" element={
+              user ? (
+                <CommunityLayout user={user} logout={logout}>
+                  <ProjectPublisher user={user} />
+                </CommunityLayout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
 
-          <Route path="/hub/saved" element={
-            <CommunityLayout user={user} logout={logout}>
-              <SavedProjects user={user} />
-            </CommunityLayout>
-          } />
+            <Route path="/hub/project/:projectId" element={
+              <CommunityLayout user={user} logout={logout}>
+                <ProjectDetail currentUser={user} />
+              </CommunityLayout>
+            } />
 
-          <Route path="/hub/notifications" element={
-            <CommunityLayout user={user} logout={logout}>
-              <NotificationsView user={user} />
-            </CommunityLayout>
-          } />
+            <Route path="/hub/discussions" element={
+              <CommunityLayout user={user} logout={logout}>
+                <DiscussionsView user={user} />
+              </CommunityLayout>
+            } />
 
-          {/* Authenticated routes (Dashboard) — must come before /:username wildcard */}
-          <Route path="/" element={
-            user ? (
-              <Dashboard user={user} logout={logout} />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          } />
+            <Route path="/hub/saved" element={
+              <CommunityLayout user={user} logout={logout}>
+                <SavedProjects user={user} />
+              </CommunityLayout>
+            } />
 
-          {/* Vanity profile pages — must come after all specific routes */}
-          <Route path="/:username" element={
-            <CommunityLayout user={user} logout={logout}>
-              <UserProfile currentUser={user} />
-            </CommunityLayout>
-          } />
+            <Route path="/hub/notifications" element={
+              <CommunityLayout user={user} logout={logout}>
+                <NotificationsView user={user} />
+              </CommunityLayout>
+            } />
 
-          {/* Catch-all: authenticated tools or redirect to login */}
-          <Route path="/*" element={
-            user ? (
-              <Dashboard user={user} logout={logout} />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          } />
-        </Routes>
-        <MessagingModal user={user} />
+            {/* Authenticated routes (Dashboard) — must come before /:username wildcard */}
+            <Route path="/" element={
+              user ? (
+                <Dashboard user={user} logout={logout} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
+
+            {/* Vanity profile pages — must come after all specific routes */}
+            <Route path="/:username" element={
+              <CommunityLayout user={user} logout={logout}>
+                <UserProfile currentUser={user} />
+              </CommunityLayout>
+            } />
+
+            {/* Catch-all: authenticated tools or redirect to login */}
+            <Route path="/*" element={
+              user ? (
+                <Dashboard user={user} logout={logout} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
+          </Routes>
+        </Suspense>
+        {user && (
+          <Suspense fallback={null}>
+            <MessagingModal user={user} />
+          </Suspense>
+        )}
       </BrowserRouter>
     </MessagingProvider>
   );
@@ -573,6 +401,133 @@ function Dashboard({ user, logout }) {
     });
   }, [deviceStates, automations, publish, user?.uid]);
 
+  // ─── Real-Time MQTT Alert Evaluation Engine ───────────────────────────────────
+  const [alertRules, setAlertRules] = useState([]);
+  const alertHistoryRef = useRef([]);
+  const lastAlertFiredRef = useRef({});
+  const lastDirectAlertSeenRef = useRef(0);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const rulesRef = doc(db, 'users', user.uid, 'settings', 'alert_rules');
+    const historyRef = doc(db, 'users', user.uid, 'settings', 'alert_history');
+
+    const unsubRules = onSnapshot(
+      rulesRef,
+      (snap) => setAlertRules(snap.exists() ? (snap.data().list || []) : []),
+      (err) => console.error('Failed to listen to alert rules:', err),
+    );
+    const unsubHistory = onSnapshot(
+      historyRef,
+      (snap) => {
+        alertHistoryRef.current = snap.exists() ? (snap.data().list || []) : [];
+      },
+      (err) => console.error('Failed to listen to alert history:', err),
+    );
+
+    return () => {
+      unsubRules();
+      unsubHistory();
+    };
+  }, [user?.uid]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const appendAlert = (entry) => {
+      const nextList = [entry, ...alertHistoryRef.current].slice(0, 50);
+      alertHistoryRef.current = nextList;
+      setDoc(doc(db, 'users', user.uid, 'settings', 'alert_history'), { list: nextList }).catch((err) => {
+        console.error('Failed to record triggered alert:', err);
+      });
+    };
+
+    const formatTimestamp = () =>
+      new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+
+    // A) Evaluate user-configured alert threshold rules against incoming telemetry
+    alertRules.forEach((rule) => {
+      if (!rule?.active) return;
+
+      const cleanTopic = String(rule.topic || '')
+        .replace(new RegExp(`^${userUID}/`), '')
+        .replace(/^\/+/, '');
+      if (!cleanTopic) return;
+
+      const rawVal = deviceStates[cleanTopic];
+      if (rawVal === undefined || rawVal === '') return;
+
+      let op = rule.operator;
+      let targetRaw = rule.value;
+      if ((!op || targetRaw === undefined) && rule.condition) {
+        const match = String(rule.condition).match(/([<>!=]+)\s*(.+)$/);
+        if (match) {
+          op = match[1].trim();
+          targetRaw = match[2].trim();
+        }
+      }
+      if (!op || targetRaw === undefined || targetRaw === '') return;
+
+      const numVal = Number(rawVal);
+      const numTarget = Number(targetRaw);
+      const bothNumeric = Number.isFinite(numVal) && Number.isFinite(numTarget) && String(rawVal).trim() !== '' && String(targetRaw).trim() !== '';
+
+      let triggered = false;
+      if (bothNumeric) {
+        if (op === '>') triggered = numVal > numTarget;
+        else if (op === '<') triggered = numVal < numTarget;
+        else if (op === '=' || op === '==') triggered = numVal === numTarget;
+        else if (op === '!=') triggered = numVal !== numTarget;
+      } else {
+        const left = String(rawVal).trim().toLowerCase();
+        const right = String(targetRaw).trim().toLowerCase();
+        if (op === '=' || op === '==') triggered = left === right;
+        else if (op === '!=') triggered = left !== right;
+      }
+
+      if (triggered) {
+        const now = Date.now();
+        const lastFired = lastAlertFiredRef.current[rule.id] || 0;
+        if (now - lastFired > 30000) {
+          lastAlertFiredRef.current[rule.id] = now;
+          appendAlert({
+            id: now + Math.random(),
+            type: rule.severity || 'warning',
+            msg: `${rule.name}: ${rule.metric || cleanTopic} is ${rawVal} (${rule.condition})`,
+            topic: cleanTopic,
+            time: formatTimestamp(),
+          });
+        }
+      }
+    });
+
+    // B) Listen for direct hardware alerts published to {userUID}/alerts
+    const directMsg = deviceStates['alerts'];
+    const directTs = lastSeen['alerts'] || 0;
+    if (directMsg && String(directMsg).trim() !== '' && directTs > lastDirectAlertSeenRef.current) {
+      lastDirectAlertSeenRef.current = directTs;
+      const text = String(directMsg).trim();
+      let type = 'info';
+      if (/^(critical|error|fault)/i.test(text)) type = 'critical';
+      else if (/^warn/i.test(text)) type = 'warning';
+      else if (/^(ok|success|resolved)/i.test(text)) type = 'success';
+
+      appendAlert({
+        id: Date.now() + Math.random(),
+        type,
+        msg: text,
+        topic: 'alerts',
+        time: formatTimestamp(),
+      });
+    }
+  }, [deviceStates, lastSeen, alertRules, user?.uid, userUID]);
+
   const handleSetWorkspace = (workspaceId) => {
     setActiveWorkspace(workspaceId);
     setActiveTool(null);
@@ -601,8 +556,8 @@ function Dashboard({ user, logout }) {
         case 'alerts':      return <AlertsView userUID={userUID} />;
         case 'profile':     return <ProfilePage user={user} userUID={userUID} logout={logout} onOpenConnection={() => handleSetTool('connection')} />;
         case 'settings':    return <ProfilePage user={user} userUID={userUID} logout={logout} onOpenConnection={() => handleSetTool('connection')} />; // legacy alias
-        case 'developer':   return <DeveloperGuide userUID={user.uid} mqttMode={mqttMode} mqttConfig={mqttConfig} />;
-        default: return <DevicesView userUID={userUID} lastSeen={lastSeen} />;
+        case 'developer':   return <DeveloperGuide userUID={user.uid} mqttMode={mqttMode} mqttConfig={mqttConfig} onOpenTool={handleSetTool} />;
+        default: return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
       }
     }
 
@@ -709,9 +664,11 @@ function Dashboard({ user, logout }) {
         
         <div className={`flex-1 ${activeTool === 'developer' || activeTool === 'simulator' ? 'flex flex-col px-2 md:px-3 pb-2 pt-2 min-h-0 h-full overflow-hidden' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>
           <div className={activeTool !== 'developer' && activeTool !== 'simulator' ? 'max-w-7xl mx-auto space-y-6' : 'h-full flex flex-col'}>
-            <Routes>
-              <Route path="/" element={renderContent()} />
-            </Routes>
+            <Suspense fallback={<RouteLoader />}>
+              <Routes>
+                <Route path="/" element={renderContent()} />
+              </Routes>
+            </Suspense>
           </div>
         </div>
 

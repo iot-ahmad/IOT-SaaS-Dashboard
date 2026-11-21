@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
-import { doc, getDoc, updateDoc, increment, deleteDoc, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment, deleteDoc, collection, onSnapshot, query, orderBy, where, setDoc, addDoc } from 'firebase/firestore';
 import {
   ArrowLeft, Cpu, Eye, ThumbsUp, Copy, Calendar,
   Check, AlertCircle, Zap, User, ChevronLeft, ChevronRight,
-  Trash2, MessageSquare, HelpCircle, Layers, ShieldCheck, Share2
+  Trash2, MessageSquare, HelpCircle, Layers, ShieldCheck, Share2, Bookmark
 } from 'lucide-react';
 import { MarkdownPreview } from './ProjectPublisher';
 import { SchematicSvgViewer } from './ui/WiringBuilder';
@@ -26,6 +26,8 @@ export default function ProjectDetail({ currentUser }) {
   const [error, setError] = useState('');
   const [liked, setLiked] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [savedDocId, setSavedDocId] = useState(null);
+  const [savingBookmark, setSavingBookmark] = useState(false);
   const [activeCompIdx, setActiveCompIdx] = useState(0);
   const [publicQaList, setPublicQaList] = useState([]);
   const viewIncremented = useRef(false);
@@ -83,6 +85,54 @@ export default function ProjectDetail({ currentUser }) {
     return () => unsub();
   }, [projectId]);
 
+  useEffect(() => {
+    if (!currentUser?.uid || !projectId || !db) {
+      setSavedDocId(null);
+      return;
+    }
+    const q = query(collection(db, 'saved_projects'), where('userId', '==', currentUser.uid));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const match = snap.docs.find((d) => d.data().projectId === projectId);
+        setSavedDocId(match ? match.id : null);
+      },
+      () => setSavedDocId(null),
+    );
+    return () => unsub();
+  }, [currentUser?.uid, projectId]);
+
+  const handleToggleSave = async () => {
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+    if (!project || savingBookmark) return;
+    setSavingBookmark(true);
+    try {
+      if (savedDocId) {
+        await deleteDoc(doc(db, 'saved_projects', savedDocId));
+      } else {
+        await setDoc(doc(db, 'saved_projects', `${currentUser.uid}_${projectId}`), {
+          userId: currentUser.uid,
+          projectId,
+          title: project.title || 'Untitled Project',
+          summary: project.summary || '',
+          difficulty: formatDifficulty(project.difficulty),
+          ownerName: project.ownerName || 'Developer',
+          ownerUsername: project.ownerUsername || '',
+          thumbnail: project.images?.[0] || '',
+          componentsList: project.componentsList || [],
+          savedAt: new Date().toISOString(),
+        });
+      }
+    } catch (err) {
+      console.error('Failed to toggle bookmark:', err);
+    } finally {
+      setSavingBookmark(false);
+    }
+  };
+
   const handleLike = async () => {
     const docRef = doc(db, 'projects', projectId);
     const likedKey = `liked_project_${projectId}`;
@@ -97,6 +147,19 @@ export default function ProjectDetail({ currentUser }) {
         localStorage.setItem(likedKey, 'true');
         setProject(prev => prev ? { ...prev, metrics: { ...prev.metrics, likes: (prev.metrics?.likes || 0) + 1 } } : null);
         await updateDoc(docRef, { 'metrics.likes': increment(1) });
+        if (currentUser && project?.ownerId && project.ownerId !== currentUser.uid) {
+          addDoc(collection(db, 'notifications'), {
+            recipientId: project.ownerId,
+            actorId: currentUser.uid,
+            actorName: currentUser.displayName || 'An engineer',
+            type: 'like',
+            title: `${currentUser.displayName || 'An engineer'} liked your project "${project.title || 'Project'}"`,
+            projectId,
+            link: `/hub/project/${projectId}`,
+            isUnread: true,
+            createdAt: new Date().toISOString(),
+          }).catch(() => {});
+        }
       }
     } catch (err) { console.error(err); }
   };
@@ -110,6 +173,19 @@ export default function ProjectDetail({ currentUser }) {
       const docRef = doc(db, 'projects', projectId);
       updateDoc(docRef, { 'metrics.clones': increment(1) }).catch(() => {});
       setProject(prev => prev ? { ...prev, metrics: { ...prev.metrics, clones: (prev.metrics?.clones || 0) + 1 } } : null);
+      if (currentUser && project?.ownerId && project.ownerId !== currentUser.uid) {
+        addDoc(collection(db, 'notifications'), {
+          recipientId: project.ownerId,
+          actorId: currentUser.uid,
+          actorName: currentUser.displayName || 'An engineer',
+          type: 'clone',
+          title: `${currentUser.displayName || 'An engineer'} copied documentation from "${project.title || 'Project'}"`,
+          projectId,
+          link: `/hub/project/${projectId}`,
+          isUnread: true,
+          createdAt: new Date().toISOString(),
+        }).catch(() => {});
+      }
     } catch (err) { console.error(err); }
   };
 
@@ -187,6 +263,21 @@ export default function ProjectDetail({ currentUser }) {
             <ThumbsUp size={13} className="text-primary" />
             <span>{liked ? 'Liked' : 'Like'}</span>
             <span className="text-[10px] font-mono text-primary font-bold">({project.metrics?.likes || 0})</span>
+          </button>
+
+          {/* Save / Bookmark */}
+          <button
+            type="button"
+            onClick={handleToggleSave}
+            disabled={savingBookmark}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all border flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ${
+              savedDocId
+                ? 'bg-primary/15 border-primary/35 text-primary'
+                : 'bg-muted/60 border-border text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Bookmark size={13} className="text-primary" fill={savedDocId ? 'currentColor' : 'none'} />
+            <span>{savedDocId ? 'Saved' : 'Save'}</span>
           </button>
 
           {/* Message Owner */}

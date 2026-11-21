@@ -1,10 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X, Play, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/neon-button';
-
-import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { Zap, CheckCircle2, AlertTriangle, Info, Copy, Check, Terminal, Bell, ChevronUp, ChevronDown, Trash2, X } from 'lucide-react';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const Card = ({ children, className = '' }) => (
   <div className={`hw-panel bg-card border border-border rounded-xl p-5 transition-all duration-200 hover:border-white/15 ${className}`}>
@@ -27,448 +24,11 @@ const CopyTopicButton = ({ topic, userUID }) => {
     <button 
       onClick={handleCopy}
       title={`Copy: ${fullTopic}`}
-      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all ${copied ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground/70'}`}
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono transition-all cursor-pointer ${copied ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground/70'}`}
     >
       {copied ? <Check size={10} className="text-primary" /> : <Copy size={10} className="text-primary" />}
       {copied ? 'Copied!' : fullTopic}
     </button>
-  );
-};
-
-// Last Seen indicator
-const LastSeenBadge = ({ lastSeenTimestamp }) => {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const diffSec = Math.floor((now - lastSeenTimestamp) / 1000);
-  const isOffline = diffSec > 30;
-
-  let label;
-  if (diffSec < 5) label = 'Just now';
-  else if (diffSec < 60) label = `${diffSec}s ago`;
-  else if (diffSec < 3600) label = `${Math.floor(diffSec / 60)}m ago`;
-  else label = `${Math.floor(diffSec / 3600)}h ago`;
-
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${isOffline ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-primary/10 border-primary/25 text-primary'}`}>
-      {isOffline ? 'Offline' : label}
-    </span>
-  );
-};
-
-// ==================== DEVICES VIEW ====================
-export const DevicesView = ({ userUID, lastSeen }) => {
-  const mergedDevices = DEVICES.map(d => ({
-    ...d,
-    lastSeen: lastSeen[d.topic] || d.lastSeen,
-  }));
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-xl font-bold">Connected Devices</h2>
-        <button
-          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
-          className="flex items-center gap-2 px-4 py-2 font-bold hover:opacity-90 transition-opacity shadow-lg text-sm rounded-xl"
-        >
-          <Plus size={18} /> Add Device
-        </button>
-      </div>
-
-      <div className="flex gap-3">
-        <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={16} />
-          <input className="w-full bg-input border border-border rounded-xl py-2.5 pl-11 pr-4 focus:outline-none focus:border-primary/50 text-sm placeholder:text-muted-foreground" placeholder="Search devices..." />
-        </div>
-        <button className="bg-muted border border-border px-4 rounded-xl text-foreground flex items-center gap-2 text-sm hover:bg-secondary transition-colors">
-          <Filter size={16} className="text-primary" /> Filter
-        </button>
-      </div>
-
-      {/* Device Table */}
-      <Card className="!p-0 overflow-x-auto">
-        <table className="w-full text-left min-w-[700px]">
-          <thead className="bg-muted text-muted-foreground text-xs uppercase font-bold border-b border-border">
-            <tr>
-              <th className="px-5 py-3">Device</th>
-              <th className="px-5 py-3">MQTT Topic</th>
-              <th className="px-5 py-3">Pin</th>
-              <th className="px-5 py-3">Status</th>
-              <th className="px-5 py-3">Last Seen</th>
-              <th className="px-5 py-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {mergedDevices.map(device => (
-              <tr key={device.id} className="hover:bg-muted/30 transition-colors">
-                <td className="px-5 py-3">
-                  <div className="flex items-center gap-3">
-                    <Cpu size={16} className="text-primary flex-shrink-0" />
-                    <div>
-                      <span className="font-medium text-sm">{device.name}</span>
-                      <span className="block text-xs text-muted-foreground dark:text-white/30">{device.type}</span>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-3">
-                  <CopyTopicButton topic={device.topic} userUID={userUID} />
-                </td>
-                <td className="px-5 py-3">
-                  <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded">{device.pin}</span>
-                </td>
-                <td className="px-5 py-3">
-                  <LastSeenBadge lastSeenTimestamp={device.lastSeen} />
-                </td>
-                <td className="px-5 py-3 text-xs text-muted-foreground">
-                  {new Date(device.lastSeen).toLocaleTimeString()}
-                </td>
-                <td className="px-5 py-3 text-right">
-                  <button className="text-muted-foreground dark:text-white/30 hover:text-foreground transition-colors"><MoreVertical size={16} /></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
-
-      {/* Pin Mapping */}
-      <Card>
-        <h3 className="font-bold mb-4 flex items-center gap-2">
-          <CircuitBoard size={20} className="text-primary" /> ESP32 Pin Mapping
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {PIN_MAP.map(p => (
-            <div key={p.pin} className="bg-muted border border-border rounded-xl p-3 hover:bg-secondary transition-colors">
-              <span className={`text-xs font-bold font-mono ${p.color}`}>{p.pin}</span>
-              <p className="text-[11px] text-foreground/90/50 mt-1">{p.label}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
-  );
-};
-
-// ==================== COSMOS3 PHYSICAL AI DIAGNOSTICS ====================
-const getMockCosmosResponse = (device, scenario) => {
-  const sc = scenario.toLowerCase();
-  if (sc.includes('مضخة') || sc.includes('pump') || sc.includes('موتور') || sc.includes('motor')) {
-    return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
-
-**1. Physical Fault Isolation:**
-*   **Condition:** Sudden drop in pump operating current detected while the GPIO control signal remains active.
-*   **Physical Diagnosis:** Mechanical blockage in the pump intake impeller, or dry running caused by depleted water levels in the main tank, which can overheat and damage internal windings.
-
-**2. Recommended Engineering Automation (Smart Rules):**
-*   **Automatic Protection Rule:**
-    \`If Tank Water Level < 10% → Immediately stop Water Pump and trigger critical alert\`
-*   **ESP32 Hardware Protection Firmware:**
-\`\`\`cpp
-// Hardware-level dry-run protection
-if (waterLevelPercent < 10.0) {
-  digitalWrite(PUMP_PIN, LOW); // Shut off pump immediately
-  client.publish("users/YOUR_UID/alerts", "CRITICAL: Dry run protection triggered!");
-}
-\`\`\``;
-  }
-  
-  if (sc.includes('بطارية') || sc.includes('battery') || sc.includes('شحن') || sc.includes('شاحن') || sc.includes('power') || sc.includes('sleep')) {
-    return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
-
-**1. Physical Fault Isolation:**
-*   **Condition:** Battery voltage dropped to 2.8V, below the safe operating threshold for the ESP32 LDO voltage regulator.
-*   **Physical Diagnosis:** High-frequency sensor wake cycles drawing ~80mA continuously without Deep Sleep enabled, causing rapid LiPo cell discharge.
-
-**2. Recommended Engineering Action & Resolution:**
-*   **Recommended Automation:** Reduce telemetry publishing frequency, dim any local display backlight, and send a maintenance alert when battery charge drops below 15%.
-*   **Enable ESP32 Deep Sleep (C++):**
-\`\`\`cpp
-// Put ESP32 into deep sleep for 15 minutes after each reading to conserve power
-esp_sleep_enable_timer_wakeup(15 * 60 * 1000000ULL);
-esp_deep_sleep_start();
-\`\`\``;
-  }
-
-  if (sc.includes('مطر') || sc.includes('rain') || sc.includes('ري') || sc.includes('سقي') || sc.includes('irrigation')) {
-    return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
-
-**1. Physical Fault Isolation:**
-*   **Condition:** Automation Logic Conflict detected: soil moisture sensor reads low (< 20%) and requests irrigation while the rain sensor detects active rainfall.
-*   **Physical Diagnosis:** Direct rainfall is saturating surface sensors before water percolates to root depth. Activating irrigation now would over-saturate roots and waste water.
-
-**2. Recommended Smart Automation (Logical Resolution):**
-*   **Hybrid Automation Rule:**
-    \`If Soil Moisture < 20% AND Rain Sensor = 0 (No Rain) → Start Irrigation. Otherwise, inhibit and defer irrigation.\`
-*   **Smart Automation Firmware:**
-\`\`\`cpp
-bool isRaining = digitalRead(RAIN_SENSOR_PIN) == LOW; // LOW indicates rain detected
-int moisture = analogRead(SOIL_PIN);
-int moisturePercent = map(moisture, 4095, 1200, 0, 100);
-
-if (moisturePercent < 20 && !isRaining) {
-  digitalWrite(IRRIGATION_PIN, HIGH); // Safe irrigation start
-} else {
-  digitalWrite(IRRIGATION_PIN, LOW);  // Inhibit or defer irrigation
-}
-\`\`\``;
-  }
-
-  return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
-
-**1. Physical Fault Isolation:**
-*   Your diagnostic query for **[${device}]** has been analyzed by the Cosmos3 engine.
-*   **Diagnosis:** The model recommends verifying power rail stability and I2C/SPI bus pull-up resistors, and checking for electromagnetic or thermal interference affecting sensor accuracy.
-
-**2. Automation Recommendations:**
-*   Configure local fail-safe rules on the microcontroller to prevent physical hardware damage if cloud connectivity is temporarily lost (Offline Mode).`;
-};
-
-export const CosmosPhysicalDiagnostics = ({ userUID }) => {
-  const [device, setDevice] = useState('Soil Sensor #01');
-  const [scenario, setScenario] = useState('');
-  const [response, setResponse] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleDiagnose = async (e) => {
-    e.preventDefault();
-    if (!scenario.trim()) return;
-
-    setLoading(true);
-    setResponse('');
-    
-    try {
-      const res = await callCosmos3API(device, scenario.trim());
-      setResponse(res);
-    } catch (err) {
-      console.error(err);
-      setResponse('An error occurred while running the physical hardware diagnostic.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const callCosmos3API = async (dev, sc) => {
-    const apiKey = import.meta.env.VITE_NVIDIA_API_KEY;
-    if (!apiKey || apiKey.startsWith('your_')) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(getMockCosmosResponse(dev, sc));
-        }, 1200);
-      });
-    }
-
-    try {
-      const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: "nvidia/llama-3.1-nemotron-51b-instruct",
-          messages: [
-            {
-              role: "system",
-              content: `You are Cosmos3 Physical AI, an engineering diagnostic engine for IoT hardware and embedded systems.
-Your responsibilities:
-1. Analyze physical hardware behavior and faults (e.g., sensor battery drain, pump stall, automation rule conflicts, circuit faults).
-2. Provide accurate engineering diagnostics grounded in physical reasoning.
-3. Suggest practical fixes, smart automation scenarios, and fail-safe firmware rules.
-Respond in clear, professional English with a structured engineering format.`
-            },
-            {
-              role: "user",
-              content: `Target Device: ${dev}\nPhysical issue or scenario to analyze: ${sc}`
-            }
-          ],
-          temperature: 0.2,
-          max_tokens: 1024
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`NVIDIA API Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (error) {
-      console.error("NVIDIA/Cosmos3 API error:", error);
-      return `**Cosmos3 Engine Connection Warning**\n\n*Cause:* API key may be invalid or expired. Falling back to the built-in physical diagnostic simulator:\n\n${getMockCosmosResponse(dev, sc)}`;
-    }
-  };
-
-  const renderDiagnosticContent = (text) => {
-    const parts = [];
-    const lines = text.split('\n');
-    let inCode = false;
-    let codeLines = [];
-    let codeLang = '';
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      if (line.startsWith('```')) {
-        if (inCode) {
-          parts.push({
-            type: 'code',
-            code: codeLines.join('\n'),
-            lang: codeLang
-          });
-          codeLines = [];
-          inCode = false;
-        } else {
-          inCode = true;
-          codeLang = line.replace('```', '').trim() || 'cpp';
-        }
-      } else {
-        if (inCode) {
-          codeLines.push(line);
-        } else {
-          parts.push({
-            type: 'text',
-            content: line
-          });
-        }
-      }
-    }
-
-    return parts.map((part, idx) => {
-      if (part.type === 'code') {
-        return (
-          <div key={idx} className="my-3 font-mono text-left" dir="ltr">
-            <pre className="bg-background border border-border rounded-xl p-4 overflow-x-auto text-[11px] leading-relaxed font-mono text-foreground/85 scrollbar-thin text-left ltr-text">
-              <code>{part.code}</code>
-            </pre>
-          </div>
-        );
-      }
-
-      let line = part.content;
-      if (line.trim() === '') return <div key={idx} className="h-1.5" />;
-
-      let html = line.replace(/`([^`]+)`/g, '<bdi><code class="bg-muted border border-border px-1.5 py-0.5 rounded font-mono text-primary text-[10px]">$1</code></bdi>');
-      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
-      
-      if (/^\*(?!\*)/.test(line.trim())) {
-        html = html.trim().substring(1).trim();
-        return (
-          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/80 text-left">
-            <span className="text-primary font-bold shrink-0">—</span>
-            <span dangerouslySetInnerHTML={{ __html: html }} />
-          </div>
-        );
-      }
-
-      if (line.trim().startsWith('>')) {
-        html = html.trim().substring(1).trim();
-        return (
-          <blockquote key={idx} className="border-l-2 border-primary/50 pl-3 pr-0 my-2 text-xs text-muted-foreground italic bg-background py-1 text-left rounded-r-md" dangerouslySetInnerHTML={{ __html: html }} />
-        );
-      }
-
-      return (
-        <p key={idx} className="text-xs text-foreground/80 leading-relaxed mt-0.5 text-left" dangerouslySetInnerHTML={{ __html: html }} />
-      );
-    });
-  };
-
-  return (
-    <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20 shadow-lg relative overflow-hidden mb-6">
-      <div className="flex items-center gap-3 mb-4">
-        <Cpu size={22} className="text-primary shrink-0" />
-        <div className="text-left font-sans">
-          <h3 className="font-extrabold text-foreground text-sm">Cosmos3 Physical AI Diagnostics</h3>
-          <p className="text-[10px] text-muted-foreground font-medium">Physical AI analysis engine for hardware diagnostics and engineering automation</p>
-        </div>
-      </div>
-
-      <form onSubmit={handleDiagnose} className="space-y-4 font-sans">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="sm:col-span-1 text-left">
-            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">Target Device or Sensor</label>
-            <select
-              value={device}
-              onChange={(e) => setDevice(e.target.value)}
-              className="w-full bg-input border border-border rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-primary/50 text-foreground"
-            >
-              <option>Soil Sensor #01</option>
-              <option>Main Irrigation Valve</option>
-              <option>Greenhouse Temp</option>
-              <option>Water Tank Level</option>
-              <option>Water Pump A</option>
-              <option>Greenhouse Vents</option>
-              <option>Rain Sensor</option>
-              <option>Light Sensor</option>
-            </select>
-          </div>
-          <div className="sm:col-span-2 text-left">
-            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">Physical Issue or Complex Automation Scenario</label>
-            <div className="flex gap-2">
-              <input
-                required
-                value={scenario}
-                onChange={(e) => setScenario(e.target.value)}
-                placeholder="e.g., Water pump stopped suddenly, or auto-irrigation conflicts with detected rain..."
-                className="flex-1 bg-input border border-border rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-primary/50 text-foreground"
-              />
-              <button
-                type="submit"
-                disabled={loading || !scenario.trim()}
-                className="bg-primary text-primary-foreground px-5 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors text-xs disabled:opacity-50"
-              >
-                {loading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />}
-                {loading ? 'Analyzing...' : 'Diagnose'}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Presets badges */}
-        <div className="flex flex-wrap gap-2 pt-1.5">
-          <span className="text-[10px] text-muted-foreground/60 self-center">Quick Examples:</span>
-          {[
-            { label: 'Sudden water pump failure', sc: 'Water pump stopped drawing water despite active ON command and critically low soil moisture' },
-            { label: 'ESP32 battery drain & sleep optimization', sc: 'Battery voltage dropped to 2.8V; need deep sleep power-saving firmware' },
-            { label: 'Irrigation conflict with rain sensor', sc: 'Soil moisture is low requesting irrigation, but the rain sensor detects active rainfall' }
-          ].map((preset, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setScenario(preset.sc)}
-              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border bg-muted text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all text-left shrink-0"
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
-      </form>
-
-      {/* Result Diagnostic Panel */}
-      {(loading || response) && (
-        <div className="mt-5 border-t border-border pt-4 text-left">
-          <div className="bg-background border border-border rounded-2xl p-5 shadow-inner relative">
-            <div className="absolute top-4 right-4 flex items-center gap-2">
-              <span className="text-[9px] text-primary font-mono uppercase tracking-wider font-bold">PHYSICAL REAL-TIME DIAGNOSTIC</span>
-            </div>
-            
-            {loading ? (
-              <div className="py-8 flex flex-col items-center justify-center gap-3">
-                <RefreshCw size={24} className="text-primary animate-spin" />
-                <p className="text-xs text-muted-foreground">Cosmos3 is analyzing physical hardware parameters and deriving engineering behavior...</p>
-              </div>
-            ) : (
-              <div dir="ltr" className="space-y-2 text-foreground font-sans leading-relaxed text-left">
-                {renderDiagnosticContent(response)}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </Card>
   );
 };
 
@@ -690,43 +250,55 @@ export const AlertsView = ({ userUID }) => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
-    if (!userUID) return;
-    const load = async () => {
-      try {
-        const historyRef = doc(db, 'users', userUID, 'settings', 'alert_history');
-        const rulesRef = doc(db, 'users', userUID, 'settings', 'alert_rules');
-        
-        const [historySnap, rulesSnap] = await Promise.all([
-          getDoc(historyRef),
-          getDoc(rulesRef)
-        ]);
+    if (!userUID) {
+      setAlerts([]);
+      setRules([]);
+      setLoading(false);
+      return;
+    }
 
-        if (historySnap.exists()) {
-          setAlerts(historySnap.data().list || []);
-        } else {
-          setAlerts([
-            { id: 1, type: 'critical', msg: 'Water Pump A failure detected!', time: '1h ago' },
-            { id: 2, type: 'warning', msg: 'Soil Sensor #02 battery low (15%)', time: '4h ago' },
-            { id: 3, type: 'success', msg: 'Irrigation schedule completed successfully', time: 'Today, 06:00' },
-            { id: 4, type: 'info', msg: 'System update available (v2.4.0)', time: 'Yesterday' }
-          ]);
-        }
-
-        if (rulesSnap.exists()) {
-          setRules(rulesSnap.data().list || []);
-        } else {
-          setRules([
-            { id: 1, name: 'Low Battery', condition: 'Battery < 20%', topic: 'sensor/+/battery', active: true },
-            { id: 2, name: 'Pump Failure', condition: 'Status = Error', topic: 'actuator/pump/status', active: true },
-          ]);
-        }
-      } catch (err) {
-        console.error("Failed to load alerts", err);
-      } finally {
-        setLoading(false);
-      }
+    setLoading(true);
+    let historyReady = false;
+    let rulesReady = false;
+    const markReady = () => {
+      if (historyReady && rulesReady) setLoading(false);
     };
-    load();
+
+    const historyRef = doc(db, 'users', userUID, 'settings', 'alert_history');
+    const rulesRef = doc(db, 'users', userUID, 'settings', 'alert_rules');
+
+    const unsubHistory = onSnapshot(
+      historyRef,
+      (snap) => {
+        setAlerts(snap.exists() ? (snap.data().list || []) : []);
+        historyReady = true;
+        markReady();
+      },
+      (err) => {
+        console.error('Failed to subscribe to alert history:', err);
+        historyReady = true;
+        markReady();
+      },
+    );
+
+    const unsubRules = onSnapshot(
+      rulesRef,
+      (snap) => {
+        setRules(snap.exists() ? (snap.data().list || []) : []);
+        rulesReady = true;
+        markReady();
+      },
+      (err) => {
+        console.error('Failed to subscribe to alert rules:', err);
+        rulesReady = true;
+        markReady();
+      },
+    );
+
+    return () => {
+      unsubHistory();
+      unsubRules();
+    };
   }, [userUID]);
 
   const saveAlerts = async (list) => {
@@ -747,12 +319,28 @@ export const AlertsView = ({ userUID }) => {
   const handleAddRule = (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
+    const name = String(fd.get('name') || '').trim();
+    const metric = String(fd.get('metric') || '').trim();
+    const operator = String(fd.get('operator') || '>');
+    const value = String(fd.get('value') || '').trim();
+    const severity = String(fd.get('severity') || 'warning');
+    const rawTopic = String(fd.get('topic') || '').trim().replace(/^\/+/, '');
+    const cleanTopic = userUID && rawTopic.startsWith(`${userUID}/`)
+      ? rawTopic.slice(userUID.length + 1)
+      : rawTopic;
+
+    if (!name || !cleanTopic || !metric || !value) return;
+
     const newRule = {
       id: Date.now(),
-      name: fd.get('name'),
-      condition: `${fd.get('metric')} ${fd.get('operator')} ${fd.get('value')}`,
-      topic: fd.get('topic'),
-      active: true
+      name,
+      metric,
+      operator,
+      value,
+      severity,
+      condition: `${metric} ${operator} ${value}`,
+      topic: cleanTopic,
+      active: true,
     };
     saveRules([...rules, newRule]);
     setShowAddModal(false);
@@ -772,7 +360,7 @@ export const AlertsView = ({ userUID }) => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-foreground">System Alerts</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Hardware fault diagnostics and threshold notifications</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Live MQTT threshold rules and hardware fault events</p>
         </div>
         <div className="flex bg-muted border border-border p-1 rounded-xl">
           <button 
@@ -785,7 +373,7 @@ export const AlertsView = ({ userUID }) => {
             onClick={() => setActiveTab('rules')}
             className={`px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${activeTab === 'rules' ? 'bg-card text-foreground shadow-sm border border-border' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            Alert Rules
+            Alert Rules (<span className="font-mono text-primary">{rules.length}</span>)
           </button>
         </div>
       </div>
@@ -801,7 +389,14 @@ export const AlertsView = ({ userUID }) => {
             )}
           </div>
           {alerts.length === 0 ? (
-            <div className="hw-panel bg-card border border-border rounded-xl text-center py-12 text-muted-foreground text-sm">No new alerts.</div>
+            <div className="hw-panel bg-card border border-border rounded-xl text-center py-12 px-4 space-y-2">
+              <Bell size={28} className="text-primary mx-auto" />
+              <p className="text-sm font-semibold text-foreground">No alerts triggered yet</p>
+              <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                Create a threshold rule in Alert Rules or publish directly from your ESP32 to{' '}
+                <code className="font-mono text-primary bg-muted px-1.5 py-0.5 rounded">{userUID}/alerts</code>.
+              </p>
+            </div>
           ) : (
             <div className="space-y-3">
               {alerts.map(alert => {
@@ -815,7 +410,12 @@ export const AlertsView = ({ userUID }) => {
                           <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border ${bg} ${color}`}>{badge}</span>
                           <p className="text-sm font-semibold text-foreground">{alert.msg}</p>
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{alert.time}</p>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <p className="text-[11px] text-muted-foreground font-mono">{alert.time}</p>
+                          {alert.topic && (
+                            <span className="text-[10px] font-mono text-primary bg-muted px-1.5 py-0.5 rounded">{userUID}/{alert.topic}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <button onClick={() => dismissAlert(alert.id)} className="text-xs font-medium text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-lg hover:bg-muted transition-colors shrink-0 cursor-pointer">Dismiss</button>
@@ -836,31 +436,47 @@ export const AlertsView = ({ userUID }) => {
             </button>
           </div>
           {rules.length === 0 ? (
-            <div className="hw-panel bg-card border border-border rounded-xl text-center py-12 text-muted-foreground text-sm">No alert rules configured.</div>
+            <div className="hw-panel bg-card border border-border rounded-xl text-center py-12 px-4 space-y-2">
+              <Bell size={28} className="text-primary mx-auto" />
+              <p className="text-sm font-semibold text-foreground">No alert rules configured</p>
+              <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                Click &ldquo;New Alert Rule&rdquo; to monitor an incoming MQTT sensor topic and record real-time alerts automatically.
+              </p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {rules.map(rule => (
-                <div key={rule.id} className="hw-panel p-5 rounded-xl border border-border bg-card relative group hover:border-primary/30 transition-colors">
-                  <div className="flex justify-between items-start mb-3 gap-2">
-                    <h3 className="font-bold text-sm text-foreground">{rule.name}</h3>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button 
-                        onClick={() => toggleRule(rule.id)}
-                        className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 flex-shrink-0 cursor-pointer ${rule.active ? 'bg-primary' : 'bg-muted border border-border'}`}
-                      >
-                        <div className={`w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ${rule.active ? 'translate-x-5 bg-primary-foreground' : 'translate-x-0 bg-foreground/80'}`} />
-                      </button>
-                      <button onClick={() => deleteRule(rule.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer" title="Delete rule">
-                        <Trash2 size={14} />
-                      </button>
+              {rules.map(rule => {
+                const { badge, bg, color } = getIcon(rule.severity || 'warning');
+                return (
+                  <div key={rule.id} className="hw-panel p-5 rounded-xl border border-border bg-card relative group hover:border-primary/30 transition-colors">
+                    <div className="flex justify-between items-start mb-3 gap-2">
+                      <div className="min-w-0">
+                        <span className={`inline-block text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border mb-1.5 ${bg} ${color}`}>{badge}</span>
+                        <h3 className="font-bold text-sm text-foreground truncate">{rule.name}</h3>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button 
+                          onClick={() => toggleRule(rule.id)}
+                          className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 flex-shrink-0 cursor-pointer ${rule.active ? 'bg-primary' : 'bg-muted border border-border'}`}
+                          title={rule.active ? 'Disable rule' : 'Enable rule'}
+                        >
+                          <div className={`w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ${rule.active ? 'translate-x-5 bg-primary-foreground' : 'translate-x-0 bg-foreground/80'}`} />
+                        </button>
+                        <button onClick={() => deleteRule(rule.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer" title="Delete rule">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-2 pt-2 border-t border-border">
+                      <p className="text-xs text-muted-foreground">Condition: <span className="font-semibold text-foreground">{rule.condition}</span></p>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-xs text-muted-foreground">Topic:</span>
+                        <CopyTopicButton topic={rule.topic} userUID={userUID} />
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-1.5 pt-2 border-t border-border">
-                    <p className="text-xs text-muted-foreground">Condition: <span className="font-semibold text-foreground">{rule.condition}</span></p>
-                    <p className="text-xs text-muted-foreground">Topic: <span className="font-mono text-primary">{rule.topic}</span></p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -880,7 +496,8 @@ export const AlertsView = ({ userUID }) => {
               </div>
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">Topic to Monitor</label>
-                <input required name="topic" placeholder="e.g. sensor/greenhouse/temp" className="w-full font-mono bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
+                <input required name="topic" placeholder="e.g. sensor/temp" className="w-full font-mono bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
+                <p className="text-[10px] text-muted-foreground mt-1 font-mono">Evaluates messages arriving on {userUID}/&lt;topic&gt;</p>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-1">
@@ -893,12 +510,21 @@ export const AlertsView = ({ userUID }) => {
                     <option>&gt;</option>
                     <option>&lt;</option>
                     <option>=</option>
+                    <option>!=</option>
                   </select>
                 </div>
                 <div className="col-span-1">
                   <label className="block text-xs text-muted-foreground mb-1">Value</label>
                   <input required name="value" placeholder="e.g. 40" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50" />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">Severity Level</label>
+                <select name="severity" defaultValue="warning" className="w-full bg-input border border-border rounded-xl py-2 px-3 text-sm text-foreground focus:outline-none focus:border-primary/50">
+                  <option value="warning">Warning</option>
+                  <option value="critical">Critical</option>
+                  <option value="info">Info</option>
+                </select>
               </div>
               <button
                 type="submit"
