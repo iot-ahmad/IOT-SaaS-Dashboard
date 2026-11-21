@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Responsive as ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
+import { Responsive as ResponsiveGridLayout, useContainerWidth, verticalCompactor } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import {
@@ -17,6 +17,16 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const COLS_BY_BP = { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 };
+
+const DRAG_CONFIG = {
+  enabled: true,
+  handle: '.drag-handle',
+  cancel: '.no-drag',
+};
+
+const RESIZE_CONFIG = {
+  enabled: true,
+};
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 const uid = () => `w_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
@@ -2723,10 +2733,10 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
       <div className="px-3 py-2 border-b border-border/80 bg-muted/25 flex items-center justify-between gap-2 shrink-0" dir="ltr">
         <div className="flex items-center gap-1.5 min-w-0">
           <div
-            className="drag-handle cursor-grab active:cursor-grabbing p-0.5 rounded text-primary/70 hover:text-primary transition-colors flex items-center justify-center shrink-0"
+            className="drag-handle cursor-grab active:cursor-grabbing p-1 -ml-0.5 text-primary/80 hover:text-primary transition-colors flex items-center justify-center shrink-0 touch-none select-none"
             title="Drag to move instrument"
           >
-            <GripVertical size={13} className="text-primary" />
+            <GripVertical size={13} className="text-primary pointer-events-none" />
           </div>
           <MetaIcon size={13} className="text-primary shrink-0" />
           <span className="text-xs font-bold text-foreground truncate">{widget.name}</span>
@@ -2952,14 +2962,11 @@ export default function UniversalController({ deviceStates, publish, storageScop
               breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
               cols={COLS_BY_BP}
               rowHeight={80}
-              draggableHandle=".drag-handle"
-              draggableCancel=".no-drag"
-              isDraggable
-              isResizable
-              compactType="vertical"
+              dragConfig={DRAG_CONFIG}
+              resizeConfig={RESIZE_CONFIG}
+              compactor={verticalCompactor}
               onLayoutChange={onLayoutChange}
               margin={[14, 14]}
-              useCSSTransforms
             >
               {widgets.map(widget => (
                 <div key={widget.id}>
