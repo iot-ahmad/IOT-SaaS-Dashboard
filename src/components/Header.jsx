@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen, Globe, MessageSquare } from 'lucide-react';
+import React from 'react';
+import { Menu, Wifi, WifiOff, PanelLeftClose, PanelLeftOpen, Globe, MessageSquare } from 'lucide-react';
 import { TOOLS } from '../data/mockData';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMessaging } from '../context/MessagingContext';
@@ -12,40 +12,11 @@ export default function Header({
   toggleMobileMenu,
   customWorkspaces,
   isSidebarCollapsed,
-  onToggleSidebar,
-  isDark: propIsDark,
-  onToggleTheme
+  onToggleSidebar
 }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { unreadCount = 0, setIsMessagingOpen = () => { } } = useMessaging();
-  const [localIsDark, setLocalIsDark] = useState(true);
-  const isDark = propIsDark !== undefined ? propIsDark : localIsDark;
-
-  useEffect(() => {
-    const isDarkTheme = localStorage.theme ? localStorage.theme === 'dark' : true;
-    if (propIsDark === undefined) {
-      setLocalIsDark(isDarkTheme);
-    }
-    if (isDarkTheme) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, [propIsDark]);
-
-  const toggleTheme = () => {
-    if (onToggleTheme) {
-      onToggleTheme();
-    } else {
-      const newTheme = !localIsDark;
-      setLocalIsDark(newTheme);
-      if (newTheme) {
-        document.documentElement.classList.add('dark');
-        localStorage.theme = 'dark';
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.theme = 'light';
-      }
-    }
-  };
 
   let title = 'Dashboard';
   let subtitle = 'Manage your connected devices and automations';
@@ -141,25 +112,15 @@ export default function Header({
           <span className="hidden sm:inline">Project Hub</span>
         </button>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="h-9 w-9 flex items-center justify-center rounded-lg bg-transparent border-0 hover:bg-muted/40 text-primary transition-colors cursor-pointer"
-          title="Toggle Theme"
-        >
-          {isDark ? <Sun size={16} className="text-primary" /> : <Moon size={16} className="text-primary" />}
-        </button>
-
         {/* MQTT Broker Status Pill */}
         <div
           title={isConnected
             ? (mqttMode === 'private' ? 'Connected to private isolated EMQX MQTT broker (TLS 8883)' : 'Connected to shared demo broker (for education & simulation only)')
             : 'Disconnected from MQTT broker'}
-          className={`hidden lg:flex h-9 items-center gap-2 px-3 rounded-lg border text-xs font-medium ${
-            isConnected
-              ? 'bg-primary/10 border-primary/25 text-primary'
-              : 'bg-red-500/10 border-red-500/25 text-red-400'
-          }`}
+          className={`hidden lg:flex h-9 items-center gap-2 px-3 rounded-lg border text-xs font-medium ${isConnected
+            ? 'bg-primary/10 border-primary/25 text-primary'
+            : 'bg-red-500/10 border-red-500/25 text-red-400'
+            }`}
         >
           {isConnected ? <Wifi size={14} className="text-primary" /> : <WifiOff size={14} className="text-red-400" />}
           <span className="hidden xl:inline font-mono text-[11px] font-semibold">

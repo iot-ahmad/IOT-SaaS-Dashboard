@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Home, Compass, Plus, MessageSquare, Bell, Bookmark,
-  User, Search, Sun, Moon, HelpCircle, LogOut,
+  User, Search, HelpCircle, LogOut,
   LayoutDashboard, ChevronRight, ChevronLeft, Cpu
 } from 'lucide-react';
 import { useMessaging } from '../../context/MessagingContext';
@@ -14,31 +14,11 @@ export default function CommunityLayout({ user, logout, children }) {
   const location = useLocation();
   const { unreadCount, setIsMessagingOpen } = useMessaging();
 
-  const [isDark, setIsDark] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSupport, setShowSupport] = useState(false);
   const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const isDarkTheme = localStorage.theme ? localStorage.theme === 'dark' : true;
-    setIsDark(isDarkTheme);
-    if (isDarkTheme) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
-    }
-  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -106,14 +86,6 @@ export default function CommunityLayout({ user, logout, children }) {
 
         {/* Right side: Controls */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl bg-transparent border-0 text-primary hover:bg-muted transition-colors cursor-pointer"
-            title="Toggle Theme"
-          >
-            {isDark ? <Sun size={15} className="text-primary" /> : <Moon size={15} className="text-primary" />}
-          </button>
-
           <button
             onClick={() => setIsMessagingOpen(true)}
             className="relative p-2 rounded-xl bg-transparent border-0 text-primary hover:bg-muted transition-colors cursor-pointer"

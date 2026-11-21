@@ -11,7 +11,7 @@ import DeveloperGuide from './components/DeveloperGuide';
 import SimulatorView from './components/SimulatorView';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
-import { Loader2, Sun, Moon, MessageSquare } from 'lucide-react';
+import { Loader2, MessageSquare } from 'lucide-react';
 import { WORKSPACES } from './data/mockData';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
@@ -31,6 +31,8 @@ import ProfilePage from './components/ProfilePage';
 import { BrandLogo, FAVICON_DATA_URI } from './components/ui/BrandLogo';
 
 if (typeof document !== 'undefined') {
+  document.documentElement.classList.add('dark');
+  try { localStorage.setItem('theme', 'dark'); } catch {}
   const faviconLink = document.querySelector("link[rel~='icon']");
   if (faviconLink) faviconLink.href = FAVICON_DATA_URI;
 }
@@ -40,13 +42,12 @@ import MessagingModal from './components/messaging/MessagingModal';
 
 /**
  * Standalone layout wrapper for the public Hub section.
- * Renders a top nav with branding, theme toggle, and optional user actions.
+ * Renders a top nav with branding and optional user actions.
  * Accessible to both authenticated users and anonymous guests.
  *
  * @param {{ children: React.ReactNode, user: object|null, logout: function }} props
  */
 function HubLayout({ children, user, logout }) {
-  const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const { unreadCount = 0, setIsMessagingOpen = () => {} } = useMessaging();
@@ -67,25 +68,6 @@ function HubLayout({ children, user, logout }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isDropdownOpen]);
-
-  useEffect(() => {
-    const isDarkTheme = localStorage.theme ? localStorage.theme === 'dark' : true;
-    setIsDark(isDarkTheme);
-    if (isDarkTheme) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
-    }
-  };
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/30 overflow-x-hidden">
@@ -133,14 +115,6 @@ function HubLayout({ children, user, logout }) {
 
         {/* Right side actions */}
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl bg-transparent border-0 text-primary hover:bg-muted/40 transition-colors cursor-pointer"
-            title="Toggle theme"
-          >
-            {isDark ? <Sun size={15} className="text-primary" /> : <Moon size={15} className="text-primary" />}
-          </button>
-
           {user ? (
             // ── Logged-in user actions ──
             <div className="flex items-center gap-2">
@@ -388,24 +362,6 @@ function Dashboard({ user, logout }) {
   const [activeTool, setActiveTool] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
-    const isDarkTheme = localStorage.theme ? localStorage.theme === 'dark' : true;
-    setIsDark(isDarkTheme);
-  }, []);
-
-  const toggleTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
-    }
-  };
 
   // Dynamic Workspaces State (dual-persistence: Firestore + localStorage)
   const [customWorkspaces, setCustomWorkspaces] = useState(WORKSPACES);
@@ -733,7 +689,6 @@ function Dashboard({ user, logout }) {
           onDeleteWorkspace={handleDeleteWorkspace}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(v => !v)}
-          isDark={isDark}
         />
       </div>
 
@@ -747,8 +702,6 @@ function Dashboard({ user, logout }) {
           customWorkspaces={displayWorkspaces}
           isSidebarCollapsed={isSidebarCollapsed}
           onToggleSidebar={() => setIsSidebarCollapsed(v => !v)}
-          isDark={isDark}
-          onToggleTheme={toggleTheme}
         />
         
         <div className={`flex-1 ${activeTool === 'developer' || activeTool === 'simulator' ? 'flex flex-col px-2 md:px-3 pb-2 pt-2 min-h-0 h-full overflow-hidden' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>

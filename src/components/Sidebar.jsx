@@ -26,7 +26,6 @@ export default function Sidebar({
   onDeleteWorkspace,
   isCollapsed,
   onToggleCollapse,
-  isDark = true,
 }) {
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
