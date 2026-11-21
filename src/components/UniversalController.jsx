@@ -884,8 +884,8 @@ function GaugeWidget({ widget, value, history = [] }) {
               />
 
               {/* Scale Min/Max Micro-Labels */}
-              <text x="26" y="111" textAnchor="middle" fontSize="9" fill="#a3e635" fontFamily="monospace">0</text>
-              <text x="134" y="111" textAnchor="middle" fontSize="9" fill="#a3e635" fontFamily="monospace">{maxVal}</text>
+              <text x="26" y="111" textAnchor="middle" fontSize="9" fill="#a3e635" fontFamily="var(--font-mono)">0</text>
+              <text x="134" y="111" textAnchor="middle" fontSize="9" fill="#a3e635" fontFamily="var(--font-mono)">{maxVal}</text>
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center pt-3 pointer-events-none">
@@ -1052,7 +1052,7 @@ function RelayWidget({ widget, value, publish }) {
           {/* Left Terminal COM */}
           <line x1="12" y1="34" x2="48" y2="34" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="2.5" strokeLinecap="round" />
           <circle cx="48" cy="34" r="4" fill={isOn ? '#a3e635' : '#8b8d83'} />
-          <text x="14" y="47" fontSize="8" fontFamily="monospace" fill="#b5b6ad">COM</text>
+          <text x="14" y="47" fontSize="8" fontFamily="var(--font-mono)" fill="#b5b6ad">COM</text>
 
           {/* Mechanical Armature Contact */}
           <line
@@ -1067,7 +1067,7 @@ function RelayWidget({ widget, value, publish }) {
           {/* Right Terminal NO */}
           <circle cx="112" cy="34" r="4" fill={isOn ? '#a3e635' : '#8b8d83'} />
           <line x1="112" y1="34" x2="148" y2="34" stroke={isOn ? '#a3e635' : '#8b8d83'} strokeWidth="2.5" strokeLinecap="round" />
-          <text x="130" y="47" fontSize="8" fontFamily="monospace" fill="#b5b6ad">NO</text>
+          <text x="130" y="47" fontSize="8" fontFamily="var(--font-mono)" fill="#b5b6ad">NO</text>
         </svg>
       </button>
 
@@ -1373,9 +1373,9 @@ function ServoWidget({ widget, publish }) {
             <circle cx={armX} cy={armY} r="3.5" fill="#f0f0e8" stroke="#a3e635" strokeWidth="1.5" />
             <circle cx="80" cy="78" r="8" fill="#1a1b18" stroke="#8b8d83" strokeWidth="2" />
             <circle cx="80" cy="78" r="3" fill="#a3e635" />
-            <text x="16" y="88" fontSize="8" fontFamily="monospace" fill="#a3e635">0°</text>
-            <text x="80" y="10" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="#a3e635">90°</text>
-            <text x="142" y="88" fontSize="8" fontFamily="monospace" fill="#a3e635">180°</text>
+            <text x="16" y="88" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">0°</text>
+            <text x="80" y="10" textAnchor="middle" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">90°</text>
+            <text x="142" y="88" fontSize="8" fontFamily="var(--font-mono)" fill="#a3e635">180°</text>
           </svg>
         </div>
         <div className="text-right shrink-0">
@@ -2406,7 +2406,7 @@ function GripperWidget({ widget, publish }) {
           <rect x="30" y="24" width="30" height="16" rx="4" fill="rgba(240,240,232,0.08)" stroke="rgba(240,240,232,0.28)" strokeWidth="1.5" />
           <rect x={45 - jawGap / 2 - 14} y="10" width="14" height="14" rx="3" fill="rgba(163,230,53,0.22)" stroke="#a3e635" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
           <rect x={45 + jawGap / 2} y="10" width="14" height="14" rx="3" fill="rgba(163,230,53,0.22)" stroke="#a3e635" strokeWidth="1.5" style={{ transition: 'all 0.2s' }} />
-          <text x="45" y="36" textAnchor="middle" fontSize="8" fill="#a3e635" fontFamily="monospace" fontWeight="bold">{openPct}%</text>
+          <text x="45" y="36" textAnchor="middle" fontSize="8" fill="#a3e635" fontFamily="var(--font-mono)" fontWeight="bold">{openPct}%</text>
         </svg>
       </div>
       <div>

@@ -1,6 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700&family=Almarai:wght@400;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 @custom-variant dark (&:is(.dark *));
 
 /* ── Design Tokens: Dark Charcoal + Light Ivory + Lime Green ── */
@@ -50,9 +49,9 @@
 
   --radius: 0.75rem;
   --spacing: 0.25rem;
-  --font-sans: "IBM Plex Sans Arabic", "Cairo", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", monospace; /* للأرقام/الكود - يبقى إنجليزي */
-  --font-display: "Almarai", "Cairo", sans-serif; /* للعناوين الكبيرة */
+  --font-sans: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
 }
 
 /* ── @theme inline: expose all CSS vars to Tailwind 4 utilities ── */
@@ -95,8 +94,9 @@
 
   --color-radius: var(--radius);
   --color-spacing: var(--spacing);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --font-sans: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
   --font-serif: var(--font-serif);
 
   --color-letter-spacing: var(--letter-spacing);
@@ -106,10 +106,14 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-sans), sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: var(--letter-spacing);
+  }
+
+  code, pre, kbd, samp {
+    font-family: var(--font-mono);
   }
 }
 
