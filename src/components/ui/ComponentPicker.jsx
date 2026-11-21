@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
 import {
-  Cpu, Plus, Trash2, Search, X, ImagePlus, Check, Sparkles,
+  Cpu, Plus, Trash2, Search, X, ImagePlus, Check,
   Layers, Tag, Info, ArrowUpRight, HelpCircle
 } from 'lucide-react';
 import { COMPONENT_DATABASE, COMPONENT_CATEGORIES } from '../../data/componentDatabase';
@@ -75,7 +75,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-              <Sparkles size={18} className="text-primary animate-pulse" />
+              <Cpu size={18} className="text-primary" />
               مكتبة الأجهزة والقطع الإلكترونية
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">اختر من القطع الجاهزة أو أضف قطعة مخصصة لمشروعك</p>
@@ -111,7 +111,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                   activeCategory === cat.id
-                    ? 'bg-primary text-black shadow-md shadow-primary/20'
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
                     : 'bg-card dark:bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10'
                 }`}
               >
@@ -316,7 +316,7 @@ export default function ComponentPicker({ components = [], onChange }) {
     <div className="space-y-5 text-right" dir="rtl">
       {/* Top Banner Info */}
       <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-3">
-        <Sparkles size={18} className="text-primary shrink-0 mt-0.5" />
+        <Cpu size={18} className="text-primary shrink-0 mt-0.5" />
         <div>
           <h4 className="text-xs font-bold text-foreground">شبكة بطاقات الأجهزة والقطع التفاعلية</h4>
           <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">

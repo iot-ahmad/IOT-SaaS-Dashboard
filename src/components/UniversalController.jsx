@@ -9,7 +9,7 @@ import {
   Lightbulb, Palette, Calendar, FlaskConical, Wind, Blinds,
   Lock, Bell, Camera, Droplets, Sprout, Monitor, Globe,
   Minus, RotateCcw, RotateCw, AlignJustify, Hash, ChevronRight as ChevronRightIcon,
-  Power, Cpu, Gauge, GraduationCap, Shield, Leaf, Wrench, Play, Sparkles, Grid, Send, Terminal,
+  Power, Cpu, Gauge, GraduationCap, Shield, Leaf, Wrench, Play, Grid, Send, Terminal,
   Bot, Hand, Navigation, Crosshair, LocateFixed
 } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, YAxis, AreaChart, Area } from 'recharts';

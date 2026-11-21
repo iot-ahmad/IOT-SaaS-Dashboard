@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { uploadToCloudinary } from '../lib/cloudinaryUpload';
-import { Globe, Edit3, Camera, FileText, Cpu, Eye, ThumbsUp, Copy, Check, AlertCircle, X, Sparkles, FolderCode, Link2, Package, MessageSquare } from 'lucide-react';
+import { Globe, Edit3, Camera, FileText, Cpu, Eye, ThumbsUp, Copy, Check, AlertCircle, X, FolderCode, Link2, Package, MessageSquare } from 'lucide-react';
 import { useMessaging } from '../context/MessagingContext';
 
 // Inline SVG icons for brands not available in this lucide-react version
@@ -336,7 +336,7 @@ export default function UserProfile({ currentUser }) {
             )}
           </div>
           <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-md">
-            <Sparkles size={13} className="text-black" />
+            <Check size={13} className="text-primary-foreground" />
           </div>
         </div>
 
@@ -369,9 +369,9 @@ export default function UserProfile({ currentUser }) {
 
         <button
           onClick={() => setShowEditModal(true)}
-          className="bg-primary hover:bg-primary/90 text-black font-black px-8 py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 text-sm cursor-pointer"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 text-sm cursor-pointer"
         >
-          <Sparkles size={14} className="inline-block mr-1 mb-0.5" />
+          <Edit3 size={14} className="inline-block mr-1.5 mb-0.5" />
           إعداد الملف الشخصي الآن
         </button>
 
@@ -391,7 +391,7 @@ export default function UserProfile({ currentUser }) {
               </button>
               <h3 className="text-xl font-bold mb-1 text-white text-right flex items-center justify-end gap-2 border-b border-border pb-3">
                 أنشئ ملفك الشخصي
-                <Sparkles size={18} className="text-primary" />
+                <Edit3 size={18} className="text-primary" />
               </h3>
               <p className="text-xs text-muted-foreground text-right mb-5">ستظهر معلوماتك على صفحتك العامة في Hub</p>
 
@@ -452,7 +452,7 @@ export default function UserProfile({ currentUser }) {
 
                 <div className="pt-3 flex gap-3">
                   <button type="submit" disabled={avatarUploading}
-                    className="flex-1 bg-primary text-black font-bold py-2.5 rounded-xl text-xs cursor-pointer shadow-md shadow-primary/10 disabled:opacity-50">
+                    className="flex-1 bg-primary text-primary-foreground font-bold py-2.5 rounded-xl text-xs cursor-pointer shadow-md shadow-primary/10 disabled:opacity-50">
                     إنشاء الملف الشخصي
                   </button>
                   <button type="button" onClick={() => setShowEditModal(false)}

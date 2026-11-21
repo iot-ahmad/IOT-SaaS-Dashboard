@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { X, Copy, Check, RefreshCw, ExternalLink, Sparkles } from 'lucide-react';
+import { X, Copy, Check, RefreshCw, ExternalLink, FileCode } from 'lucide-react';
 
 export default function MoreMenu({
   isOpen,
@@ -160,9 +160,9 @@ export default function MoreMenu({
               onOpenModal();
               onClose();
             }}
-            className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-amber-400 hover:text-amber-300 text-xs transition-colors cursor-pointer text-start"
+            className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-foreground text-xs transition-colors cursor-pointer text-start"
           >
-            <Sparkles size={13} />
+            <FileCode size={13} className="text-primary" />
             <span>الكود ومخطط التوصيل الكامل</span>
           </button>
         )}

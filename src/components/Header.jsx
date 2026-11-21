@@ -131,7 +131,7 @@ export default function Header({
           <MessageSquare size={16} />
           <span className="hidden sm:inline">الرسائل</span>
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-black text-[9px] font-extrabold flex items-center justify-center shadow-md">
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md">
               {unreadCount}
             </span>
           )}

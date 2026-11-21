@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Search, Plus, Copy, Check, X, Download, BarChart2,
   Trash2, Wifi, WifiOff, Activity, Thermometer, Zap, CircuitBoard,
-  Sparkles, Layers, CheckCheck, Play
+  Cpu, Layers, CheckCheck, Play
 } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -20,7 +20,7 @@ export const PROJECT_DEVICE_PRESETS = [
   {
     projectId: 'all-in-one',
     projectName: 'المحطة الشاملة (Mega All-In-One Station)',
-    badge: '🌟 موصى به للاختبار الشامل',
+    badge: 'موصى به للاختبار الشامل',
     description: '11 مستشعر ومشغل يجمع كل حساسات وأدوات المنصة لاختبار لوحة التحكم بالكامل.',
     devices: [
       { name: 'درجة الحرارة DHT22 Temp', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', chartType: 'area' },
@@ -39,7 +39,7 @@ export const PROJECT_DEVICE_PRESETS = [
   {
     projectId: 'smart-farm',
     projectName: 'المزرعة الذكية والري التلقائي (Smart Farm)',
-    badge: '🌱 زراعة ذكية و STEM',
+    badge: 'زراعة ذكية و STEM',
     description: 'مستشعرات حرارة ورطوبة البيوت المحمية، رطوبة التربة، ومضخة وصمام الري الآلي.',
     devices: [
       { name: 'حرارة البيوت المحمية DHT22', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', chartType: 'area' },
@@ -53,7 +53,7 @@ export const PROJECT_DEVICE_PRESETS = [
   {
     projectId: 'smart-home',
     projectName: 'المنزل الذكي ونظام الحماية (Smart Home)',
-    badge: '🔒 أمن وسلامة وأتمتة',
+    badge: 'أمن وسلامة وأتمتة',
     description: 'كاشف الحركة والسرقة، حساس الإضاءة، قفل الباب الإلكتروني، وصفارة الإنذار.',
     devices: [
       { name: 'كاشف الحركة والسرقة PIR', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', chartType: 'scatter' },
@@ -66,7 +66,7 @@ export const PROJECT_DEVICE_PRESETS = [
   {
     projectId: 'rc-car',
     projectName: 'السيارة الذكية والروبوت (RC Car)',
-    badge: '🏎️ روبوتكس وتحكم D-Pad',
+    badge: 'روبوتكس وتحكم D-Pad',
     description: 'رادار كشف الحواجز سونار، محركات الدفع، منظم السرعة، المصابيح، والبوق.',
     devices: [
       { name: 'رادار كشف الحواجز Sonar HC-SR04', type: 'Sensor', pin: 'GPIO 5', topic: 'sensor/distance', chartType: 'bar' },
@@ -80,11 +80,11 @@ export const PROJECT_DEVICE_PRESETS = [
 
 // ── Chart Types ────────────────────────────────────────────────────────────────
 const CHART_TYPES = [
-  { id: 'area',    label: '📈 Area',    desc: 'Continuous data over time (temp, humidity)' },
-  { id: 'line',    label: '📉 Line',    desc: 'Precise value tracking, minimal visual noise' },
-  { id: 'bar',     label: '📊 Bar',     desc: 'Comparing discrete readings or events' },
-  { id: 'scatter', label: '🔵 Scatter', desc: 'Detect patterns and outliers' },
-  { id: 'radar',   label: '🕸 Radar',   desc: 'Multi-variable comparison (max 8 points)' },
+  { id: 'area',    label: 'Area',    desc: 'Continuous data over time (temp, humidity)' },
+  { id: 'line',    label: 'Line',    desc: 'Precise value tracking, minimal visual noise' },
+  { id: 'bar',     label: 'Bar',     desc: 'Comparing discrete readings or events' },
+  { id: 'scatter', label: 'Scatter', desc: 'Detect patterns and outliers' },
+  { id: 'radar',   label: 'Radar',   desc: 'Multi-variable comparison (max 8 points)' },
 ];
 
 // ── ESP32 GPIO options ──────────────────────────────────────────────────────
@@ -411,7 +411,7 @@ function AddDeviceModal({ onClose, onAdd, userUID }) {
               <button
                 onClick={() => name.trim() && setStep(2)}
                 disabled={!name.trim()}
-                className="w-full bg-primary text-black font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-40"
+                className="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-40"
               >
                 Next →
               </button>
@@ -501,7 +501,7 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-border bg-muted/40">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
-              <Sparkles size={18} />
+              <Layers size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-foreground">استيراد أجهزة مشاريع المحاكي الجاهزة</h3>
@@ -594,7 +594,7 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
               }}
               className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow-md active:scale-95 flex items-center gap-1.5"
             >
-              <Sparkles size={14} />
+              <Layers size={14} />
               استيراد كافة المشاريع معاً
             </button>
             <button
@@ -742,7 +742,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
             onClick={() => setShowPresetsModal(true)}
             className="mx-0 flex items-center gap-1.5 rounded-xl text-sm px-3.5 py-2 border-primary/40 text-primary hover:bg-primary/10 font-bold shadow-sm"
           >
-            <Sparkles size={16} className="text-primary" />
+            <Layers size={16} className="text-primary" />
             أجهزة المشاريع الجاهزة
           </Button>
           <Button
@@ -770,7 +770,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
-              <Sparkles size={20} className="text-primary" />
+              <Cpu size={20} className="text-primary" />
             </div>
             <div>
               <h4 className="text-sm font-bold text-foreground">تجهيز أجهزة المحاكي للاختبار المباشر</h4>

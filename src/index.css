@@ -47,7 +47,7 @@
   --chart-4: #a855f7;
   --chart-5: #ec4899;
 
-  --radius: 0.1px;
+  --radius: 0.75rem;
   --spacing: 0.25rem;
   --font-sans: "IBM Plex Sans Arabic", "Cairo", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", monospace; /* للأرقام/الكود - يبقى إنجليزي */
@@ -59,34 +59,34 @@
 
 /* ── Design Tokens: Dark Mode (Muted / Corporate — Stripe/Linear/Notion) ── */
 .dark {
-  --background: #151516; /* Solid dark gray-navy canvas */
-  --foreground: #e8e9eb; /* Off-white for headings */
+  --background: #0d0f14; /* Crisp dark slate canvas */
+  --foreground: #f1f5f9; /* Clean off-white for headings */
 
-  --card: #101113da; /* Quiet surface tile */
-  --card-foreground: #e8e9eb;
-  --sidebar: #191a1b;
-  --sidebar-foreground: #f7f4f4;
+  --card: #13161f; /* Quiet surface tile */
+  --card-foreground: #f1f5f9;
+  --sidebar: #10131a;
+  --sidebar-foreground: #f1f5f9;
   --sidebar-border: rgba(255, 255, 255, 0.08); /* Single neutral border */
-  --border: rgba(44, 43, 43, 0.08); /* Single neutral border */
-  --input: #1a1d23;
-  --muted: #1e2229;
-  --muted-foreground: #ffffff; /* Medium gray for secondary text */
-  --secondary: #1e2229;
-  --secondary-foreground: #e8e9eb;
-  --popover: #1a1d23;
-  --popover-foreground: #e8e9eb;
+  --border: rgba(255, 255, 255, 0.08); /* Crisp 1px subtle border */
+  --input: #171b26;
+  --muted: #1a1e29;
+  --muted-foreground: #94a3b8; /* Balanced slate-gray for secondary text */
+  --secondary: #1e2330;
+  --secondary-foreground: #f1f5f9;
+  --popover: #151922;
+  --popover-foreground: #f1f5f9;
 
-  /* Primary: Muted Corporate Slate Blue */
-  --primary: #0666b9;
-  --primary-foreground: #e8e9eb;
-  --ring: #0c5596;
-  --accent: #19191a;
-  --accent-foreground: #e8e9eb;
-  --sidebar-accent: #1e2229;
-  --sidebar-accent-foreground: #e8e9eb;
-  --sidebar-primary: #0666b9;
-  --sidebar-primary-foreground: #e8e9eb;
-  --sidebar-ring: #0666b9;
+  /* Primary: Clean Corporate Slate Blue */
+  --primary: #0a72cc;
+  --primary-foreground: #ffffff;
+  --ring: #0a72cc;
+  --accent: #1a1e29;
+  --accent-foreground: #f1f5f9;
+  --sidebar-accent: #1a1e29;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-primary: #0a72cc;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-ring: #0a72cc;
 
   /* Semantic status: Bright & Eye-catching */
   --destructive: #ef4444;

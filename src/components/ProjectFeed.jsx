@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, updateDoc, doc, increment } from 'fi
 import {
   Search, Cpu, Eye, ThumbsUp, Copy, Plus, Calendar,
   Zap, Leaf, Bot, Home, Wifi, Thermometer, LayoutGrid, TrendingUp, Star,
-  Flame, Sparkles, ArrowRight, BookOpen, Layers
+  Flame, ArrowRight, BookOpen, Layers
 } from 'lucide-react';
 import { FEATURED_TEMPLATES } from '../data/featuredTemplates';
 import FeaturedTemplatesModal from './ui/FeaturedTemplatesModal';
@@ -397,7 +397,7 @@ export default function ProjectFeed({ user }) {
             onClick={handleAllClick}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all duration-200 cursor-pointer shrink-0 flex items-center gap-1.5 ${
               selectedCategory === 'all'
-                ? 'bg-primary text-black border-transparent shadow-md'
+                ? 'bg-primary text-primary-foreground border-transparent shadow-md'
                 : 'bg-card/5 border-border text-muted-foreground hover:text-foreground hover:border-primary/30'
             }`}
           >
@@ -435,7 +435,7 @@ export default function ProjectFeed({ user }) {
                   onClick={() => setSortBy(opt.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-primary text-black shadow-sm'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >

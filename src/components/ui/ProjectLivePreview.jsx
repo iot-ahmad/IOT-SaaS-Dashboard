@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Eye, Cpu, ThumbsUp, Copy, Calendar, Sparkles, Zap,
+  Eye, Cpu, ThumbsUp, Copy, Calendar, Zap,
   CheckCircle2, Layers, MessageSquare, BookOpen, User, X, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { SchematicSvgViewer } from './WiringBuilder';
@@ -148,14 +148,14 @@ export default function ProjectLivePreview({
               <button
                 type="button"
                 onClick={() => setViewMode('card')}
-                className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${viewMode === 'card' ? 'bg-primary text-black' : 'text-muted-foreground'}`}
+                className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${viewMode === 'card' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}
               >
                 البطاقة
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode('detail')}
-                className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${viewMode === 'detail' ? 'bg-primary text-black' : 'text-muted-foreground'}`}
+                className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${viewMode === 'detail' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}
               >
                 المخطط
               </button>
@@ -183,7 +183,7 @@ export default function ProjectLivePreview({
           <div className="w-full max-w-lg bg-card dark:bg-[#0a0c12] border-t border-border rounded-t-3xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles size={16} className="text-primary" />
+                <Eye size={16} className="text-primary" />
                 <h4 className="text-sm font-bold text-foreground">معاينة بطاقة المشروع</h4>
               </div>
               <button

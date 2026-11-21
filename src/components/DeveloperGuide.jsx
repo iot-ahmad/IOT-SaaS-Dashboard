@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Copy, Check, Send, Sparkles, RefreshCw, Bot, Paperclip, Plus, ArrowUp, Cpu, Zap, Globe, Terminal, Play, CircleUserRound } from 'lucide-react';
+import { Copy, Check, Send, RefreshCw, Bot, Paperclip, Plus, ArrowUp, Cpu, Zap, Globe, Terminal, Play, CircleUserRound } from 'lucide-react';
 import { getDefaultBrokerHost, getRootCaForHost } from '../config/mqttSecurity';
 
 /* ── tiny copy button ─────────────────────────────────────────────────────── */
@@ -47,7 +47,7 @@ const getBotResponse = (input, uid, brokerHost, tlsPort = 8883) => {
   const caInfo = getRootCaForHost(activeHost);
 
   if (text.includes('مطور') || text.includes('من قام') || text.includes('احمد') || text.includes('أحمد') || text.includes('creator') || text.includes('developer') || text.includes('batayneh') || text.includes('بطاينه') || text.includes('بطاينة') || text.includes('صنع') || text.includes('برمج')) {
-    return `**تم تصميم وتطوير منصة IOT365 بالكامل بواسطة المطور أحمد البطاينة (Ahmad Al-Batayneh) 💻✨.**\n\nتم تطوير هذه المنصة لتوفير أداة قوية، سريعة، ومجانية للطلاب والباحثين والمهندسين لربط لوحات ESP32 ومشاريع إنترنت الأشياء لحظياً دون الدخول في تعقيدات إنشاء قواعد البيانات والسيرفرات الخاصة.`;
+    return `**تم تصميم وتطوير منصة IOT365 بالكامل بواسطة المطور أحمد البطاينة (Ahmad Al-Batayneh).**\n\nتم تطوير هذه المنصة لتوفير أداة قوية، سريعة، ومجانية للطلاب والباحثين والمهندسين لربط لوحات ESP32 ومشاريع إنترنت الأشياء لحظياً دون الدخول في تعقيدات إنشاء قواعد البيانات والسيرفرات الخاصة.`;
   }
 
   if (text.includes('broker') || text.includes('بروك') || text.includes('hivemq') || text.includes('emqx') || text.includes('سيرفر') || text.includes('server') || text.includes('port') || text.includes('بورت') || text.includes('host') || text.includes('عنوان') || text.includes('منفذ')) {
@@ -179,7 +179,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
 
     const systemPrompt = `أنت مساعد ذكي متخصص لمنصة IOT365. مهمتك مساعدة الطلاب والمطورين في مشاريع إنترنت الأشياء والـ ESP32 وبرمجة Arduino C++ وبروتوكول MQTT.
 معلومات المنصة:
-- مطور ومصمم منصة IOT365 بالكامل هو: المطور أحمد البطاينة (Ahmad Al-Batayneh) 💻✨.
+- مطور ومصمم منصة IOT365 بالكامل هو: المطور أحمد البطاينة (Ahmad Al-Batayneh).
 - UID المستخدم الحالي: ${userUID || 'YOUR_UID'}
 - MQTT Broker الحالي: ${activeHost} — المنفذ المشفر TLS: ${activeTlsPort} (WSS للمتصفح: ${activeCaInfo.wsPort}/mqtt) — الوضع: ${mqttMode === 'private' ? 'سيرفر خاص معزول' : 'وضع التجربة'}
 - بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
@@ -340,7 +340,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
 
             <div dir="rtl" className={`p-4 rounded-2xl text-right rtl-text border ${
               msg.sender === 'user'
-                ? 'bg-primary text-black border-transparent rounded-tr-none text-sm font-semibold shadow-lg shadow-primary/20'
+                ? 'bg-primary text-primary-foreground border-transparent rounded-tr-none text-sm font-semibold shadow-lg shadow-primary/20'
                 : 'bg-card dark:bg-card/[0.03] border-border dark:border-white/[0.07] text-foreground/90 rounded-tl-none space-y-1 shadow-sm'
             }`}>
               {msg.sender === 'user' ? (
@@ -422,14 +422,14 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
                 disabled={!inputVal.trim() || isTyping}
                 className={`px-2 py-2 rounded-lg transition-colors flex items-center justify-center ${
                   inputVal.trim() && !isTyping
-                    ? "bg-primary text-black shadow-md shadow-primary/20"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                     : "bg-muted dark:bg-neutral-800 text-muted-foreground dark:text-zinc-500 cursor-not-allowed"
                 }`}
               >
                 <ArrowUp
                   className={`w-4 h-4 ${
                     inputVal.trim() && !isTyping
-                      ? "text-black"
+                      ? "text-primary-foreground"
                       : "text-muted-foreground dark:text-zinc-500"
                   }`}
                 />

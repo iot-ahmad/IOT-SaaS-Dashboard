@@ -4,7 +4,7 @@ import { db } from '../firebase';
 import { doc, collection, setDoc, getDoc } from 'firebase/firestore';
 import {
   ArrowLeft, ArrowRight, Upload, X, Cpu, Eye, Code, CheckCircle2,
-  AlertCircle, Sparkles, Plus, Trash2, ImagePlus, Zap, FileText,
+  AlertCircle, Plus, Trash2, ImagePlus, Zap, FileText,
   ChevronRight, Info, Flame, Copy, HelpCircle, Layers, Star, MessageSquare
 } from 'lucide-react';
 import ComponentPicker from './ui/ComponentPicker';
@@ -572,15 +572,15 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               {/* Editor */}
               <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[640px]">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
-                  <Code size={16} className="text-primary animate-pulse" />
+                  <Code size={16} className="text-primary" />
                   محرر التوثيق والأكواد البرمجية
                 </h3>
 
                 <div className="flex gap-1.5 bg-muted dark:bg-[#0c0e14] border border-border p-1 rounded-xl shrink-0">
                   {[
-                    { id: 'overview', label: '📄 نظرة عامة' },
-                    { id: 'code', label: '💻 كود C++ / Arduino' },
-                    { id: 'challenges', label: '⚠️ التحديات والحلول' },
+                    { id: 'overview', label: 'نظرة عامة' },
+                    { id: 'code', label: 'كود C++ / Arduino' },
+                    { id: 'challenges', label: 'التحديات والحلول' },
                   ].map(t => (
                     <button
                       key={t.id}
@@ -588,7 +588,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                       onClick={() => setDocTab(t.id)}
                       className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-bold transition-all text-center cursor-pointer ${
                         docTab === t.id
-                          ? 'bg-primary text-black shadow-md'
+                          ? 'bg-primary text-primary-foreground shadow-md'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >

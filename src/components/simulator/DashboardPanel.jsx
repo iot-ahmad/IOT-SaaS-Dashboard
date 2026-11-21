@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gamepad2, Cpu, Terminal, Code, Sparkles, Copy, Check, Plus, RotateCcw, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { Gamepad2, Cpu, Terminal, Code, CircuitBoard, FileCode, Copy, Check, Plus, RotateCcw, ShieldCheck, AlertTriangle } from 'lucide-react';
 import UniversalController from '../UniversalController';
 import { LiveTerminal } from '../ToolViews';
 import NewDevicesView from '../DevicesView';
@@ -102,10 +102,10 @@ export default function DashboardPanel({
             <button
               type="button"
               onClick={onOpenModal}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700/80 border border-white/10 text-zinc-200 text-xs font-semibold cursor-pointer transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/90 hover:bg-zinc-700/80 border border-white/10 text-zinc-200 text-xs font-semibold cursor-pointer transition-all"
               title="الكود ومخطط التوصيل الكامل"
             >
-              <Sparkles size={12} className="text-amber-400" />
+              <CircuitBoard size={13} className="text-primary" />
               <span className="hidden sm:inline">مخطط التوصيل</span>
             </button>
           )}
@@ -232,8 +232,9 @@ export default function DashboardPanel({
 
         {activePanel === 'terminal' && (
           <div className="h-full flex flex-col gap-2">
-            <div className="p-3 bg-zinc-800/40 border border-white/10 rounded-xl text-xs text-zinc-400">
-              ⚡ تعرض هذه الشاشة جميع الإشارات المتبادلة بين لوحة التحكم ومحاكي Wokwi في الوقت الفعلي عبر بروتوكول MQTT.
+            <div className="p-3 bg-zinc-800/40 border border-white/10 rounded-xl text-xs text-zinc-400 flex items-center gap-2">
+              <Terminal size={14} className="text-primary shrink-0" />
+              <span>تعرض هذه الشاشة جميع الإشارات المتبادلة بين لوحة التحكم ومحاكي Wokwi في الوقت الفعلي عبر بروتوكول MQTT.</span>
             </div>
             <div className="flex-1 min-h-[300px]">
               <LiveTerminal messages={messages} isConnected={mqttOnline} />
@@ -257,7 +258,7 @@ export default function DashboardPanel({
                   onClick={() => onSelectProjectId('all-in-one')}
                   className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs transition-all cursor-pointer"
                 >
-                  تجربة المحطة الشاملة الجاهزة 🌟
+                  تجربة المحطة الشاملة الجاهزة
                 </button>
               </div>
             ) : (
@@ -271,7 +272,7 @@ export default function DashboardPanel({
                       onClick={onOpenModal}
                       className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
                     >
-                      <Sparkles size={13} className="text-amber-400" />
+                      <FileCode size={13} className="text-primary" />
                       فتح النافذة التفصيلية
                     </button>
                   </div>

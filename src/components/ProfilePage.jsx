@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User, Globe, Camera, Copy, Check, Shield, Bell, Link as LinkIcon,
-  CreditCard, Lock, Smartphone, Mail, Activity, Cpu, Sparkles, X,
+  CreditCard, Lock, Smartphone, Mail, Activity, Cpu, X,
   AlertCircle, Edit3, ChevronRight, ExternalLink, Eye, EyeOff, Server, AlertTriangle, RotateCcw,
 } from 'lucide-react';
 import {
@@ -739,7 +739,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                 <div className="mb-4 p-3 rounded-xl bg-primary/10 border border-primary/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="text-xs space-y-0.5">
                     <p className="font-bold text-foreground flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-primary" />
+                      <Shield size={14} className="text-primary" />
                       الربط التلقائي المعزول (EMQX Serverless)
                     </p>
                     <p className="text-muted-foreground">

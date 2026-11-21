@@ -146,7 +146,7 @@ function HubLayout({ children, user, logout }) {
               >
                 <MessageSquare size={15} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-black text-[9px] font-extrabold flex items-center justify-center shadow-md">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md">
                     {unreadCount}
                   </span>
                 )}
@@ -207,7 +207,7 @@ function HubLayout({ children, user, logout }) {
             // ── Guest actions ──
             <button
               onClick={() => navigate('/login')}
-              className="bg-primary hover:bg-primary/90 text-black text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-primary/10 cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-primary/10 cursor-pointer"
             >
               تسجيل الدخول
             </button>

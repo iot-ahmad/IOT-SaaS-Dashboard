@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Sparkles, X, CheckCircle2, Code, Cpu, Layers, Copy, Check, ShieldCheck, AlertTriangle 
+  CircuitBoard, X, CheckCircle2, Code, Cpu, Layers, Copy, Check, ShieldCheck, AlertTriangle 
 } from 'lucide-react';
 import { SIMULATOR_PROJECTS } from '../data/simulatorProjects';
 import TopBar from './simulator/TopBar';
@@ -287,8 +287,8 @@ export default function SimulatorView({
             
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-zinc-800/40 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center text-amber-400">
-                  <Sparkles size={16} />
+                <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/25 flex items-center justify-center text-primary">
+                  <CircuitBoard size={16} />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm sm:text-base text-foreground">

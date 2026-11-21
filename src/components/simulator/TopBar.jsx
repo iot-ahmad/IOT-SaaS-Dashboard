@@ -34,7 +34,7 @@ export default function TopBar({
           className="bg-zinc-800 border border-white/10 text-foreground text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-primary/40 cursor-pointer shadow-sm max-w-[200px] sm:max-w-xs truncate"
           title="اختيار مشروع المحاكاة"
         >
-          <option value="empty">✨ مشروع جديد فارغ</option>
+          <option value="empty">مشروع جديد فارغ (Custom)</option>
           <optgroup label="── مشاريع محاكاة جاهزة ──">
             {SIMULATOR_PROJECTS.map((proj) => (
               <option key={proj.id} value={proj.id}>

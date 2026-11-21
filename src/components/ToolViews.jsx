@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X, Sparkles, Play, RefreshCw } from 'lucide-react';
+import { Cpu, Zap, Search, Filter, MoreVertical, Plus, CheckCircle2, AlertTriangle, Info, User, Globe, Copy, Check, Terminal, CircuitBoard, Bell, Shield, Link as LinkIcon, CreditCard, Lock, Smartphone, Mail, Activity, ChevronUp, ChevronDown, Trash2, X, Play, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
@@ -380,12 +380,12 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-primary/5 to-amber-500/10 border-primary/20 shadow-lg relative overflow-hidden mb-6">
+    <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20 shadow-lg relative overflow-hidden mb-6">
       <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(245,158,11,0.15)] shrink-0">
-          <Sparkles size={18} className="animate-pulse" />
+        <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shrink-0">
+          <Cpu size={18} />
         </div>
         <div className="text-left font-sans">
           <h3 className="font-extrabold text-foreground text-sm">Cosmos3 Physical AI Diagnostics</h3>
@@ -425,7 +425,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
               <button
                 type="submit"
                 disabled={loading || !scenario.trim()}
-                className="bg-primary text-black px-5 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors text-xs disabled:opacity-50"
+                className="bg-primary text-primary-foreground px-5 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors text-xs disabled:opacity-50"
               >
                 {loading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />}
                 {loading ? 'تحليل...' : 'تشخيص'}
@@ -438,9 +438,9 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
         <div className="flex flex-wrap gap-2 pt-1.5">
           <span className="text-[10px] text-muted-foreground/60 self-center">أمثلة سريعة:</span>
           {[
-            { label: '🚨 توقف مضخة المياه فجأة', sc: 'المضخة متوقفة ولا تسحب مياه رغم وجود أمر تشغيل والرطوبة منخفضة جداً' },
-            { label: '🔋 انخفاض بطارية ESP32 وحلول التوفير', sc: 'البطارية انخفضت لـ 2.8 فولت ونريد كود sleep موفر للطاقة' },
-            { label: '🌧️ تضارب أتمتة الري مع المطر المكتشف', sc: 'رطوبة التربة منخفضة وتطلب ري ولكن حساس المطر يرصد هطول أمطار' }
+            { label: 'توقف مضخة المياه فجأة', sc: 'المضخة متوقفة ولا تسحب مياه رغم وجود أمر تشغيل والرطوبة منخفضة جداً' },
+            { label: 'انخفاض بطارية ESP32 وحلول التوفير', sc: 'البطارية انخفضت لـ 2.8 فولت ونريد كود sleep موفر للطاقة' },
+            { label: 'تضارب أتمتة الري مع المطر المكتشف', sc: 'رطوبة التربة منخفضة وتطلب ري ولكن حساس المطر يرصد هطول أمطار' }
           ].map((preset, idx) => (
             <button
               key={idx}

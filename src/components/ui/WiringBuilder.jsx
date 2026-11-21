@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Zap, Upload, Image, Trash2, AlertCircle, FileText, Check,
-  Camera, Eye, Layers, ExternalLink, Sparkles
+  Camera, Eye, Layers, ExternalLink
 } from 'lucide-react';
 import { compressImage, uploadToCloudinary } from '../../lib/cloudinaryUpload';
 

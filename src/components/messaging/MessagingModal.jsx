@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MessageSquare, Send, Code, X, Search, Shield, Flag,
-  UserX, Sparkles, ExternalLink, HelpCircle, CheckCheck,
+  UserX, ExternalLink, HelpCircle, CheckCheck,
   ChevronRight, Lock, CornerDownLeft, Copy, Check
 } from 'lucide-react';
 import { useMessaging } from '../../context/MessagingContext';
@@ -203,7 +203,7 @@ export default function MessagingModal({ user }) {
                         </div>
                       )}
                       {unread > 0 && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-black text-[9px] font-extrabold flex items-center justify-center shadow">
+                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow">
                           {unread}
                         </span>
                       )}
@@ -293,7 +293,7 @@ export default function MessagingModal({ user }) {
                         className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary hover:bg-primary/20 transition-colors flex items-center gap-1 cursor-pointer"
                         title="تحويل لمناقشة وسؤال وجواب عام على صفحة المشروع"
                       >
-                        <Sparkles size={11} />
+                        <HelpCircle size={11} />
                         نشر كـ Q&A عام
                       </button>
                     )}
@@ -340,7 +340,7 @@ export default function MessagingModal({ user }) {
                           <div
                             className={`p-3 rounded-2xl text-xs leading-relaxed space-y-2 ${
                               isMe
-                                ? 'bg-primary text-black rounded-tr-none font-medium'
+                                ? 'bg-primary text-primary-foreground rounded-tr-none font-medium'
                                 : 'bg-card dark:bg-[#121622] text-foreground border border-border rounded-tl-none'
                             }`}
                           >
@@ -454,7 +454,7 @@ export default function MessagingModal({ user }) {
           <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-lg p-5 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles size={18} className="text-primary" />
+                <HelpCircle size={18} className="text-primary" />
                 <h4 className="text-sm font-bold text-foreground">تحويل المحادثة إلى سؤال وجواب عام (Public Q&A)</h4>
               </div>
               <button type="button" onClick={() => setQaModalOpen(false)} className="p-1 rounded-lg text-muted-foreground hover:text-foreground">

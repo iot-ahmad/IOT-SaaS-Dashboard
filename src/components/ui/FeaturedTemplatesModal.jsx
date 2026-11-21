@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Sparkles, Copy, Eye, X, Check, ArrowRight, Layers,
+  Copy, Eye, X, Check, ArrowRight, Layers,
   Cpu, Star, Bookmark, ExternalLink, HelpCircle, Flame
 } from 'lucide-react';
 import { FEATURED_TEMPLATES } from '../../data/featuredTemplates';
