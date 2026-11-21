@@ -9,6 +9,7 @@ import { DevicesView, AutomationsToolView, AlertsView, LiveTerminal } from './co
 import NewDevicesView from './components/DevicesView';
 import DeveloperGuide from './components/DeveloperGuide';
 import SimulatorView from './components/SimulatorView';
+import MqttConnectionView from './components/MqttConnectionView';
 import { useMqtt } from './hooks/useMqtt';
 import { useAuth } from './hooks/useAuth';
 import { Loader2, MessageSquare } from 'lucide-react';
@@ -595,11 +596,12 @@ function Dashboard({ user, logout }) {
       switch (activeTool) {
         case 'simulator':   return <SimulatorView deviceStates={deviceStates} publish={publish} messages={messages} userUID={userUID} lastSeen={lastSeen} isConnected={isConnected} mqttMode={mqttMode} mqttConfig={mqttConfig} />;
         case 'devices':     return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
+        case 'connection':  return <MqttConnectionView userUID={userUID} isConnected={isConnected} mqttMode={mqttMode} mqttConfig={mqttConfig} />;
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
-        case 'alerts':     return <AlertsView userUID={userUID} />;
-        case 'profile':    return <ProfilePage user={user} userUID={userUID} logout={logout} />;
-        case 'settings':   return <ProfilePage user={user} userUID={userUID} logout={logout} />; // legacy alias
-        case 'developer':  return <DeveloperGuide userUID={user.uid} mqttMode={mqttMode} mqttConfig={mqttConfig} />;
+        case 'alerts':      return <AlertsView userUID={userUID} />;
+        case 'profile':     return <ProfilePage user={user} userUID={userUID} logout={logout} onOpenConnection={() => handleSetTool('connection')} />;
+        case 'settings':    return <ProfilePage user={user} userUID={userUID} logout={logout} onOpenConnection={() => handleSetTool('connection')} />; // legacy alias
+        case 'developer':   return <DeveloperGuide userUID={user.uid} mqttMode={mqttMode} mqttConfig={mqttConfig} />;
         default: return <DevicesView userUID={userUID} lastSeen={lastSeen} />;
       }
     }
@@ -702,6 +704,7 @@ function Dashboard({ user, logout }) {
           customWorkspaces={displayWorkspaces}
           isSidebarCollapsed={isSidebarCollapsed}
           onToggleSidebar={() => setIsSidebarCollapsed(v => !v)}
+          onOpenTool={handleSetTool}
         />
         
         <div className={`flex-1 ${activeTool === 'developer' || activeTool === 'simulator' ? 'flex flex-col px-2 md:px-3 pb-2 pt-2 min-h-0 h-full overflow-hidden' : 'p-6 md:p-8 pb-40 overflow-y-auto'}`}>

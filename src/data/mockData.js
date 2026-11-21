@@ -7,6 +7,7 @@ export const WORKSPACES = [
 export const TOOLS = [
   { id: 'simulator', name: 'Wokwi Simulator', icon: 'Columns' },
   { id: 'devices', name: 'Devices', icon: 'Cpu' },
+  { id: 'connection', name: 'Connect Device', icon: 'Wifi' },
   { id: 'automations', name: 'Automations', icon: 'Zap' },
   { id: 'alerts', name: 'Alerts', icon: 'Bell' },
   { id: 'settings', name: 'Settings', icon: 'Settings' },

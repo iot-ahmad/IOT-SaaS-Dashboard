@@ -157,7 +157,14 @@ export const HomeView = ({
           <Layers size={22} className="text-primary shrink-0" />
         </div>
 
-        <div className="hw-panel bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+        <div
+          onClick={() => onOpenTool?.('connection')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenTool?.('connection'); } }}
+          title="Open Connect Device settings"
+          className="hw-panel bg-card border border-border hover:border-primary/40 transition-colors cursor-pointer rounded-xl p-4 flex items-center justify-between"
+        >
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">MQTT Cloud Broker</p>
             <div className="flex items-center gap-2 mt-1">

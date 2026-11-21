@@ -12,7 +12,8 @@ export default function Header({
   toggleMobileMenu,
   customWorkspaces,
   isSidebarCollapsed,
-  onToggleSidebar
+  onToggleSidebar,
+  onOpenTool
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,6 +40,9 @@ export default function Header({
     if (activeTool === 'simulator') {
       title = 'Quick Simulator & Dashboard';
       subtitle = 'Split screen workspace combining interactive circuit simulator, live dashboard, and devices';
+    } else if (activeTool === 'connection') {
+      title = 'Connect Device';
+      subtitle = 'Cloud server & MQTT Broker credentials to link your ESP32 or IoT board';
     } else {
       const tool = TOOLS.find(t => t.id === activeTool);
       title = tool ? tool.name : 'Tools';
@@ -113,11 +117,13 @@ export default function Header({
         </button>
 
         {/* MQTT Broker Status Pill */}
-        <div
+        <button
+          type="button"
+          onClick={() => onOpenTool?.('connection')}
           title={isConnected
-            ? (mqttMode === 'private' ? 'Connected to private isolated EMQX MQTT broker (TLS 8883)' : 'Connected to shared demo broker (for education & simulation only)')
-            : 'Disconnected from MQTT broker'}
-          className={`hidden lg:flex h-9 items-center gap-2 px-3 rounded-lg border text-xs font-medium ${isConnected
+            ? (mqttMode === 'private' ? 'Connected to private isolated EMQX MQTT broker (TLS 8883) — Click to manage' : 'Connected to shared demo broker — Click to set up Connect Device')
+            : 'Disconnected from MQTT broker — Click to manage connection'}
+          className={`hidden lg:flex h-9 items-center gap-2 px-3 rounded-lg border text-xs font-medium cursor-pointer hover:opacity-90 transition-opacity ${isConnected
             ? 'bg-primary/10 border-primary/25 text-primary'
             : 'bg-red-500/10 border-red-500/25 text-red-400'
             }`}
@@ -126,7 +132,7 @@ export default function Header({
           <span className="hidden xl:inline font-mono text-[11px] font-semibold">
             {isConnected ? (mqttMode === 'private' ? 'EMQX Isolated' : 'Demo Broker') : 'Broker Offline'}
           </span>
-        </div>
+        </button>
       </div>
     </header>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Globe, HelpCircle, Columns } from 'lucide-react';
+import { Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, LogOut, Gamepad2, BookOpen, Plus, X, LayoutDashboard, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Globe, HelpCircle, Columns, Wifi } from 'lucide-react';
 import { Button } from '@/components/ui/neon-button';
 import { TOOLS } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import SupportModal from './SupportModal';
 import { BrandLogo } from './ui/BrandLogo';
 
 const iconMap = {
-  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard, Globe, Columns
+  Home, Tractor, Briefcase, Cpu, Zap, Bell, Settings, Gamepad2, BookOpen, LayoutDashboard, Globe, Columns, Wifi
 };
 
 const navBtnClass =
