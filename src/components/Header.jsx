@@ -8,6 +8,7 @@ export default function Header({
   activeWorkspace, 
   activeTool, 
   isConnected, 
+  mqttMode = 'demo',
   toggleMobileMenu, 
   customWorkspaces, 
   isSidebarCollapsed, 
@@ -158,7 +159,11 @@ export default function Header({
         </button>
 
         {/* MQTT Status */}
-        <div style={isConnected
+        <div
+          title={isConnected
+            ? (mqttMode === 'private' ? 'متصل بسيرفر MQTT الخاص المعزول' : 'متصل بسيرفر التجربة المشترك (للتعليم والمحاكاة فقط)')
+            : 'غير متصل بسيرفر MQTT'}
+          style={isConnected
           ? { background: 'rgba(91, 140, 110, 0.12)', border: '1px solid var(--border)', color: '#5B8C6E', borderRadius: 'var(--radius)' }
           : { background: 'rgba(184, 92, 92, 0.12)', border: '1px solid var(--border)', color: '#B85C5C', borderRadius: 'var(--radius)' }
         } className="hidden lg:flex items-center gap-2 px-3 py-2 text-xs font-medium">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gamepad2, Cpu, Terminal, Code, Sparkles, Copy, Check, Plus, RotateCcw } from 'lucide-react';
+import { Gamepad2, Cpu, Terminal, Code, Sparkles, Copy, Check, Plus, RotateCcw, ShieldCheck, AlertTriangle } from 'lucide-react';
 import UniversalController from '../UniversalController';
 import { LiveTerminal } from '../ToolViews';
 import NewDevicesView from '../DevicesView';
@@ -18,6 +18,10 @@ export default function DashboardPanel({
   userUID,
   lastSeen,
   mqttOnline,
+  mqttMode = 'demo',
+  mqttConfig = {},
+  includePrivateCreds = false,
+  onToggleIncludeCreds,
   onOpenModal,
   copiedCode,
   onCopyCode,
@@ -280,6 +284,31 @@ export default function DashboardPanel({
                 </div>
 
                 <div className="space-y-2">
+                  {/* TLS & Credentials Security Banner */}
+                  <div className={`rounded-xl p-3 border text-[11px] flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                    mqttMode === 'private'
+                      ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+                      : 'bg-amber-500/10 border-amber-500/25 text-amber-300'
+                  }`}>
+                    <div className="flex items-start gap-2">
+                      {mqttMode === 'private' ? <ShieldCheck size={15} className="shrink-0 mt-0.5" /> : <AlertTriangle size={15} className="shrink-0 mt-0.5" />}
+                      <span>
+                        {mqttMode === 'private'
+                          ? `اتصال مشفّر بشهادة ${mqttConfig?.caName || 'Root CA'} + مزامنة NTP + Client ID فريد مع ${mqttConfig?.provisionedBy === 'emqx_auto' ? 'حساب EMQX المعزول تلقائياً' : 'سيرفرك الخاص'}.`
+                          : `الكود يستخدم TLS موثق (${mqttConfig?.caName || 'Root CA'}) + Client ID فريد، مع إخفاء بيانات الدخول للحماية. فعّل حسابك المعزول من Profile & Settings → Security.`}
+                      </span>
+                    </div>
+                    {mqttMode === 'private' && onToggleIncludeCreds && (
+                      <button
+                        type="button"
+                        onClick={onToggleIncludeCreds}
+                        className="px-2.5 py-1 rounded-lg bg-zinc-900/70 hover:bg-zinc-900 border border-white/10 text-foreground font-semibold shrink-0 cursor-pointer"
+                      >
+                        {includePrivateCreds ? 'إخفاء كلمة المرور (placeholders)' : 'تضمين بيانات MQTT الخاصة بي'}
+                      </button>
+                    )}
+                  </div>
+
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-foreground">كود C++ / Arduino جاهز للنسخ:</span>
                     <div className="flex items-center gap-2">

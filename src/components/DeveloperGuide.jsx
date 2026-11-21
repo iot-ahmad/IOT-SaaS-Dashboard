@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Copy, Check, Send, Sparkles, RefreshCw, Bot, Paperclip, Plus, ArrowUp, Cpu, Zap, Globe, Terminal, Play, CircleUserRound } from 'lucide-react';
+import { getDefaultBrokerHost, getRootCaForHost } from '../config/mqttSecurity';
 
 /* ── tiny copy button ─────────────────────────────────────────────────────── */
 function CopyBtn({ text }) {
@@ -39,16 +40,18 @@ function CodeBlock({ code, language = 'cpp' }) {
   );
 }
 
-const getBotResponse = (input, uid) => {
+const getBotResponse = (input, uid, brokerHost, tlsPort = 8883) => {
   const text = input.toLowerCase();
   const cleanUid = uid || 'YOUR_UID';
+  const activeHost = brokerHost || getDefaultBrokerHost();
+  const caInfo = getRootCaForHost(activeHost);
 
   if (text.includes('مطور') || text.includes('من قام') || text.includes('احمد') || text.includes('أحمد') || text.includes('creator') || text.includes('developer') || text.includes('batayneh') || text.includes('بطاينه') || text.includes('بطاينة') || text.includes('صنع') || text.includes('برمج')) {
     return `**تم تصميم وتطوير منصة IOT365 بالكامل بواسطة المطور أحمد البطاينة (Ahmad Al-Batayneh) 💻✨.**\n\nتم تطوير هذه المنصة لتوفير أداة قوية، سريعة، ومجانية للطلاب والباحثين والمهندسين لربط لوحات ESP32 ومشاريع إنترنت الأشياء لحظياً دون الدخول في تعقيدات إنشاء قواعد البيانات والسيرفرات الخاصة.`;
   }
 
-  if (text.includes('broker') || text.includes('بروك') || text.includes('hivemq') || text.includes('سيرفر') || text.includes('server') || text.includes('port') || text.includes('بورت') || text.includes('host') || text.includes('عنوان') || text.includes('منفذ')) {
-    return `**معلومات الاتصال بسيرفر IOT365 السحابي المشفر 🌐:**\n\n*   **Host (السيرفر):** \`fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud\`\n*   **Port (المنفذ المشفر TLS):** \`8883\` (لأجهزة ESP32 عبر WiFiClientSecure)\n*   **WebSockets Port (للموقع):** \`8884\` (على المسار \`/mqtt\`)\n*   **بيانات الدخول الجاهزة:** \`Username: iot365\` | \`Password: iot365-jo\`\n\n> 💡 إعداد الاتصال في كود ESP32:\n\`\`\`cpp\nespClient.setInsecure();\nclient.setServer("fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud", 8883);\nclient.connect("ESP32_Device", "iot365", "iot365-jo");\n\`\`\``;
+  if (text.includes('broker') || text.includes('بروك') || text.includes('hivemq') || text.includes('emqx') || text.includes('سيرفر') || text.includes('server') || text.includes('port') || text.includes('بورت') || text.includes('host') || text.includes('عنوان') || text.includes('منفذ')) {
+    return `**معلومات الاتصال الآمن بسيرفر MQTT (TLS 1.2+) 🌐:**\n\n*   **Host (السيرفر الحالي):** \`${activeHost}\`\n*   **Port (المنفذ المشفر TLS):** \`${tlsPort}\` (لأجهزة ESP32 عبر \`WiFiClientSecure\` مع التحقق من شهادة الجذر \`${caInfo.name}\`)\n*   **WebSockets Port (للموقع):** \`${caInfo.wsPort}\` (على المسار \`/mqtt\`)\n*   **بيانات الدخول المعزولة:** عند تفعيل EMQX Serverless، يحصل حسابك تلقائياً على اسم مستخدم (\`${cleanUid}\`) وكلمة مرور خاصة مقيدة بقاعدة ACL على مسارك فقط (\`${cleanUid}/#\`). يمكنك نسخها أو تدويرها من **Profile & Settings → Security**.\n*   ⚠️ **تنبيه أمني:** تجنّب استخدام أي حساب تجريبي مشترك مع الأجهزة الحقيقية (الأقفال، المرحّلات، المضخات).\n\n> 💡 إعداد الاتصال الآمن في كود ESP32 (بدون \`setInsecure()\` وبدون Client ID ثابت):\n\`\`\`cpp\n#include <time.h>\n// 1. مزامنة الوقت عبر NTP للتحقق من صلاحية شهادة SSL\nconfigTime(0, 0, "pool.ntp.org", "time.nist.gov");\nwhile (time(nullptr) < 1700000000) delay(300);\n\n// 2. تفعيل التحقق من شهادة الجذر ${caInfo.name}\nespClient.setCACert(root_ca);\nclient.setServer("${activeHost}", ${tlsPort});\n\n// 3. معرّف فريد من MAC الخاص باللوحة لمنع تصادم الأجهزة\nString clientId = "ESP32_" + String((uint32_t)(ESP.getEfuseMac() >> 24), HEX) + "_" + String(random(0xFFFF), HEX);\nclient.connect(clientId.c_str(), "YOUR_MQTT_USERNAME", "YOUR_MQTT_PASSWORD");\n\`\`\``;
   }
 
   if (text.includes('كيف') && (text.includes('اربط') || text.includes('أربط') || text.includes('اتصال') || text.includes('connect') || text.includes('esp32') || text.includes('طريقة') || text.includes('شغل'))) {
@@ -130,7 +133,10 @@ function useAutoResizeTextarea({ minHeight, maxHeight }) {
   return { textareaRef, adjustHeight };
 }
 
-export default function DeveloperGuide({ userUID }) {
+export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig = {} }) {
+  const activeHost = mqttConfig?.host || getDefaultBrokerHost();
+  const activeTlsPort = mqttConfig?.tlsPort || 8883;
+  const activeCaInfo = getRootCaForHost(activeHost);
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -175,14 +181,16 @@ export default function DeveloperGuide({ userUID }) {
 معلومات المنصة:
 - مطور ومصمم منصة IOT365 بالكامل هو: المطور أحمد البطاينة (Ahmad Al-Batayneh) 💻✨.
 - UID المستخدم الحالي: ${userUID || 'YOUR_UID'}
-- MQTT Broker: fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud — المنفذ المشفر TLS: 8883 (WSS للمتصفح: 8884/mqtt) — يتطلب Username و Password
+- MQTT Broker الحالي: ${activeHost} — المنفذ المشفر TLS: ${activeTlsPort} (WSS للمتصفح: ${activeCaInfo.wsPort}/mqtt) — الوضع: ${mqttMode === 'private' ? 'سيرفر خاص معزول' : 'وضع التجربة'}
 - بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
 خبرتك تشمل أيضاً:
 - تشخيص العتاد الفيزيائي (Hardware Diagnostics) وتحليل أعطال الأجهزة مثل المضخات والحساسات والدوائر الكهربائية.
 - اقتراح سيناريوهات أتمتة ذكية وحلول هندسية عملية لمشاكل ESP32.
-قواعد الإجابة:
+قواعد الإجابة والأمان (إلزامية):
 - أجب دائماً باللغة العربية.
-- عند كتابة أكواد ESP32/C++ اكتب كوداً نظيفاً ومتكاملاً وخالياً من الأخطاء.
+- عند كتابة أكواد ESP32/C++ لـ EMQX Cloud أو HiveMQ Cloud، استخدم دائماً espClient.setCACert(root_ca) مع شهادة ${activeCaInfo.name} ومزامنة الوقت عبر configTime() ولا تستخدم espClient.setInsecure() أبداً.
+- استخدم معرّف عميل فريد مبني على ESP.getEfuseMac() ولا تضع Client ID ثابت مثل ESP32_Device.
+- لا تكتب أو تخترع أي كلمات مرور حقيقية في الكود؛ استخدم دائماً العناصر النائبة "YOUR_MQTT_USERNAME" و "YOUR_MQTT_PASSWORD".
 - اجعل إجاباتك دقيقة وعملية ومركّزة.`;
 
     try {
@@ -210,7 +218,7 @@ export default function DeveloperGuide({ userUID }) {
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: 'bot',
-        text: getBotResponse(query, userUID)
+        text: getBotResponse(query, userUID, activeHost, activeTlsPort)
       }]);
     } finally {
       setIsTyping(false);

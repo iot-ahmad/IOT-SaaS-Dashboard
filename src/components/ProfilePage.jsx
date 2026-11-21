@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import {
   User, Globe, Camera, Copy, Check, Shield, Bell, Link as LinkIcon,
   CreditCard, Lock, Smartphone, Mail, Activity, Cpu, Sparkles, X,
-  AlertCircle, Edit3, ChevronRight, ExternalLink,
+  AlertCircle, Edit3, ChevronRight, ExternalLink, Eye, EyeOff, Server, AlertTriangle, RotateCcw,
 } from 'lucide-react';
 import {
   updateProfile, updatePassword, reauthenticateWithCredential,
   EmailAuthProvider, linkWithPopup, unlink, GoogleAuthProvider, GithubAuthProvider,
 } from 'firebase/auth';
 import {
-  collection, doc, query, where, getDocs, getDoc, setDoc,
+  collection, doc, query, where, getDocs, getDoc, setDoc, serverTimestamp,
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { uploadToCloudinary } from '../lib/cloudinaryUpload';
@@ -110,6 +110,19 @@ export default function ProfilePage({ user, userUID, logout }) {
   const [newPassword, setNewPassword]         = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // ── Private MQTT & ACL Security state ───────────────────────────────────
+  const [mqttUseCustom, setMqttUseCustom]     = useState(false);
+  const [mqttBrokerUrl, setMqttBrokerUrl]     = useState('');
+  const [mqttTlsPort, setMqttTlsPort]         = useState('8883');
+  const [mqttUsername, setMqttUsername]       = useState('');
+  const [mqttPassword, setMqttPassword]       = useState('');
+  const [mqttEnableGuest, setMqttEnableGuest] = useState(false);
+  const [mqttProvisionedBy, setMqttProvisionedBy] = useState(null);
+  const [mqttProvisioning, setMqttProvisioning]   = useState(false);
+  const [copiedMqttField, setCopiedMqttField]     = useState(null);
+  const [showMqttPass, setShowMqttPass]       = useState(false);
+  const [mqttSaving, setMqttSaving]           = useState(false);
+
   // ── Notifications state ──────────────────────────────────────────────────
   const [notifications, setNotifications] = useState({
     push: true, email: true, sms: false, marketing: false,
@@ -128,15 +141,28 @@ export default function ProfilePage({ user, userUID, logout }) {
   useEffect(() => {
     if (!userUID) return;
 
-    // Load Firestore prefs (language, timezone, notifications)
+    // Load Firestore prefs (language, timezone, notifications, mqtt security)
     const loadPrefs = async () => {
       try {
-        const snap = await getDoc(doc(db, 'users', userUID, 'settings', 'prefs'));
-        if (snap.exists()) {
-          const d = snap.data();
+        const [prefsSnap, mqttSnap] = await Promise.all([
+          getDoc(doc(db, 'users', userUID, 'settings', 'prefs')),
+          getDoc(doc(db, 'users', userUID, 'settings', 'mqtt')),
+        ]);
+        if (prefsSnap.exists()) {
+          const d = prefsSnap.data();
           if (d.language) setLanguage(d.language);
           if (d.timezone) setTimezone(d.timezone);
           if (d.notifications) setNotifications(d.notifications);
+        }
+        if (mqttSnap.exists()) {
+          const m = mqttSnap.data();
+          setMqttUseCustom(Boolean(m.useCustomBroker));
+          setMqttBrokerUrl(m.brokerUrl || '');
+          setMqttTlsPort(String(m.tlsPort || 8883));
+          setMqttUsername(m.username || '');
+          setMqttPassword(m.password || '');
+          setMqttEnableGuest(Boolean(m.enableGuestTopic));
+          setMqttProvisionedBy(m.provisionedBy || null);
         }
       } catch { /* non-critical */ }
     };
@@ -284,6 +310,124 @@ export default function ProfilePage({ user, userUID, logout }) {
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
     } catch (err) { showToast(err.message, 'error'); }
     setLoading(false);
+  };
+
+  // ─── Save Private MQTT & ACL settings ───────────────────────────────────
+  const handleSaveMqttSettings = async (e) => {
+    e?.preventDefault();
+    if (!userUID) return;
+
+    const trimmedUrl = mqttBrokerUrl.trim();
+    if (mqttUseCustom) {
+      if (!trimmedUrl || !trimmedUrl.startsWith('wss://')) {
+        return showToast('يجب أن يبدأ رابط السيرفر الخاص بـ wss:// لضمان التشفير.', 'error');
+      }
+    }
+
+    setMqttSaving(true);
+    try {
+      const nextProvisionedBy = mqttUseCustom ? (mqttProvisionedBy || 'manual') : null;
+      await setDoc(doc(db, 'users', userUID, 'settings', 'mqtt'), {
+        useCustomBroker: mqttUseCustom,
+        provisionedBy: nextProvisionedBy,
+        brokerUrl: trimmedUrl,
+        tlsPort: Number(mqttTlsPort) || 8883,
+        username: mqttUsername.trim(),
+        password: mqttPassword,
+        enableGuestTopic: mqttEnableGuest,
+        autoProvisionDisabled: !mqttUseCustom,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      setMqttProvisionedBy(nextProvisionedBy);
+      showToast(mqttUseCustom ? 'تم حفظ وتفعيل إعدادات السيرفر الخاص بك!' : 'تم حفظ إعدادات أمان MQTT.');
+    } catch (err) {
+      showToast(err?.message || 'فشل حفظ إعدادات MQTT.', 'error');
+    }
+    setMqttSaving(false);
+  };
+
+  const handleResetMqttToDemo = async () => {
+    if (!userUID) return;
+    setMqttSaving(true);
+    try {
+      setMqttUseCustom(false);
+      setMqttEnableGuest(false);
+      setMqttProvisionedBy(null);
+      await setDoc(doc(db, 'users', userUID, 'settings', 'mqtt'), {
+        useCustomBroker: false,
+        provisionedBy: null,
+        enableGuestTopic: false,
+        autoProvisionDisabled: true,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      showToast('تمت العودة إلى وضع التجربة المشترك (للمحاكاة فقط).');
+    } catch (err) {
+      showToast(err?.message || 'فشل إعادة الضبط.', 'error');
+    }
+    setMqttSaving(false);
+  };
+
+  const handleAutoProvisionMqtt = async () => {
+    if (!userUID) return;
+    const idToken = await auth.currentUser?.getIdToken();
+    if (!idToken) return showToast('يرجى تسجيل الدخول أولاً.', 'error');
+
+    setMqttProvisioning(true);
+    try {
+      const res = await fetch('/api/mqtt-provision', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ rotate: mqttProvisionedBy === 'emqx_auto' }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 503 || res.status === 404) {
+          showToast('تفعيل الإنشاء التلقائي يتطلب إضافة متغيرات EMQX_API_URL و EMQX_BROKER_HOST و EMQX_APP_ID و EMQX_APP_SECRET في لوحة Vercel.', 'error');
+        } else {
+          showToast(data?.error || 'فشل توليد حساب MQTT التلقائي.', 'error');
+        }
+        setMqttProvisioning(false);
+        return;
+      }
+
+      await setDoc(doc(db, 'users', userUID, 'settings', 'mqtt'), {
+        useCustomBroker: true,
+        provisionedBy: 'emqx_auto',
+        provider: data.provider || 'emqx',
+        brokerUrl: data.brokerUrl,
+        tlsPort: data.tlsPort || 8883,
+        username: data.username,
+        password: data.password,
+        enableGuestTopic: false,
+        autoProvisionDisabled: false,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+
+      setMqttUseCustom(true);
+      setMqttBrokerUrl(data.brokerUrl);
+      setMqttTlsPort(String(data.tlsPort || 8883));
+      setMqttUsername(data.username);
+      setMqttPassword(data.password);
+      setMqttEnableGuest(false);
+      setMqttProvisionedBy('emqx_auto');
+      showToast(mqttProvisionedBy === 'emqx_auto'
+        ? 'تم تدوير كلمة مرور حساب EMQX المعزول بنجاح!'
+        : 'تم توليد وتفعيل حساب EMQX المعزول الخاص بك بنجاح!');
+    } catch (err) {
+      showToast(err?.message || 'تعذر الاتصال بخادم التوليد التلقائي.', 'error');
+    }
+    setMqttProvisioning(false);
+  };
+
+  const copyMqttField = (field, val) => {
+    if (!val) return;
+    navigator.clipboard.writeText(val);
+    setCopiedMqttField(field);
+    setTimeout(() => setCopiedMqttField(null), 2000);
   };
 
   // ─── Link / Unlink social providers ─────────────────────────────────────
@@ -571,6 +715,214 @@ export default function ProfilePage({ user, userUID, logout }) {
           {/* ══ TAB: Security ════════════════════════════════════════════ */}
           {activeTab === 'security' && (
             <div className="space-y-6">
+              {/* Private MQTT & ACL Security Card */}
+              <Card>
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                  <h3 className="font-bold flex items-center gap-2">
+                    <Server size={18} className="text-primary" />
+                    إعدادات أمان سيرفر MQTT (Private Broker &amp; ACL)
+                  </h3>
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${
+                    mqttUseCustom
+                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                      : 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                  }`}>
+                    {mqttUseCustom
+                      ? (mqttProvisionedBy === 'emqx_auto'
+                        ? 'حساب EMQX المعزول تلقائياً (ACL 100%)'
+                        : 'سيرفر خاص معزول (آمن للإنتاج)')
+                      : 'وضع التجربة المشترك (للتعليم والمحاكاة فقط)'}
+                  </span>
+                </div>
+
+                {/* 1-Click EMQX Auto-Provision / Rotate */}
+                <div className="mb-4 p-3 rounded-xl bg-primary/10 border border-primary/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="text-xs space-y-0.5">
+                    <p className="font-bold text-foreground flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-primary" />
+                      الربط التلقائي المعزول (EMQX Serverless)
+                    </p>
+                    <p className="text-muted-foreground">
+                      ينشئ لحسابك اسم مستخدم مطابق لـ UID وكلمة مرور فريدة مقيدة بمسارك فقط (<code className="px-1 rounded bg-muted">{userUID}/#</code>).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAutoProvisionMqtt}
+                    disabled={mqttProvisioning || mqttSaving}
+                    className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0 cursor-pointer"
+                  >
+                    {mqttProvisioning
+                      ? 'جاري التوليد...'
+                      : (mqttProvisionedBy === 'emqx_auto'
+                        ? 'تدوير كلمة مرور حساب EMQX'
+                        : 'توليد حساب MQTT المعزول تلقائياً')}
+                  </button>
+                </div>
+
+                {!mqttUseCustom && (
+                  <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs flex items-start gap-2.5 leading-relaxed">
+                    <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">تنبيه أمني: لا تربط أجهزة حقيقية حساسة بوضع التجربة المشترك</p>
+                      <p className="text-amber-200/80 mt-0.5">
+                        الحساب الافتراضي مخصص لمشاريع Wokwi والتجارب التعليمية فقط. لأقفال الأبواب والمضخات والمرحّلات الفعلية، اضغط زر التوليد التلقائي أعلاه أو أدخل سيرفرك الخاص.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={handleSaveMqttSettings} className="space-y-4">
+                  <label className="flex items-center justify-between gap-3 p-3 rounded-xl bg-muted border border-border cursor-pointer">
+                    <div>
+                      <p className="text-sm font-bold text-foreground">استخدام سيرفر / بيانات MQTT خاصة بي</p>
+                      <p className="text-xs text-muted-foreground">يتم حفظ الإعدادات بشكل خاص في حسابك ويتم التبديل إليها لحظياً.</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={mqttUseCustom}
+                      onChange={(e) => setMqttUseCustom(e.target.checked)}
+                      className="w-4 h-4 accent-primary cursor-pointer"
+                    />
+                  </label>
+
+                  {mqttUseCustom && (
+                    <div className="space-y-3 p-4 rounded-xl bg-muted/50 border border-border">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="md:col-span-2">
+                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">WSS Broker URL (للمتصفح) *</label>
+                          <input
+                            type="text"
+                            dir="ltr"
+                            className={`${inputCls} font-mono`}
+                            value={mqttBrokerUrl}
+                            onChange={(e) => setMqttBrokerUrl(e.target.value)}
+                            placeholder="wss://your-deployment.ala.eu-central-1.emqxsl.com:8084/mqtt"
+                            required={mqttUseCustom}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">TLS Port (للـ ESP32)</label>
+                          <input
+                            type="number"
+                            dir="ltr"
+                            className={`${inputCls} font-mono`}
+                            value={mqttTlsPort}
+                            onChange={(e) => setMqttTlsPort(e.target.value)}
+                            placeholder="8883"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">MQTT Username</label>
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              type="text"
+                              dir="ltr"
+                              className={`${inputCls} font-mono`}
+                              value={mqttUsername}
+                              onChange={(e) => setMqttUsername(e.target.value)}
+                              placeholder="esp32_user"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => copyMqttField('user', mqttUsername)}
+                              aria-label="نسخ اسم المستخدم"
+                              className="p-2.5 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
+                            >
+                              {copiedMqttField === 'user' ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">MQTT Password</label>
+                          <div className="flex items-center gap-1.5">
+                            <div className="relative flex-1">
+                              <input
+                                type={showMqttPass ? 'text' : 'password'}
+                                dir="ltr"
+                                className={`${inputCls} font-mono pr-10`}
+                                value={mqttPassword}
+                                onChange={(e) => setMqttPassword(e.target.value)}
+                                placeholder="••••••••••••"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowMqttPass((v) => !v)}
+                                aria-label={showMqttPass ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                              >
+                                {showMqttPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                              </button>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => copyMqttField('pass', mqttPassword)}
+                              aria-label="نسخ كلمة المرور"
+                              className="p-2.5 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
+                            >
+                              {copiedMqttField === 'pass' ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <label className="flex items-start gap-2.5 p-3 rounded-xl bg-muted/40 border border-border cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={mqttEnableGuest}
+                      onChange={(e) => setMqttEnableGuest(e.target.checked)}
+                      className="w-4 h-4 mt-0.5 accent-primary cursor-pointer"
+                    />
+                    <div className="text-xs">
+                      <span className="font-semibold text-foreground block">تفعيل مسار guest_iot365/# للمحاكاة بدون UID</span>
+                      <span className="text-muted-foreground">يقلل العزل ويسمح بقراءة/إرسال رسائل المسار العام — يُنصح بإبقائه معطّلاً.</span>
+                    </div>
+                  </label>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="submit"
+                      disabled={mqttSaving}
+                      className="bg-primary text-primary-foreground text-xs font-bold py-2 px-4 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+                    >
+                      {mqttSaving ? 'جاري الحفظ...' : 'حفظ وتطبيق إعدادات MQTT'}
+                    </button>
+                    {mqttUseCustom && (
+                      <button
+                        type="button"
+                        onClick={handleResetMqttToDemo}
+                        disabled={mqttSaving}
+                        className="flex items-center gap-1.5 bg-muted hover:bg-secondary text-foreground text-xs font-semibold py-2 px-3 rounded-xl border border-border transition-colors disabled:opacity-50 cursor-pointer"
+                      >
+                        <RotateCcw size={13} />
+                        العودة للوضع التجريبي
+                      </button>
+                    )}
+                  </div>
+                </form>
+
+                {/* ACL Setup Guide */}
+                <div className="mt-4 p-3 rounded-xl bg-background border border-border text-xs space-y-1.5">
+                  <p className="font-bold text-foreground">دليل عزل الصلاحيات (ACL) في HiveMQ Cloud أو EMQX:</p>
+                  <p className="text-muted-foreground">امنع الاشتراك العام <code className="px-1 rounded bg-muted">#</code> واجعل صلاحية حسابك مقيدة بهذا المسار فقط:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]" dir="ltr">
+                    <div className="p-2 rounded-lg bg-muted border border-border">
+                      <span className="text-muted-foreground block text-[10px]">Topic Filter (Allow):</span>
+                      <span className="text-primary font-bold break-all">{userUID}/#</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-muted border border-border">
+                      <span className="text-muted-foreground block text-[10px]">Permission:</span>
+                      <span className="text-emerald-400 font-bold">Publish &amp; Subscribe (Allow)</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
               <Card>
                 <h3 className="font-bold mb-4 flex items-center gap-2"><Shield size={18} className="text-red-400" /> Security</h3>
                 <div className="space-y-6">

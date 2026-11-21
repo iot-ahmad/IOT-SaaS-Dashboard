@@ -1,11 +1,13 @@
 /**
  * IOT365 Simulator Ready-Made Projects
  * Complete with:
- * - Full C++ Arduino code (sketch.ino)
+ * - Full C++ Arduino code (sketch.ino) with verified TLS (ISRG Root X1 + NTP) & unique MAC-based Client IDs
  * - Complete Wokwi circuit wiring (diagram.json)
  * - Required libraries (libraries.txt)
  * - Hardware Pinout & Dashboard Topic mapping
  */
+
+import { resolveSketchMqttOptions } from '../config/mqttSecurity';
 
 export const SIMULATOR_PROJECTS = [
   {
@@ -139,7 +141,9 @@ ESP32Servo`,
   ],
   "dependencies": {}
 }`,
-    sketchCode: (uidPlaceholder = '') => `/*
+    sketchCode: (uidPlaceholder = '', mqttOptions = {}) => {
+      const mq = resolveSketchMqttOptions(mqttOptions);
+      return `/*
  * ==================================================================================
  * IOT365 PLATFORM — ALL-IN-ONE SIMULATOR TEST STATION
  * ==================================================================================
@@ -154,6 +158,7 @@ ESP32Servo`,
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
+#include <time.h>
 #include <DHT.h>
 #include <ESP32Servo.h>
 #include <Adafruit_NeoPixel.h>
@@ -168,13 +173,15 @@ ESP32Servo`,
 const char* USER_UID = "${uidPlaceholder}"; 
 
 // Network & MQTT Broker Config
+// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-// Dedicated IOT365 Cloud Cluster
-const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
-const int   mqtt_port   = 8883;
-const char* mqtt_user   = "iot365";
-const char* mqtt_pass   = "iot365-jo";
+const char* mqtt_server = "${mq.host}";
+const int   mqtt_port   = ${mq.port};
+const char* mqtt_user   = "${mq.user}";
+const char* mqtt_pass   = "${mq.pass}";
+
+${mq.tlsHelpers}
 
 // Pin Definitions
 #define PIN_DHT         15
@@ -340,7 +347,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void reconnectMQTT() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection... ");
-    String clientId = "ESP32_IOT365_" + String(random(0xffff), HEX);
+    String clientId = makeUniqueClientId("ESP32_AIO");
     
     bool connected = (strlen(mqtt_user) > 0)
       ? client.connect(clientId.c_str(), mqtt_user, mqtt_pass)
@@ -412,8 +419,10 @@ void setup() {
   }
   Serial.println("\\nWiFi Connected! IP: " + WiFi.localIP().toString());
 
-  // Setup Secure MQTT (TLS)
-  espClient.setInsecure();
+  // Setup Secure MQTT (Verified TLS via ISRG Root X1 + NTP)
+  randomSeed(esp_random());
+  syncTimeForTLS();
+  espClient.setCACert(root_ca);
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
@@ -464,7 +473,8 @@ void loop() {
     updateOLED(temp, hum, dist, moisture);
   }
 }
-`
+`;
+    }
   },
   {
     id: 'smart-farm',
@@ -537,24 +547,30 @@ ESP32Servo`,
   ],
   "dependencies": {}
 }`,
-    sketchCode: (uidPlaceholder = '') => `/*
+    sketchCode: (uidPlaceholder = '', mqttOptions = {}) => {
+      const mq = resolveSketchMqttOptions(mqttOptions);
+      return `/*
  * IOT365 — SMART FARM & IRRIGATION CONTROLLER
  * نظام الري والزراعة الذكية
  */
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
+#include <time.h>
 #include <DHT.h>
 #include <ESP32Servo.h>
 
 const char* USER_UID = "${uidPlaceholder}";
 
+// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
-const int   mqtt_port   = 8883;
-const char* mqtt_user   = "iot365";
-const char* mqtt_pass   = "iot365-jo";
+const char* mqtt_server = "${mq.host}";
+const int   mqtt_port   = ${mq.port};
+const char* mqtt_user   = "${mq.user}";
+const char* mqtt_pass   = "${mq.pass}";
+
+${mq.tlsHelpers}
 
 #define PIN_DHT    15
 #define PIN_SOIL   34
@@ -599,14 +615,17 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  espClient.setInsecure();
+  randomSeed(esp_random());
+  syncTimeForTLS();
+  espClient.setCACert(root_ca);
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
 
 void loop() {
   if (!client.connected()) {
-    while (!(strlen(mqtt_user) > 0 ? client.connect("ESP32_FarmClient", mqtt_user, mqtt_pass) : client.connect("ESP32_FarmClient"))) delay(1000);
+    String clientId = makeUniqueClientId("ESP32_Farm");
+    while (!(strlen(mqtt_user) > 0 ? client.connect(clientId.c_str(), mqtt_user, mqtt_pass) : client.connect(clientId.c_str()))) delay(1000);
     String sub = (strlen(USER_UID) > 0) ? String(USER_UID) + "/#" : "guest_iot365/#";
     client.subscribe(sub.c_str());
   }
@@ -627,7 +646,8 @@ void loop() {
     else digitalWrite(PIN_ALARM, LOW);
   }
 }
-`
+`;
+    }
   },
   {
     id: 'smart-home',
@@ -695,23 +715,29 @@ ESP32Servo`,
   ],
   "dependencies": {}
 }`,
-    sketchCode: (uidPlaceholder = '') => `/*
+    sketchCode: (uidPlaceholder = '', mqttOptions = {}) => {
+      const mq = resolveSketchMqttOptions(mqttOptions);
+      return `/*
  * IOT365 — SMART HOME & SECURITY
  * نظام المنزل الذكي والإنذار
  */
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
+#include <time.h>
 #include <ESP32Servo.h>
 
 const char* USER_UID = "${uidPlaceholder}";
 
+// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
-const int   mqtt_port   = 8883;
-const char* mqtt_user   = "iot365";
-const char* mqtt_pass   = "iot365-jo";
+const char* mqtt_server = "${mq.host}";
+const int   mqtt_port   = ${mq.port};
+const char* mqtt_user   = "${mq.user}";
+const char* mqtt_pass   = "${mq.pass}";
+
+${mq.tlsHelpers}
 
 #define PIN_PIR    19
 #define PIN_LDR    35
@@ -757,14 +783,17 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  espClient.setInsecure();
+  randomSeed(esp_random());
+  syncTimeForTLS();
+  espClient.setCACert(root_ca);
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
 
 void loop() {
   if (!client.connected()) {
-    while (!(strlen(mqtt_user) > 0 ? client.connect("ESP32_SecurityClient", mqtt_user, mqtt_pass) : client.connect("ESP32_SecurityClient"))) delay(1000);
+    String clientId = makeUniqueClientId("ESP32_Home");
+    while (!(strlen(mqtt_user) > 0 ? client.connect(clientId.c_str(), mqtt_user, mqtt_pass) : client.connect(clientId.c_str()))) delay(1000);
     String sub = (strlen(USER_UID) > 0) ? String(USER_UID) + "/#" : "guest_iot365/#";
     client.subscribe(sub.c_str());
   }
@@ -783,7 +812,8 @@ void loop() {
     }
   }
 }
-`
+`;
+    }
   },
   {
     id: 'rc-car',
@@ -847,22 +877,28 @@ void loop() {
   ],
   "dependencies": {}
 }`,
-    sketchCode: (uidPlaceholder = '') => `/*
+    sketchCode: (uidPlaceholder = '', mqttOptions = {}) => {
+      const mq = resolveSketchMqttOptions(mqttOptions);
+      return `/*
  * IOT365 — SMART RC CAR CONTROLLER
  * تحكم كامل بالسيارة الذكية وحساس المسافة
  */
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
+#include <time.h>
 
 const char* USER_UID = "${uidPlaceholder}";
 
+// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "fb1525bbd13f4f1ca5f0a7599eed435f.s1.eu.hivemq.cloud";
-const int   mqtt_port   = 8883;
-const char* mqtt_user   = "iot365";
-const char* mqtt_pass   = "iot365-jo";
+const char* mqtt_server = "${mq.host}";
+const int   mqtt_port   = ${mq.port};
+const char* mqtt_user   = "${mq.user}";
+const char* mqtt_pass   = "${mq.pass}";
+
+${mq.tlsHelpers}
 
 #define PIN_TRIG  5
 #define PIN_ECHO  18
@@ -922,14 +958,17 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) delay(300);
 
-  espClient.setInsecure();
+  randomSeed(esp_random());
+  syncTimeForTLS();
+  espClient.setCACert(root_ca);
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
 
 void loop() {
   if (!client.connected()) {
-    while (!(strlen(mqtt_user) > 0 ? client.connect("ESP32_CarClient", mqtt_user, mqtt_pass) : client.connect("ESP32_CarClient"))) delay(1000);
+    String clientId = makeUniqueClientId("ESP32_Car");
+    while (!(strlen(mqtt_user) > 0 ? client.connect(clientId.c_str(), mqtt_user, mqtt_pass) : client.connect(clientId.c_str()))) delay(1000);
     String sub = (strlen(USER_UID) > 0) ? String(USER_UID) + "/#" : "guest_iot365/#";
     client.subscribe(sub.c_str());
   }
@@ -944,6 +983,7 @@ void loop() {
     }
   }
 }
-`
+`;
+    }
   }
 ];

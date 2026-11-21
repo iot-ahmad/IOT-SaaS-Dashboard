@@ -529,7 +529,7 @@ function Dashboard({ user, logout }) {
   })();
 
   // Use Firebase UID as the MQTT topic prefix - unique per user
-  const { isConnected, messages, deviceStates, lastSeen, publish, userUID } = useMqtt(user.uid);
+  const { isConnected, messages, deviceStates, lastSeen, publish, userUID, mqttMode, mqttConfig } = useMqtt(user.uid);
 
   // ─── Real-time Automation Engine ──────────────────────────────────────────────
   const [automations, setAutomations] = useState([]);
@@ -631,13 +631,13 @@ function Dashboard({ user, logout }) {
   const renderContent = () => {
     if (activeTool) {
       switch (activeTool) {
-        case 'simulator':   return <SimulatorView deviceStates={deviceStates} publish={publish} messages={messages} userUID={userUID} lastSeen={lastSeen} isConnected={isConnected} />;
+        case 'simulator':   return <SimulatorView deviceStates={deviceStates} publish={publish} messages={messages} userUID={userUID} lastSeen={lastSeen} isConnected={isConnected} mqttMode={mqttMode} mqttConfig={mqttConfig} />;
         case 'devices':     return <NewDevicesView userUID={userUID} lastSeen={lastSeen} deviceStates={deviceStates} />;
         case 'automations': return <AutomationsToolView publish={publish} userUID={userUID} />;
         case 'alerts':     return <AlertsView userUID={userUID} />;
         case 'profile':    return <ProfilePage user={user} userUID={userUID} logout={logout} />;
         case 'settings':   return <ProfilePage user={user} userUID={userUID} logout={logout} />; // legacy alias
-        case 'developer':  return <DeveloperGuide userUID={user.uid} />;
+        case 'developer':  return <DeveloperGuide userUID={user.uid} mqttMode={mqttMode} mqttConfig={mqttConfig} />;
         default: return <DevicesView userUID={userUID} lastSeen={lastSeen} />;
       }
     }
@@ -726,6 +726,7 @@ function Dashboard({ user, logout }) {
           activeWorkspace={activeWorkspace}
           activeTool={activeTool}
           isConnected={isConnected}
+          mqttMode={mqttMode}
           toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           customWorkspaces={displayWorkspaces}
           isSidebarCollapsed={isSidebarCollapsed}

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Sparkles, X, CheckCircle2, Code, Cpu, Layers, Copy, Check 
+  Sparkles, X, CheckCircle2, Code, Cpu, Layers, Copy, Check, ShieldCheck, AlertTriangle 
 } from 'lucide-react';
 import { SIMULATOR_PROJECTS } from '../data/simulatorProjects';
 import TopBar from './simulator/TopBar';
@@ -34,7 +34,9 @@ export default function SimulatorView({
   userUID = '', 
   lastSeen = {}, 
   isMqttConnected,
-  isConnected
+  isConnected,
+  mqttMode = 'demo',
+  mqttConfig = {}
 }) {
   const containerRef = useRef(null);
   const moreMenuButtonRef = useRef(null);
@@ -70,6 +72,7 @@ export default function SimulatorView({
   const [showProjectsModal, setShowProjectsModal] = useState(false);
   const [modalTab, setModalTab] = useState('code');
   const [useAccountUid, setUseAccountUid] = useState(true);
+  const [includePrivateCreds, setIncludePrivateCreds] = useState(false);
 
   // Copy confirmations
   const [copiedCode, setCopiedCode] = useState(false);
@@ -151,7 +154,13 @@ export default function SimulatorView({
   };
 
   const currentUidParam = useAccountUid ? (userUID || '') : '';
-  const currentCode = activeProject.sketchCode(currentUidParam);
+  const currentCode = activeProject.sketchCode(currentUidParam, {
+    host: mqttConfig?.host,
+    tlsPort: mqttConfig?.tlsPort,
+    username: mqttConfig?.username,
+    password: mqttConfig?.password,
+    includeCredentials: mqttMode === 'private' && includePrivateCreds,
+  });
 
   const copyCode = () => {
     navigator.clipboard.writeText(currentCode);
@@ -255,6 +264,10 @@ export default function SimulatorView({
           userUID={userUID}
           lastSeen={lastSeen}
           mqttOnline={mqttOnline}
+          mqttMode={mqttMode}
+          mqttConfig={mqttConfig}
+          includePrivateCreds={includePrivateCreds}
+          onToggleIncludeCreds={() => setIncludePrivateCreds(v => !v)}
           onOpenModal={() => setShowProjectsModal(true)}
           copiedCode={copiedCode}
           onCopyCode={copyCode}
@@ -358,6 +371,31 @@ export default function SimulatorView({
             <div className="p-5 overflow-y-auto flex-1 space-y-4 text-xs scrollbar-thin">
               {modalTab === 'code' && (
                 <div className="space-y-3">
+                  {/* TLS & Credentials Security Banner */}
+                  <div className={`rounded-xl p-3 border text-[11px] flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                    mqttMode === 'private'
+                      ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+                      : 'bg-amber-500/10 border-amber-500/25 text-amber-300'
+                  }`}>
+                    <div className="flex items-start gap-2">
+                      {mqttMode === 'private' ? <ShieldCheck size={15} className="shrink-0 mt-0.5" /> : <AlertTriangle size={15} className="shrink-0 mt-0.5" />}
+                      <span>
+                        {mqttMode === 'private'
+                          ? `تحقق شهادة TLS (${mqttConfig?.caName || 'Root CA'}) + مزامنة NTP + Client ID فريد مفعّلة مع ${mqttConfig?.provisionedBy === 'emqx_auto' ? 'حساب EMQX المعزول تلقائياً' : 'سيرفرك الخاص'}. اضغط "تضمين بيانات MQTT الخاصة بي" لنسخ كود جاهز للتشغيل.`
+                          : `تحقق شهادة TLS (${mqttConfig?.caName || 'Root CA'}) + Client ID فريد مفعّلان. بيانات الدخول مخفية (placeholders) للحماية — فعّل السيرفر الخاص أو التوليد التلقائي من Profile & Settings → Security.`}
+                      </span>
+                    </div>
+                    {mqttMode === 'private' && (
+                      <button
+                        type="button"
+                        onClick={() => setIncludePrivateCreds(v => !v)}
+                        className="px-2.5 py-1 rounded-lg bg-zinc-900/70 hover:bg-zinc-900 border border-white/10 text-foreground font-semibold shrink-0 cursor-pointer"
+                      >
+                        {includePrivateCreds ? 'إخفاء كلمة المرور (placeholders)' : 'تضمين بيانات MQTT الخاصة بي'}
+                      </button>
+                    )}
+                  </div>
+
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-foreground">كود C++ كامل للـ ESP32:</span>
                     <button
