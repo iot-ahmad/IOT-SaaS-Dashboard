@@ -31,11 +31,17 @@ export default async function handler(req, res) {
 
   let uid = '';
   try {
+    const requestOrigin = req.headers.referer || req.headers.origin || (req.headers.host ? `https://${req.headers.host}/` : '');
+    const verifyHeaders = { 'Content-Type': 'application/json' };
+    if (requestOrigin) {
+      verifyHeaders.Referer = requestOrigin;
+    }
+
     const verifyRes = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(firebaseApiKey)}`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: verifyHeaders,
         body: JSON.stringify({ idToken }),
       }
     );
