@@ -17,7 +17,7 @@ import { FEATURED_TEMPLATES } from '../data/featuredTemplates';
 // MarkdownPreview – exported so other components can reuse it
 // ─────────────────────────────────────────────────────────────
 export const MarkdownPreview = ({ text }) => {
-  if (!text) return <p className="text-muted-foreground text-sm italic">لا يوجد توثيق بعد...</p>;
+  if (!text) return <p className="text-muted-foreground text-sm italic">No documentation added yet...</p>;
 
   const parseMarkdown = (markdownText) => {
     const lines = markdownText.split('\n');
@@ -89,7 +89,7 @@ export const MarkdownPreview = ({ text }) => {
   const parsedElements = parseMarkdown(text);
 
   return (
-    <div className="space-y-4 font-sans text-foreground/90 leading-relaxed text-right rtl-text" dir="rtl">
+    <div className="space-y-4 font-sans text-foreground/90 leading-relaxed text-left" dir="ltr">
       {parsedElements.map((el, idx) => {
         if (el.type === 'h1') return (
           <h1 key={idx} className="text-2xl font-extrabold text-foreground mt-6 mb-3 border-b border-border pb-2">
@@ -108,13 +108,13 @@ export const MarkdownPreview = ({ text }) => {
           </h3>
         );
         if (el.type === 'li') return (
-          <div key={idx} className="flex gap-2 items-start text-sm pr-2 mt-1">
+          <div key={idx} className="flex gap-2 items-start text-sm pl-2 mt-1">
             <span className="text-primary mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
             <span dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
           </div>
         );
         if (el.type === 'blockquote') return (
-          <blockquote key={idx} className="border-r-4 border-primary/50 pr-4 pl-0 my-3 text-sm text-muted-foreground italic bg-card/[0.01] py-2 rounded-l-lg"
+          <blockquote key={idx} className="border-l-4 border-primary/50 pl-4 pr-0 my-3 text-sm text-muted-foreground italic bg-card/[0.01] py-2 rounded-r-lg"
             dangerouslySetInnerHTML={{ __html: formatText(el.content) }} />
         );
         if (el.type === 'img') return (
@@ -128,7 +128,7 @@ export const MarkdownPreview = ({ text }) => {
             <div className="flex items-center justify-between bg-zinc-950 px-4 py-1.5 border-t border-x border-border rounded-t-xl text-[10px] text-muted-foreground font-sans tracking-wide">
               <span>{el.language.toUpperCase()}</span>
               <button type="button" onClick={() => navigator.clipboard.writeText(el.content)}
-                className="hover:text-primary transition-colors cursor-pointer">نسخ الكود</button>
+                className="hover:text-primary transition-colors cursor-pointer">Copy Code</button>
             </div>
             <pre className="bg-[#030406] border border-border rounded-b-xl p-4 overflow-x-auto text-xs leading-relaxed font-mono scrollbar-thin text-left ltr-text text-slate-300">
               <code dangerouslySetInnerHTML={{ __html: highlightCode(el.content) }} />
@@ -147,11 +147,11 @@ export const MarkdownPreview = ({ text }) => {
 // Wizard Steps Configuration
 // ─────────────────────────────────────────────────────────────
 const STEPS = [
-  { num: 1, label: 'البيانات الأساسية', icon: FileText },
-  { num: 2, label: 'الأجهزة والقطع', icon: Cpu },
-  { num: 3, label: 'التوثيق التقني', icon: Code },
-  { num: 4, label: 'التوصيل الكهربائي', icon: Zap },
-  { num: 5, label: 'المعاينة والنشر', icon: Eye },
+  { num: 1, label: 'Basic Info', icon: FileText },
+  { num: 2, label: 'Hardware & Parts', icon: Cpu },
+  { num: 3, label: 'Technical Docs', icon: Code },
+  { num: 4, label: 'Wiring & Schematic', icon: Zap },
+  { num: 5, label: 'Review & Publish', icon: Eye },
 ];
 
 export default function ProjectPublisher({ user }) {
@@ -175,7 +175,7 @@ export default function ProjectPublisher({ user }) {
   // Step 1: Basic Info
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
-  const [difficulty, setDifficulty] = useState('مبتدئ');
+  const [difficulty, setDifficulty] = useState('Beginner');
   const [visibility, setVisibility] = useState('public');
   const [tagInput, setTagInput] = useState('');
   const [tagsList, setTagsList] = useState(['ESP32', 'IoT']);
@@ -186,14 +186,14 @@ export default function ProjectPublisher({ user }) {
       id: 'default-mcu',
       name: 'ESP32 NodeMCU DevKit V1',
       category: 'MCU',
-      function: 'وحدة المعالجة المركزية والاتصال السحابي',
+      function: 'Central processing unit and cloud connectivity controller',
       imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80'
     },
     {
       id: 'default-sensor',
       name: 'DHT22 / AM2302',
       category: 'SENSOR',
-      function: 'قياس درجات الحرارة والرطوبة',
+      function: 'Ambient temperature and relative humidity sensing',
       imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80'
     }
   ]);
@@ -201,7 +201,7 @@ export default function ProjectPublisher({ user }) {
   // Step 3: Technical Documentation
   const [docTab, setDocTab] = useState('overview');
   const [secOverview, setSecOverview] = useState('');
-  const [secCode, setSecCode] = useState('// اكتب كود Arduino / ESP32 هنا\n\nvoid setup() {\n  Serial.begin(115200);\n  Serial.println("IoT Project Initialized!");\n}\n\nvoid loop() {\n  // logic here\n  delay(1000);\n}');
+  const [secCode, setSecCode] = useState('// Write your Arduino / ESP32 firmware code here\n\nvoid setup() {\n  Serial.begin(115200);\n  Serial.println("IoT Project Initialized!");\n}\n\nvoid loop() {\n  // logic here\n  delay(1000);\n}');
   const [secChallenges, setSecChallenges] = useState('');
 
   // Step 4: Wiring Diagram (Auto Builder & Upload)
@@ -243,9 +243,9 @@ export default function ProjectPublisher({ user }) {
   // ─── Template Application Handler ───
   const handleApplyTemplate = (template) => {
     setActiveTemplateOrigin(template.title);
-    setTitle(`مشروع مستند إلى: ${template.title}`);
+    setTitle(`Project based on: ${template.title}`);
     setSummary(template.summary || '');
-    setDifficulty(template.difficulty || 'مبتدئ');
+    setDifficulty(template.difficulty || 'Beginner');
     setTagsList(template.tags || ['ESP32', 'IoT']);
     if (template.components && template.components.length > 0) {
       setComponentsList(template.components);
@@ -284,31 +284,31 @@ export default function ProjectPublisher({ user }) {
       .map(c => `### ${c.name} (${c.category || 'PART'})\n${c.imageUrl ? `![${c.name}](${c.imageUrl})\n` : ''}${c.function || ''}`)
       .join('\n\n');
 
-    return `# ${title || 'توثيق المشروع'}
+    return `# ${title || 'Project Documentation'}
 
-## 📄 نظرة عامة (Overview)
-${secOverview || 'لا يوجد وصف مضاف...'}
+## Overview
+${secOverview || 'No overview description added...'}
 
-## 🔌 الأجهزة والقطع المستخدمة
-${compSection || 'لم يتم إضافة أجهزة بعد...'}
+## Hardware Components Used
+${compSection || 'No hardware components added yet...'}
 
-## 💻 كود التشغيل (Arduino Sketch)
+## Firmware Code (Arduino Sketch)
 \`\`\`cpp
-${secCode || '// الكود هنا'}
+${secCode || '// Code here'}
 \`\`\`
 
-## ⚡ مخطط التوصيل الكهربائي
+## Wiring & Schematic Diagram
 ${wiringDescription || ''}
-${wiringImageUrl ? `\n![مخطط التوصيل](${wiringImageUrl})` : ''}
+${wiringImageUrl ? `\n![Wiring Diagram](${wiringImageUrl})` : ''}
 
-## ⚠️ ملاحظات وتحديات
-${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
+## Notes & Challenges
+${secChallenges || 'No additional notes added...'}`;
   };
 
   // ─── Publish to Firestore ───
   const handlePublish = async () => {
     if (!title.trim() || !summary.trim()) {
-      setError('الرجاء ملء العنوان والوصف المختصر للمشروع.');
+      setError('Please fill in both the project title and short summary.');
       setStep(1);
       return;
     }
@@ -346,7 +346,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
       navigate(`/hub/project/${projectId}`);
     } catch (err) {
       console.error(err);
-      setError('فشل نشر المشروع. تأكد من اتصال الإنترنت وصلاحيات قاعدة البيانات.');
+      setError('Failed to publish project. Please check your internet connection and database permissions.');
     } finally {
       setLoading(false);
     }
@@ -363,25 +363,25 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
   if (!hasUsername) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl" dir="rtl">
+      <div className="max-w-md mx-auto text-center py-16 bg-card/[0.02] border border-border p-8 rounded-3xl backdrop-blur-xl" dir="ltr">
         <AlertCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-white">تحتاج إلى تعيين اسم مستخدم أولاً</h3>
+        <h3 className="text-xl font-bold text-white">Username Required First</h3>
         <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-          لتتمكن من نشر مشاريعك في المجتمع، يرجى التوجه لصفحة ملفك الشخصي وتعيين اسم المستخدم.
+          To publish projects to the community hub, please go to your profile settings and claim a unique username.
         </p>
         <button
           onClick={() => navigate('/settings')}
           style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
           className="mt-6 font-bold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg cursor-pointer"
         >
-          توجه إلى الإعدادات الآن
+          Go to Settings Now
         </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-20 text-right" dir="rtl">
+    <div className="max-w-7xl mx-auto space-y-6 pb-20 text-left" dir="ltr">
       
       {/* ─── Top Header ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
@@ -389,11 +389,11 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
           <div className="flex items-center gap-2">
             <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
               <Code size={20} className="text-zinc-400" />
-              <span>محرر وتوثيق مشاريع الـ IoT</span>
+              <span>IoT Project Publisher & Documentation Studio</span>
             </h2>
           </div>
           <p className="text-xs text-zinc-400 mt-1">
-            صمم دوائرك، ابنِ مخططات التوصيل الذكية، وشارك كودك مع مجتمع المطورين
+            Design your circuits, document smart wiring schematics, and share your firmware with the developer community
           </p>
         </div>
       </div>
@@ -423,7 +423,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                 {isPassed && <CheckCircle2 size={12} className="text-zinc-300" />}
               </button>
               {i < STEPS.length - 1 && (
-                <ChevronRight size={14} className={`mx-1 rotate-180 ${isPassed ? 'text-zinc-400' : 'text-zinc-600'}`} />
+                <ChevronRight size={14} className={`mx-1 ${isPassed ? 'text-zinc-400' : 'text-zinc-600'}`} />
               )}
             </div>
           );
@@ -450,7 +450,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <FileText size={18} className="text-primary" />
-                  الخطوة 1: البيانات الأساسية للبطاقة
+                  Step 1: Basic Project Information
                 </h3>
 
                 {/* Smart Template Nudge */}
@@ -460,7 +460,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                   className="text-xs text-sky-400 hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <HelpCircle size={13} />
-                  غير متأكد مما تكتب؟ شاهد نماذج مشابهة
+                  Not sure where to start? Browse featured templates
                 </button>
               </div>
 
@@ -468,11 +468,11 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Title */}
                   <div className="md:col-span-2 space-y-1.5">
-                    <label className="block text-xs font-bold text-muted-foreground">عنوان المشروع *</label>
+                    <label className="block text-xs font-bold text-muted-foreground">Project Title *</label>
                     <input
                       required
                       type="text"
-                      placeholder="مثال: محطة طقس ذكية متكاملة تدعم التنبيهات الفورية"
+                      placeholder="e.g., Smart IoT Weather Station with Real-Time MQTT Alerts"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
@@ -481,26 +481,26 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
                   {/* Difficulty */}
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-muted-foreground">مستوى الصعوبة</label>
+                    <label className="block text-xs font-bold text-muted-foreground">Difficulty Level</label>
                     <select
                       value={difficulty}
                       onChange={(e) => setDifficulty(e.target.value)}
                       className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
                     >
-                      <option value="مبتدئ">مبتدئ (Beginner)</option>
-                      <option value="متوسط">متوسط (Intermediate)</option>
-                      <option value="متقدم">متقدم (Advanced)</option>
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
                     </select>
                   </div>
                 </div>
 
                 {/* Summary */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-muted-foreground">الوصف الموجز (يظهر على بطاقة المشروع في المستودع) *</label>
+                  <label className="block text-xs font-bold text-muted-foreground">Short Summary (Displayed on the project card in the Hub) *</label>
                   <textarea
                     required
                     rows={3}
-                    placeholder="صف الهدف من مشروعك وما المشكلة التي يحلها باختصار..."
+                    placeholder="Briefly describe the goal of your project and the problem it solves..."
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
                     className="w-full bg-card/5 dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground resize-none transition-colors"
@@ -510,22 +510,22 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                 {/* Visibility & Tags */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-muted-foreground">الخصوصية</label>
+                    <label className="block text-xs font-bold text-muted-foreground">Visibility</label>
                     <select
                       value={visibility}
                       onChange={(e) => setVisibility(e.target.value)}
                       className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl py-3 px-4 focus:outline-none focus:border-primary text-sm text-foreground transition-colors"
                     >
-                      <option value="public">عام في المجتمع (Public)</option>
-                      <option value="private">خاص بي فقط (Private)</option>
+                      <option value="public">Public (Visible in Community Hub)</option>
+                      <option value="private">Private (Only Me)</option>
                     </select>
                   </div>
 
                   <div className="md:col-span-2 space-y-1.5">
-                    <label className="block text-xs font-bold text-muted-foreground">وسوم البحث (اضغط Enter لإضافة وسم)</label>
+                    <label className="block text-xs font-bold text-muted-foreground">Search Tags (Press Enter to add a tag)</label>
                     <input
                       type="text"
-                      placeholder="مثال: ESP32, MQTT, Soil Moisture, OLED..."
+                      placeholder="e.g., ESP32, MQTT, Soil Moisture, OLED..."
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={handleAddTag}
@@ -556,7 +556,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
             <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
               <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
                 <Cpu size={18} className="text-primary" />
-                الخطوة 2: الأجهزة والقطع المستخدمة (Hardware Components)
+                Step 2: Hardware Components & Parts
               </h3>
 
               <ComponentPicker
@@ -573,14 +573,14 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[640px]">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
                   <Code size={16} className="text-primary" />
-                  محرر التوثيق والأكواد البرمجية
+                  Documentation & Firmware Code Editor
                 </h3>
 
                 <div className="flex gap-1.5 bg-muted dark:bg-[#0c0e14] border border-border p-1 rounded-xl shrink-0">
                   {[
-                    { id: 'overview', label: 'نظرة عامة' },
-                    { id: 'code', label: 'كود C++ / Arduino' },
-                    { id: 'challenges', label: 'التحديات والحلول' },
+                    { id: 'overview', label: 'Overview' },
+                    { id: 'code', label: 'C++ / Arduino Code' },
+                    { id: 'challenges', label: 'Challenges & Solutions' },
                   ].map(t => (
                     <button
                       key={t.id}
@@ -602,7 +602,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                     <textarea
                       value={secOverview}
                       onChange={(e) => setSecOverview(e.target.value)}
-                      placeholder="اكتب شرحاً تفصيلياً عن وظيفة المشروع وهيكليته البرمجية..."
+                      placeholder="Write a detailed explanation of how the project works and its software architecture..."
                       className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
                     />
                   )}
@@ -610,7 +610,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                     <textarea
                       value={secCode}
                       onChange={(e) => setSecCode(e.target.value)}
-                      placeholder="// اكتب كود Arduino / ESP32 هنا"
+                      placeholder="// Write your Arduino / ESP32 code here"
                       className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin text-left leading-relaxed transition-colors"
                       dir="ltr"
                     />
@@ -619,7 +619,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                     <textarea
                       value={secChallenges}
                       onChange={(e) => setSecChallenges(e.target.value)}
-                      placeholder="اكتب الصعوبات التقنية التي واجهتك (مثل مشاكل التغذية أو التوقيت) والحلول..."
+                      placeholder="Document any technical challenges you encountered (e.g., power supply noise, sensor calibration, timing issues) and how you resolved them..."
                       className="flex-1 w-full bg-card dark:bg-[#030406] border border-border rounded-2xl p-4 text-xs font-mono text-foreground focus:outline-none focus:border-primary resize-none overflow-y-auto scrollbar-thin leading-relaxed transition-colors"
                     />
                   )}
@@ -630,7 +630,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
               <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-4 backdrop-blur-xl flex flex-col h-[640px] overflow-hidden">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 shrink-0">
                   <Eye size={16} className="text-primary" />
-                  معاينة التنسيق (Markdown Live Preview)
+                  Markdown Live Preview
                 </h3>
                 <div className="flex-1 overflow-y-auto scrollbar-thin pr-1">
                   <MarkdownPreview text={buildDocContent()} />
@@ -644,7 +644,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
             <div className="bg-card/[0.02] border border-border p-6 rounded-3xl space-y-5 backdrop-blur-xl">
               <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
                 <Zap size={18} className="text-primary" />
-                الخطوة 4: التوصيل الكهربائي والمخطط (Wiring & Schematic)
+                Step 4: Electrical Wiring & Schematic
               </h3>
 
               <WiringBuilder
@@ -666,44 +666,44 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                 <div>
                   <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                     <CheckCircle2 size={18} className="text-emerald-400" />
-                    الخطوة 5: المعاينة الشاملة قبل النشر
+                    Step 5: Comprehensive Pre-Publish Review
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    هكذا سيظهر مشروعك بالضبط لبقية مطوري المجتمع
+                    This is how your project will appear to other developers in the community hub
                   </p>
                 </div>
 
                 <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                  جاهز للنشر
+                  Ready to Publish
                 </span>
               </div>
 
               {/* Summary Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
-                  <span className="text-[10px] text-muted-foreground font-bold">العنوان والصعوبة:</span>
-                  <h4 className="text-xs font-extrabold text-foreground">{title || 'بدون عنوان'}</h4>
+                  <span className="text-[10px] text-muted-foreground font-bold">Title & Difficulty:</span>
+                  <h4 className="text-xs font-extrabold text-foreground">{title || 'Untitled Project'}</h4>
                   <span className="inline-block text-[10px] text-primary font-bold">{difficulty}</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
-                  <span className="text-[10px] text-muted-foreground font-bold">القطع والتوصيلات:</span>
-                  <h4 className="text-xs font-extrabold text-foreground">{componentsList.length} قطع إلكترونية</h4>
-                  <span className="inline-block text-[10px] text-sky-400 font-mono">{connectionsList.length} أسلاك موصولة</span>
+                  <span className="text-[10px] text-muted-foreground font-bold">Parts & Connections:</span>
+                  <h4 className="text-xs font-extrabold text-foreground">{componentsList.length} Electronic Parts</h4>
+                  <span className="inline-block text-[10px] text-sky-400 font-mono">{connectionsList.length} Connected Wires</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-card dark:bg-[#0a0c12] border border-border space-y-1">
-                  <span className="text-[10px] text-muted-foreground font-bold">تفاعل المجتمع:</span>
+                  <span className="text-[10px] text-muted-foreground font-bold">Community Engagement:</span>
                   <div className="flex items-center gap-2 text-xs font-bold text-foreground pt-1">
                     <MessageSquare size={13} className="text-primary" />
-                    <span>زر "تواصل مع المطور" مفعّل تلقائياً</span>
+                    <span>"Contact Developer" button enabled automatically</span>
                   </div>
                 </div>
               </div>
 
               {/* Visual Schematic Snapshot */}
               <div className="space-y-2">
-                <span className="text-xs font-bold text-white">مخطط التوصيل وشرح التوصيلات:</span>
+                <span className="text-xs font-bold text-white">Wiring Schematic & Pinout Guide:</span>
                 <SchematicSvgViewer
                   wiringImageUrl={wiringImageUrl}
                   wiringDescription={wiringDescription}
@@ -713,7 +713,7 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
 
               {/* Documentation Preview */}
               <div className="space-y-2 border-t border-border pt-4">
-                <span className="text-xs font-bold text-foreground">التوثيق التقني النهائي:</span>
+                <span className="text-xs font-bold text-foreground">Final Technical Documentation:</span>
                 <div className="p-5 rounded-2xl bg-card dark:bg-[#080a0f] border border-border max-h-96 overflow-y-auto scrollbar-thin">
                   <MarkdownPreview text={buildDocContent()} />
                 </div>
@@ -724,35 +724,6 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
           {/* ─── Navigation Controls ─── */}
           <div className="flex items-center justify-between pt-4 border-t border-white/[0.08]">
             <div>
-              {step < 5 ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setError('');
-                    setStep(step + 1);
-                  }}
-                  className="bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer text-xs"
-                >
-                  <span>الخطوة التالية</span>
-                  <ArrowRight size={14} className="rotate-180" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={handlePublish}
-                  className="bg-white/[0.12] hover:bg-white/[0.2] border border-white/[0.2] text-white font-bold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 text-xs"
-                >
-                  {loading ? (
-                    <><div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" /> جاري النشر...</>
-                  ) : (
-                    <><CheckCircle2 size={15} /> تأكيد ونشر المشروع في المستودع</>
-                  )}
-                </button>
-              )}
-            </div>
-
-            <div>
               {step > 1 && (
                 <button
                   type="button"
@@ -762,7 +733,36 @@ ${secChallenges || 'لا توجد ملاحظات مضافة...'}`;
                   }}
                   className="bg-white/[0.04] text-zinc-400 hover:text-white border border-white/[0.08] px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
                 >
-                  <ArrowLeft size={14} className="rotate-180" /> الخطوة السابقة
+                  <ArrowLeft size={14} /> Previous Step
+                </button>
+              )}
+            </div>
+
+            <div>
+              {step < 5 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError('');
+                    setStep(step + 1);
+                  }}
+                  className="bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer text-xs"
+                >
+                  <span>Next Step</span>
+                  <ArrowRight size={14} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handlePublish}
+                  className="bg-white/[0.12] hover:bg-white/[0.2] border border-white/[0.2] text-white font-bold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 text-xs"
+                >
+                  {loading ? (
+                    <><div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" /> Publishing...</>
+                  ) : (
+                    <><CheckCircle2 size={15} /> Confirm & Publish Project to Hub</>
+                  )}
                 </button>
               )}
             </div>

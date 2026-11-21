@@ -57,25 +57,25 @@ export default function CommunityLayout({ user, logout, children }) {
   };
 
   const navItems = [
-    { label: 'الخلاصة والتحديثات', path: '/hub', icon: Home, exact: true },
-    { label: 'استكشاف المشاريع', path: '/hub/explore', icon: Compass },
-    { label: 'نشر وتوثيق مشروع', path: '/hub/new', icon: Plus },
-    { label: 'النقاشات والأسئلة', path: '/hub/discussions', icon: HelpCircle },
-    { label: 'المشاريع المحفوظة', path: '/hub/saved', icon: Bookmark },
-    { label: 'الرسائل المباشرة', action: () => setIsMessagingOpen(true), icon: MessageSquare, badge: unreadCount },
-    { label: 'التنبيهات', path: '/hub/notifications', icon: Bell, badge: 2 },
-    { label: 'الملف الشخصي', path: user?.username ? `/${user.username}` : (user?.displayName ? `/${user.displayName.toLowerCase().replace(/\s+/g, '_')}` : '/profile'), icon: User },
+    { label: 'Feed & Updates', path: '/hub', icon: Home, exact: true },
+    { label: 'Explore Projects', path: '/hub/explore', icon: Compass },
+    { label: 'Publish Project', path: '/hub/new', icon: Plus },
+    { label: 'Discussions & Q&A', path: '/hub/discussions', icon: HelpCircle },
+    { label: 'Saved Projects', path: '/hub/saved', icon: Bookmark },
+    { label: 'Direct Messages', action: () => setIsMessagingOpen(true), icon: MessageSquare, badge: unreadCount },
+    { label: 'Notifications', path: '/hub/notifications', icon: Bell, badge: 2 },
+    { label: 'Profile', path: user?.username ? `/${user.username}` : (user?.displayName ? `/${user.displayName.toLowerCase().replace(/\s+/g, '_')}` : '/profile'), icon: User },
   ];
 
   const currentPath = location.pathname;
 
   return (
-    <div className="min-h-screen bg-[#121316] text-[#e3e4e8] flex flex-col font-sans selection:bg-white/20 selection:text-white" dir="rtl">
+    <div className="min-h-screen bg-[#121316] text-[#e3e4e8] flex flex-col font-sans selection:bg-white/20 selection:text-white" dir="ltr">
       
       {/* ─── Top Minimalist Bar (NO top tabs, clean and sleek) ─── */}
       <header className="sticky top-0 z-40 bg-[#16171a]/95 backdrop-blur-md border-b border-white/[0.08] px-4 md:px-6 py-2.5 flex items-center justify-between gap-4">
         
-        {/* Right side: Official Logo */}
+        {/* Left side: Official Logo */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/hub')}
@@ -87,7 +87,7 @@ export default function CommunityLayout({ user, logout, children }) {
               className="h-7 w-auto object-contain" 
             />
             <span className="text-[10px] text-zinc-400 font-medium bg-white/[0.05] border border-white/[0.08] px-2 py-0.5 rounded-md hidden sm:inline-block">
-              المجتمع
+              Community
             </span>
           </button>
         </div>
@@ -96,23 +96,23 @@ export default function CommunityLayout({ user, logout, children }) {
         <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-1 max-w-md relative">
           <input
             type="text"
-            placeholder="ابحث عن مشاريع، أكواد، أو أجهزة (ESP32, BME280)..."
+            placeholder="Search projects, code, or hardware (ESP32, BME280)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#1c1d22] border border-white/[0.08] rounded-xl py-1.5 px-3 pr-9 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition-all"
+            className="w-full bg-[#1c1d22] border border-white/[0.08] rounded-xl py-1.5 pl-9 pr-14 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition-all"
           />
-          <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[9px] font-mono text-zinc-500 bg-white/[0.04] border border-white/[0.06] px-1 py-0.5 rounded">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-mono text-zinc-500 bg-white/[0.04] border border-white/[0.06] px-1 py-0.5 rounded">
             Enter
           </span>
         </form>
 
-        {/* Left side: Controls */}
+        {/* Right side: Controls */}
         <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
             className="p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors cursor-pointer"
-            title="تبديل المظهر"
+            title="Toggle Theme"
           >
             {isDark ? <Sun size={14} /> : <Moon size={14} />}
           </button>
@@ -120,7 +120,7 @@ export default function CommunityLayout({ user, logout, children }) {
           <button
             onClick={() => setIsMessagingOpen(true)}
             className="relative p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors cursor-pointer"
-            title="الرسائل المباشرة"
+            title="Direct Messages"
           >
             <MessageSquare size={15} />
             {unreadCount > 0 && (
@@ -137,7 +137,7 @@ export default function CommunityLayout({ user, logout, children }) {
                 className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white bg-white/[0.05] border border-white/[0.08] hover:border-white/20 px-3 py-1.5 rounded-xl transition-all cursor-pointer"
               >
                 <LayoutDashboard size={13} />
-                <span>لوحة التحكم</span>
+                <span>Dashboard</span>
               </button>
 
               <div className="relative" ref={dropdownRef}>
@@ -155,9 +155,9 @@ export default function CommunityLayout({ user, logout, children }) {
                 </button>
 
                 {isUserMenuOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-[#18191c] border border-white/10 rounded-2xl shadow-xl p-1.5 z-50 space-y-1 text-right animate-fadeIn">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-[#18191c] border border-white/10 rounded-2xl shadow-xl p-1.5 z-50 space-y-1 text-left animate-fadeIn">
                     <div className="px-3 py-2 border-b border-white/[0.08] mb-1">
-                      <p className="text-xs font-bold text-white truncate">{user.displayName || 'مستخدم'}</p>
+                      <p className="text-xs font-bold text-white truncate">{user.displayName || 'User'}</p>
                       <p className="text-[10px] text-zinc-400 truncate">{user.email}</p>
                     </div>
 
@@ -170,7 +170,7 @@ export default function CommunityLayout({ user, logout, children }) {
                       className="w-full flex items-center gap-2 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] px-3 py-2 rounded-xl transition-colors cursor-pointer"
                     >
                       <User size={13} />
-                      <span>الملف الشخصي</span>
+                      <span>Profile</span>
                     </button>
 
                     <button
@@ -178,7 +178,7 @@ export default function CommunityLayout({ user, logout, children }) {
                       className="w-full flex items-center gap-2 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] px-3 py-2 rounded-xl transition-colors cursor-pointer"
                     >
                       <Plus size={13} />
-                      <span>نشر مشروع</span>
+                      <span>Publish Project</span>
                     </button>
 
                     <div className="border-t border-white/[0.08] pt-1 mt-1">
@@ -187,7 +187,7 @@ export default function CommunityLayout({ user, logout, children }) {
                         className="w-full flex items-center gap-2 text-xs text-rose-400 hover:bg-rose-500/10 px-3 py-2 rounded-xl transition-colors cursor-pointer"
                       >
                         <LogOut size={13} />
-                        <span>تسجيل الخروج</span>
+                        <span>Sign Out</span>
                       </button>
                     </div>
                   </div>
@@ -199,7 +199,7 @@ export default function CommunityLayout({ user, logout, children }) {
               onClick={() => navigate('/login')}
               className="px-3.5 py-1.5 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all cursor-pointer"
             >
-              تسجيل الدخول
+              Sign In
             </button>
           )}
         </div>
@@ -209,21 +209,21 @@ export default function CommunityLayout({ user, logout, children }) {
       <div className="flex-1 flex w-full">
         
         {/* ── Sidebar on the Side (Dashboard Style) ── */}
-        <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#151619] border-l border-white/[0.08] p-3 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto flex flex-col justify-between transition-all duration-300 shrink-0 z-30`}>
+        <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#151619] border-r border-white/[0.08] p-3 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto flex flex-col justify-between transition-all duration-300 shrink-0 z-30`}>
           
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
               {!isCollapsed && (
                 <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
-                  الأقسام
+                  Navigation
                 </span>
               )}
               <button
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors mr-auto"
-                title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors ml-auto"
+                title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
               >
-                {isCollapsed ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+                {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
               </button>
             </div>
 
@@ -262,16 +262,16 @@ export default function CommunityLayout({ user, logout, children }) {
 
           {!isCollapsed && (
             <div className="bg-[#1a1b1f] border border-white/[0.08] rounded-2xl p-3.5 space-y-2 mt-4">
-              <p className="text-xs font-bold text-white">انشر مشروعك</p>
+              <p className="text-xs font-bold text-white">Share Your Build</p>
               <p className="text-[11px] text-zinc-400 leading-relaxed">
-                شارك مخططاتك وأكوادك البرمجية ليتعلم منها المجتمع.
+                Publish your schematics and firmware code so the community can learn and build.
               </p>
               <button
                 onClick={() => navigate('/hub/new')}
                 className="w-full py-2 px-3 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer mt-1"
               >
                 <Plus size={13} />
-                <span>نشر مشروع جديد</span>
+                <span>New Project</span>
               </button>
             </div>
           )}

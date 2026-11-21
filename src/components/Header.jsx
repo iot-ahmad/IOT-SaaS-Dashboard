@@ -66,8 +66,8 @@ export default function Header({
     subtitle = 'Developer vanity portfolio and published IoT projects';
   } else if (activeTool) {
     if (activeTool === 'simulator') {
-      title = 'المحاكي السريع & الداشبورد ';
-      subtitle = 'تجزئة الشاشة في نفس الصفحة بين محاكي الدوائر التفاعلي ولوحة التحكم والأجهزة الحية';
+      title = 'Quick Simulator & Dashboard';
+      subtitle = 'Split screen workspace combining interactive circuit simulator, live dashboard, and devices';
     } else {
       const tool = TOOLS.find(t => t.id === activeTool);
       title = tool ? tool.name : 'Tools';
@@ -126,10 +126,10 @@ export default function Header({
           onClick={() => setIsMessagingOpen(true)}
           style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
           className="relative flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-foreground transition-colors cursor-pointer"
-          title="الرسائل المباشرة"
+          title="Direct Messages"
         >
           <MessageSquare size={16} />
-          <span className="hidden sm:inline">الرسائل</span>
+          <span className="hidden sm:inline">Messages</span>
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-md">
               {unreadCount}
@@ -142,10 +142,10 @@ export default function Header({
           onClick={() => navigate('/hub')}
           style={{ background: 'var(--muted)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', borderRadius: 'var(--radius)' }}
           className="flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:text-foreground transition-colors cursor-pointer"
-          title="مجتمع المشاريع"
+          title="Project Hub"
         >
           <Globe size={16} />
-          <span className="hidden sm:inline">مجتمع المشاريع</span>
+          <span className="hidden sm:inline">Project Hub</span>
         </button>
 
         {/* Theme Toggle */}
@@ -161,8 +161,8 @@ export default function Header({
         {/* MQTT Status */}
         <div
           title={isConnected
-            ? (mqttMode === 'private' ? 'متصل بسيرفر MQTT الخاص المعزول' : 'متصل بسيرفر التجربة المشترك (للتعليم والمحاكاة فقط)')
-            : 'غير متصل بسيرفر MQTT'}
+            ? (mqttMode === 'private' ? 'Connected to private isolated MQTT broker' : 'Connected to shared demo broker (for education & simulation only)')
+            : 'Disconnected from MQTT broker'}
           style={isConnected
           ? { background: 'rgba(91, 140, 110, 0.12)', border: '1px solid var(--border)', color: '#5B8C6E', borderRadius: 'var(--radius)' }
           : { background: 'rgba(184, 92, 92, 0.12)', border: '1px solid var(--border)', color: '#B85C5C', borderRadius: 'var(--radius)' }

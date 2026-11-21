@@ -12,53 +12,53 @@ import { resolveSketchMqttOptions } from '../config/mqttSecurity';
 export const SIMULATOR_PROJECTS = [
   {
     id: 'all-in-one',
-    title: 'مشروع الطقس والمحطة الشاملة (Weather & All-In-One Station)',
-    badge: 'موصى به للاختبار الشامل',
-    description: 'مشروع ESP32 ضخم وشامل يجمع 5 حساسات و 8 مشغلات للتحقق من جميع أدوات لوحة التحكم والتيرمنال وقراءات الحساسات في وقت واحد.',
+    title: 'Weather & All-In-One Station',
+    badge: 'Recommended for Full Testing',
+    description: 'Comprehensive ESP32 station combining 5 sensors and 8 actuators to test all dashboard widgets, live terminal, and telemetry streams simultaneously.',
     wokwiUrl: 'https://wokwi.com/projects/475440992138342401',
     accentColor: 'from-blue-600 to-indigo-600',
     stats: { sensors: 5, actuators: 8, wires: 28 },
     pinouts: [
-      { component: 'DHT22 (الحرارة والرطوبة)', pin: 'GPIO 15', type: 'Sensor', topic: 'sensor/temp & sensor/humidity', note: 'يرسل الحرارة °C والرطوبة %' },
-      { component: 'HC-SR04 (حساس المسافة)', pin: 'Trig: GPIO 5, Echo: GPIO 18', type: 'Sensor', topic: 'sensor/distance', note: 'يرسل المسافة بالسنتيمتر' },
-      { component: 'Potentiometer (رطوبة/مستوى)', pin: 'GPIO 34 (ADC1)', type: 'Sensor', topic: 'farm/moisture', note: 'محاكاة رطوبة التربة أو مستوى الخزان (0-100%)' },
-      { component: 'LDR (حساس الضوء المحيط)', pin: 'GPIO 35 (ADC1)', type: 'Sensor', topic: 'sensor/light', note: 'يرسل شدة الإضاءة المحيطة (0-100%)' },
-      { component: 'PIR Motion (حساس الحركة)', pin: 'GPIO 19', type: 'Sensor', topic: 'security/motion', note: 'يرسل 1 عند كشف حركة و 0 عند السكون' },
-      { component: 'مصباح LED (إضاءة رئيسية)', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'تشغيل/إطفاء ON/OFF' },
-      { component: 'مرحّل Relay (مضخة/جهاز)', pin: 'GPIO 25', type: 'Actuator', topic: 'actuator/relay', note: 'تشغيل/إطفاء ON/OFF' },
-      { component: 'سيرفو SG90 (بوابة/صمام)', pin: 'GPIO 13', type: 'Actuator', topic: 'actuator/servo', note: 'التحكم بالزاوية 0–180 درجة' },
-      { component: 'مروحة / Dimmer PWM', pin: 'GPIO 4', type: 'Actuator', topic: 'actuator/dimmer & stem/fan', note: 'التحكم بسرعة/شدة الإضاءة (0-255)' },
-      { component: 'صفارة إنذار Buzzer', pin: 'GPIO 12', type: 'Actuator', topic: 'sound/buzzer', note: 'تنبيهات صوتية فورية عند إرسال BEEP' },
-      { component: 'حلقة RGB NeoPixel (16 LED)', pin: 'GPIO 23', type: 'Actuator', topic: 'light/rgb', note: 'ألوان متغيرة عبر صيغة R,G,B' },
-      { component: 'شاشة OLED SSD1306 (I2C)', pin: 'SDA: GPIO 21, SCL: GPIO 22', type: 'Display', topic: 'display/oled', note: 'عرض حي لقراءات الحساسات والرسائل الواردة' },
-      { component: 'أداة السيارة D-Pad & Speed', pin: 'Serial + OLED Visual', type: 'Controller', topic: 'car/move & car/speed', note: 'FORWARD, BACK, LEFT, RIGHT, STOP' }
+      { component: 'DHT22 (Temperature & Humidity)', pin: 'GPIO 15', type: 'Sensor', topic: 'sensor/temp & sensor/humidity', note: 'Publishes temperature (°C) and humidity (%)' },
+      { component: 'HC-SR04 (Ultrasonic Distance)', pin: 'Trig: GPIO 5, Echo: GPIO 18', type: 'Sensor', topic: 'sensor/distance', note: 'Publishes distance in centimeters' },
+      { component: 'Potentiometer (Moisture / Level)', pin: 'GPIO 34 (ADC1)', type: 'Sensor', topic: 'farm/moisture', note: 'Simulates soil moisture or tank level (0-100%)' },
+      { component: 'LDR (Ambient Light Sensor)', pin: 'GPIO 35 (ADC1)', type: 'Sensor', topic: 'sensor/light', note: 'Publishes ambient light intensity (0-100%)' },
+      { component: 'PIR Motion Sensor', pin: 'GPIO 19', type: 'Sensor', topic: 'security/motion', note: 'Publishes 1 on motion detected, 0 when idle' },
+      { component: 'Main Status LED', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'Toggle ON / OFF' },
+      { component: 'Power Relay (Pump / Appliance)', pin: 'GPIO 25', type: 'Actuator', topic: 'actuator/relay', note: 'Toggle ON / OFF' },
+      { component: 'SG90 Servo (Gate / Valve)', pin: 'GPIO 13', type: 'Actuator', topic: 'actuator/servo', note: 'Angle control 0–180 degrees' },
+      { component: 'PWM Fan / Dimmer', pin: 'GPIO 4', type: 'Actuator', topic: 'actuator/dimmer & stem/fan', note: 'Speed or brightness control (0-255)' },
+      { component: 'Alert Buzzer', pin: 'GPIO 12', type: 'Actuator', topic: 'sound/buzzer', note: 'Instant audio alert on BEEP command' },
+      { component: 'RGB NeoPixel Ring (16 LEDs)', pin: 'GPIO 23', type: 'Actuator', topic: 'light/rgb', note: 'Dynamic RGB colors via R,G,B payload' },
+      { component: 'OLED SSD1306 Display (I2C)', pin: 'SDA: GPIO 21, SCL: GPIO 22', type: 'Display', topic: 'display/oled', note: 'Live sensor telemetry and incoming message display' },
+      { component: 'RC Car D-Pad & Speed', pin: 'Serial + OLED Visual', type: 'Controller', topic: 'car/move & car/speed', note: 'FORWARD, BACK, LEFT, RIGHT, STOP' }
     ],
     widgets: [
-      { id: 'aio_temp', type: 'gauge', name: 'درجة الحرارة (Temp DHT22)', topic: 'sensor/temp', unit: '°C', minVal: 0, maxVal: 60, w: 3, h: 3 },
-      { id: 'aio_hum', type: 'gauge', name: 'الرطوبة النسبية (Humidity)', topic: 'sensor/humidity', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
-      { id: 'aio_dist', type: 'gauge', name: 'المسافة (Sonar HC-SR04)', topic: 'sensor/distance', unit: 'cm', minVal: 0, maxVal: 100, w: 3, h: 3 },
-      { id: 'aio_soil', type: 'gauge', name: 'رطوبة التربة (Soil Moisture)', topic: 'farm/moisture', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
-      { id: 'aio_light', type: 'gauge', name: 'شدة الإضاءة (Light LDR)', topic: 'sensor/light', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
-      { id: 'aio_led', type: 'switch', name: 'مصباح LED الرئيسي', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 },
-      { id: 'aio_relay', type: 'relay', name: 'مرحّل Relay 220V', topic: 'actuator/relay', unit: '', maxVal: 1, w: 2, h: 2 },
-      { id: 'aio_servo', type: 'servo', name: 'سيرفو البوابة / الصمام (SG90)', topic: 'actuator/servo', unit: '°', maxVal: 180, w: 3, h: 2 },
-      { id: 'aio_fan', type: 'dimmer', name: 'مروحة التبريد / الديمر (PWM)', topic: 'actuator/dimmer', unit: '%', maxVal: 255, w: 3, h: 2 },
-      { id: 'aio_buzzer', type: 'buzzer', name: 'صفارة الإنذار (Buzzer)', topic: 'sound/buzzer', unit: '', maxVal: 1, w: 2, h: 2 },
-      { id: 'aio_dpad', type: 'dpad', name: 'تحكم السيارة (RC D-Pad)', topic: 'car/move', unit: '', maxVal: 1, w: 3, h: 4 },
-      { id: 'aio_speed', type: 'speed', name: 'سرعة السيارة (Speed Slider)', topic: 'car/speed', unit: '', maxVal: 255, w: 3, h: 2 }
+      { id: 'aio_temp', type: 'gauge', name: 'Temperature (DHT22)', topic: 'sensor/temp', unit: '°C', minVal: 0, maxVal: 60, w: 3, h: 3 },
+      { id: 'aio_hum', type: 'gauge', name: 'Relative Humidity', topic: 'sensor/humidity', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
+      { id: 'aio_dist', type: 'gauge', name: 'Distance (Sonar HC-SR04)', topic: 'sensor/distance', unit: 'cm', minVal: 0, maxVal: 100, w: 3, h: 3 },
+      { id: 'aio_soil', type: 'gauge', name: 'Soil Moisture', topic: 'farm/moisture', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
+      { id: 'aio_light', type: 'gauge', name: 'Light Intensity (LDR)', topic: 'sensor/light', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
+      { id: 'aio_led', type: 'switch', name: 'Main Status LED', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 },
+      { id: 'aio_relay', type: 'relay', name: '220V Power Relay', topic: 'actuator/relay', unit: '', maxVal: 1, w: 2, h: 2 },
+      { id: 'aio_servo', type: 'servo', name: 'Gate / Valve Servo (SG90)', topic: 'actuator/servo', unit: '°', maxVal: 180, w: 3, h: 2 },
+      { id: 'aio_fan', type: 'dimmer', name: 'Cooling Fan / Dimmer (PWM)', topic: 'actuator/dimmer', unit: '%', maxVal: 255, w: 3, h: 2 },
+      { id: 'aio_buzzer', type: 'buzzer', name: 'Alert Buzzer', topic: 'sound/buzzer', unit: '', maxVal: 1, w: 2, h: 2 },
+      { id: 'aio_dpad', type: 'dpad', name: 'RC Car Controller (D-Pad)', topic: 'car/move', unit: '', maxVal: 1, w: 3, h: 4 },
+      { id: 'aio_speed', type: 'speed', name: 'Car Speed (PWM Slider)', topic: 'car/speed', unit: '', maxVal: 255, w: 3, h: 2 }
     ],
     presetDevices: [
-      { id: 'dev_temp', name: 'مستشعر الحرارة DHT22', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', unit: '°C' },
-      { id: 'dev_hum', name: 'مستشعر الرطوبة DHT22', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', unit: '%' },
-      { id: 'dev_dist', name: 'مستشعر المسافة سونار HC-SR04', type: 'Sensor', pin: 'GPIO 5/18', topic: 'sensor/distance', unit: 'cm' },
-      { id: 'dev_soil', name: 'مستشعر رطوبة التربة Potentiometer', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', unit: '%' },
-      { id: 'dev_light', name: 'مستشعر الإضاءة المحيطة LDR', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', unit: '%' },
-      { id: 'dev_pir', name: 'كاشف الحركة PIR Motion', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', unit: 'State' },
-      { id: 'dev_led', name: 'مصباح الإشارة الرئيسي LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' },
-      { id: 'dev_relay', name: 'مرحل التحكم بالأجهزة Relay', type: 'Actuator', pin: 'GPIO 25', topic: 'actuator/relay', unit: 'State' },
-      { id: 'dev_servo', name: 'محرك السيرفو SG90', type: 'Motor', pin: 'GPIO 13', topic: 'actuator/servo', unit: '°' },
-      { id: 'dev_fan', name: 'مروحة التبريد السريعة PWM', type: 'Actuator', pin: 'GPIO 4', topic: 'actuator/dimmer', unit: 'PWM' },
-      { id: 'dev_buzzer', name: 'صفارة التنبيه الصوتي Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer', unit: 'State' }
+      { id: 'dev_temp', name: 'DHT22 Temperature Sensor', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', unit: '°C' },
+      { id: 'dev_hum', name: 'DHT22 Humidity Sensor', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', unit: '%' },
+      { id: 'dev_dist', name: 'HC-SR04 Ultrasonic Distance Sensor', type: 'Sensor', pin: 'GPIO 5/18', topic: 'sensor/distance', unit: 'cm' },
+      { id: 'dev_soil', name: 'Soil Moisture Potentiometer', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', unit: '%' },
+      { id: 'dev_light', name: 'LDR Ambient Light Sensor', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', unit: '%' },
+      { id: 'dev_pir', name: 'PIR Motion Detector', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', unit: 'State' },
+      { id: 'dev_led', name: 'Main Status Indicator LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' },
+      { id: 'dev_relay', name: 'Appliance Power Relay', type: 'Actuator', pin: 'GPIO 25', topic: 'actuator/relay', unit: 'State' },
+      { id: 'dev_servo', name: 'SG90 Servo Motor', type: 'Motor', pin: 'GPIO 13', topic: 'actuator/servo', unit: '°' },
+      { id: 'dev_fan', name: 'High-Speed PWM Cooling Fan', type: 'Actuator', pin: 'GPIO 4', topic: 'actuator/dimmer', unit: 'PWM' },
+      { id: 'dev_buzzer', name: 'Audio Alert Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer', unit: 'State' }
     ],
     libraries: `PubSubClient
 DHT sensor library
@@ -147,11 +147,11 @@ ESP32Servo`,
  * ==================================================================================
  * IOT365 PLATFORM — ALL-IN-ONE SIMULATOR TEST STATION
  * ==================================================================================
- * مشروع محاكاة متكامل لاختبار جميع وظائف المنصة:
- * - الحساسات: DHT22 (حرارة ورطوبة), HC-SR04 (مسافة), LDR (ضوء), Potentiometer (رطوبة تربة), PIR (حركة)
- * - المشغلات: LED (GPIO 2), Relay (GPIO 25), PWM Fan (GPIO 4), Servo (GPIO 13), Buzzer (GPIO 12)
- * - العرض والإضاءة: WS2812 NeoPixel Ring (GPIO 23), OLED SSD1306 (I2C 21/22)
- * - يدعم التحكم بالسيارة D-Pad & Speed
+ * Complete simulation project to test all platform capabilities:
+ * - Sensors: DHT22 (Temp & Humidity), HC-SR04 (Distance), LDR (Light), Potentiometer (Soil Moisture), PIR (Motion)
+ * - Actuators: LED (GPIO 2), Relay (GPIO 25), PWM Fan (GPIO 4), Servo (GPIO 13), Buzzer (GPIO 12)
+ * - Display & Lighting: WS2812 NeoPixel Ring (GPIO 23), OLED SSD1306 (I2C 21/22)
+ * - Supports RC Car D-Pad & Speed Control
  * ==================================================================================
  */
 
@@ -167,13 +167,13 @@ ESP32Servo`,
 #include <Adafruit_SSD1306.h>
 
 // ==================================================================================
-// USER CONFIGURATION — إعدادات المستخدم
-// اترك USER_UID فارغاً "" لاستبداله لاحقاً، أو الصق UID حسابك من المنصة مباشرة:
+// USER CONFIGURATION
+// Leave USER_UID empty "" to replace later, or paste your account UID directly:
 // ==================================================================================
 const char* USER_UID = "${uidPlaceholder}"; 
 
 // Network & MQTT Broker Config
-// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
+// Security Note: Use private MQTT credentials restricted by ACL to (<USER_UID>/#) for physical devices
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "${mq.host}";
@@ -210,7 +210,7 @@ PubSubClient client(espClient);
 
 // Timing variables
 unsigned long lastTelemetryTime = 0;
-const unsigned long TELEMETRY_INTERVAL = 3000; // كل 3 ثواني
+const unsigned long TELEMETRY_INTERVAL = 3000; // Every 3 seconds
 String lastOledMsg = "Ready...";
 String lastMoveCmd = "STOP";
 int currentSpeed = 150;
@@ -478,34 +478,34 @@ void loop() {
   },
   {
     id: 'smart-farm',
-    title: 'المزرعة الذكية والري التلقائي (Smart Farm & Irrigation)',
-    badge: 'مشاريع زراعية و STEM',
-    description: 'مشروع متخصص للمزارع الذكية والبيوت المحمية: قياس رطوبة التربة عبر Potentiometer، حرارة ورطوبة الجو عبر DHT22، والتحكم بمضخة المياه وصمام الري.',
+    title: 'Smart Farm & Automated Irrigation',
+    badge: 'Smart Agriculture & STEM',
+    description: 'Dedicated smart agriculture and greenhouse controller: soil moisture sensing via Potentiometer, ambient temperature and humidity via DHT22, and automated water pump and valve control.',
     wokwiUrl: 'https://wokwi.com/projects/475438726717854721',
     accentColor: 'from-emerald-600 to-teal-600',
     stats: { sensors: 2, actuators: 3, wires: 12 },
     pinouts: [
-      { component: 'DHT22 (حرارة ورطوبة البيوت المحمية)', pin: 'GPIO 15', type: 'Sensor', topic: 'sensor/temp & sensor/humidity', note: 'قراءات الجو المحيط' },
-      { component: 'Potentiometer (رطوبة التربة)', pin: 'GPIO 34', type: 'Sensor', topic: 'farm/moisture', note: 'نسبة الرطوبة 0–100%' },
-      { component: 'مرحّل مضخة المياه (Water Pump)', pin: 'GPIO 25', type: 'Actuator', topic: 'farm/pump & actuator/relay', note: 'تشغيل/إيقاف المضخة' },
-      { component: 'سيرفو صمام المياه (Water Valve)', pin: 'GPIO 13', type: 'Actuator', topic: 'farm/valve & actuator/servo', note: 'فتح/إغلاق الصمام' },
-      { component: 'مصباح التنبيه (Low Water Alarm)', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'إشارة تحذير عند الجفاف' }
+      { component: 'DHT22 (Greenhouse Temp & Humidity)', pin: 'GPIO 15', type: 'Sensor', topic: 'sensor/temp & sensor/humidity', note: 'Ambient greenhouse readings' },
+      { component: 'Potentiometer (Soil Moisture)', pin: 'GPIO 34', type: 'Sensor', topic: 'farm/moisture', note: 'Moisture percentage 0–100%' },
+      { component: 'Water Pump Relay', pin: 'GPIO 25', type: 'Actuator', topic: 'farm/pump & actuator/relay', note: 'Turn pump ON / OFF' },
+      { component: 'Water Valve Servo', pin: 'GPIO 13', type: 'Actuator', topic: 'farm/valve & actuator/servo', note: 'Open / close irrigation valve' },
+      { component: 'Low Water Alarm LED', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'Warning indicator on dry soil' }
     ],
     widgets: [
-      { id: 'farm_temp', type: 'gauge', name: 'درجة حرارة المحمية (Temp)', topic: 'sensor/temp', unit: '°C', minVal: 0, maxVal: 60, w: 3, h: 3 },
-      { id: 'farm_hum', type: 'gauge', name: 'رطوبة الهواء (Humidity)', topic: 'sensor/humidity', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
-      { id: 'farm_soil', type: 'gauge', name: 'رطوبة التربة (Soil Moisture)', topic: 'farm/moisture', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
-      { id: 'farm_pump', type: 'pump', name: 'مضخة مياه الري (Water Pump)', topic: 'farm/pump', unit: '', maxVal: 1, w: 3, h: 3 },
-      { id: 'farm_valve', type: 'valve', name: 'صمام مياه الري (Water Valve)', topic: 'farm/valve', unit: '°', maxVal: 180, w: 3, h: 3 },
-      { id: 'farm_alarm', type: 'switch', name: 'تنبيه انخفاض المياه (Alarm LED)', topic: 'actuator/led', unit: '', maxVal: 1, w: 3, h: 2 }
+      { id: 'farm_temp', type: 'gauge', name: 'Greenhouse Temp', topic: 'sensor/temp', unit: '°C', minVal: 0, maxVal: 60, w: 3, h: 3 },
+      { id: 'farm_hum', type: 'gauge', name: 'Air Humidity', topic: 'sensor/humidity', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
+      { id: 'farm_soil', type: 'gauge', name: 'Soil Moisture', topic: 'farm/moisture', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
+      { id: 'farm_pump', type: 'pump', name: 'Irrigation Water Pump', topic: 'farm/pump', unit: '', maxVal: 1, w: 3, h: 3 },
+      { id: 'farm_valve', type: 'valve', name: 'Irrigation Water Valve', topic: 'farm/valve', unit: '°', maxVal: 180, w: 3, h: 3 },
+      { id: 'farm_alarm', type: 'switch', name: 'Low Water Alert (Alarm LED)', topic: 'actuator/led', unit: '', maxVal: 1, w: 3, h: 2 }
     ],
     presetDevices: [
-      { id: 'fdev_temp', name: 'مستشعر حرارة البيوت المحمية DHT22', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', unit: '°C' },
-      { id: 'fdev_hum', name: 'مستشعر رطوبة الجو DHT22', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', unit: '%' },
-      { id: 'fdev_soil', name: 'مستشعر رطوبة التربة التناظري Soil Probe', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', unit: '%' },
-      { id: 'fdev_pump', name: 'مضخة مياه الري الذاتي Pump', type: 'Actuator', pin: 'GPIO 25', topic: 'farm/pump', unit: 'State' },
-      { id: 'fdev_valve', name: 'صمام التحكم بتدفق المياه Servo Valve', type: 'Motor', pin: 'GPIO 13', topic: 'farm/valve', unit: '°' },
-      { id: 'fdev_led', name: 'مصباح التحذير من جفاف الخزان', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' }
+      { id: 'fdev_temp', name: 'Greenhouse Temp Sensor (DHT22)', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', unit: '°C' },
+      { id: 'fdev_hum', name: 'Air Humidity Sensor (DHT22)', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', unit: '%' },
+      { id: 'fdev_soil', name: 'Analog Soil Moisture Probe', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', unit: '%' },
+      { id: 'fdev_pump', name: 'Automated Irrigation Water Pump', type: 'Actuator', pin: 'GPIO 25', topic: 'farm/pump', unit: 'State' },
+      { id: 'fdev_valve', name: 'Water Flow Control Servo Valve', type: 'Motor', pin: 'GPIO 13', topic: 'farm/valve', unit: '°' },
+      { id: 'fdev_led', name: 'Low Tank Warning Indicator LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' }
     ],
     libraries: `PubSubClient
 DHT sensor library
@@ -551,7 +551,7 @@ ESP32Servo`,
       const mq = resolveSketchMqttOptions(mqttOptions);
       return `/*
  * IOT365 — SMART FARM & IRRIGATION CONTROLLER
- * نظام الري والزراعة الذكية
+ * Smart Agriculture & Automated Irrigation System
  */
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -562,7 +562,7 @@ ESP32Servo`,
 
 const char* USER_UID = "${uidPlaceholder}";
 
-// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
+// Security Note: Use private MQTT credentials restricted by ACL to (<USER_UID>/#) for physical devices
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "${mq.host}";
@@ -651,32 +651,32 @@ void loop() {
   },
   {
     id: 'smart-home',
-    title: 'المنزل الذكي ونظام الحماية (Smart Home & Security)',
-    badge: 'أمن وسلامة وأتمتة',
-    description: 'نظام حماية منزلي يشتمل على حساس حركة PIR، قفل باب إلكتروني (Servo)، صفارة إنذار (Buzzer)، وإضاءة ذكية قابلة للتعتيم.',
+    title: 'Smart Home & Security System',
+    badge: 'Security, Safety & Automation',
+    description: 'Home security and automation system featuring a PIR motion sensor, electronic servo door lock, alarm siren buzzer, and smart lighting control.',
     wokwiUrl: 'https://wokwi.com/projects/475438918066225153',
     accentColor: 'from-amber-600 to-red-600',
     stats: { sensors: 2, actuators: 4, wires: 16 },
     pinouts: [
-      { component: 'PIR Motion (كاشف الحركة)', pin: 'GPIO 19', type: 'Sensor', topic: 'security/motion', note: '1 حركة، 0 أمان' },
-      { component: 'LDR (مستوى الإضاءة الليلية)', pin: 'GPIO 35', type: 'Sensor', topic: 'sensor/light', note: '0-100%' },
-      { component: 'سيرفو قفل الباب (Door Lock)', pin: 'GPIO 13', type: 'Actuator', topic: 'security/door & actuator/servo', note: '0 مقفل، 90 مفتوح' },
-      { component: 'صفارة الإنذار (Siren / Buzzer)', pin: 'GPIO 12', type: 'Actuator', topic: 'sound/buzzer', note: 'BEEP أو إنذار مستمر' },
-      { component: 'مصباح الإضاءة الرئيسية (LED)', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'ON/OFF' }
+      { component: 'PIR Motion Detector', pin: 'GPIO 19', type: 'Sensor', topic: 'security/motion', note: '1 motion detected, 0 clear' },
+      { component: 'LDR (Night Light Level)', pin: 'GPIO 35', type: 'Sensor', topic: 'sensor/light', note: '0-100%' },
+      { component: 'Door Lock Servo', pin: 'GPIO 13', type: 'Actuator', topic: 'security/door & actuator/servo', note: '0 locked, 90 unlocked' },
+      { component: 'Alarm Siren / Buzzer', pin: 'GPIO 12', type: 'Actuator', topic: 'sound/buzzer', note: 'BEEP or continuous alarm' },
+      { component: 'Main Room Light (LED)', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'ON / OFF' }
     ],
     widgets: [
-      { id: 'home_motion', type: 'switch', name: 'كاشف الحركة (PIR Motion)', topic: 'security/motion', unit: '', maxVal: 1, w: 3, h: 2 },
-      { id: 'home_light', type: 'gauge', name: 'مستوى الإضاءة الليلية (LDR)', topic: 'sensor/light', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
-      { id: 'home_door', type: 'doorlock', name: 'قفل الباب الذكي الإلكتروني', topic: 'security/door', unit: '', maxVal: 1, w: 3, h: 3 },
-      { id: 'home_siren', type: 'buzzer', name: 'صفارة إنذار الاقتحام (Siren)', topic: 'sound/buzzer', unit: '', maxVal: 1, w: 3, h: 2 },
-      { id: 'home_light_main', type: 'switch', name: 'إضاءة الغرفة الرئيسية (LED)', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 }
+      { id: 'home_motion', type: 'switch', name: 'Motion Detector (PIR)', topic: 'security/motion', unit: '', maxVal: 1, w: 3, h: 2 },
+      { id: 'home_light', type: 'gauge', name: 'Ambient Light Level (LDR)', topic: 'sensor/light', unit: '%', minVal: 0, maxVal: 100, w: 3, h: 3 },
+      { id: 'home_door', type: 'doorlock', name: 'Smart Electronic Door Lock', topic: 'security/door', unit: '', maxVal: 1, w: 3, h: 3 },
+      { id: 'home_siren', type: 'buzzer', name: 'Intrusion Alarm Siren', topic: 'sound/buzzer', unit: '', maxVal: 1, w: 3, h: 2 },
+      { id: 'home_light_main', type: 'switch', name: 'Main Room Light (LED)', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 }
     ],
     presetDevices: [
-      { id: 'hdev_pir', name: 'مستشعر الحركة والسرقة PIR Motion', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', unit: 'State' },
-      { id: 'hdev_ldr', name: 'مستشعر الإضاءة المحيطة LDR Sensor', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', unit: '%' },
-      { id: 'hdev_lock', name: 'سيرفو قفل الباب الإلكتروني Door Lock', type: 'Motor', pin: 'GPIO 13', topic: 'security/door', unit: '°' },
-      { id: 'hdev_buzzer', name: 'صفارة إنذار الطوارئ Siren Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer', unit: 'State' },
-      { id: 'hdev_led', name: 'مصباح إضاءة الغرفة الرئيسية LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' }
+      { id: 'hdev_pir', name: 'PIR Intrusion Motion Sensor', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', unit: 'State' },
+      { id: 'hdev_ldr', name: 'LDR Ambient Light Sensor', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', unit: '%' },
+      { id: 'hdev_lock', name: 'Electronic Door Lock Servo', type: 'Motor', pin: 'GPIO 13', topic: 'security/door', unit: '°' },
+      { id: 'hdev_buzzer', name: 'Emergency Siren Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer', unit: 'State' },
+      { id: 'hdev_led', name: 'Main Room Lighting LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' }
     ],
     libraries: `PubSubClient
 ESP32Servo`,
@@ -719,7 +719,7 @@ ESP32Servo`,
       const mq = resolveSketchMqttOptions(mqttOptions);
       return `/*
  * IOT365 — SMART HOME & SECURITY
- * نظام المنزل الذكي والإنذار
+ * Smart Home Automation & Intrusion Alarm System
  */
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -729,7 +729,7 @@ ESP32Servo`,
 
 const char* USER_UID = "${uidPlaceholder}";
 
-// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
+// Security Note: Use private MQTT credentials restricted by ACL to (<USER_UID>/#) for physical devices
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "${mq.host}";
@@ -817,32 +817,32 @@ void loop() {
   },
   {
     id: 'rc-car',
-    title: 'الروبوت والسيارة الذكية (Robotics & RC Smart Car)',
-    badge: 'روبوتكس وتحكم D-Pad',
-    description: 'سيارة ذكية مدعومة بحساس مسافة لمكافحة الاصطدام، تحكم كامل بالاتجاهات D-Pad وسلايدر السرعة ومصابيح أمامية وبوق صوتي.',
+    title: 'Robotics & RC Smart Car',
+    badge: 'Robotics & D-Pad Control',
+    description: 'Smart robotic vehicle equipped with an ultrasonic collision-avoidance radar, full directional D-Pad control, PWM speed slider, headlights, and horn.',
     wokwiUrl: 'https://wokwi.com/projects/475439028329251841',
     accentColor: 'from-purple-600 to-pink-600',
     stats: { sensors: 1, actuators: 5, wires: 14 },
     pinouts: [
-      { component: 'HC-SR04 (كشف العوائق أمامي)', pin: 'Trig: GPIO 5, Echo: GPIO 18', type: 'Sensor', topic: 'sensor/distance', note: 'تنبيه مسافة لتجنب الاصطدام' },
-      { component: 'D-Pad التحكم بالاتجاهات', pin: 'Serial + LED Indicators', type: 'Controller', topic: 'car/move', note: 'FORWARD, BACK, LEFT, RIGHT, STOP' },
-      { component: 'Speed Slider (السرعة)', pin: 'PWM 0-255', type: 'Controller', topic: 'car/speed', note: 'سرعة المحركات 0–255' },
-      { component: 'المصابيح الأمامية (Headlights)', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'ON / OFF' },
-      { component: 'بوق السيارة (Horn Buzzer)', pin: 'GPIO 12', type: 'Actuator', topic: 'sound/buzzer', note: 'صفارة صوتية BEEP' }
+      { component: 'HC-SR04 (Front Obstacle Detection)', pin: 'Trig: GPIO 5, Echo: GPIO 18', type: 'Sensor', topic: 'sensor/distance', note: 'Distance alert for collision avoidance' },
+      { component: 'Directional Control D-Pad', pin: 'Serial + LED Indicators', type: 'Controller', topic: 'car/move', note: 'FORWARD, BACK, LEFT, RIGHT, STOP' },
+      { component: 'Speed Slider (PWM)', pin: 'PWM 0-255', type: 'Controller', topic: 'car/speed', note: 'Motor speed 0–255' },
+      { component: 'Front Headlights', pin: 'GPIO 2', type: 'Actuator', topic: 'actuator/led', note: 'ON / OFF' },
+      { component: 'Car Horn Buzzer', pin: 'GPIO 12', type: 'Actuator', topic: 'sound/buzzer', note: 'Audio horn BEEP' }
     ],
     widgets: [
-      { id: 'car_dist', type: 'gauge', name: 'رادار المسافة لتفادي الاصطدام (Sonar)', topic: 'sensor/distance', unit: 'cm', minVal: 0, maxVal: 100, w: 4, h: 3 },
-      { id: 'car_dpad', type: 'dpad', name: 'عجلة التوجيه والاتجاهات (D-Pad)', topic: 'car/move', unit: '', maxVal: 1, w: 4, h: 4 },
-      { id: 'car_speed', type: 'speed', name: 'مستوى سرعة المحركات (PWM Speed)', topic: 'car/speed', unit: '', maxVal: 255, w: 4, h: 2 },
-      { id: 'car_lights', type: 'switch', name: 'المصابيح الأمامية (Headlights)', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 },
-      { id: 'car_horn', type: 'buzzer', name: 'بوق السيارة التنبيهي (Horn)', topic: 'sound/buzzer', unit: '', maxVal: 1, w: 2, h: 2 }
+      { id: 'car_dist', type: 'gauge', name: 'Collision Avoidance Radar (Sonar)', topic: 'sensor/distance', unit: 'cm', minVal: 0, maxVal: 100, w: 4, h: 3 },
+      { id: 'car_dpad', type: 'dpad', name: 'Steering & Directional D-Pad', topic: 'car/move', unit: '', maxVal: 1, w: 4, h: 4 },
+      { id: 'car_speed', type: 'speed', name: 'Motor Speed Level (PWM Speed)', topic: 'car/speed', unit: '', maxVal: 255, w: 4, h: 2 },
+      { id: 'car_lights', type: 'switch', name: 'Front Headlights', topic: 'actuator/led', unit: '', maxVal: 1, w: 2, h: 2 },
+      { id: 'car_horn', type: 'buzzer', name: 'Warning Car Horn', topic: 'sound/buzzer', unit: '', maxVal: 1, w: 2, h: 2 }
     ],
     presetDevices: [
-      { id: 'cdev_sonar', name: 'رادار كشف الحواجز Sonar HC-SR04', type: 'Sensor', pin: 'GPIO 5/18', topic: 'sensor/distance', unit: 'cm' },
-      { id: 'cdev_fwd', name: 'محركات دفع السيارة الذكية', type: 'Motor', pin: 'GPIO 4', topic: 'car/move', unit: 'State' },
-      { id: 'cdev_speed', name: 'منظم سرعة الحركة PWM Controller', type: 'Actuator', pin: 'PWM', topic: 'car/speed', unit: 'PWM' },
-      { id: 'cdev_lights', name: 'المصابيح الأمامية LED Headlights', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' },
-      { id: 'cdev_horn', name: 'بوق التنبيه الصوتي Car Horn', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer', unit: 'State' }
+      { id: 'cdev_sonar', name: 'HC-SR04 Obstacle Detection Radar', type: 'Sensor', pin: 'GPIO 5/18', topic: 'sensor/distance', unit: 'cm' },
+      { id: 'cdev_fwd', name: 'Smart Car Drive Motors', type: 'Motor', pin: 'GPIO 4', topic: 'car/move', unit: 'State' },
+      { id: 'cdev_speed', name: 'PWM Speed Controller', type: 'Actuator', pin: 'PWM', topic: 'car/speed', unit: 'PWM' },
+      { id: 'cdev_lights', name: 'LED Front Headlights', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led', unit: 'State' },
+      { id: 'cdev_horn', name: 'Car Warning Horn Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer', unit: 'State' }
     ],
     libraries: `PubSubClient`,
     diagramJson: `{
@@ -881,7 +881,7 @@ void loop() {
       const mq = resolveSketchMqttOptions(mqttOptions);
       return `/*
  * IOT365 — SMART RC CAR CONTROLLER
- * تحكم كامل بالسيارة الذكية وحساس المسافة
+ * Full Smart Car & Ultrasonic Distance Controller
  */
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -890,7 +890,7 @@ void loop() {
 
 const char* USER_UID = "${uidPlaceholder}";
 
-// تنبيه أمني: استخدم بيانات MQTT خاصة مقيدة بصلاحيات ACL على المسار (<USER_UID>/#) للأجهزة الحقيقية
+// Security Note: Use private MQTT credentials restricted by ACL to (<USER_UID>/#) for physical devices
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "${mq.host}";

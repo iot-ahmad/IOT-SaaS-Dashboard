@@ -16,12 +16,12 @@ export default function TopBar({
 }) {
   return (
     <header className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-sm">
-      {/* Right side (RTL start): Title + Project select */}
+      {/* Start: Title + Project select */}
       <div className="flex items-center gap-2.5 min-w-0">
         <div className="flex items-center gap-1.5 shrink-0">
           <Cpu size={16} className="text-primary" />
           <h1 className="font-extrabold text-xs sm:text-sm text-foreground m-0">
-            المحاكي السريع & الداشبورد
+            Quick Simulator &amp; Dashboard
           </h1>
         </div>
 
@@ -32,10 +32,10 @@ export default function TopBar({
           value={selectedProjectId}
           onChange={(e) => onSelectProjectId(e.target.value)}
           className="bg-zinc-800 border border-white/10 text-foreground text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-primary/40 cursor-pointer shadow-sm max-w-[200px] sm:max-w-xs truncate"
-          title="اختيار مشروع المحاكاة"
+          title="Select simulation project"
         >
-          <option value="empty">مشروع جديد فارغ (Custom)</option>
-          <optgroup label="── مشاريع محاكاة جاهزة ──">
+          <option value="empty">New Blank Project (Custom)</option>
+          <optgroup label="── Ready Simulator Projects ──">
             {SIMULATOR_PROJECTS.map((proj) => (
               <option key={proj.id} value={proj.id}>
                 {proj.title}
@@ -55,9 +55,9 @@ export default function TopBar({
               ? 'bg-zinc-900 border border-white/10 text-foreground shadow-sm'
               : 'text-zinc-400 hover:text-foreground'
           }`}
-          title="عرض المحاكي فقط"
+          title="Simulator view only"
         >
-          المحاكي
+          Simulator
         </button>
         <button
           type="button"
@@ -67,9 +67,9 @@ export default function TopBar({
               ? 'bg-zinc-900 border border-white/10 text-foreground shadow-sm'
               : 'text-zinc-400 hover:text-foreground'
           }`}
-          title="تجزئة الشاشة نصفين"
+          title="Split screen view"
         >
-          تجزئة
+          Split
         </button>
         <button
           type="button"
@@ -79,18 +79,18 @@ export default function TopBar({
               ? 'bg-zinc-900 border border-white/10 text-foreground shadow-sm'
               : 'text-zinc-400 hover:text-foreground'
           }`}
-          title="عرض اللوحة فقط"
+          title="Dashboard view only"
         >
-          اللوحة
+          Dashboard
         </button>
       </div>
 
-      {/* Left side (RTL end): MQTT status chip + Fullscreen + "⋯" More */}
+      {/* End: MQTT status chip + Fullscreen + "⋯" More */}
       <div className="flex items-center gap-1.5 shrink-0 ms-auto">
         {/* MQTT Status Chip */}
         <div 
           className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-zinc-800 border border-white/10 text-[11px] font-medium shrink-0"
-          title={mqttOnline ? 'متصل بسيرفر MQTT' : 'غير متصل بالـ MQTT'}
+          title={mqttOnline ? 'Connected to MQTT broker' : 'Disconnected from MQTT broker'}
         >
           <span className={`w-2 h-2 rounded-full shrink-0 ${mqttOnline ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
           <span className="hidden sm:inline text-zinc-300 font-mono">
@@ -102,9 +102,9 @@ export default function TopBar({
         <button
           type="button"
           onClick={onToggleFullScreen}
-          aria-label={isFullScreen ? 'الخروج من ملء الشاشة' : 'ملء الشاشة'}
+          aria-label={isFullScreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           className="p-1.5 rounded-lg bg-zinc-800 border border-white/10 text-zinc-300 hover:text-foreground hover:bg-zinc-700/60 transition-all shrink-0 cursor-pointer"
-          title={isFullScreen ? 'الخروج من ملء الشاشة' : 'ملء الشاشة'}
+          title={isFullScreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
           {isFullScreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
         </button>
@@ -114,14 +114,14 @@ export default function TopBar({
           ref={moreMenuButtonRef}
           type="button"
           onClick={onToggleMoreMenu}
-          aria-label="المزيد من خيارات المحاكي والحساب"
+          aria-label="More simulator and account options"
           aria-expanded={showMoreMenu}
           className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
             showMoreMenu 
               ? 'bg-zinc-700 border-primary/50 text-foreground shadow' 
               : 'bg-zinc-800 border-white/10 text-zinc-300 hover:text-foreground hover:bg-zinc-700/60'
           }`}
-          title="المزيد من خيارات المحاكي والحساب"
+          title="More simulator and account options"
         >
           <MoreHorizontal size={15} />
         </button>

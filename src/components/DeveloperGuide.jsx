@@ -46,43 +46,43 @@ const getBotResponse = (input, uid, brokerHost, tlsPort = 8883) => {
   const activeHost = brokerHost || getDefaultBrokerHost();
   const caInfo = getRootCaForHost(activeHost);
 
-  if (text.includes('مطور') || text.includes('من قام') || text.includes('احمد') || text.includes('أحمد') || text.includes('creator') || text.includes('developer') || text.includes('batayneh') || text.includes('بطاينه') || text.includes('بطاينة') || text.includes('صنع') || text.includes('برمج')) {
-    return `**تم تصميم وتطوير منصة IOT365 بالكامل بواسطة المطور أحمد البطاينة (Ahmad Al-Batayneh).**\n\nتم تطوير هذه المنصة لتوفير أداة قوية، سريعة، ومجانية للطلاب والباحثين والمهندسين لربط لوحات ESP32 ومشاريع إنترنت الأشياء لحظياً دون الدخول في تعقيدات إنشاء قواعد البيانات والسيرفرات الخاصة.`;
+  if (text.includes('مطور') || text.includes('من قام') || text.includes('احمد') || text.includes('أحمد') || text.includes('creator') || text.includes('developer') || text.includes('author') || text.includes('who built') || text.includes('who made') || text.includes('batayneh') || text.includes('بطاينه') || text.includes('بطاينة') || text.includes('صنع') || text.includes('برمج')) {
+    return `**The IOT365 platform was completely designed and developed by Ahmad Al-Batayneh.**\n\nIt was built to provide a fast, powerful, and free platform for students, researchers, and engineers to connect ESP32 boards and IoT projects in real time without the complexity of setting up custom databases and backend servers.`;
   }
 
   if (text.includes('broker') || text.includes('بروك') || text.includes('hivemq') || text.includes('emqx') || text.includes('سيرفر') || text.includes('server') || text.includes('port') || text.includes('بورت') || text.includes('host') || text.includes('عنوان') || text.includes('منفذ')) {
-    return `**معلومات الاتصال الآمن بسيرفر MQTT (TLS 1.2+) 🌐:**\n\n*   **Host (السيرفر الحالي):** \`${activeHost}\`\n*   **Port (المنفذ المشفر TLS):** \`${tlsPort}\` (لأجهزة ESP32 عبر \`WiFiClientSecure\` مع التحقق من شهادة الجذر \`${caInfo.name}\`)\n*   **WebSockets Port (للموقع):** \`${caInfo.wsPort}\` (على المسار \`/mqtt\`)\n*   **بيانات الدخول المعزولة:** عند تفعيل EMQX Serverless، يحصل حسابك تلقائياً على اسم مستخدم (\`${cleanUid}\`) وكلمة مرور خاصة مقيدة بقاعدة ACL على مسارك فقط (\`${cleanUid}/#\`). يمكنك نسخها أو تدويرها من **Profile & Settings → Security**.\n*   ⚠️ **تنبيه أمني:** تجنّب استخدام أي حساب تجريبي مشترك مع الأجهزة الحقيقية (الأقفال، المرحّلات، المضخات).\n\n> 💡 إعداد الاتصال الآمن في كود ESP32 (بدون \`setInsecure()\` وبدون Client ID ثابت):\n\`\`\`cpp\n#include <time.h>\n// 1. مزامنة الوقت عبر NTP للتحقق من صلاحية شهادة SSL\nconfigTime(0, 0, "pool.ntp.org", "time.nist.gov");\nwhile (time(nullptr) < 1700000000) delay(300);\n\n// 2. تفعيل التحقق من شهادة الجذر ${caInfo.name}\nespClient.setCACert(root_ca);\nclient.setServer("${activeHost}", ${tlsPort});\n\n// 3. معرّف فريد من MAC الخاص باللوحة لمنع تصادم الأجهزة\nString clientId = "ESP32_" + String((uint32_t)(ESP.getEfuseMac() >> 24), HEX) + "_" + String(random(0xFFFF), HEX);\nclient.connect(clientId.c_str(), "YOUR_MQTT_USERNAME", "YOUR_MQTT_PASSWORD");\n\`\`\``;
+    return `**Secure MQTT Broker Connection Details (TLS 1.2+):**\n\n*   **Host (Active Broker):** \`${activeHost}\`\n*   **TLS Port (Encrypted):** \`${tlsPort}\` (for ESP32 devices via \`WiFiClientSecure\` verifying root CA certificate \`${caInfo.name}\`)\n*   **WebSockets Port (Browser):** \`${caInfo.wsPort}\` (on path \`/mqtt\`)\n*   **Isolated Credentials:** When EMQX Serverless is enabled, your account automatically receives a dedicated username (\`${cleanUid}\`) and password restricted by ACL rules to your namespace (\`${cleanUid}/#\`). You can copy or rotate them from **Profile & Settings → Security**.\n*   **Security Notice:** Avoid using any shared demo credentials with physical actuators (locks, relays, pumps).\n\n> Secure connection setup in ESP32 firmware (without \`setInsecure()\` and without a static Client ID):\n\`\`\`cpp\n#include <time.h>\n// 1. Sync time via NTP to validate SSL certificate expiration\nconfigTime(0, 0, "pool.ntp.org", "time.nist.gov");\nwhile (time(nullptr) < 1700000000) delay(300);\n\n// 2. Enable root CA certificate verification (${caInfo.name})\nespClient.setCACert(root_ca);\nclient.setServer("${activeHost}", ${tlsPort});\n\n// 3. Unique Client ID derived from board MAC address to prevent collisions\nString clientId = "ESP32_" + String((uint32_t)(ESP.getEfuseMac() >> 24), HEX) + "_" + String(random(0xFFFF), HEX);\nclient.connect(clientId.c_str(), "YOUR_MQTT_USERNAME", "YOUR_MQTT_PASSWORD");\n\`\`\``;
   }
 
-  if (text.includes('كيف') && (text.includes('اربط') || text.includes('أربط') || text.includes('اتصال') || text.includes('connect') || text.includes('esp32') || text.includes('طريقة') || text.includes('شغل'))) {
-    return `**دليل ربط جهاز الـ ESP32 بالمنصة في 4 خطوات 🚀:**\n\n1.  **نسخ الـ UID:** انسخ معرفك الفريد (\`${cleanUid}\`) من الأعلى.\n2.  **كود الـ WiFi:** قم بتوصيل الـ ESP32 بشبكة الإنترنت الخاصة بك.\n3.  **تسمية المواضيع:** أرسل واستقبل البيانات عبر مواضيع تبدأ بـ UID الخاص بك:\n    \`[UID]/[Topic]\` (مثل: \`${cleanUid}/actuator/led\`).\n4.  **تصميم الـ Dashboard:** أضف أداة التحكم واضبط الـ Topic الخاص بها ليتطابق مع الكود.`;
+  if ((text.includes('كيف') || text.includes('how') || text.includes('connect') || text.includes('esp32') || text.includes('link') || text.includes('setup')) && (text.includes('اربط') || text.includes('أربط') || text.includes('اتصال') || text.includes('connect') || text.includes('esp32') || text.includes('طريقة') || text.includes('شغل') || text.includes('how'))) {
+    return `**How to Connect Your ESP32 in 4 Steps:**\n\n1.  **Copy Your UID:** Copy your unique identifier (\`${cleanUid}\`) from the top bar.\n2.  **Wi-Fi Setup:** Connect your ESP32 board to your local Wi-Fi network.\n3.  **Topic Naming:** Publish and subscribe using topics prefixed with your UID:\n    \`[UID]/[Topic]\` (e.g., \`${cleanUid}/actuator/led\`).\n4.  **Dashboard Layout:** Add a control widget to your dashboard and match its MQTT Topic to your firmware.`;
   }
 
-  if (text.includes('مجاني') || text.includes('free') || text.includes('فلوس') || text.includes('دفع') || text.includes('سعر') || text.includes('billing') || text.includes('اشتراك') || text.includes('باقة') || text.includes('باقات')) {
-    return `**هل منصة IOT365 مجانية؟ 💰**\n\n**نعم، المنصة مجانية بالكامل لجميع المطورين، الطلاب، والأفراد!** 🎉\n\nأما بالنسبة لـ *Billing & Plan (قريباً)*، فهي مخصصة للجامعات والمؤسسات التعليمية التي ترغب في الحصول على لوحات تحكم مخصصة وإدارة مشاريع الطلاب بشكل جماعي، أو للاستضافة على خوادم خاصة بالجامعة. استخدامك الشخصي سيبقى مجانياً بالكامل.`;
+  if (text.includes('مجاني') || text.includes('free') || text.includes('فلوس') || text.includes('دفع') || text.includes('سعر') || text.includes('price') || text.includes('pricing') || text.includes('cost') || text.includes('billing') || text.includes('اشتراك') || text.includes('باقة') || text.includes('باقات')) {
+    return `**Is IOT365 Free?**\n\n**Yes, the platform is completely free for developers, students, and individual makers.**\n\nThe upcoming *Billing & Plan* tier is designed for universities and educational institutions that require dedicated classroom management dashboards, bulk student project administration, or on-premise server hosting. Personal accounts remain completely free.`;
   }
 
-  if (text.includes('حفظ') || text.includes('احفظ') || text.includes('save') || text.includes('firestore') || text.includes('تخزين') || text.includes('حذف') || text.includes('يروح') || text.includes('ضيع')) {
-    return `**حفظ وتعديل لوحة التحكم (الـ Dashboard) 💾:**\n\n*   **حفظ تلقائي وفوري:** لا تحتاج للضغط على أي زر للحفظ. يتم حفظ كافة الأدوات التي تضيفها وتعديلاتها (المواقع، الأحجام، التسميات، الأجهزة) تلقائياً في حسابك السحابي المدعوم بـ Firebase.\n*   **تغيير الأسماء وحذف المشاريع:** يمكنك إعادة تسمية أي لوحة تحكم أو حذفها مباشرة من القائمة الجانبية بنقرة زر واحدة.`;
+  if (text.includes('حفظ') || text.includes('احفظ') || text.includes('save') || text.includes('firestore') || text.includes('تخزين') || text.includes('حذف') || text.includes('يروح') || text.includes('ضيع') || text.includes('persist') || text.includes('layout')) {
+    return `**Saving & Customizing Your Dashboard:**\n\n*   **Instant Auto-Save:** You do not need to click a save button. Every widget you add or modify (positions, sizes, labels, and topics) is automatically synced to your cloud account backed by Firebase.\n*   **Renaming & Deleting Projects:** You can rename or delete any project dashboard directly from the sidebar with a single click.`;
   }
 
-  if (text.includes('topic') || text.includes('عنوان الموضوع') || text.includes('موضوع') || text.includes('توبيك') || text.includes('بنية')) {
-    return `**بنية المواضيع (Topics) الفريدة في IOT365 📂:**\n\nلضمان أقصى درجات الأمان وتنظيم البيانات المشفرة على سيرفر IOT365 الخاص، نستخدم بنية تبدأ بـ الـ UID الخاص بك:\n\`\`\`text\n[userUID]/[Topic_Name]\n\`\`\`\n**أمثلة:**\n*   مفتاح تشغيل: \`${cleanUid}/actuator/led\`\n*   مخطط بياني للحرارة: \`${cleanUid}/sensor/temp\`\n*   أداة D-Pad للسيارة: \`${cleanUid}/car/move\``;
+  if (text.includes('topic') || text.includes('عنوان الموضوع') || text.includes('موضوع') || text.includes('توبيك') || text.includes('بنية') || text.includes('structure')) {
+    return `**MQTT Topic Structure in IOT365:**\n\nTo ensure isolation and security on the IOT365 broker, all topics are prefixed with your unique user UID:\n\`\`\`text\n[userUID]/[Topic_Name]\n\`\`\`\n**Examples:**\n*   Toggle Switch: \`${cleanUid}/actuator/led\`\n*   Temperature Gauge: \`${cleanUid}/sensor/temp\`\n*   RC Car D-Pad: \`${cleanUid}/car/move\``;
   }
 
-  if (text.includes('d-pad') || text.includes('سيارة') || text.includes('car') || text.includes('rc') || text.includes('اتجاه') || text.includes('أزرار') || text.includes('حركة')) {
-    return `**التحكم بالسيارات الذكية (RC Car) 🚗:**\n\n*   تستخدم أداة الـ **D-Pad** للتحكم بالسيارات الذكية لحظياً.\n*   تقوم الأداة بإرسال الأوامر التالية كـ String: \`FORWARD\`, \`BACK\`, \`LEFT\`, \`RIGHT\`, \`STOP\`.\n*   تستقبل السيارة الأوامر عبر موضوع التوجيه، مثل: \`${cleanUid}/car/move\`.\n\n> 💡 تفقد كود "RC Car / D-Pad" في قسم الأكواد الجاهزة بالدليل لمثال متكامل!`;
+  if (text.includes('d-pad') || text.includes('dpad') || text.includes('سيارة') || text.includes('car') || text.includes('rc') || text.includes('اتجاه') || text.includes('أزرار') || text.includes('حركة')) {
+    return `**Smart RC Car Control (D-Pad):**\n\n*   Use the **D-Pad** or **Joystick** widget for real-time directional control.\n*   The widget publishes string commands: \`FORWARD\`, \`BACK\`, \`LEFT\`, \`RIGHT\`, and \`STOP\`.\n*   Subscribe to your steering topic on the ESP32, such as: \`${cleanUid}/car/move\`.\n\n> Check the "RC Car / D-Pad" template in the Code Generator for a complete working example.`;
   }
 
-  if (text.includes('alert') || text.includes('تنبيه') || text.includes('اشعار') || text.includes('إشعار') || text.includes('رنين') || text.includes('جرس')) {
-    return `**نظام الإشعارات والتنبيهات (Alerts) 🔔:**\n\n*   **قواعد التنبيه الذكية:** يمكنك ضبط تنبيهات داخل قسم الـ Alerts للمراقبة التلقائية لقراءات الحساسات (مثل: إذا تجاوزت الرطوبة حدّاً معيناً، أرسل إشعارا).\n*   **إرسال التنبيهات من ال ESP32:** يمكنك برمجة جهازك ليرسل رسالة تنبيه نصية مباشرة على الـ Topic الخاص بالتنبيهات ليظهر كإشعار منبثق فوري باللوحة.`;
+  if (text.includes('alert') || text.includes('تنبيه') || text.includes('اشعار') || text.includes('إشعار') || text.includes('رنين') || text.includes('جرس') || text.includes('notification')) {
+    return `**Alerts & Notifications System:**\n\n*   **Smart Alert Rules:** Configure threshold rules in the Alerts tab to automatically monitor incoming sensor telemetry (e.g., trigger an alert if soil moisture drops below a threshold).\n*   **Direct ESP32 Alerts:** Your device can also publish alert messages directly to your alerts topic to display real-time notifications on the dashboard.`;
   }
 
-  if (text.includes('dht') || text.includes('حساس') || text.includes('حرارة') || text.includes('رطوبة') || text.includes('سنسور')) {
-    return `**قراءة بيانات الحساسات (مثل DHT11 / DHT22) 🌡️:**\n\n*   قم بتوصيل الحساس بالـ ESP32.\n*   أرسل القيمة كـ String أو Float عبر موضوع الحساس مثل: \`${cleanUid}/sensor/temperature\`.\n*   أضف أداة **Gauge (عداد)** أو **Chart (مخطط)** في اللوحة واضبط الـ Topic ليعرض القراءة محدثة تلقائياً كل بضع ثوانٍ.`;
+  if (text.includes('dht') || text.includes('temp') || text.includes('sensor') || text.includes('حساس') || text.includes('حرارة') || text.includes('رطوبة') || text.includes('سنسور')) {
+    return `**Reading Sensor Data (e.g., DHT11 / DHT22):**\n\n*   Wire your sensor to an ESP32 GPIO pin.\n*   Publish the reading as a string or float to a sensor topic such as: \`${cleanUid}/sensor/temperature\`.\n*   Add a **Gauge / Chart** widget on your dashboard with the matching topic to visualize live readings and historical trends.`;
   }
 
-  return `عذراً، لم أفهم استفسارك بشكل كامل. 😅\n\nهل يمكنك إعادة صياغة السؤال؟ أو اختر أحد المواضيع الشائعة:\n*   كيف أربط ESP32؟\n*   معلومات الـ MQTT Broker\n*   تسمية الـ Topics والـ UID\n*   حفظ تصميم لوحة التحكم\n*   مطور المشروع ومجانيته`;
+  return `I didn't quite catch that question.\n\nCould you rephrase your query, or pick one of these common topics?\n*   How to connect an ESP32\n*   MQTT Broker connection details\n*   Topic structure and UID namespace\n*   Saving dashboard layouts\n*   Platform creator and pricing`;
 };
 
 function useAutoResizeTextarea({ minHeight, maxHeight }) {
@@ -141,7 +141,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
     {
       id: 1,
       sender: 'bot',
-      text: `مرحباً بك! أنا مساعد IOT365 الذكي 🤖\n\nيمكنني مساعدتك في أي سؤال بخصوص ربط الـ ESP32، بنية الـ Topics، كتابة الأكواد، حفظ التصاميم، أو أي استفسار تقني آخر.\n\nاسألني بحرية! 🚀`
+      text: `Welcome! I am the IOT365 Smart Assistant.\n\nI can help you with connecting your ESP32, structuring MQTT topics, writing Arduino/C++ firmware, saving dashboard layouts, or any other technical questions.\n\nAsk me anything!`
     }
   ]);
   const [inputVal, setInputVal] = useState('');
@@ -177,21 +177,21 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
     if (!textToSend) setInputVal('');
     setIsTyping(true);
 
-    const systemPrompt = `أنت مساعد ذكي متخصص لمنصة IOT365. مهمتك مساعدة الطلاب والمطورين في مشاريع إنترنت الأشياء والـ ESP32 وبرمجة Arduino C++ وبروتوكول MQTT.
-معلومات المنصة:
-- مطور ومصمم منصة IOT365 بالكامل هو: المطور أحمد البطاينة (Ahmad Al-Batayneh).
-- UID المستخدم الحالي: ${userUID || 'YOUR_UID'}
-- MQTT Broker الحالي: ${activeHost} — المنفذ المشفر TLS: ${activeTlsPort} (WSS للمتصفح: ${activeCaInfo.wsPort}/mqtt) — الوضع: ${mqttMode === 'private' ? 'سيرفر خاص معزول' : 'وضع التجربة'}
-- بنية Topics: [UID]/[اسم_الموضوع] — مثال: ${userUID || 'YOUR_UID'}/sensor/temp
-خبرتك تشمل أيضاً:
-- تشخيص العتاد الفيزيائي (Hardware Diagnostics) وتحليل أعطال الأجهزة مثل المضخات والحساسات والدوائر الكهربائية.
-- اقتراح سيناريوهات أتمتة ذكية وحلول هندسية عملية لمشاكل ESP32.
-قواعد الإجابة والأمان (إلزامية):
-- أجب دائماً باللغة العربية.
-- عند كتابة أكواد ESP32/C++ لـ EMQX Cloud أو HiveMQ Cloud، استخدم دائماً espClient.setCACert(root_ca) مع شهادة ${activeCaInfo.name} ومزامنة الوقت عبر configTime() ولا تستخدم espClient.setInsecure() أبداً.
-- استخدم معرّف عميل فريد مبني على ESP.getEfuseMac() ولا تضع Client ID ثابت مثل ESP32_Device.
-- لا تكتب أو تخترع أي كلمات مرور حقيقية في الكود؛ استخدم دائماً العناصر النائبة "YOUR_MQTT_USERNAME" و "YOUR_MQTT_PASSWORD".
-- اجعل إجاباتك دقيقة وعملية ومركّزة.`;
+    const systemPrompt = `You are a specialized AI technical assistant for the IOT365 platform. Your mission is to help students, engineers, and developers with IoT projects, ESP32 boards, Arduino C++ firmware, and MQTT integration.
+Platform Details:
+- The IOT365 platform was completely designed and developed by Ahmad Al-Batayneh.
+- Current User UID: ${userUID || 'YOUR_UID'}
+- Active MQTT Broker: ${activeHost} — Encrypted TLS Port: ${activeTlsPort} (Browser WSS: ${activeCaInfo.wsPort}/mqtt) — Mode: ${mqttMode === 'private' ? 'Isolated Private Broker' : 'Demo Mode'}
+- Topic Structure: [UID]/[topic_name] — Example: ${userUID || 'YOUR_UID'}/sensor/temp
+Your expertise also includes:
+- Physical Hardware Diagnostics and troubleshooting issues with pumps, sensors, and electronic circuits.
+- Designing smart automation rules and practical engineering solutions for ESP32 systems.
+Mandatory Response & Security Rules:
+- Always respond in clear, professional English.
+- When writing ESP32/C++ code for EMQX Cloud or HiveMQ Cloud, always use espClient.setCACert(root_ca) with the ${activeCaInfo.name} certificate and NTP time synchronization via configTime(), and NEVER use espClient.setInsecure().
+- Always generate a unique Client ID derived from ESP.getEfuseMac() and never hardcode a static Client ID such as ESP32_Device.
+- Never invent or hardcode real passwords in code; always use placeholders "YOUR_MQTT_USERNAME" and "YOUR_MQTT_PASSWORD".
+- Keep your answers accurate, practical, and concise.`;
 
     try {
       const contextMessages = updatedMessages.slice(-10).map(m => ({
@@ -267,7 +267,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
       if (/^\*(?!\*)/.test(line.trim())) {
         html = html.trim().substring(1).trim();
         return (
-          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/70 text-right rtl-text">
+          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/70 text-left">
             <span className="text-primary mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
             <span dangerouslySetInnerHTML={{ __html: html }} />
           </div>
@@ -277,12 +277,12 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
       if (line.trim().startsWith('>')) {
         html = html.trim().substring(1).trim();
         return (
-          <blockquote key={idx} className="border-r-2 border-primary/50 pr-3 pl-0 my-2 text-xs text-muted-foreground italic bg-background dark:bg-card/[0.01] py-1 text-right rtl-text rounded-l-md" dangerouslySetInnerHTML={{ __html: html }} />
+          <blockquote key={idx} className="border-l-2 border-primary/50 pl-3 pr-0 my-2 text-xs text-muted-foreground italic bg-background dark:bg-card/[0.01] py-1 text-left rounded-r-md" dangerouslySetInnerHTML={{ __html: html }} />
         );
       }
 
       return (
-        <p key={idx} className="text-xs text-foreground/70 leading-relaxed mt-0.5 text-right rtl-text" dangerouslySetInnerHTML={{ __html: html }} />
+        <p key={idx} className="text-xs text-foreground/70 leading-relaxed mt-0.5 text-left" dangerouslySetInnerHTML={{ __html: html }} />
       );
     });
   };
@@ -300,7 +300,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
             <h2 className="font-extrabold text-foreground text-base">IOT365 Smart Assistant</h2>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <p className="text-[11px] text-muted-foreground font-medium">مساعدك الذكي لمشاريع ESP32 و MQTT</p>
+              <p className="text-[11px] text-muted-foreground font-medium">Your AI assistant for ESP32 & MQTT projects</p>
             </div>
           </div>
         </div>
@@ -316,9 +316,9 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
           )}
           {/* Clear chat */}
           <button
-            onClick={() => setMessages([{ id: 1, sender: 'bot', text: `مرحباً بك! أنا مساعد IOT365 الذكي 🤖\n\nيمكنني مساعدتك في أي سؤال بخصوص ربط الـ ESP32، بنية الـ Topics، كتابة الأكواد، حفظ التصاميم، أو أي استفسار تقني آخر.\n\nاسألني بحرية! 🚀` }])}
+            onClick={() => setMessages([{ id: 1, sender: 'bot', text: `Welcome! I am the IOT365 Smart Assistant.\n\nI can help you with connecting your ESP32, structuring MQTT topics, writing Arduino/C++ firmware, saving dashboard layouts, or any other technical questions.\n\nAsk me anything!` }])}
             className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-            title="مسح المحادثة"
+            title="Clear conversation"
           >
             <RefreshCw size={16} />
           </button>
@@ -338,13 +338,13 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
               </div>
             )}
 
-            <div dir="rtl" className={`p-4 rounded-2xl text-right rtl-text border ${
+            <div dir="ltr" className={`p-4 rounded-2xl text-left border ${
               msg.sender === 'user'
                 ? 'bg-primary text-primary-foreground border-transparent rounded-tr-none text-sm font-semibold shadow-lg shadow-primary/20'
                 : 'bg-card dark:bg-card/[0.03] border-border dark:border-white/[0.07] text-foreground/90 rounded-tl-none space-y-1 shadow-sm'
             }`}>
               {msg.sender === 'user' ? (
-                <p className="leading-relaxed text-right rtl-text"><bdi>{msg.text}</bdi></p>
+                <p className="leading-relaxed text-left"><bdi>{msg.text}</bdi></p>
               ) : (
                 renderBotMessage(msg.text)
               )}
@@ -386,7 +386,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
                 adjustHeight();
               }}
               onKeyDown={handleKeyDown}
-              placeholder="اكتب سؤالك هنا... (مثال: كيف أربط ESP32 بالـ DHT22؟)"
+              placeholder="Type your question here... (e.g., How do I connect an ESP32 with a DHT22 sensor?)"
               className="w-full px-4 py-3 resize-none bg-transparent border-none text-foreground text-sm focus:outline-none placeholder:text-muted-foreground dark:placeholder:text-neutral-500 min-h-[60px]"
               style={{
                 overflow: "hidden",
@@ -399,7 +399,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
               <button
                 type="button"
                 className="group p-2 hover:bg-muted dark:hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1 text-muted-foreground dark:text-zinc-400"
-                title="إرفاق ملف"
+                title="Attach file"
               >
                 <Paperclip className="w-4 h-4 text-foreground/90" />
                 <span className="text-[10px] text-muted-foreground dark:text-zinc-400 hidden group-hover:inline transition-opacity">
@@ -433,7 +433,7 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
                       : "text-muted-foreground dark:text-zinc-500"
                   }`}
                 />
-                <span className="sr-only">إرسال</span>
+                <span className="sr-only">Send</span>
               </button>
             </div>
           </div>
@@ -442,12 +442,12 @@ export default function DeveloperGuide({ userUID, mqttMode = 'demo', mqttConfig 
         {/* Quick Suggestions (v0 Style Action Buttons) */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
           {[
-            { label: 'عنوان الـ Broker؟', q: 'ما هي معلومات الـ MQTT Broker؟', icon: <Globe className="w-3.5 h-3.5" /> },
-            { label: 'كيف أربط ESP32؟', q: 'كيف أربط جهاز الـ ESP32؟', icon: <Cpu className="w-3.5 h-3.5" /> },
-            { label: 'حفظ التصميم؟', q: 'كيف أحفظ لوحة التحكم والأسماء؟', icon: <Plus className="w-3.5 h-3.5" /> },
-            { label: 'حساس الحرارة؟', q: 'كيف أقرأ بيانات حساس DHT22؟', icon: <Zap className="w-3.5 h-3.5" /> },
-            { label: 'سيارة RC؟', q: 'كيف أتحكم بسيارة RC عبر D-Pad؟', icon: <Play className="w-3.5 h-3.5" /> },
-            { label: 'مطور المشروع؟', q: 'من هو مطور منصة IOT365؟', icon: <CircleUserRound className="w-3.5 h-3.5" /> },
+            { label: 'Broker Details?', q: 'What are the MQTT Broker connection details?', icon: <Globe className="w-3.5 h-3.5" /> },
+            { label: 'Connect ESP32?', q: 'How do I connect my ESP32 device?', icon: <Cpu className="w-3.5 h-3.5" /> },
+            { label: 'Save Layout?', q: 'How do I save my dashboard layout and project names?', icon: <Plus className="w-3.5 h-3.5" /> },
+            { label: 'Temperature Sensor?', q: 'How do I read data from a DHT22 sensor?', icon: <Zap className="w-3.5 h-3.5" /> },
+            { label: 'RC Car Control?', q: 'How do I control an RC car using the D-Pad?', icon: <Play className="w-3.5 h-3.5" /> },
+            { label: 'Platform Creator?', q: 'Who is the developer of the IOT365 platform?', icon: <CircleUserRound className="w-3.5 h-3.5" /> },
           ].map((chip, idx) => (
             <button
               key={idx}

@@ -7,6 +7,11 @@ import {
   ArrowRight, Eye, Send, Plus
 } from 'lucide-react';
 
+const formatDifficulty = (diff) => {
+  const map = { 'مبتدئ': 'Beginner', 'متوسط': 'Intermediate', 'متقدم': 'Advanced' };
+  return map[diff] || diff || 'Beginner';
+};
+
 export default function CommunityFeed({ user }) {
   const navigate = useNavigate();
 
@@ -53,10 +58,10 @@ export default function CommunityFeed({ user }) {
 
     const newPost = {
       id: `p-${Date.now()}`,
-      authorName: user?.displayName || 'مطور في المجتمع',
+      authorName: user?.displayName || 'Community Developer',
       authorUsername: user?.displayName ? user.displayName.toLowerCase().replace(/\s+/g, '_') : 'maker',
       authorPhoto: user?.photoURL || null,
-      createdAt: 'الآن',
+      createdAt: 'Just now',
       content: postContent.trim(),
       hardware: postHardware ? postHardware.split(',').map(s => s.trim()) : [],
       likes: 0,
@@ -87,10 +92,10 @@ export default function CommunityFeed({ user }) {
       <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-lg md:text-xl font-bold text-white">
-            خلاصة المجتمع وتحديثات الهاردوير
+            Community Feed & Hardware Updates
           </h1>
           <p className="text-xs text-zinc-400 mt-0.5">
-            شارك تجاربك مع الحساسات والمتحكمات واطلع على مشاريع المطورين
+            Share your experiments with sensors and microcontrollers and explore developer projects
           </p>
         </div>
 
@@ -100,14 +105,14 @@ export default function CommunityFeed({ user }) {
             className="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-xs font-medium text-zinc-300 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Cpu size={14} className="text-zinc-400" />
-            <span>تصفح المشاريع</span>
+            <span>Browse Projects</span>
           </button>
           <button
             onClick={() => navigate('/hub/new')}
             className="px-3.5 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Plus size={14} />
-            <span>نشر مشروع</span>
+            <span>Publish Project</span>
           </button>
         </div>
       </div>
@@ -134,7 +139,7 @@ export default function CommunityFeed({ user }) {
                   rows={2}
                   value={postContent}
                   onChange={(e) => setPostContent(e.target.value)}
-                  placeholder="اكتب تحديثاً سريعاً أو نصيحة تقنية حول تجاربك في الـ IoT..."
+                  placeholder="Share a quick update or technical tip about your IoT experiments..."
                   className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl p-3 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 resize-none transition-all font-sans"
                 />
 
@@ -143,7 +148,7 @@ export default function CommunityFeed({ user }) {
                     type="text"
                     value={postHardware}
                     onChange={(e) => setPostHardware(e.target.value)}
-                    placeholder="أسماء القطع مفصولة بفواصل (مثال: ESP32, DHT22, OLED)..."
+                    placeholder="Hardware components separated by commas (e.g., ESP32, DHT22, OLED)..."
                     className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none transition-all"
                   />
                 )}
@@ -158,7 +163,7 @@ export default function CommunityFeed({ user }) {
                       }`}
                     >
                       <Cpu size={13} />
-                      <span>+ إضافة عتاد</span>
+                      <span>+ Add Hardware</span>
                     </button>
                     <button
                       type="button"
@@ -166,7 +171,7 @@ export default function CommunityFeed({ user }) {
                       className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/[0.06] text-zinc-400 hover:text-white transition-colors cursor-pointer text-xs"
                     >
                       <Code size={13} />
-                      <span>توثيق مشروع كامل</span>
+                      <span>Document Full Project</span>
                     </button>
                   </div>
 
@@ -176,8 +181,8 @@ export default function CommunityFeed({ user }) {
                     onClick={handleCreatePost}
                     className="px-4 py-1.5 rounded-lg bg-white/[0.1] hover:bg-white/[0.18] border border-white/[0.12] text-white font-bold text-xs transition-all disabled:opacity-40 cursor-pointer flex items-center gap-1.5"
                   >
-                    <Send size={11} className="rotate-180" />
-                    <span>نشر</span>
+                    <Send size={11} />
+                    <span>Post</span>
                   </button>
                 </div>
               </div>
@@ -188,9 +193,9 @@ export default function CommunityFeed({ user }) {
           {posts.length === 0 && projects.length === 0 ? (
             <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-10 text-center space-y-3">
               <Cpu size={36} className="text-zinc-600 mx-auto" />
-              <h3 className="text-sm font-bold text-white">لا توجد منشورات أو مشاريع بعد</h3>
+              <h3 className="text-sm font-bold text-white">No posts or projects yet</h3>
               <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-                كن أول من يشارك تحديثاً أو يوثق مشروعاً في المجتمع!
+                Be the first to share an update or document a project in the community!
               </p>
             </div>
           ) : (
@@ -233,7 +238,7 @@ export default function CommunityFeed({ user }) {
                       <span>{post.likes}</span>
                     </button>
                     <button onClick={() => navigate('/hub/discussions')} className="hover:text-white text-xs">
-                      {post.comments} تعليق
+                      {post.comments} Comments
                     </button>
                   </div>
                 </div>
@@ -252,12 +257,12 @@ export default function CommunityFeed({ user }) {
                         {(p.ownerName || 'M').charAt(0)}
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-white">{p.ownerName || 'مطور'}</span>
-                        <p className="text-[10px] text-zinc-500 font-mono">نشر مشروعاً جديداً · {new Date(p.createdAt || Date.now()).toLocaleDateString('ar-JO')}</p>
+                        <span className="text-xs font-bold text-white">{p.ownerName || 'Developer'}</span>
+                        <p className="text-[10px] text-zinc-500 font-mono">Published a new project · {new Date(p.createdAt || Date.now()).toLocaleDateString('en-US')}</p>
                       </div>
                     </div>
                     <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-zinc-400">
-                      {p.difficulty || 'مبتدئ'}
+                      {formatDifficulty(p.difficulty)}
                     </span>
                   </div>
 
@@ -282,7 +287,7 @@ export default function CommunityFeed({ user }) {
                       <span className="flex items-center gap-1"><ThumbsUp size={12} /> {p.metrics?.likes || 0}</span>
                     </div>
                     <span className="text-[11px] text-zinc-400 hover:underline flex items-center gap-1">
-                      عرض التوثيق الكامل <ArrowRight size={11} className="rotate-180" />
+                      View Full Documentation <ArrowRight size={11} />
                     </span>
                   </div>
                 </div>
@@ -297,10 +302,10 @@ export default function CommunityFeed({ user }) {
           
           <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-3">
             <h3 className="text-xs font-bold text-white border-b border-white/[0.06] pb-2">
-              أحدث المشاريع المنشورة
+              Latest Published Projects
             </h3>
             {projects.length === 0 ? (
-              <p className="text-[11px] text-zinc-500">لا توجد مشاريع حتى الآن</p>
+              <p className="text-[11px] text-zinc-500">No projects yet</p>
             ) : (
               <div className="space-y-2.5">
                 {projects.slice(0, 4).map((proj) => (
@@ -310,7 +315,7 @@ export default function CommunityFeed({ user }) {
                     className="p-2 rounded-xl hover:bg-white/[0.04] transition-colors cursor-pointer"
                   >
                     <h4 className="text-xs font-medium text-white line-clamp-1">{proj.title}</h4>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">بواسطة {proj.ownerName || 'مطور'}</p>
+                    <p className="text-[10px] text-zinc-500 mt-0.5">by {proj.ownerName || 'Developer'}</p>
                   </div>
                 ))}
               </div>
@@ -318,7 +323,7 @@ export default function CommunityFeed({ user }) {
           </div>
 
           <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-2">
-            <h3 className="text-xs font-bold text-white">الوسوم الشائعة</h3>
+            <h3 className="text-xs font-bold text-white">Popular Tags</h3>
             <div className="flex flex-wrap gap-1">
               {['ESP32', 'BME280', 'MQTT', 'DHT22', 'Relay', 'OLED', 'DeepSleep'].map((t, idx) => (
                 <button

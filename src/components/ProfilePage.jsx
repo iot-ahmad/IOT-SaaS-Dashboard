@@ -206,10 +206,10 @@ export default function ProfilePage({ user, userUID, logout }) {
       const url = await uploadToCloudinary(compressed, null, `users/${userUID}`);
       setEditAvatarUrl(url);
       setAvatarUploading(false);
-      showToast('تم رفع الصورة — اضغط حفظ لتأكيد التغييرات.');
+      showToast('Photo uploaded — click Save to confirm changes.');
     } catch (err) {
       console.error(err);
-      showToast('فشل رفع الصورة الشخصية.', 'error');
+      showToast('Failed to upload profile photo.', 'error');
       setAvatarUploading(false);
     }
   };
@@ -222,11 +222,11 @@ export default function ProfilePage({ user, userUID, logout }) {
 
     const reserved = ['hub', 'devices', 'settings', 'alerts', 'automations', 'developer', 'home', 'controller', 'views', 'profile'];
     if (reserved.includes(formatted)) {
-      setProfileError('اسم المستخدم هذا محجوز للمنصة، يرجى اختيار اسم آخر.');
+      setProfileError('This username is reserved by the platform. Please choose another.');
       return;
     }
     if (!/^[a-z0-9_-]{3,20}$/.test(formatted)) {
-      setProfileError('يجب أن يتكون اسم المستخدم من 3-20 حرفاً إنجليزياً أو أرقام أو شرطات فقط.');
+      setProfileError('Username must be 3–20 characters and contain only letters, numbers, underscores, or hyphens.');
       return;
     }
 
@@ -237,7 +237,7 @@ export default function ProfilePage({ user, userUID, logout }) {
         const q = query(collection(db, 'users'), where('username', '==', formatted));
         const qs = await getDocs(q);
         if (!qs.empty && qs.docs[0].id !== userUID) {
-          setProfileError('اسم المستخدم هذا مستخدم بالفعل من قبل مطور آخر.');
+          setProfileError('This username is already taken by another developer.');
           setLoading(false);
           return;
         }
@@ -264,12 +264,12 @@ export default function ProfilePage({ user, userUID, logout }) {
       }
 
       setFirestoreProfile(prev => ({ ...(prev || {}), ...updatedFields }));
-      showToast('تم حفظ الملف الشخصي بنجاح!');
+      showToast('Public profile saved successfully!');
     } catch (err) {
       if (err?.code === 'permission-denied') {
-        setProfileError('خطأ صلاحيات Firestore — راجع قواعد الأمان في Firebase Console.');
+        setProfileError('Firestore permission error — check security rules in Firebase Console.');
       } else {
-        setProfileError(`فشل الحفظ: ${err?.code || err?.message || 'خطأ غير معروف'}`);
+        setProfileError(`Save failed: ${err?.code || err?.message || 'Unknown error'}`);
       }
     }
     setLoading(false);
@@ -283,7 +283,7 @@ export default function ProfilePage({ user, userUID, logout }) {
         await updateProfile(auth.currentUser, { displayName });
       }
       await setDoc(doc(db, 'users', userUID, 'settings', 'prefs'), { language, timezone }, { merge: true });
-      showToast('تم حفظ إعدادات الحساب!');
+      showToast('Account settings saved!');
     } catch (err) { showToast(err.message, 'error'); }
     setLoading(false);
   };
@@ -293,20 +293,20 @@ export default function ProfilePage({ user, userUID, logout }) {
     setNotifications(next);
     try {
       await setDoc(doc(db, 'users', userUID, 'settings', 'prefs'), { notifications: next }, { merge: true });
-      showToast('تم حفظ إعدادات الإشعارات!');
-    } catch { showToast('فشل حفظ الإشعارات.', 'error'); }
+      showToast('Notification preferences saved!');
+    } catch { showToast('Failed to save notifications.', 'error'); }
   };
 
   // ─── Change password ─────────────────────────────────────────────────────
   const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) return showToast('كلمتا المرور غير متطابقتين.', 'error');
-    if (!currentPassword) return showToast('يرجى إدخال كلمة المرور الحالية.', 'error');
+    if (newPassword !== confirmPassword) return showToast('Passwords do not match.', 'error');
+    if (!currentPassword) return showToast('Please enter your current password.', 'error');
     setLoading(true);
     try {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(auth.currentUser, credential);
       await updatePassword(auth.currentUser, newPassword);
-      showToast('تم تحديث كلمة المرور بنجاح!');
+      showToast('Password updated successfully!');
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
     } catch (err) { showToast(err.message, 'error'); }
     setLoading(false);
@@ -320,7 +320,7 @@ export default function ProfilePage({ user, userUID, logout }) {
     const trimmedUrl = mqttBrokerUrl.trim();
     if (mqttUseCustom) {
       if (!trimmedUrl || !trimmedUrl.startsWith('wss://')) {
-        return showToast('يجب أن يبدأ رابط السيرفر الخاص بـ wss:// لضمان التشفير.', 'error');
+        return showToast('Private broker URL must start with wss:// to ensure encryption.', 'error');
       }
     }
 
@@ -339,9 +339,9 @@ export default function ProfilePage({ user, userUID, logout }) {
         updatedAt: serverTimestamp(),
       }, { merge: true });
       setMqttProvisionedBy(nextProvisionedBy);
-      showToast(mqttUseCustom ? 'تم حفظ وتفعيل إعدادات السيرفر الخاص بك!' : 'تم حفظ إعدادات أمان MQTT.');
+      showToast(mqttUseCustom ? 'Private MQTT broker settings saved and activated!' : 'MQTT security settings saved.');
     } catch (err) {
-      showToast(err?.message || 'فشل حفظ إعدادات MQTT.', 'error');
+      showToast(err?.message || 'Failed to save MQTT settings.', 'error');
     }
     setMqttSaving(false);
   };
@@ -360,9 +360,9 @@ export default function ProfilePage({ user, userUID, logout }) {
         autoProvisionDisabled: true,
         updatedAt: serverTimestamp(),
       }, { merge: true });
-      showToast('تمت العودة إلى وضع التجربة المشترك (للمحاكاة فقط).');
+      showToast('Switched back to shared demo mode (for simulation only).');
     } catch (err) {
-      showToast(err?.message || 'فشل إعادة الضبط.', 'error');
+      showToast(err?.message || 'Failed to reset settings.', 'error');
     }
     setMqttSaving(false);
   };
@@ -370,7 +370,7 @@ export default function ProfilePage({ user, userUID, logout }) {
   const handleAutoProvisionMqtt = async () => {
     if (!userUID) return;
     const idToken = await auth.currentUser?.getIdToken();
-    if (!idToken) return showToast('يرجى تسجيل الدخول أولاً.', 'error');
+    if (!idToken) return showToast('Please sign in first.', 'error');
 
     setMqttProvisioning(true);
     try {
@@ -386,9 +386,9 @@ export default function ProfilePage({ user, userUID, logout }) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         if (res.status === 503 || res.status === 404) {
-          showToast('تفعيل الإنشاء التلقائي يتطلب إضافة متغيرات EMQX_API_URL و EMQX_BROKER_HOST و EMQX_APP_ID و EMQX_APP_SECRET في لوحة Vercel.', 'error');
+          showToast('Auto-provisioning requires configuring EMQX_API_URL, EMQX_BROKER_HOST, EMQX_APP_ID, and EMQX_APP_SECRET in Vercel.', 'error');
         } else {
-          showToast(data?.error || 'فشل توليد حساب MQTT التلقائي.', 'error');
+          showToast(data?.error || 'Failed to auto-provision MQTT account.', 'error');
         }
         setMqttProvisioning(false);
         return;
@@ -415,10 +415,10 @@ export default function ProfilePage({ user, userUID, logout }) {
       setMqttEnableGuest(false);
       setMqttProvisionedBy('emqx_auto');
       showToast(mqttProvisionedBy === 'emqx_auto'
-        ? 'تم تدوير كلمة مرور حساب EMQX المعزول بنجاح!'
-        : 'تم توليد وتفعيل حساب EMQX المعزول الخاص بك بنجاح!');
+        ? 'Isolated EMQX account password rotated successfully!'
+        : 'Isolated EMQX account provisioned and activated!');
     } catch (err) {
-      showToast(err?.message || 'تعذر الاتصال بخادم التوليد التلقائي.', 'error');
+      showToast(err?.message || 'Could not reach auto-provisioning server.', 'error');
     }
     setMqttProvisioning(false);
   };
@@ -437,7 +437,7 @@ export default function ProfilePage({ user, userUID, logout }) {
       const p = providerId === 'google.com' ? new GoogleAuthProvider() : new GithubAuthProvider();
       await linkWithPopup(auth.currentUser, p);
       setProviders(prev => [...prev, providerId]);
-      showToast(`تم ربط ${providerId} بنجاح!`);
+      showToast(`Linked ${providerId} successfully!`);
     } catch (err) { showToast(err.message, 'error'); }
     setLoading(false);
   };
@@ -447,7 +447,7 @@ export default function ProfilePage({ user, userUID, logout }) {
     try {
       await unlink(auth.currentUser, providerId);
       setProviders(prev => prev.filter(p => p !== providerId));
-      showToast(`تم فصل ${providerId}.`);
+      showToast(`Disconnected ${providerId}.`);
     } catch (err) { showToast(err.message, 'error'); }
     setLoading(false);
   };
@@ -520,7 +520,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                 <Icon size={16} className="flex-shrink-0" />
                 {label}
                 {id === 'billing' && (
-                  <span className="ml-auto text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">قريباً</span>
+                  <span className="ml-auto text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">Soon</span>
                 )}
               </Button>
             );
@@ -565,7 +565,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                       <div>
                         <p className="text-sm font-semibold text-foreground">Upload Profile Picture</p>
                         <p className="text-xs text-muted-foreground mt-1">JPG, PNG, GIF up to 2MB. Will be compressed to 400×400.</p>
-                        {avatarUploading && <p className="text-xs text-primary mt-1 animate-pulse">جاري الرفع...</p>}
+                        {avatarUploading && <p className="text-xs text-primary mt-1 animate-pulse">Uploading...</p>}
                       </div>
                     </div>
                   </Card>
@@ -586,16 +586,16 @@ export default function ProfilePage({ user, userUID, logout }) {
                               type="button"
                               onClick={() => navigate(`/${editUsername}`)}
                               className="text-[11px] text-primary hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0 font-medium"
-                              title="فتح صفحة الحساب العامة"
+                              title="Open public profile page"
                             >
-                              <span>معاينة وفتح الحساب</span>
+                              <span>Preview Public Profile</span>
                               <ExternalLink size={12} />
                             </button>
                           )}
                         </div>
                         <input className={`${inputCls} font-mono`} value={editUsername} onChange={e => setEditUsername(e.target.value)} placeholder="e.g. smart_dev" dir="ltr" required />
                         <p className="text-[10px] text-muted-foreground mt-1 font-mono">
-                          رابط حسابك المباشر: <span className="text-primary/90 font-medium">iot365.app/{editUsername || 'username'}</span>
+                          Direct profile URL: <span className="text-primary/90 font-medium">iot365.app/{editUsername || 'username'}</span>
                         </p>
                       </div>
                     </div>
@@ -646,7 +646,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                   <span className="text-xs font-bold text-primary uppercase tracking-widest">Your Device UID</span>
                 </div>
                 <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  استخدم هذا الـ UID في كود Arduino / ESP32 الخاص بك لربط جهازك بالموقع.
+                  Use this UID in your Arduino / ESP32 firmware sketch to link your hardware devices to the platform.
                 </p>
                 <div className="flex items-stretch gap-2 mb-4">
                   <code className="flex-1 bg-background/40 border border-border rounded-xl py-3 px-4 text-sm font-mono text-primary break-all leading-relaxed">
@@ -720,7 +720,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                   <h3 className="font-bold flex items-center gap-2">
                     <Server size={18} className="text-primary" />
-                    إعدادات أمان سيرفر MQTT (Private Broker &amp; ACL)
+                    MQTT Broker Security Settings (Private Broker &amp; ACL)
                   </h3>
                   <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${
                     mqttUseCustom
@@ -729,9 +729,9 @@ export default function ProfilePage({ user, userUID, logout }) {
                   }`}>
                     {mqttUseCustom
                       ? (mqttProvisionedBy === 'emqx_auto'
-                        ? 'حساب EMQX المعزول تلقائياً (ACL 100%)'
-                        : 'سيرفر خاص معزول (آمن للإنتاج)')
-                      : 'وضع التجربة المشترك (للتعليم والمحاكاة فقط)'}
+                        ? 'Auto-Isolated EMQX Account (100% ACL)'
+                        : 'Isolated Private Broker (Production Ready)')
+                      : 'Shared Demo Mode (Education & Simulation Only)'}
                   </span>
                 </div>
 
@@ -740,10 +740,10 @@ export default function ProfilePage({ user, userUID, logout }) {
                   <div className="text-xs space-y-0.5">
                     <p className="font-bold text-foreground flex items-center gap-1.5">
                       <Shield size={14} className="text-primary" />
-                      الربط التلقائي المعزول (EMQX Serverless)
+                      Isolated Auto-Provisioning (EMQX Serverless)
                     </p>
                     <p className="text-muted-foreground">
-                      ينشئ لحسابك اسم مستخدم مطابق لـ UID وكلمة مرور فريدة مقيدة بمسارك فقط (<code className="px-1 rounded bg-muted">{userUID}/#</code>).
+                      Creates a dedicated MQTT username matching your UID with a unique password restricted strictly to your topic prefix (<code className="px-1 rounded bg-muted">{userUID}/#</code>).
                     </p>
                   </div>
                   <button
@@ -753,10 +753,10 @@ export default function ProfilePage({ user, userUID, logout }) {
                     className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0 cursor-pointer"
                   >
                     {mqttProvisioning
-                      ? 'جاري التوليد...'
+                      ? 'Provisioning...'
                       : (mqttProvisionedBy === 'emqx_auto'
-                        ? 'تدوير كلمة مرور حساب EMQX'
-                        : 'توليد حساب MQTT المعزول تلقائياً')}
+                        ? 'Rotate EMQX Account Password'
+                        : 'Auto-Provision Isolated MQTT Account')}
                   </button>
                 </div>
 
@@ -764,9 +764,9 @@ export default function ProfilePage({ user, userUID, logout }) {
                   <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs flex items-start gap-2.5 leading-relaxed">
                     <AlertTriangle size={16} className="shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold">تنبيه أمني: لا تربط أجهزة حقيقية حساسة بوضع التجربة المشترك</p>
+                      <p className="font-bold">Security Warning: Do not connect sensitive physical hardware in shared demo mode</p>
                       <p className="text-amber-200/80 mt-0.5">
-                        الحساب الافتراضي مخصص لمشاريع Wokwi والتجارب التعليمية فقط. لأقفال الأبواب والمضخات والمرحّلات الفعلية، اضغط زر التوليد التلقائي أعلاه أو أدخل سيرفرك الخاص.
+                        The default shared broker is intended for Wokwi simulations and educational testing only. For physical door locks, pumps, and relays, click Auto-Provision above or configure your own private broker.
                       </p>
                     </div>
                   </div>
@@ -775,8 +775,8 @@ export default function ProfilePage({ user, userUID, logout }) {
                 <form onSubmit={handleSaveMqttSettings} className="space-y-4">
                   <label className="flex items-center justify-between gap-3 p-3 rounded-xl bg-muted border border-border cursor-pointer">
                     <div>
-                      <p className="text-sm font-bold text-foreground">استخدام سيرفر / بيانات MQTT خاصة بي</p>
-                      <p className="text-xs text-muted-foreground">يتم حفظ الإعدادات بشكل خاص في حسابك ويتم التبديل إليها لحظياً.</p>
+                      <p className="text-sm font-bold text-foreground">Use My Own Private MQTT Broker / Credentials</p>
+                      <p className="text-xs text-muted-foreground">Settings are stored privately in your account and applied immediately.</p>
                     </div>
                     <input
                       type="checkbox"
@@ -790,7 +790,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                     <div className="space-y-3 p-4 rounded-xl bg-muted/50 border border-border">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="md:col-span-2">
-                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">WSS Broker URL (للمتصفح) *</label>
+                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">WSS Broker URL (Browser) *</label>
                           <input
                             type="text"
                             dir="ltr"
@@ -802,7 +802,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">TLS Port (للـ ESP32)</label>
+                          <label className="text-xs text-muted-foreground block mb-1 font-semibold">TLS Port (ESP32)</label>
                           <input
                             type="number"
                             dir="ltr"
@@ -829,7 +829,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                             <button
                               type="button"
                               onClick={() => copyMqttField('user', mqttUsername)}
-                              aria-label="نسخ اسم المستخدم"
+                              aria-label="Copy username"
                               className="p-2.5 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
                             >
                               {copiedMqttField === 'user' ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
@@ -851,7 +851,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                               <button
                                 type="button"
                                 onClick={() => setShowMqttPass((v) => !v)}
-                                aria-label={showMqttPass ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                                aria-label={showMqttPass ? 'Hide password' : 'Show password'}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                               >
                                 {showMqttPass ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -860,7 +860,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                             <button
                               type="button"
                               onClick={() => copyMqttField('pass', mqttPassword)}
-                              aria-label="نسخ كلمة المرور"
+                              aria-label="Copy password"
                               className="p-2.5 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
                             >
                               {copiedMqttField === 'pass' ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
@@ -879,8 +879,8 @@ export default function ProfilePage({ user, userUID, logout }) {
                       className="w-4 h-4 mt-0.5 accent-primary cursor-pointer"
                     />
                     <div className="text-xs">
-                      <span className="font-semibold text-foreground block">تفعيل مسار guest_iot365/# للمحاكاة بدون UID</span>
-                      <span className="text-muted-foreground">يقلل العزل ويسمح بقراءة/إرسال رسائل المسار العام — يُنصح بإبقائه معطّلاً.</span>
+                      <span className="font-semibold text-foreground block">Enable guest_iot365/# topic for UID-less simulation</span>
+                      <span className="text-muted-foreground">Reduces isolation and allows reading/publishing on the public guest namespace — recommended to keep disabled.</span>
                     </div>
                   </label>
 
@@ -890,7 +890,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                       disabled={mqttSaving}
                       className="bg-primary text-primary-foreground text-xs font-bold py-2 px-4 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
                     >
-                      {mqttSaving ? 'جاري الحفظ...' : 'حفظ وتطبيق إعدادات MQTT'}
+                      {mqttSaving ? 'Saving...' : 'Save & Apply MQTT Settings'}
                     </button>
                     {mqttUseCustom && (
                       <button
@@ -900,7 +900,7 @@ export default function ProfilePage({ user, userUID, logout }) {
                         className="flex items-center gap-1.5 bg-muted hover:bg-secondary text-foreground text-xs font-semibold py-2 px-3 rounded-xl border border-border transition-colors disabled:opacity-50 cursor-pointer"
                       >
                         <RotateCcw size={13} />
-                        العودة للوضع التجريبي
+                        Switch Back to Demo Mode
                       </button>
                     )}
                   </div>
@@ -908,8 +908,8 @@ export default function ProfilePage({ user, userUID, logout }) {
 
                 {/* ACL Setup Guide */}
                 <div className="mt-4 p-3 rounded-xl bg-background border border-border text-xs space-y-1.5">
-                  <p className="font-bold text-foreground">دليل عزل الصلاحيات (ACL) في HiveMQ Cloud أو EMQX:</p>
-                  <p className="text-muted-foreground">امنع الاشتراك العام <code className="px-1 rounded bg-muted">#</code> واجعل صلاحية حسابك مقيدة بهذا المسار فقط:</p>
+                  <p className="font-bold text-foreground">ACL Topic Isolation Guide (HiveMQ Cloud / EMQX):</p>
+                  <p className="text-muted-foreground">Block wildcard subscriptions (<code className="px-1 rounded bg-muted">#</code>) and restrict your account permissions to this topic filter only:</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]" dir="ltr">
                     <div className="p-2 rounded-lg bg-muted border border-border">
                       <span className="text-muted-foreground block text-[10px]">Topic Filter (Allow):</span>
@@ -1057,9 +1057,9 @@ export default function ProfilePage({ user, userUID, logout }) {
                   <div className="inline-block bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-primary/30 mb-4">
                     Coming Soon
                   </div>
-                  <h4 className="text-xl font-bold mb-2">مجاني للاستخدام الشخصي</h4>
+                  <h4 className="text-xl font-bold mb-2">Free for Personal Use</h4>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                    المنصة ستكون مجانية بالكامل للمشاريع الشخصية. سيتم لاحقاً إطلاق خطط مدفوعة مخصصة للجامعات والمؤسسات بأسعار رمزية.
+                    The platform is completely free for personal and educational projects. Dedicated plans for universities and enterprise teams will be introduced in the future.
                   </p>
                 </div>
               </div>

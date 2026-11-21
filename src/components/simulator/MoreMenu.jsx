@@ -56,15 +56,15 @@ export default function MoreMenu({
       ref={menuRef}
       role="dialog"
       aria-modal="true"
-      aria-label="إعدادات المحاكي والحساب"
+      aria-label="Simulator & Account Settings"
       className="absolute end-0 top-full mt-2 w-72 sm:w-80 bg-zinc-900 border border-white/15 rounded-xl shadow-2xl p-3 z-50 flex flex-col gap-3 text-xs animate-in fade-in zoom-in-95 duration-150"
     >
       <div className="flex items-center justify-between pb-2 border-b border-white/10">
-        <span className="font-bold text-foreground">إعدادات المحاكي والحساب</span>
+        <span className="font-bold text-foreground">Simulator &amp; Account Settings</span>
         <button
           type="button"
           onClick={onClose}
-          aria-label="إغلاق القائمة"
+          aria-label="Close menu"
           className="text-zinc-400 hover:text-foreground p-1 rounded-md"
         >
           <X size={14} />
@@ -74,7 +74,7 @@ export default function MoreMenu({
       {/* Wokwi Project URL Form */}
       <form onSubmit={onApplyUrl} className="flex flex-col gap-1.5">
         <label htmlFor="wokwi-url-input" className="text-zinc-400 text-[11px]">
-          رابط مشروع Wokwi:
+          Wokwi Project URL:
         </label>
         <div className="flex items-center gap-1.5">
           <input
@@ -82,14 +82,14 @@ export default function MoreMenu({
             type="text"
             value={wokwiUrlInput}
             onChange={(e) => setWokwiUrlInput(e.target.value)}
-            placeholder="رابط Wokwi أو Project ID..."
+            placeholder="Wokwi URL or Project ID..."
             className="flex-1 bg-zinc-800 border border-white/10 text-xs rounded-lg px-2.5 py-1.5 outline-none font-mono text-zinc-200 truncate focus:border-primary/50"
           />
           <button
             type="submit"
             className="px-2.5 py-1.5 rounded-lg bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-all shrink-0 cursor-pointer"
           >
-            تحديث
+            Apply
           </button>
         </div>
         {!isDefaultUrl && (
@@ -98,7 +98,7 @@ export default function MoreMenu({
             onClick={onResetDefault}
             className="text-[10px] text-zinc-400 hover:text-primary text-start underline cursor-pointer"
           >
-            استعادة الرابط الافتراضي
+            Reset to default URL
           </button>
         )}
       </form>
@@ -106,7 +106,7 @@ export default function MoreMenu({
       {/* Account UID */}
       {userUID && (
         <div className="flex flex-col gap-1 pt-2 border-t border-white/10">
-          <span className="text-zinc-400 text-[11px]">معرّف الحساب (UID):</span>
+          <span className="text-zinc-400 text-[11px]">Account UID:</span>
           <div className="flex items-center gap-1.5">
             <input
               type="text"
@@ -119,11 +119,11 @@ export default function MoreMenu({
             <button
               type="button"
               onClick={onCopyUid}
-              aria-label="نسخ معرّف الحساب"
+              aria-label="Copy Account UID"
               className="flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-800 border border-white/10 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold shrink-0 cursor-pointer"
             >
               {copiedUid ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-              <span>{copiedUid ? 'تم' : 'نسخ'}</span>
+              <span>{copiedUid ? 'Copied' : 'Copy'}</span>
             </button>
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function MoreMenu({
           className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-foreground text-xs transition-colors cursor-pointer text-start"
         >
           <RefreshCw size={13} />
-          <span>إعادة تحميل المحاكي</span>
+          <span>Reload Simulator</span>
         </button>
 
         <a
@@ -150,7 +150,7 @@ export default function MoreMenu({
           className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-foreground text-xs transition-colors text-start"
         >
           <ExternalLink size={13} />
-          <span>فتح في Wokwi بتبويب جديد ↗</span>
+          <span>Open in Wokwi (New Tab) ↗</span>
         </a>
 
         {!isCustomProject && (
@@ -163,7 +163,7 @@ export default function MoreMenu({
             className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-foreground text-xs transition-colors cursor-pointer text-start"
           >
             <FileCode size={13} className="text-primary" />
-            <span>الكود ومخطط التوصيل الكامل</span>
+            <span>Full Code &amp; Wiring Diagram</span>
           </button>
         )}
       </div>

@@ -10,8 +10,8 @@ export default function NotificationsView() {
       id: 'n-1',
       type: 'like',
       icon: ThumbsUp,
-      title: 'أعجب أحد المهندسين بمشروعك المنشور',
-      time: 'منذ ساعتين',
+      title: 'An engineer liked your published project',
+      time: '2 hours ago',
       isUnread: true,
       link: '/hub/explore'
     },
@@ -19,8 +19,8 @@ export default function NotificationsView() {
       id: 'n-2',
       type: 'answer',
       icon: MessageSquare,
-      title: 'تمت إضافة رد جديد على أحد النقاشات التقنية',
-      time: 'اليوم',
+      title: 'A new reply was added to a technical discussion',
+      time: 'Today',
       isUnread: false,
       link: '/hub/discussions'
     }
@@ -38,10 +38,10 @@ export default function NotificationsView() {
         <div>
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
             <Bell size={18} className="text-zinc-400" />
-            <span>التنبيهات</span>
+            <span>Notifications</span>
           </h1>
           <p className="text-xs text-zinc-400 mt-0.5">
-            آخر التفاعلات والمشاركات داخل المجتمع
+            Recent interactions and activity across the community
           </p>
         </div>
 
@@ -50,7 +50,7 @@ export default function NotificationsView() {
           className="px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-medium text-zinc-300 transition-all flex items-center gap-1.5 cursor-pointer"
         >
           <CheckCheck size={13} />
-          <span>تحديد الكل كمقروء</span>
+          <span>Mark all as read</span>
         </button>
       </div>
 

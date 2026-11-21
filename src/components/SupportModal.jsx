@@ -39,7 +39,7 @@ export default function SupportModal({ isOpen, onClose }) {
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", duration: 0.4 }}
             className="relative bg-card/95 dark:bg-[#0c0d12]/95 border border-border/80 dark:border-white/[0.08] p-8 rounded-3xl w-full max-w-md shadow-[0_20px_80px_rgba(0,0,0,0.9)] text-foreground z-50 overflow-hidden"
-            dir="rtl"
+            dir="ltr"
           >
             {/* Subtle neon glowing accent dots */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
@@ -49,8 +49,8 @@ export default function SupportModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-5 left-5 text-muted-foreground hover:text-foreground p-1.5 rounded-xl hover:bg-muted/50 transition-all cursor-pointer z-10 animate-none select-none"
-              title="إغلاق"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground p-1.5 rounded-xl hover:bg-muted/50 transition-all cursor-pointer z-10 animate-none select-none"
+              title="Close"
             >
               <X size={18} />
             </button>
@@ -58,11 +58,11 @@ export default function SupportModal({ isOpen, onClose }) {
             {/* Header */}
             <div className="text-center mb-6">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 text-primary">
-                <LifeBuoy size={24} className="animate-pulse" />
+                <LifeBuoy size={24} />
               </div>
-              <h3 className="text-xl font-bold tracking-tight">الدعم الفني · Support</h3>
+              <h3 className="text-xl font-bold tracking-tight">Technical Support</h3>
               <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                نسعد بمساعدتك! تواصل معنا مباشرة عبر القنوات الرسمية التالية:
+                We are happy to help! Reach out to us directly through our official channels:
               </p>
             </div>
 
@@ -79,12 +79,12 @@ export default function SupportModal({ isOpen, onClose }) {
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-pink-500/10">
                     <InstagramIcon size={20} />
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-foreground group-hover:text-pink-400 transition-colors">الانستغرام (Instagram)</p>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-foreground group-hover:text-pink-400 transition-colors">Instagram</p>
                     <p className="text-[11px] text-muted-foreground font-mono">@iot365.tech</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-pink-400 group-hover:translate-x-[-2px] transition-all" />
+                <ExternalLink size={16} className="text-muted-foreground group-hover:text-pink-400 group-hover:translate-x-[2px] transition-all" />
               </a>
 
               {/* LinkedIn Link */}
@@ -98,12 +98,12 @@ export default function SupportModal({ isOpen, onClose }) {
                   <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-sm">
                     <LinkedinIcon size={20} />
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-foreground">لينكد إين (LinkedIn)</p>
-                    <p className="text-[11px] text-muted-foreground">م. أحمد البطاينة</p>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-foreground">LinkedIn</p>
+                    <p className="text-[11px] text-muted-foreground">Eng. Ahmad Al-Batayneh</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[-2px] transition-all" />
+                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[2px] transition-all" />
               </a>
 
               {/* Team Website Link */}
@@ -117,12 +117,12 @@ export default function SupportModal({ isOpen, onClose }) {
                   <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-sm">
                     <Users size={20} />
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-foreground">فريق العمل (Our Team)</p>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-foreground">Our Team</p>
                     <p className="text-[11px] text-muted-foreground font-mono">team-iot365.netlify.app</p>
                   </div>
                 </div>
-                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[-2px] transition-all" />
+                <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-[2px] transition-all" />
               </a>
             </div>
 

@@ -14,10 +14,10 @@ export default function SavedProjects({ user }) {
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2.5">
             <Bookmark size={20} className="text-zinc-400" />
-            <span>المشاريع المحفوظة</span>
+            <span>Saved Projects</span>
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            مكتبتك الخاصة للمشاريع والدوائر التي قمت بحفظها للرجوع إليها
+            Your personal library of bookmarked projects and circuits for quick reference
           </p>
         </div>
 
@@ -26,7 +26,7 @@ export default function SavedProjects({ user }) {
           className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-xs font-medium text-white transition-all flex items-center gap-2 cursor-pointer self-start md:self-auto"
         >
           <Cpu size={14} />
-          <span>استكشاف المشاريع</span>
+          <span>Explore Projects</span>
         </button>
       </div>
 
@@ -34,15 +34,15 @@ export default function SavedProjects({ user }) {
       {savedList.length === 0 ? (
         <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-12 text-center space-y-3">
           <Bookmark size={40} className="text-zinc-600 mx-auto" />
-          <h3 className="text-sm font-bold text-white">لم تقم بحفظ أي مشاريع بعد</h3>
+          <h3 className="text-sm font-bold text-white">No saved projects yet</h3>
           <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-            يمكنك حفظ أي مشروع من صفحة استكشاف المشاريع لتظهر هنا وتتمكن من الرجوع إليها سريعاً.
+            Bookmark any project from the Explore Projects page to keep it here for quick access.
           </p>
           <button
             onClick={() => navigate('/hub/explore')}
             className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-medium text-xs transition-all cursor-pointer"
           >
-            تصفح المستودع الآن
+            Browse Repository Now
           </button>
         </div>
       ) : (

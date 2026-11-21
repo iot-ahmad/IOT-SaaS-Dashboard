@@ -16,8 +16,8 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
   if (!isOpen || !template) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn" dir="rtl">
-      <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn" dir="ltr">
+      <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-left">
         {/* Header */}
         <div className="p-5 border-b border-border flex items-center justify-between bg-muted/20">
           <div>
@@ -27,7 +27,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
               </span>
               <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
                 <Copy size={11} className="text-sky-400" />
-                استُخدم {template.timesUsedAsTemplate} مرة كنموذج
+                Used {template.timesUsedAsTemplate} times as template
               </span>
             </div>
             <h3 className="text-base font-extrabold text-foreground mt-1">{template.title}</h3>
@@ -44,7 +44,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
               className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer shadow-lg shadow-primary/20"
             >
               <Copy size={13} />
-              استخدم هيكل هذا المشروع كنموذج
+              Use This Project Structure as Template
             </button>
             <button
               type="button"
@@ -65,7 +65,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
               activeTab === 'doc' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'
             }`}
           >
-            التوثيق والكود
+            Documentation & Code
           </button>
           <button
             type="button"
@@ -74,7 +74,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
               activeTab === 'wiring' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'
             }`}
           >
-            مخطط التوصيل ({template.connections?.length || 0} أسلاك)
+            Wiring Diagram ({template.connections?.length || 0} wires)
           </button>
           <button
             type="button"
@@ -83,7 +83,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
               activeTab === 'parts' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'
             }`}
           >
-            القطع المستخدمة ({template.components?.length || 0})
+            Hardware Parts ({template.components?.length || 0})
           </button>
         </div>
 
@@ -91,7 +91,7 @@ export function ProjectDetailPreviewModal({ template, isOpen, onClose, onApplyTe
         <div className="flex-1 overflow-y-auto p-6 scrollbar-thin space-y-4">
           {activeTab === 'doc' && (
             <div className="space-y-4">
-              <MarkdownPreview text={`${template.overviewTemplate}\n\n## 💻 كود التشغيل\n\`\`\`cpp\n${template.codeTemplate}\n\`\`\``} />
+              <MarkdownPreview text={`${template.overviewTemplate}\n\n## Firmware Code\n\`\`\`cpp\n${template.codeTemplate}\n\`\`\``} />
             </div>
           )}
 
@@ -144,17 +144,17 @@ export default function FeaturedTemplatesModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" dir="rtl">
-        <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" dir="ltr">
+        <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden text-left">
           {/* Header */}
           <div className="p-5 border-b border-border flex items-center justify-between">
             <div>
               <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                 <Flame size={18} className="text-amber-400" />
-                المشاريع المميزة والقوالب الجاهزة (Featured Templates)
+                Featured Projects & Starter Templates
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                ابدأ مشروعك من هيكل معد مسبقاً يوفر عليك الوقت في إعداد التوصيلات والكود
+                Start your project from a pre-configured architecture to save time on wiring and firmware setup
               </p>
             </div>
             <button
@@ -176,12 +176,12 @@ export default function FeaturedTemplatesModal({
                 >
                   <div className="relative h-36 w-full bg-zinc-950 overflow-hidden">
                     <img src={template.coverImage} alt={template.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded-md text-[10px] font-bold text-emerald-400">
+                    <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded-md text-[10px] font-bold text-emerald-400">
                       {template.difficulty}
                     </div>
-                    <div className="absolute top-2.5 left-2.5 bg-sky-500/20 backdrop-blur-md border border-sky-500/30 text-sky-300 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
+                    <div className="absolute top-2.5 right-2.5 bg-sky-500/20 backdrop-blur-md border border-sky-500/30 text-sky-300 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
                       <Copy size={10} />
-                      استُخدم {template.timesUsedAsTemplate} مرة
+                      Used {template.timesUsedAsTemplate} times
                     </div>
                   </div>
 
@@ -202,7 +202,7 @@ export default function FeaturedTemplatesModal({
                         className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-border hover:bg-white/5 transition-colors cursor-pointer"
                       >
                         <Eye size={12} />
-                        معاينة كاملة
+                        Full Preview
                       </button>
 
                       <button
@@ -215,7 +215,7 @@ export default function FeaturedTemplatesModal({
                         className="text-[11px] font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-primary/20"
                       >
                         <Copy size={12} />
-                        استخدم كنموذج
+                        Use Template
                       </button>
                     </div>
                   </div>

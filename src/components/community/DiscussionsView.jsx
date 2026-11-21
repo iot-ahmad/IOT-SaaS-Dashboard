@@ -9,13 +9,28 @@ import {
 import AskQuestionModal from './AskQuestionModal';
 
 const TOPICS = [
-  { id: 'all', label: 'كافة المواضيع' },
-  { id: 'power', label: 'إدارة الطاقة والبطاريات' },
-  { id: 'sensors', label: 'الحساسات والمشغلات' },
-  { id: 'cloud', label: 'السحابة وMQTT' },
-  { id: 'robotics', label: 'الروبوتات والمحركات' },
-  { id: 'firmware', label: 'البرمجيات الثابتة وRTOS' },
+  { id: 'all', label: 'All Topics' },
+  { id: 'power', label: 'Power & Battery Management' },
+  { id: 'sensors', label: 'Sensors & Actuators' },
+  { id: 'cloud', label: 'Cloud & MQTT' },
+  { id: 'robotics', label: 'Robotics & Motors' },
+  { id: 'firmware', label: 'Firmware & RTOS' },
 ];
+
+const formatCategory = (cat) => {
+  const map = {
+    'عام': 'General',
+    'إدارة الطاقة والبطاريات': 'Power & Battery Management',
+    'حساسات ومشغلات': 'Sensors & Actuators',
+    'الحساسات والمشغلات': 'Sensors & Actuators',
+    'السحابة وMQTT': 'Cloud & MQTT',
+    'روبوتات ومحركات': 'Robotics & Motors',
+    'الروبوتات والمحركات': 'Robotics & Motors',
+    'برمجيات ثابتة وRTOS': 'Firmware & RTOS',
+    'البرمجيات الثابتة وRTOS': 'Firmware & RTOS',
+  };
+  return map[cat] || cat || 'General';
+};
 
 export default function DiscussionsView({ user }) {
   const navigate = useNavigate();
@@ -66,7 +81,7 @@ export default function DiscussionsView({ user }) {
 
   const filteredQuestions = questions.filter(q => {
     if (searchQuery.trim()) {
-      const text = `${q.title} ${q.content} ${(q.tags || []).join(' ')}`.toLowerCase();
+      const text = `${q.title} ${q.content} ${formatCategory(q.category)} ${(q.tags || []).join(' ')}`.toLowerCase();
       if (!text.includes(searchQuery.toLowerCase())) return false;
     }
     if (activeTab === 'unanswered' && q.isAnswered) return false;
@@ -84,10 +99,10 @@ export default function DiscussionsView({ user }) {
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2.5">
             <HelpCircle size={20} className="text-zinc-400" />
-            <span>النقاشات والأسئلة التقنية</span>
+            <span>Technical Discussions & Q&A</span>
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            اطرح استفساراتك حول الدوائر الإلكترونية والبرمجة مع مجتمع المهندسين
+            Ask questions about electronic circuits, sensors, and firmware with the engineering community
           </p>
         </div>
 
@@ -96,7 +111,7 @@ export default function DiscussionsView({ user }) {
           className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold text-xs transition-all flex items-center gap-2 cursor-pointer self-start md:self-auto"
         >
           <Plus size={14} />
-          <span>اطرح سؤالاً جديداً</span>
+          <span>Ask a Question</span>
         </button>
       </div>
 
@@ -106,12 +121,12 @@ export default function DiscussionsView({ user }) {
           <div className="relative flex-1 w-full">
             <input
               type="text"
-              placeholder="ابحث في الأسئلة والحلول التقنية..."
+              placeholder="Search technical questions and solutions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2.5 px-3 pr-10 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
+              className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2.5 pl-10 pr-3 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
             />
-            <Search size={15} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
@@ -121,7 +136,7 @@ export default function DiscussionsView({ user }) {
                 activeTab === 'newest' ? 'bg-white/[0.12] text-white' : 'bg-[#1e2024] text-zinc-400 hover:text-white'
               }`}
             >
-              الأحدث
+              Newest
             </button>
             <button
               onClick={() => setActiveTab('popular')}
@@ -129,7 +144,7 @@ export default function DiscussionsView({ user }) {
                 activeTab === 'popular' ? 'bg-white/[0.12] text-white' : 'bg-[#1e2024] text-zinc-400 hover:text-white'
               }`}
             >
-              الأكثر تفاعلاً
+              Most Popular
             </button>
             <button
               onClick={() => setActiveTab('unanswered')}
@@ -137,7 +152,7 @@ export default function DiscussionsView({ user }) {
                 activeTab === 'unanswered' ? 'bg-white/[0.12] text-white' : 'bg-[#1e2024] text-zinc-400 hover:text-white'
               }`}
             >
-              بانتظار إجابة
+              Unanswered
             </button>
           </div>
         </div>
@@ -156,13 +171,13 @@ export default function DiscussionsView({ user }) {
           ) : filteredQuestions.length === 0 ? (
             <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-10 text-center space-y-3">
               <HelpCircle size={36} className="text-zinc-600 mx-auto" />
-              <h3 className="text-sm font-bold text-white">لا توجد أسئلة حالياً</h3>
-              <p className="text-xs text-zinc-400">كن أول من يطرح استفساراً في المجتمع!</p>
+              <h3 className="text-sm font-bold text-white">No questions found</h3>
+              <p className="text-xs text-zinc-400">Be the first to ask a technical question in the community!</p>
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-medium text-xs"
               >
-                + طرح سؤال
+                + Ask Question
               </button>
             </div>
           ) : (
@@ -187,11 +202,11 @@ export default function DiscussionsView({ user }) {
                   <div className="flex-1 space-y-1.5 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-400">
-                        {q.category || 'عام'}
+                        {formatCategory(q.category)}
                       </span>
                       {q.isAnswered && (
                         <span className="text-[10px] font-medium text-emerald-400 flex items-center gap-1">
-                          <CheckCircle2 size={11} /> تم الحل
+                          <CheckCircle2 size={11} /> Solved
                         </span>
                       )}
                     </div>
@@ -217,10 +232,10 @@ export default function DiscussionsView({ user }) {
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-[10px] text-zinc-500">
-                  <span>{q.authorName || 'مستخدم'} · {q.createdAt}</span>
+                  <span>{q.authorName || 'User'} · {q.createdAt}</span>
                   <div className="flex items-center gap-1 font-mono">
                     <MessageSquare size={12} />
-                    <span>{q.answersCount || 0} إجابات</span>
+                    <span>{q.answersCount || 0} Answers</span>
                   </div>
                 </div>
               </div>
@@ -232,14 +247,14 @@ export default function DiscussionsView({ user }) {
         <div className="space-y-4">
           <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-4 space-y-2.5">
             <h3 className="text-xs font-bold text-white border-b border-white/[0.06] pb-2">
-              الموضوعات التقنية
+              Technical Topics
             </h3>
             <div className="space-y-1">
               {TOPICS.map((topic) => (
                 <button
                   key={topic.id}
                   onClick={() => setSearchQuery(topic.id === 'all' ? '' : topic.label)}
-                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition-all text-right cursor-pointer"
+                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition-all text-left cursor-pointer"
                 >
                   <span>{topic.label}</span>
                 </button>

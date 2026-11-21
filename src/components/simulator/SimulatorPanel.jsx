@@ -33,13 +33,13 @@ export default function SimulatorPanel({
               <Play size={10} className="text-blue-400 fill-blue-400 ms-0.5" />
             </span>
             <p className="text-blue-200 font-medium text-xs truncate">
-              اضغط Play داخل المحاكي لتشغيل الحساسات وبث القراءات فورياً
+              Click Play inside the simulator to start sensors and stream live telemetry
             </p>
           </div>
           <button
             type="button"
             onClick={onDismissPlayHint}
-            aria-label="إغلاق التنبيه"
+            aria-label="Dismiss hint"
             className="text-blue-400 hover:text-blue-200 p-0.5 shrink-0 cursor-pointer"
           >
             <X size={13} />
@@ -52,7 +52,7 @@ export default function SimulatorPanel({
         <div className="flex items-center gap-2 truncate">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
           <span className="font-bold text-foreground truncate">
-            {isCustomProject ? 'محاكي Wokwi' : activeProject.title.split('(')[0]}
+            {isCustomProject ? 'Wokwi Simulator' : activeProject.title.split('(')[0].trim()}
           </span>
           {!isCustomProject && (
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-white/10 shrink-0 hidden sm:inline">
@@ -66,10 +66,10 @@ export default function SimulatorPanel({
           type="button"
           onClick={onCopyCode}
           className="flex items-center gap-1.5 text-xs bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 px-3 py-1 rounded-lg font-bold transition-all cursor-pointer shadow-sm shrink-0"
-          title="نسخ الكود المحدث المشفر جاهز للصق في المحاكي"
+          title="Copy updated TLS-secured sketch code ready to paste into the simulator"
         >
           {copiedCode ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-          <span>{copiedCode ? 'تم النسخ!' : 'نسخ الكود المحدّث'}</span>
+          <span>{copiedCode ? 'Copied!' : 'Copy Updated Code'}</span>
         </button>
       </div>
 

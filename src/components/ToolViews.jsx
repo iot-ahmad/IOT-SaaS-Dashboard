@@ -160,74 +160,74 @@ export const DevicesView = ({ userUID, lastSeen }) => {
 const getMockCosmosResponse = (device, scenario) => {
   const sc = scenario.toLowerCase();
   if (sc.includes('مضخة') || sc.includes('pump') || sc.includes('موتور') || sc.includes('motor')) {
-    return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+    return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
 
-**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
-*   **الحالة:** تم رصد انخفاض تيار التشغيل الكهربائي للمضخة بشكل فجائي مع بقاء إشارة GPIO نشطة.
-*   **التشخيص الفيزيائي:** انسداد ميكانيكي (Mechanical Blockage) في مروحة السحب الخاصة بالمضخة، أو تشغيل جاف (Dry Running) للمضخة بسبب نفاد منسوب المياه في الخزان الرئيسي، مما قد يتسبب في تلف الملفات الداخلية للحرارة الزائدة.
+**1. Physical Fault Isolation:**
+*   **Condition:** Sudden drop in pump operating current detected while the GPIO control signal remains active.
+*   **Physical Diagnosis:** Mechanical blockage in the pump intake impeller, or dry running caused by depleted water levels in the main tank, which can overheat and damage internal windings.
 
-**2. الأتمتة والسيناريو الهندسي المقترح (Smart Rules):**
-*   **قاعدة الحماية التلقائية:**
-    \`إذا كان مستوى المياه في الخزان < 10% ← إيقاف مضخة المياه فوراً وإرسال تنبيه حرج\`
-*   **كود الحماية في الـ ESP32:**
+**2. Recommended Engineering Automation (Smart Rules):**
+*   **Automatic Protection Rule:**
+    \`If Tank Water Level < 10% → Immediately stop Water Pump and trigger critical alert\`
+*   **ESP32 Hardware Protection Firmware:**
 \`\`\`cpp
-// حماية مدمجة بالعتاد لمنع التشغيل الجاف
+// Hardware-level dry-run protection
 if (waterLevelPercent < 10.0) {
-  digitalWrite(PUMP_PIN, LOW); // إيقاف المضخة فوراً
+  digitalWrite(PUMP_PIN, LOW); // Shut off pump immediately
   client.publish("users/YOUR_UID/alerts", "CRITICAL: Dry run protection triggered!");
 }
 \`\`\``;
   }
   
-  if (sc.includes('بطارية') || sc.includes('battery') || sc.includes('شحن') || sc.includes('شاحن')) {
-    return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+  if (sc.includes('بطارية') || sc.includes('battery') || sc.includes('شحن') || sc.includes('شاحن') || sc.includes('power') || sc.includes('sleep')) {
+    return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
 
-**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
-*   **الحالة:** هبوط جهد البطارية (Battery Voltage) إلى 2.8V، وهو ما يقل عن الحد التشغيلي الآمن لمنظم الجهد (LDO Regulator) الخاص بـ ESP32.
-*   **التشخيص الفيزيائي:** دورة استيقاظ مكثفة للحساس مع استهلاك مستمر للتيار بمعدل ~80mA. عدم تفعيل بروتوكول النوم العميق (Deep Sleep) مما يتسبب في تفريغ سريع لخلية الليثيوم (LiPo).
+**1. Physical Fault Isolation:**
+*   **Condition:** Battery voltage dropped to 2.8V, below the safe operating threshold for the ESP32 LDO voltage regulator.
+*   **Physical Diagnosis:** High-frequency sensor wake cycles drawing ~80mA continuously without Deep Sleep enabled, causing rapid LiPo cell discharge.
 
-**2. الإجراء الهندسي والحل المقترح:**
-*   **الأتمتة المقترحة:** تقليل وتيرة الإرسال وتخفيض الإضاءة الخلفية للشاشة إن وجدت، وإرسال تنبيه صيانة عند انخفاض الشحن عن 15%.
-*   **تفعيل النوم العميق (Deep Sleep C++):**
+**2. Recommended Engineering Action & Resolution:**
+*   **Recommended Automation:** Reduce telemetry publishing frequency, dim any local display backlight, and send a maintenance alert when battery charge drops below 15%.
+*   **Enable ESP32 Deep Sleep (C++):**
 \`\`\`cpp
-// إدخال الـ ESP32 في نوم عميق لمدة 15 دقيقة بعد كل قراءة لتوفير الطاقة
+// Put ESP32 into deep sleep for 15 minutes after each reading to conserve power
 esp_sleep_enable_timer_wakeup(15 * 60 * 1000000ULL);
 esp_deep_sleep_start();
 \`\`\``;
   }
 
   if (sc.includes('مطر') || sc.includes('rain') || sc.includes('ري') || sc.includes('سقي') || sc.includes('irrigation')) {
-    return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+    return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
 
-**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
-*   **الحالة:** تضارب في سيناريو الأتمتة (Automation Logic Conflict): حساس الرطوبة يسجل مستوى منخفض (< 20%) ويطلب تشغيل الري، بينما مستشعر المطر يرصد هطول أمطار غزيرة.
-*   **التشخيص الفيزيائي:** هطول مطري مباشر يغمر الحساسات الخارجية، ولكن التربة لم تمتص المياه بالكامل بعد. تشغيل الري سيؤدي لغرق الجذور وضياع المياه.
+**1. Physical Fault Isolation:**
+*   **Condition:** Automation Logic Conflict detected: soil moisture sensor reads low (< 20%) and requests irrigation while the rain sensor detects active rainfall.
+*   **Physical Diagnosis:** Direct rainfall is saturating surface sensors before water percolates to root depth. Activating irrigation now would over-saturate roots and waste water.
 
-**2. الأتمتة الذكية المقترحة (Logical Resolution):**
-*   **قاعدة الأتمتة الهجينة:**
-    \`إذا كانت رطوبة التربة < 20% و المطر = 0 (لا يوجد مطر) ← تشغيل الري. وإلا، يمنع الري تماماً ويتم تأجيل العملية\`
-*   **كود الأتمتة الذكي:**
+**2. Recommended Smart Automation (Logical Resolution):**
+*   **Hybrid Automation Rule:**
+    \`If Soil Moisture < 20% AND Rain Sensor = 0 (No Rain) → Start Irrigation. Otherwise, inhibit and defer irrigation.\`
+*   **Smart Automation Firmware:**
 \`\`\`cpp
-bool isRaining = digitalRead(RAIN_SENSOR_PIN) == LOW; // LOW يعني وجود مطر
+bool isRaining = digitalRead(RAIN_SENSOR_PIN) == LOW; // LOW indicates rain detected
 int moisture = analogRead(SOIL_PIN);
 int moisturePercent = map(moisture, 4095, 1200, 0, 100);
 
 if (moisturePercent < 20 && !isRaining) {
-  digitalWrite(IRRIGATION_PIN, HIGH); // تشغيل الري الآمن
+  digitalWrite(IRRIGATION_PIN, HIGH); // Safe irrigation start
 } else {
-  digitalWrite(IRRIGATION_PIN, LOW);  // إيقاف أو تأجيل الري
+  digitalWrite(IRRIGATION_PIN, LOW);  // Inhibit or defer irrigation
 }
 \`\`\``;
   }
 
-  return `🤖 **تقرير تشخيص العتاد الفيزيائي (Cosmos3 - Physical AI)**
+  return `**Physical Hardware Diagnostic Report (Cosmos3 - Physical AI)**
 
-**1. التحليل الفيزيائي للأعطال (Fault Isolation):**
-*   تم استقبال استعلامك بخصوص جهاز **[${device}]** وتحليله عبر محرك Cosmos3.
-*   **التشخيص:** يقترح النموذج مراجعة توصيل الطاقة واستقرار قراءات الحساسات عبر بروتوكول I2C/SPI، مع التأكد من عدم وجود تداخل مغناطيسي أو حراري يؤثر على دقة القراءات.
+**1. Physical Fault Isolation:**
+*   Your diagnostic query for **[${device}]** has been analyzed by the Cosmos3 engine.
+*   **Diagnosis:** The model recommends verifying power rail stability and I2C/SPI bus pull-up resistors, and checking for electromagnetic or thermal interference affecting sensor accuracy.
 
-**2. مقترحات الأتمتة:**
-*   إنشاء قواعد أتمتة احتياطية (Fail-safe rules) لمنع حدوث كوارث فيزيائية في حال فقدان الاتصال بالإنترنت (Offline Mode).`;
+**2. Automation Recommendations:**
+*   Configure local fail-safe rules on the microcontroller to prevent physical hardware damage if cloud connectivity is temporarily lost (Offline Mode).`;
 };
 
 export const CosmosPhysicalDiagnostics = ({ userUID }) => {
@@ -248,7 +248,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       setResponse(res);
     } catch (err) {
       console.error(err);
-      setResponse('حدث خطأ أثناء إجراء التشخيص الفيزيائي.');
+      setResponse('An error occurred while running the physical hardware diagnostic.');
     } finally {
       setLoading(false);
     }
@@ -276,16 +276,16 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
           messages: [
             {
               role: "system",
-              content: `أنت نموذج Cosmos3 الذكاء الفيزيائي (Physical AI) ومحرك التحليل الهندسي لمشاريع إنترنت الأشياء والعتاد (Hardware Diagnostics).
-مهمتك:
-1. تحليل سلوك العتاد والمشاكل الفيزيائية (مثل انخفاض بطارية الحساس، توقف المضخة، تداخل أو تضارب القواعد، أعطال الدوائر الكهربائية).
-2. تقديم تشخيص هندسي دقيق قائم على التفكير الفيزيائي المنطقي (Reasoning).
-3. اقتراح حلول عملية، سيناريوهات أتمتة ذكية، وقواعد أتمتة لحل المشكلة.
-أجب باللغة العربية بأسلوب احترافي وهندسي مذهل وجذاب.`
+              content: `You are Cosmos3 Physical AI, an engineering diagnostic engine for IoT hardware and embedded systems.
+Your responsibilities:
+1. Analyze physical hardware behavior and faults (e.g., sensor battery drain, pump stall, automation rule conflicts, circuit faults).
+2. Provide accurate engineering diagnostics grounded in physical reasoning.
+3. Suggest practical fixes, smart automation scenarios, and fail-safe firmware rules.
+Respond in clear, professional English with a structured engineering format.`
             },
             {
               role: "user",
-              content: `الجهاز المستهدف: ${dev}\nالمشكلة أو السيناريو الفيزيائي المطلوب تحليله: ${sc}`
+              content: `Target Device: ${dev}\nPhysical issue or scenario to analyze: ${sc}`
             }
           ],
           temperature: 0.2,
@@ -301,7 +301,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       return data.choices[0].message.content;
     } catch (error) {
       console.error("NVIDIA/Cosmos3 API error:", error);
-      return `⚠️ **فشل الاتصال بمحرك Cosmos3**\n\n*السبب:* قد يكون مفتاح API غير صحيح أو انتهت صلاحيته. تم تفعيل المحاكي الفيزيائي الاحتياطي:\n\n${getMockCosmosResponse(dev, sc)}`;
+      return `**Cosmos3 Engine Connection Warning**\n\n*Cause:* API key may be invalid or expired. Falling back to the built-in physical diagnostic simulator:\n\n${getMockCosmosResponse(dev, sc)}`;
     }
   };
 
@@ -359,7 +359,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       if (/^\*(?!\*)/.test(line.trim())) {
         html = html.trim().substring(1).trim();
         return (
-          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/70 text-right rtl-text">
+          <div key={idx} className="flex gap-2 items-start text-xs mt-1 text-foreground/70 text-left">
             <span className="text-primary mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
             <span dangerouslySetInnerHTML={{ __html: html }} />
           </div>
@@ -369,12 +369,12 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
       if (line.trim().startsWith('>')) {
         html = html.trim().substring(1).trim();
         return (
-          <blockquote key={idx} className="border-r-2 border-primary/50 pr-3 pl-0 my-2 text-xs text-muted-foreground italic bg-background dark:bg-card/[0.01] py-1 text-right rtl-text rounded-l-md" dangerouslySetInnerHTML={{ __html: html }} />
+          <blockquote key={idx} className="border-l-2 border-primary/50 pl-3 pr-0 my-2 text-xs text-muted-foreground italic bg-background dark:bg-card/[0.01] py-1 text-left rounded-r-md" dangerouslySetInnerHTML={{ __html: html }} />
         );
       }
 
       return (
-        <p key={idx} className="text-xs text-foreground/70 leading-relaxed mt-0.5 text-right rtl-text" dangerouslySetInnerHTML={{ __html: html }} />
+        <p key={idx} className="text-xs text-foreground/70 leading-relaxed mt-0.5 text-left" dangerouslySetInnerHTML={{ __html: html }} />
       );
     });
   };
@@ -389,14 +389,14 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
         </div>
         <div className="text-left font-sans">
           <h3 className="font-extrabold text-foreground text-sm">Cosmos3 Physical AI Diagnostics</h3>
-          <p className="text-[10px] text-muted-foreground dark:text-white/30 font-medium">محرك التحليل والذكاء الفيزيائي للعتاد والأتمتة الهندسية</p>
+          <p className="text-[10px] text-muted-foreground dark:text-white/30 font-medium">Physical AI analysis engine for hardware diagnostics and engineering automation</p>
         </div>
       </div>
 
       <form onSubmit={handleDiagnose} className="space-y-4 font-sans">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="sm:col-span-1 text-left">
-            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">الجهاز أو الحساس المستهدف</label>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">Target Device or Sensor</label>
             <select
               value={device}
               onChange={(e) => setDevice(e.target.value)}
@@ -413,13 +413,13 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
             </select>
           </div>
           <div className="sm:col-span-2 text-left">
-            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">المشكلة الفيزيائية أو سيناريو الأتمتة المعقد</label>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">Physical Issue or Complex Automation Scenario</label>
             <div className="flex gap-2">
               <input
                 required
                 value={scenario}
                 onChange={(e) => setScenario(e.target.value)}
-                placeholder="مثال: توقف مضخة المياه فجأة، أو تضارب الري التلقائي عند نزول المطر..."
+                placeholder="e.g., Water pump stopped suddenly, or auto-irrigation conflicts with detected rain..."
                 className="flex-1 bg-muted bg-background/50 border border-border rounded-xl py-2.5 px-4 text-xs focus:outline-none focus:border-primary/50 text-foreground"
               />
               <button
@@ -428,7 +428,7 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
                 className="bg-primary text-primary-foreground px-5 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors text-xs disabled:opacity-50"
               >
                 {loading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />}
-                {loading ? 'تحليل...' : 'تشخيص'}
+                {loading ? 'Analyzing...' : 'Diagnose'}
               </button>
             </div>
           </div>
@@ -436,17 +436,17 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
 
         {/* Presets badges */}
         <div className="flex flex-wrap gap-2 pt-1.5">
-          <span className="text-[10px] text-muted-foreground/60 self-center">أمثلة سريعة:</span>
+          <span className="text-[10px] text-muted-foreground/60 self-center">Quick Examples:</span>
           {[
-            { label: 'توقف مضخة المياه فجأة', sc: 'المضخة متوقفة ولا تسحب مياه رغم وجود أمر تشغيل والرطوبة منخفضة جداً' },
-            { label: 'انخفاض بطارية ESP32 وحلول التوفير', sc: 'البطارية انخفضت لـ 2.8 فولت ونريد كود sleep موفر للطاقة' },
-            { label: 'تضارب أتمتة الري مع المطر المكتشف', sc: 'رطوبة التربة منخفضة وتطلب ري ولكن حساس المطر يرصد هطول أمطار' }
+            { label: 'Sudden water pump failure', sc: 'Water pump stopped drawing water despite active ON command and critically low soil moisture' },
+            { label: 'ESP32 battery drain & sleep optimization', sc: 'Battery voltage dropped to 2.8V; need deep sleep power-saving firmware' },
+            { label: 'Irrigation conflict with rain sensor', sc: 'Soil moisture is low requesting irrigation, but the rain sensor detects active rainfall' }
           ].map((preset, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => setScenario(preset.sc)}
-              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border bg-muted text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all text-right shrink-0"
+              className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border bg-muted text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all text-left shrink-0"
             >
               {preset.label}
             </button>
@@ -466,10 +466,10 @@ export const CosmosPhysicalDiagnostics = ({ userUID }) => {
             {loading ? (
               <div className="py-8 flex flex-col items-center justify-center gap-3">
                 <RefreshCw size={24} className="text-primary animate-spin" />
-                <p className="text-xs text-muted-foreground dark:text-white/30 animate-pulse">يقوم Cosmos3 بتحليل الخواص الفيزيائية للعتاد واستخلاص السلوك الهندسي...</p>
+                <p className="text-xs text-muted-foreground dark:text-white/30 animate-pulse">Cosmos3 is analyzing physical hardware parameters and deriving engineering behavior...</p>
               </div>
             ) : (
-              <div dir="rtl" className="space-y-2 text-slate-200 font-sans leading-relaxed text-right rtl-text">
+              <div dir="ltr" className="space-y-2 text-slate-200 font-sans leading-relaxed text-left">
                 {renderDiagnosticContent(response)}
               </div>
             )}

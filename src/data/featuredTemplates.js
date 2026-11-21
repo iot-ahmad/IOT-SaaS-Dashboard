@@ -6,14 +6,14 @@
 export const FEATURED_TEMPLATES = [
   {
     id: 'template-weather-station',
-    title: 'محطة طقس ذكية متكاملة (IoT Smart Weather Station)',
-    summary: 'نظام مراقبة مناخية ذكي يقرأ درجات الحرارة والرطوبة ويرسل البيانات فوراً عبر WiFi إلى لوحة التحكم مع تنبيهات عند الارتفاع.',
-    difficulty: 'مبتدئ',
+    title: 'IoT Smart Weather Station',
+    summary: 'An intelligent climate monitoring node that reads ambient temperature and humidity, displays live telemetry on an OLED screen, and publishes real-time MQTT alerts over Wi-Fi.',
+    difficulty: 'Beginner',
     difficultyColor: '#22C55E',
     is_featured: true,
     timesUsedAsTemplate: 34,
     rating: 4.9,
-    author: 'أحمد النجار',
+    author: 'Ahmed Al-Najjar',
     authorRole: 'IoT Hardware Architect',
     coverImage: 'https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800&auto=format&fit=crop&q=80',
     tags: ['ESP32', 'DHT22', 'OLED', 'Weather', 'WiFi', 'MQTT'],
@@ -22,62 +22,62 @@ export const FEATURED_TEMPLATES = [
         id: 'comp-1',
         name: 'ESP32 NodeMCU DevKit V1',
         category: 'MCU',
-        function: 'معالجة قراءات الحساسات والاتصال بشبكة WiFi وإرسال حزم MQTT',
+        function: 'Processes sensor telemetry, manages Wi-Fi connectivity, and publishes MQTT payloads',
         imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-2',
         name: 'DHT22 / AM2302',
         category: 'SENSOR',
-        function: 'قياس درجات الحرارة بدقة ±0.5°C ونسبة الرطوبة الجوية',
+        function: 'Measures ambient temperature (±0.5°C accuracy) and relative humidity',
         imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-3',
-        name: 'شاشة OLED 0.96 بوصة SSD1306',
+        name: '0.96" OLED Display SSD1306',
         category: 'DISPLAY',
-        function: 'عرض درجة الحرارة وحالة الطقس وقوة إشارة WiFi محلياً',
+        function: 'Renders temperature, humidity, and Wi-Fi signal strength locally',
         imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-4',
-        name: 'بطارية ليثيوم 18650 مع شاحن TP4056',
+        name: '18650 Li-Ion Battery Pack with TP4056',
         category: 'POWER',
-        function: 'تغذية المحطة بطاقة مستقلة للاستخدام في الأماكن الخارجية',
+        function: 'Provides autonomous off-grid power for outdoor deployment',
         imageUrl: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=500&auto=format&fit=crop&q=80'
       }
     ],
     connections: [
-      { id: 'w1', fromComp: 'DHT22 / AM2302', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '3.3V', color: '#EF4444', note: 'تغذية الحساس' },
-      { id: 'w2', fromComp: 'DHT22 / AM2302', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'الأرضي المشترك' },
-      { id: 'w3', fromComp: 'DHT22 / AM2302', fromPin: 'DATA', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO25', color: '#F59E0B', note: 'إشارة القراءة الرقمية' },
-      { id: 'w4', fromComp: 'شاشة OLED 0.96 بوصة SSD1306', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '3.3V', color: '#EF4444', note: 'تغذية الشاشة' },
-      { id: 'w5', fromComp: 'شاشة OLED 0.96 بوصة SSD1306', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'أرضي الشاشة' },
-      { id: 'w6', fromComp: 'شاشة OLED 0.96 بوصة SSD1306', fromPin: 'SDA', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO21', color: '#38BDF8', note: 'I2C Data Bus' },
-      { id: 'w7', fromComp: 'شاشة OLED 0.96 بوصة SSD1306', fromPin: 'SCL', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO22', color: '#22C55E', note: 'I2C Clock Bus' }
+      { id: 'w1', fromComp: 'DHT22 / AM2302', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '3.3V', color: '#EF4444', note: 'Sensor Power' },
+      { id: 'w2', fromComp: 'DHT22 / AM2302', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'Common Ground' },
+      { id: 'w3', fromComp: 'DHT22 / AM2302', fromPin: 'DATA', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO25', color: '#F59E0B', note: '1-Wire Digital Signal' },
+      { id: 'w4', fromComp: '0.96" OLED Display SSD1306', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '3.3V', color: '#EF4444', note: 'Display Power' },
+      { id: 'w5', fromComp: '0.96" OLED Display SSD1306', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'Display Ground' },
+      { id: 'w6', fromComp: '0.96" OLED Display SSD1306', fromPin: 'SDA', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO21', color: '#38BDF8', note: 'I2C Data Bus' },
+      { id: 'w7', fromComp: '0.96" OLED Display SSD1306', fromPin: 'SCL', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO22', color: '#22C55E', note: 'I2C Clock Bus' }
     ],
     wiringImageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1000&auto=format&fit=crop&q=80',
-    wiringDescription: `### 🔌 جدول التوصيل الكهربائي (ESP32 NodeMCU):
-1. شاشة OLED 0.96 (I2C):
-   - VCC ──► 3.3V في ESP32
-   - GND ──► GND في ESP32
+    wiringDescription: `### Electrical Wiring Table (ESP32 NodeMCU):
+1. 0.96" OLED Display (I2C):
+   - VCC ──► ESP32 3.3V
+   - GND ──► ESP32 GND
    - SDA ──► GPIO 21
    - SCL ──► GPIO 22
 
-2. حساس الحرارة والرطوبة DHT22:
-   - VCC ──► 3.3V في ESP32
-   - GND ──► GND المشترك
-   - DATA ──► GPIO 25 (مع مقاومة رفع Pull-up 4.7kΩ)
+2. DHT22 Temperature & Humidity Sensor:
+   - VCC ──► ESP32 3.3V
+   - GND ──► Common GND
+   - DATA ──► GPIO 25 (with 4.7kΩ pull-up resistor)
 
-3. التغذية والطاقة:
-   - مخرج بطارية 18650 عبر TP4056 ──► منفذ VIN و GND في لوحة ESP32.`,
-    overviewTemplate: `يهدف هذا المشروع إلى بناء محطة طقس ذكية مدمجة ومنخفضة التكلفة لمراقبة المناخ والحرارة بدقة عالية.
+3. Power Supply:
+   - 18650 Battery output via TP4056 module ──► ESP32 VIN & GND pins.`,
+    overviewTemplate: `This project builds a compact, low-power smart weather station for high-precision environmental monitoring.
 
-### 🌟 المميزات الرئيسية:
-- قراءة فورية للحرارة والرطوبة كل ثانيتين.
-- إرسال البيانات إلى السحابة عبر بروتوكول MQTT المشفر.
-- عرض فوري على شاشة OLED مدمجة.
-- وضع السكون العميق (Deep Sleep) لتوفير البطارية.`,
+### Key Features:
+- Real-time temperature and humidity sampling every 2 seconds.
+- Encrypted telemetry streaming to the cloud via MQTT.
+- Local status readout on an integrated I2C OLED display.
+- Deep Sleep power-saving mode for extended battery life.`,
     codeTemplate: `#include <WiFi.h>
 #include <PubSubClient.h>
 #include <DHT.h>
@@ -111,80 +111,80 @@ void loop() {
 
   {
     id: 'template-smart-farm',
-    title: 'نظام ري المزرعة الذكية (Automated Smart Farm)',
-    summary: 'أتمتة عملية الري اعتماداً على حساسات رطوبة التربة السعوية ومضخة مياه 5V مع جدولة ذكية وحماية ضد الجفاف.',
-    difficulty: 'متوسط',
+    title: 'Automated Smart Farm Irrigation System',
+    summary: 'Automates plant irrigation using capacitive soil moisture probes and a 5V submersible water pump with smart scheduling and dry-run protection.',
+    difficulty: 'Intermediate',
     difficultyColor: '#F59E0B',
     is_featured: true,
     timesUsedAsTemplate: 28,
     rating: 4.8,
-    author: 'سارة المهدي',
+    author: 'Sara Al-Mahdi',
     authorRole: 'Embedded Systems Specialist',
     coverImage: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&auto=format&fit=crop&q=80',
     tags: ['ESP32', 'Soil Moisture', 'Relay', 'Water Pump', 'Automation'],
     wiringImageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1000&auto=format&fit=crop&q=80',
-    wiringDescription: `### 🔌 جدول التوصيل الكهربائي (ESP32 NodeMCU):
-1. حساس رطوبة التربة السعوي (Capacitive Soil Sensor):
-   - VCC ──► 3.3V في ESP32
-   - GND ──► GND المشترك
-   - AOUT ──► GPIO 34 (منفذ القراءة التناظرية ADC1)
+    wiringDescription: `### Electrical Wiring Table (ESP32 NodeMCU):
+1. Capacitive Soil Moisture Sensor:
+   - VCC ──► ESP32 3.3V
+   - GND ──► Common GND
+   - AOUT ──► GPIO 34 (ADC1 Analog Input)
 
-2. مرحل التحكم 5V Relay:
+2. 5V Relay Control Module:
    - VCC ──► 5V (VIN)
    - GND ──► GND
    - IN ──► GPIO 26
 
-3. مضخة المياه 5V DC:
-   - القطب الموجب للمضخة ──► نقطة NO في الريلاي
-   - نقطة COM في الريلاي ──► القطب الموجب للبطارية/المصدر الخارجي
-   - القطب السالب للمضخة ──► القطب السالب للمصدر المشترك`,
+3. 5V DC Submersible Water Pump:
+   - Pump Positive (+) ──► Relay NO (Normally Open) terminal
+   - Relay COM terminal ──► External 5V Power Supply Positive (+)
+   - Pump Negative (-) ──► Common Power Supply Ground (-)`,
     components: [
       {
         id: 'comp-1',
         name: 'ESP32 NodeMCU DevKit V1',
         category: 'MCU',
-        function: 'مراقبة مستوى رطوبة التربة والتحكم الآلي بتشغيل مضخة الري',
+        function: 'Monitors soil moisture levels and automatically triggers the irrigation pump relay',
         imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-2',
-        name: 'حساس رطوبة التربة السعوي',
+        name: 'Capacitive Soil Moisture Sensor',
         category: 'SENSOR',
-        function: 'قياس نسبة تشبع التربة بالماء عبر إشارة تناظرية دقيقة',
+        function: 'Measures soil water saturation via corrosion-free analog capacitance sensing',
         imageUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d69106093?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-3',
-        name: 'مرحل أحادي القناة 5V Relay',
+        name: '1-Channel 5V Relay Module',
         category: 'ACTUATOR',
-        function: 'تشغيل وفصل مضخة الري وعزل دائرة الجهد العالي',
+        function: 'Switches the irrigation water pump on/off while isolating the control logic circuit',
         imageUrl: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-4',
-        name: 'مضخة مياه غاطسة 5V DC',
+        name: '5V DC Submersible Water Pump',
         category: 'ACTUATOR',
-        function: 'سحب الماء من الخزان وضخه إلى شبكة التنقيط للنباتات',
+        function: 'Draws water from the reservoir and delivers it through the drip irrigation line',
         imageUrl: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=500&auto=format&fit=crop&q=80'
       }
     ],
     connections: [
-      { id: 'w1', fromComp: 'حساس رطوبة التربة السعوي', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '3.3V', color: '#EF4444', note: 'تغذية الحساس' },
-      { id: 'w2', fromComp: 'حساس رطوبة التربة السعوي', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'أرضي' },
-      { id: 'w3', fromComp: 'حساس رطوبة التربة السعوي', fromPin: 'AOUT', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO34 (ADC)', color: '#E2E8F0', note: 'قراءة تناظرية' },
-      { id: 'w4', fromComp: 'مرحل أحادي القناة 5V Relay', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '5V (VIN)', color: '#EF4444', note: 'تغذية الريليه 5V' },
-      { id: 'w5', fromComp: 'مرحل أحادي القناة 5V Relay', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'أرضي' },
-      { id: 'w6', fromComp: 'مرحل أحادي القناة 5V Relay', fromPin: 'IN', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO26', color: '#22C55E', note: 'إشارة التحكم في المضخة' }
+      { id: 'w1', fromComp: 'Capacitive Soil Moisture Sensor', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '3.3V', color: '#EF4444', note: 'Sensor Power' },
+      { id: 'w2', fromComp: 'Capacitive Soil Moisture Sensor', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'Ground' },
+      { id: 'w3', fromComp: 'Capacitive Soil Moisture Sensor', fromPin: 'AOUT', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO34 (ADC)', color: '#E2E8F0', note: 'Analog Readout' },
+      { id: 'w4', fromComp: '1-Channel 5V Relay Module', fromPin: 'VCC', toComp: 'ESP32 NodeMCU DevKit V1', toPin: '5V (VIN)', color: '#EF4444', note: '5V Relay Power' },
+      { id: 'w5', fromComp: '1-Channel 5V Relay Module', fromPin: 'GND', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GND', color: '#475569', note: 'Ground' },
+      { id: 'w6', fromComp: '1-Channel 5V Relay Module', fromPin: 'IN', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO26', color: '#22C55E', note: 'Pump Trigger Signal' }
     ],
-    overviewTemplate: `نظام ري ذاتي يضمن الحفاظ على رطوبة التربة المثالية للنباتات دون هدر للمياه.
+    overviewTemplate: `An autonomous smart irrigation system designed to maintain optimal soil moisture for crops while minimizing water waste.
 
-### 🌿 أهداف المشروع:
-- قراءة نسبة الرطوبة بشكل متواصل وتحديد عتبة الجفاف.
-- تشغيل المضخة تلقائياً لمدة محددة عند انخفاض الرطوبة عن 30%.
-- إرسال إشعارات استهلاك المياه للداشبورد.`,
+### Project Objectives:
+- Continuously sample soil moisture and evaluate dryness thresholds.
+- Automatically actuate the water pump for a timed cycle when moisture drops below 30%.
+- Log irrigation events and water usage telemetry to the cloud dashboard.`,
     codeTemplate: `const int SOIL_PIN = 34;
 const int PUMP_RELAY_PIN = 26;
-const int DRY_THRESHOLD = 2400; // عدل القيمة حسب معايرة حساسك
+const int DRY_THRESHOLD = 2400; // Calibrate threshold based on your sensor in dry air vs water
 
 void setup() {
   Serial.begin(115200);
@@ -209,14 +209,14 @@ void loop() {
 
   {
     id: 'template-rc-car',
-    title: 'سيارة ذكية يتم التحكم بها عن بُعد (ESP32 Bluetooth / WiFi RC Robot Car)',
-    summary: 'روبوت متنقل ذكي مزود بمحركات DC وسيرفو ومستشعر مسافة لتفادي العوائق مع تحكم فوري من الداشبورد أو الهاتف.',
-    difficulty: 'متقدم',
+    title: 'ESP32 Wi-Fi / Bluetooth Autonomous RC Robot Car',
+    summary: 'A smart mobile robot equipped with dual DC gear motors, an L298N H-Bridge driver, and an ultrasonic radar servo mount for real-time remote control and autonomous obstacle avoidance.',
+    difficulty: 'Advanced',
     difficultyColor: '#A855F7',
     is_featured: true,
     timesUsedAsTemplate: 21,
     rating: 4.95,
-    author: 'عمر القاسم',
+    author: 'Omar Al-Qasim',
     authorRole: 'Robotics & Automation Lead',
     coverImage: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?w=800&auto=format&fit=crop&q=80',
     tags: ['ESP32', 'L298N', 'Robotics', 'HC-SR04', 'RC Car', 'Motors'],
@@ -225,57 +225,57 @@ void loop() {
         id: 'comp-1',
         name: 'ESP32 NodeMCU DevKit V1',
         category: 'MCU',
-        function: 'استقبال أوامر التوجيه اللاسلكية وتوليد إشارات PWM للمحركات',
+        function: 'Receives low-latency wireless steering commands and generates PWM motor control signals',
         imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-2',
-        name: 'لوحة قيادة المحركات L298N Dual H-Bridge',
+        name: 'L298N Dual H-Bridge Motor Driver',
         category: 'ACTUATOR',
-        function: 'تغذية والتحكم في سرعة واتجاه محركين DC تيار مستمر',
+        function: 'Drives and controls the speed and rotation direction of the left and right DC motors',
         imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-3',
-        name: 'HC-SR04 (حساس مسافة بالموجات فوق الصوتية)',
+        name: 'HC-SR04 Ultrasonic Distance Sensor',
         category: 'SENSOR',
-        function: 'كشف الجدران والعوائق أمام السيارة والتوقف التلقائي في حالات الطوارئ',
+        function: 'Detects walls and obstacles ahead of the vehicle for emergency braking and pathfinding',
         imageUrl: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=500&auto=format&fit=crop&q=80'
       },
       {
         id: 'comp-4',
-        name: 'محرك سيرفو صغير SG90 Micro Servo',
+        name: 'SG90 Micro Servo Motor',
         category: 'ACTUATOR',
-        function: 'تدوير حساس المسافة يميناً ويساراً لمسح البيئة المحيطة',
+        function: 'Sweeps the ultrasonic distance sensor left and right to scan the surrounding environment',
         imageUrl: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=500&auto=format&fit=crop&q=80'
       }
     ],
     connections: [
-      { id: 'w1', fromComp: 'لوحة قيادة المحركات L298N Dual H-Bridge', fromPin: 'IN1', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO18', color: '#F59E0B', note: 'المحرك الأيسر أمام' },
-      { id: 'w2', fromComp: 'لوحة قيادة المحركات L298N Dual H-Bridge', fromPin: 'IN2', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO19', color: '#F59E0B', note: 'المحرك الأيسر خلف' },
-      { id: 'w3', fromComp: 'لوحة قيادة المحركات L298N Dual H-Bridge', fromPin: 'IN3', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO22', color: '#38BDF8', note: 'المحرك الأيمن أمام' },
-      { id: 'w4', fromComp: 'لوحة قيادة المحركات L298N Dual H-Bridge', fromPin: 'IN4', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO23', color: '#38BDF8', note: 'المحرك الأيمن خلف' },
-      { id: 'w5', fromComp: 'HC-SR04 (حساس مسافة بالموجات فوق الصوتية)', fromPin: 'TRIG', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO5', color: '#FB923C', note: 'نبضة الإرسال' },
-      { id: 'w6', fromComp: 'HC-SR04 (حساس مسافة بالموجات فوق الصوتية)', fromPin: 'ECHO', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO4', color: '#FB923C', note: 'إشارة الارتداد' }
+      { id: 'w1', fromComp: 'L298N Dual H-Bridge Motor Driver', fromPin: 'IN1', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO18', color: '#F59E0B', note: 'Left Motor Forward' },
+      { id: 'w2', fromComp: 'L298N Dual H-Bridge Motor Driver', fromPin: 'IN2', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO19', color: '#F59E0B', note: 'Left Motor Reverse' },
+      { id: 'w3', fromComp: 'L298N Dual H-Bridge Motor Driver', fromPin: 'IN3', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO22', color: '#38BDF8', note: 'Right Motor Forward' },
+      { id: 'w4', fromComp: 'L298N Dual H-Bridge Motor Driver', fromPin: 'IN4', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO23', color: '#38BDF8', note: 'Right Motor Reverse' },
+      { id: 'w5', fromComp: 'HC-SR04 Ultrasonic Distance Sensor', fromPin: 'TRIG', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO5', color: '#FB923C', note: 'Trigger Pulse' },
+      { id: 'w6', fromComp: 'HC-SR04 Ultrasonic Distance Sensor', fromPin: 'ECHO', toComp: 'ESP32 NodeMCU DevKit V1', toPin: 'GPIO4', color: '#FB923C', note: 'Echo Return Signal' }
     ],
     wiringImageUrl: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?w=1000&auto=format&fit=crop&q=80',
-    wiringDescription: `### 🔌 جدول التوصيل الكهربائي (ESP32 + L298N):
-1. دائرة درايفر المحركات L298N:
-   - IN1 ──► GPIO 18 (محرك أيسر)
-   - IN2 ──► GPIO 19 (محرك أيسر)
-   - IN3 ──► GPIO 22 (محرك أيمن)
-   - IN4 ──► GPIO 23 (محرك أيمن)
-   - GND في L298N ──► GND مشترك مع ESP32 ومصدر البطارية
+    wiringDescription: `### Electrical Wiring Table (ESP32 + L298N):
+1. L298N Dual H-Bridge Motor Driver:
+   - IN1 ──► GPIO 18 (Left Motor)
+   - IN2 ──► GPIO 19 (Left Motor)
+   - IN3 ──► GPIO 22 (Right Motor)
+   - IN4 ──► GPIO 23 (Right Motor)
+   - L298N GND ──► Common GND shared between ESP32 and battery pack
 
-2. حساس الموجات فوق الصوتية HC-SR04:
+2. HC-SR04 Ultrasonic Distance Sensor:
    - VCC ──► 5V
    - GND ──► GND
    - TRIG ──► GPIO 5
-   - ECHO ──► مقسم جهد (Voltage Divider) ──► GPIO 4 (حماية منفذ الـ 3.3V)
+   - ECHO ──► Voltage Divider ──► GPIO 4 (3.3V logic level protection)
 
-3. محرك السيرفو SG90:
-   - سلك الإشارة البرتقالي ──► GPIO 13 (PWM)`,
-    overviewTemplate: `مركبة روبوتية ذكية تعتمد على متحكم ESP32 توفر نمطي قيادة: تحكم يدوي كامل عبر أزرار الداشبورد، ونمط قيادة ذاتية لتفادي الحواجز.`,
+3. SG90 Micro Servo Motor:
+   - Orange PWM Signal Wire ──► GPIO 13`,
+    overviewTemplate: `An ESP32-powered robotic vehicle featuring dual operating modes: low-latency manual teleoperation from the web dashboard, and autonomous ultrasonic obstacle avoidance.`,
     codeTemplate: `#define IN1 18
 #define IN2 19
 #define IN3 22

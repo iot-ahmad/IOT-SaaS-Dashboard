@@ -34,33 +34,33 @@ const OnboardingWizard = () => {
   const steps = [
     {
       number: '1',
-      title: 'أنشئ مساحة عمل',
-      subTitle: 'Create Workspace',
-      desc: 'اضغط على زر "Add Project" لإنشاء مساحة عمل مخصصة لمشروعك (مثل: سيارة ذكية أو بيت زراعي).',
+      title: 'Create Workspace',
+      subTitle: 'Step 1',
+      desc: 'Click "Add Project" to create a dedicated workspace for your project (e.g., Smart Car or Greenhouse).',
       icon: Plus,
       tokenColor: 'var(--accent)'
     },
     {
       number: '2',
-      title: 'أضف أداة تحكم',
-      subTitle: 'Add Tool',
-      desc: 'ادخل مساحة العمل واضغط "Add Tool" لإضافة أزرار، عدادات (Gauge)، أو D-Pad للتحكم والتحليل.',
+      title: 'Add Control Widget',
+      subTitle: 'Step 2',
+      desc: 'Open your workspace and click "Add Widget" to add switches, gauges, charts, or a D-Pad controller.',
       icon: Gamepad2,
       tokenColor: 'var(--secondary)'
     },
     {
       number: '3',
-      title: 'اربط جهاز ESP32',
-      subTitle: 'Connect ESP32',
-      desc: 'استخدم الـ Data Key المخصص للأداة لربط حساسات أو محركات جهازك ESP32 بالمنصة مباشرة.',
+      title: 'Connect ESP32',
+      subTitle: 'Step 3',
+      desc: 'Use the assigned MQTT topic key for each widget to link your ESP32 sensors or actuators directly.',
       icon: Cpu,
       tokenColor: 'var(--destructive)'
     },
     {
       number: '4',
-      title: 'انسخ كود التشغيل',
-      subTitle: 'Copy Arduino Code',
-      desc: 'توجه إلى "Developer Guide" وانسخ كود C++ الجاهز والمهيأ للبدء بالبث والتحكم بثوانٍ.',
+      title: 'Copy Arduino Sketch',
+      subTitle: 'Step 4',
+      desc: 'Visit the "Developer Guide" or "Simulator" to copy ready-to-run C++ firmware and start streaming in seconds.',
       icon: Zap,
       tokenColor: 'var(--primary)'
     }
@@ -70,13 +70,13 @@ const OnboardingWizard = () => {
     <div className="bg-card border border-border rounded-xl p-6 sm:p-8 relative overflow-hidden mt-6 shadow-sm">
       <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
         <span className="px-3 py-1 rounded-md bg-muted border border-border text-xs font-semibold text-muted-foreground tracking-wide uppercase">
-          دليل البدء السريع · Quick Start Guide
+          Quick Start Guide
         </span>
         <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-3">
-          مرحباً بك في منصة IOT365 الذكية
+          Welcome to IOT365 Smart Platform
         </h3>
         <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
-          اتبع الخطوات الأربع البسيطة التالية لربط جهاز ESP32 الخاص بك وبدء التحكم به خلال دقائق معدودة
+          Follow these four simple steps to connect your ESP32 board and start controlling it within minutes
         </p>
       </div>
 

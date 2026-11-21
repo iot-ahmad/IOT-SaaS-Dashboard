@@ -6,7 +6,7 @@ import { collection, addDoc } from 'firebase/firestore';
 export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdded }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('حساسات ومشغلات');
+  const [category, setCategory] = useState('Sensors & Actuators');
   const [tags, setTags] = useState(['ESP32']);
   const [tagInput, setTagInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) {
-      setError('يرجى ملء عنوان وتفاصيل السؤال.');
+      setError('Please fill in both the question title and details.');
       return;
     }
     setLoading(true);
@@ -44,7 +44,7 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
         category,
         tags,
         authorId: user?.uid || 'guest',
-        authorName: user?.displayName || 'مطور إلكترونيات',
+        authorName: user?.displayName || 'Hardware Developer',
         authorUsername: user?.displayName ? user.displayName.toLowerCase().replace(/\s+/g, '_') : 'maker',
         authorPhoto: user?.photoURL || null,
         upvotes: 0,
@@ -60,20 +60,20 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
       onClose();
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء حفظ السؤال.');
+      setError('An error occurred while saving the question.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" dir="rtl">
-      <div className="bg-[#18191c] border border-white/10 w-full max-w-xl rounded-2xl p-6 shadow-2xl space-y-4 text-foreground text-right">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" dir="ltr">
+      <div className="bg-[#18191c] border border-white/10 w-full max-w-xl rounded-2xl p-6 shadow-2xl space-y-4 text-foreground text-left">
         
         <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
           <div className="flex items-center gap-2.5">
             <HelpCircle size={18} className="text-zinc-400" />
-            <h3 className="text-sm font-bold text-white">طرح سؤال تقني جديد</h3>
+            <h3 className="text-sm font-bold text-white">Ask a Technical Question</h3>
           </div>
           <button
             onClick={onClose}
@@ -92,11 +92,11 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">عنوان السؤال *</label>
+            <label className="block text-xs font-medium text-zinc-300 mb-1">Question Title *</label>
             <input
               type="text"
               required
-              placeholder="مثال: كيفية تقليل استهلاك الطاقة في ESP32 عند استخدام Deep Sleep؟"
+              placeholder="e.g., How to reduce ESP32 power consumption during Deep Sleep?"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
@@ -105,25 +105,25 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">التصنيف</label>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2 px-2.5 text-xs text-white focus:outline-none focus:border-white/20 transition-colors"
               >
-                <option value="إدارة الطاقة والبطاريات">إدارة الطاقة والبطاريات</option>
-                <option value="حساسات ومشغلات">حساسات ومشغلات</option>
-                <option value="السحابة وMQTT">السحابة وMQTT</option>
-                <option value="روبوتات ومحركات">روبوتات ومحركات</option>
-                <option value="برمجيات ثابتة وRTOS">برمجيات ثابتة وRTOS</option>
+                <option value="Power & Battery Management">Power & Battery Management</option>
+                <option value="Sensors & Actuators">Sensors & Actuators</option>
+                <option value="Cloud & MQTT">Cloud & MQTT</option>
+                <option value="Robotics & Motors">Robotics & Motors</option>
+                <option value="Firmware & RTOS">Firmware & RTOS</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">الوسوم</label>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Tags</label>
               <input
                 type="text"
-                placeholder="ESP32, I2C (اضغط Enter)"
+                placeholder="ESP32, I2C (Press Enter)"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleAddTag}
@@ -141,11 +141,11 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">تفاصيل السؤال *</label>
+            <label className="block text-xs font-medium text-zinc-300 mb-1">Question Details *</label>
             <textarea
               required
               rows={4}
-              placeholder="اشرح المشكلة بالتفصيل، السلوك المتوقع، وما قمت بتجربته..."
+              placeholder="Explain the problem in detail, expected behavior, and what you have tried so far..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500 resize-none font-sans"
@@ -158,14 +158,14 @@ export default function AskQuestionModal({ isOpen, onClose, user, onQuestionAdde
               onClick={onClose}
               className="px-4 py-2 rounded-xl text-xs font-medium text-zinc-400 hover:text-white transition-colors"
             >
-              إلغاء
+              Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
               className="px-5 py-2 rounded-xl bg-white/[0.1] hover:bg-white/[0.16] border border-white/[0.12] text-white font-bold text-xs transition-all disabled:opacity-40 cursor-pointer"
             >
-              {loading ? 'جاري الإرسال...' : 'نشر السؤال'}
+              {loading ? 'Posting...' : 'Post Question'}
             </button>
           </div>
         </form>

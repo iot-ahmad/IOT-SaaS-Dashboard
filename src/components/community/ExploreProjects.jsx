@@ -9,20 +9,25 @@ import {
 } from 'lucide-react';
 
 const CATEGORIES = [
-  { id: 'all', label: 'الكل', icon: LayoutGrid, keywords: [] },
+  { id: 'all', label: 'All', icon: LayoutGrid, keywords: [] },
   { id: 'esp32', label: 'ESP32 & IoT', icon: Wifi, keywords: ['esp32', 'esp8266', 'wifi', 'mqtt', 'iot'] },
-  { id: 'home', label: 'أتمتة منزلية', icon: Home, keywords: ['relay', 'smart home', 'مبدل', 'منزلي', 'إضاءة', 'lighting'] },
-  { id: 'farm', label: 'زراعة ذكية', icon: Leaf, keywords: ['soil', 'humidity', 'moisture', 'irrigation', 'farm', 'زراعة', 'تربة', 'ري'] },
-  { id: 'robot', label: 'روبوتات', icon: Bot, keywords: ['motor', 'servo', 'robot', 'روبوت', 'محرك'] },
-  { id: 'sensor', label: 'حساسات ورصد', icon: Thermometer, keywords: ['dht11', 'dht22', 'bme280', 'sensor', 'temperature', 'حرارة', 'حساس'] },
-  { id: 'energy', label: 'طاقة وبطاريات', icon: Zap, keywords: ['solar', 'battery', 'power', 'energy', 'طاقة', 'شمسية'] },
+  { id: 'home', label: 'Home Automation', icon: Home, keywords: ['relay', 'smart home', 'مبدل', 'منزلي', 'إضاءة', 'lighting'] },
+  { id: 'farm', label: 'Smart Agriculture', icon: Leaf, keywords: ['soil', 'humidity', 'moisture', 'irrigation', 'farm', 'زراعة', 'تربة', 'ري'] },
+  { id: 'robot', label: 'Robotics', icon: Bot, keywords: ['motor', 'servo', 'robot', 'روبوت', 'محرك'] },
+  { id: 'sensor', label: 'Sensors & Monitoring', icon: Thermometer, keywords: ['dht11', 'dht22', 'bme280', 'sensor', 'temperature', 'حرارة', 'حساس'] },
+  { id: 'energy', label: 'Power & Batteries', icon: Zap, keywords: ['solar', 'battery', 'power', 'energy', 'طاقة', 'شمسية'] },
 ];
 
 const SORT_OPTIONS = [
-  { id: 'popular', label: 'الأكثر مشاهدة', icon: TrendingUp },
-  { id: 'newest', label: 'الأحدث', icon: Calendar },
-  { id: 'liked', label: 'الأعلى تقييماً', icon: Star },
+  { id: 'popular', label: 'Most Viewed', icon: TrendingUp },
+  { id: 'newest', label: 'Newest', icon: Calendar },
+  { id: 'liked', label: 'Highest Rated', icon: Star },
 ];
+
+const formatDifficulty = (diff) => {
+  const map = { 'مبتدئ': 'Beginner', 'متوسط': 'Intermediate', 'متقدم': 'Advanced' };
+  return map[diff] || diff || 'Beginner';
+};
 
 export default function ExploreProjects({ user }) {
   const navigate = useNavigate();
@@ -98,10 +103,10 @@ export default function ExploreProjects({ user }) {
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2.5">
             <Layers size={20} className="text-zinc-400" />
-            <span>استكشاف المشاريع</span>
+            <span>Explore Projects</span>
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            مشاريع إنترنت الأشياء والدوائر الإلكترونية المنشورة من المجتمع
+            IoT and electronic circuit projects published by the community
           </p>
         </div>
 
@@ -110,7 +115,7 @@ export default function ExploreProjects({ user }) {
           className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-semibold text-xs transition-all flex items-center gap-2 cursor-pointer self-start md:self-auto"
         >
           <Plus size={14} />
-          <span>نشر مشروع جديد</span>
+          <span>Publish New Project</span>
         </button>
       </div>
 
@@ -121,18 +126,18 @@ export default function ExploreProjects({ user }) {
           <div className="relative flex-1 w-full">
             <input
               type="text"
-              placeholder="ابحث بالاسم أو الحساسات (BME280, DHT22) أو المتحكم (ESP32)..."
+              placeholder="Search by title, sensors (BME280, DHT22), or microcontroller (ESP32)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2.5 px-3 pr-10 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
+              className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl py-2.5 pl-10 pr-14 text-xs text-white focus:outline-none focus:border-white/20 transition-colors placeholder:text-zinc-500"
             />
-            <Search size={15} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs"
               >
-                مسح
+                Clear
               </button>
             )}
           </div>
@@ -140,7 +145,7 @@ export default function ExploreProjects({ user }) {
           <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
             <div className="flex items-center gap-2 bg-[#1e2024] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-300 w-full md:w-auto">
               <Filter size={13} className="text-zinc-400 shrink-0" />
-              <span className="text-zinc-500 font-medium">الترتيب:</span>
+              <span className="text-zinc-500 font-medium">Sort by:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -196,15 +201,15 @@ export default function ExploreProjects({ user }) {
       ) : filteredProjects.length === 0 ? (
         <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-12 text-center space-y-3">
           <Cpu size={40} className="text-zinc-600 mx-auto" />
-          <h3 className="text-sm font-bold text-white">لا توجد مشاريع منشورة حالياً</h3>
+          <h3 className="text-sm font-bold text-white">No published projects found</h3>
           <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-            {searchQuery ? 'لم يتم العثور على نتائج تطابق معايير البحث الحالية.' : 'كن أول من يوثق وينشر مشروعه في المجتمع!'}
+            {searchQuery ? 'No results match your current search criteria.' : 'Be the first to document and publish your project in the community!'}
           </p>
           <button
             onClick={() => navigate('/hub/new')}
             className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-medium text-xs transition-all"
           >
-            نشر مشروع جديد
+            Publish New Project
           </button>
         </div>
       ) : (
@@ -233,13 +238,13 @@ export default function ExploreProjects({ user }) {
                 {/* Difficulty & Date */}
                 <div className="absolute top-2.5 right-2.5">
                   <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-sm border border-white/10 text-zinc-300">
-                    {proj.difficulty || 'مبتدئ'}
+                    {formatDifficulty(proj.difficulty)}
                   </span>
                 </div>
 
                 <div className="absolute top-2.5 left-2.5 text-[9px] font-mono text-zinc-400 bg-black/70 backdrop-blur-sm border border-white/10 px-2 py-0.5 rounded-md flex items-center gap-1">
                   <Calendar size={9} />
-                  <span>{new Date(proj.createdAt || Date.now()).toLocaleDateString('ar-JO')}</span>
+                  <span>{new Date(proj.createdAt || Date.now()).toLocaleDateString('en-US')}</span>
                 </div>
               </div>
 
@@ -279,7 +284,7 @@ export default function ExploreProjects({ user }) {
                       {(proj.ownerName || 'U').charAt(0)}
                     </div>
                     <span className="text-zinc-400 font-medium truncate max-w-[110px]">
-                      {proj.ownerName || 'مطور'}
+                      {proj.ownerName || 'Developer'}
                     </span>
                   </div>
 

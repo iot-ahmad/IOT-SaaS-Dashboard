@@ -12,21 +12,26 @@ import FeaturedTemplatesModal from './ui/FeaturedTemplatesModal';
 
 // ─── Category config (icon + label + filter keyword) ──────────────────────────
 const CATEGORIES = [
-  { id: 'all',        label: 'الكل',            icon: LayoutGrid,   color: 'text-primary',  bg: 'bg-primary/10',  activeBg: 'bg-primary',  keywords: [] },
-  { id: 'home',       label: 'أتمتة منزلية',    icon: Home,         color: 'text-sky-400',    bg: 'bg-sky-400/10',    activeBg: 'bg-sky-400',    keywords: ['relay','smart home','مبدل','منزلي','إضاءة','lighting'] },
-  { id: 'farm',       label: 'زراعة ذكية',       icon: Leaf,         color: 'text-emerald-400',bg: 'bg-emerald-400/10',activeBg: 'bg-emerald-400',keywords: ['soil','humidity','moisture','irrigation','farm','زراعة','تربة','ري'] },
-  { id: 'robot',      label: 'روبوتات',          icon: Bot,          color: 'text-violet-400', bg: 'bg-violet-400/10', activeBg: 'bg-violet-400', keywords: ['motor','servo','robot','روبوت','محرك'] },
-  { id: 'iot',        label: 'إنترنت الأشياء',   icon: Wifi,         color: 'text-cyan-400',   bg: 'bg-cyan-400/10',   activeBg: 'bg-cyan-400',   keywords: ['esp32','esp8266','wifi','mqtt','iot'] },
-  { id: 'sensor',     label: 'حساسات',           icon: Thermometer,  color: 'text-rose-400',   bg: 'bg-rose-400/10',   activeBg: 'bg-rose-400',   keywords: ['dht11','dht22','sensor','temperature','حرارة','حساس'] },
-  { id: 'energy',     label: 'طاقة',             icon: Zap,          color: 'text-primary', bg: 'bg-primary/10', activeBg: 'bg-primary', keywords: ['solar','battery','power','energy','طاقة','شمسية'] },
+  { id: 'all',        label: 'All',               icon: LayoutGrid,   color: 'text-primary',     bg: 'bg-primary/10',     activeBg: 'bg-primary',     keywords: [] },
+  { id: 'home',       label: 'Home Automation',   icon: Home,         color: 'text-sky-400',     bg: 'bg-sky-400/10',     activeBg: 'bg-sky-400',     keywords: ['relay','smart home','مبدل','منزلي','إضاءة','lighting'] },
+  { id: 'farm',       label: 'Smart Agriculture', icon: Leaf,         color: 'text-emerald-400', bg: 'bg-emerald-400/10', activeBg: 'bg-emerald-400', keywords: ['soil','humidity','moisture','irrigation','farm','زراعة','تربة','ري'] },
+  { id: 'robot',      label: 'Robotics',          icon: Bot,          color: 'text-violet-400',  bg: 'bg-violet-400/10',  activeBg: 'bg-violet-400',  keywords: ['motor','servo','robot','روبوت','محرك'] },
+  { id: 'iot',        label: 'IoT & Wireless',    icon: Wifi,         color: 'text-cyan-400',    bg: 'bg-cyan-400/10',    activeBg: 'bg-cyan-400',    keywords: ['esp32','esp8266','wifi','mqtt','iot'] },
+  { id: 'sensor',     label: 'Sensors',           icon: Thermometer,  color: 'text-rose-400',    bg: 'bg-rose-400/10',    activeBg: 'bg-rose-400',    keywords: ['dht11','dht22','sensor','temperature','حرارة','حساس'] },
+  { id: 'energy',     label: 'Power & Energy',    icon: Zap,          color: 'text-primary',     bg: 'bg-primary/10',     activeBg: 'bg-primary',     keywords: ['solar','battery','power','energy','طاقة','شمسية'] },
 ];
 
 // ─── Sort options ─────────────────────────────────────────────────────────────
 const SORT_OPTIONS = [
-  { id: 'newest',  label: 'الأحدث',    icon: Calendar },
-  { id: 'popular', label: 'الأكثر مشاهدة', icon: TrendingUp },
-  { id: 'liked',   label: 'الأعلى تقييماً', icon: Star },
+  { id: 'newest',  label: 'Newest',        icon: Calendar },
+  { id: 'popular', label: 'Most Viewed',   icon: TrendingUp },
+  { id: 'liked',   label: 'Highest Rated', icon: Star },
 ];
+
+const formatDifficulty = (diff) => {
+  const map = { 'مبتدئ': 'Beginner', 'متوسط': 'Intermediate', 'متقدم': 'Advanced' };
+  return map[diff] || diff || 'Beginner';
+};
 
 // ─── Skeleton card ─────────────────────────────────────────────────────────────
 function SkeletonCard() {
@@ -34,10 +39,10 @@ function SkeletonCard() {
     <div className="hub-card animate-pulse">
       <div className="hub-card-img-wrap bg-zinc-800/60" />
       <div className="p-4 space-y-2.5">
-        <div className="h-3.5 bg-zinc-800/80 rounded-lg w-3/4 ml-auto" />
+        <div className="h-3.5 bg-zinc-800/80 rounded-lg w-3/4" />
         <div className="h-3 bg-zinc-800/50 rounded-lg w-full" />
-        <div className="h-3 bg-zinc-800/50 rounded-lg w-5/6 ml-auto" />
-        <div className="flex gap-1.5 justify-end pt-1">
+        <div className="h-3 bg-zinc-800/50 rounded-lg w-5/6" />
+        <div className="flex gap-1.5 justify-start pt-1">
           <div className="h-5 bg-zinc-800/60 rounded-lg w-14" />
           <div className="h-5 bg-zinc-800/60 rounded-lg w-14" />
         </div>
@@ -87,19 +92,19 @@ function ProjectCard({ proj, onClick, onAuthorClick, onUseTemplate }) {
         {/* Difficulty badge */}
         {proj.difficulty && (
           <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded-md text-[9px] font-bold text-primary">
-            {proj.difficulty}
+            {formatDifficulty(proj.difficulty)}
           </div>
         )}
 
         {/* Date badge */}
         <div className="absolute top-2.5 left-2.5 bg-black/50 backdrop-blur-sm border border-white/10 text-[9px] text-zinc-300 px-1.5 py-0.5 rounded-md font-mono flex items-center gap-1">
           <Calendar size={8} />
-          {new Date(proj.createdAt).toLocaleDateString('ar-JO')}
+          {new Date(proj.createdAt).toLocaleDateString('en-US')}
         </div>
       </div>
 
       {/* ── Card Body ── */}
-      <div className="p-4 flex flex-col gap-2.5 flex-1 text-right" dir="rtl">
+      <div className="p-4 flex flex-col gap-2.5 flex-1 text-left" dir="ltr">
         {/* Title */}
         <h3 className="text-sm font-extrabold text-white group-hover:text-primary transition-colors leading-snug line-clamp-1">
           {proj.title}
@@ -129,34 +134,34 @@ function ProjectCard({ proj, onClick, onAuthorClick, onUseTemplate }) {
 
         {/* Footer: Author + Metrics */}
         <div className="flex items-center justify-between pt-2 mt-auto border-t border-white/[0.05]">
-          {/* Metrics */}
-          <div className="flex items-center gap-3 text-[10px] text-zinc-600 font-mono">
-            <div className="flex items-center gap-1 hover:text-primary transition-colors" title="مشاهدات">
-              <Eye size={11} />
-              <span>{proj.metrics?.views || 0}</span>
-            </div>
-            <div className="flex items-center gap-1 hover:text-rose-400 transition-colors" title="إعجابات">
-              <ThumbsUp size={11} />
-              <span>{proj.metrics?.likes || 0}</span>
-            </div>
-            <div className="flex items-center gap-1 hover:text-sky-400 transition-colors" title="استخدام كقالب">
-              <Copy size={11} />
-              <span>{proj.timesUsedAsTemplate || 0}</span>
-            </div>
-          </div>
-
           {/* Author */}
           <button
             className="flex items-center gap-1.5 group/author"
             onClick={(e) => { e.stopPropagation(); onAuthorClick(proj.ownerUsername); }}
           >
-            <span className="text-[11px] text-zinc-500 group-hover/author:text-white transition-colors font-medium">
-              @{proj.ownerUsername}
-            </span>
             <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-[9px] font-bold text-primary uppercase shadow-sm group-hover/author:border-primary/50 transition-colors">
               {(proj.ownerName || proj.ownerUsername || 'U').charAt(0)}
             </div>
+            <span className="text-[11px] text-zinc-500 group-hover/author:text-white transition-colors font-medium">
+              @{proj.ownerUsername}
+            </span>
           </button>
+
+          {/* Metrics */}
+          <div className="flex items-center gap-3 text-[10px] text-zinc-600 font-mono">
+            <div className="flex items-center gap-1 hover:text-primary transition-colors" title="Views">
+              <Eye size={11} />
+              <span>{proj.metrics?.views || 0}</span>
+            </div>
+            <div className="flex items-center gap-1 hover:text-rose-400 transition-colors" title="Likes">
+              <ThumbsUp size={11} />
+              <span>{proj.metrics?.likes || 0}</span>
+            </div>
+            <div className="flex items-center gap-1 hover:text-sky-400 transition-colors" title="Used as Template">
+              <Copy size={11} />
+              <span>{proj.timesUsedAsTemplate || 0}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -299,7 +304,7 @@ export default function ProjectFeed({ user }) {
         .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
-      <div className="space-y-6 pb-12" dir="rtl">
+      <div className="space-y-6 pb-12" dir="ltr">
 
         {/* ══════════════════════════════════════════════════════════════════
             FEATURED & TEMPLATE PROJECTS SPOTLIGHT HERO
@@ -309,10 +314,10 @@ export default function ProjectFeed({ user }) {
             <div>
               <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
                 <Flame size={20} className="text-amber-400" />
-                المشاريع المميزة والقوالب الجاهزة (Featured & Template Projects)
+                Featured & Template Projects
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                نماذج هندسية معتمدة ومخططات توصيل جاهزة يمكنك استخدامها مباشرة لبناء مشروعك
+                Verified engineering blueprints and ready-to-use wiring schematics to jumpstart your project
               </p>
             </div>
 
@@ -322,7 +327,7 @@ export default function ProjectFeed({ user }) {
                 className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <Layers size={13} />
-                عرض كافة القوالب
+                View All Templates
               </button>
               <button
                 onClick={() => navigate(user ? '/hub/new' : '/login')}
@@ -330,7 +335,7 @@ export default function ProjectFeed({ user }) {
                 className="px-4 py-1.5 rounded-xl text-xs font-bold transition-opacity hover:opacity-90 shadow-md shadow-primary/20 flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus size={14} />
-                نشر مشروع جديد
+                Publish New Project
               </button>
             </div>
           </div>
@@ -349,15 +354,15 @@ export default function ProjectFeed({ user }) {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded-md text-[9px] font-bold text-emerald-400">
-                    {template.difficulty}
+                    {formatDifficulty(template.difficulty)}
                   </div>
                   <div className="absolute top-2 left-2 bg-sky-500/20 backdrop-blur-md border border-sky-500/30 text-sky-300 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
                     <Copy size={9} />
-                    استُخدم {template.timesUsedAsTemplate} مرة
+                    Used {template.timesUsedAsTemplate} times
                   </div>
                 </div>
 
-                <div className="p-3.5 space-y-2 flex-1 flex flex-col justify-between text-right">
+                <div className="p-3.5 space-y-2 flex-1 flex flex-col justify-between text-left">
                   <div>
                     <h4 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                       {template.title}
@@ -369,7 +374,7 @@ export default function ProjectFeed({ user }) {
 
                   <div className="pt-2 border-t border-border flex items-center justify-between gap-2 mt-2">
                     <span className="text-[10px] text-muted-foreground font-mono">
-                      {template.components?.length || 0} قطع · {template.connections?.length || 0} أسلاك
+                      {template.components?.length || 0} parts · {template.connections?.length || 0} wires
                     </span>
 
                     <button
@@ -379,7 +384,7 @@ export default function ProjectFeed({ user }) {
                       className="text-[10px] font-bold flex items-center gap-1 px-2.5 py-1 rounded-lg hover:opacity-90 transition-opacity cursor-pointer shadow-sm shadow-primary/20"
                     >
                       <Copy size={11} />
-                      استخدم كنموذج
+                      Use as Template
                     </button>
                   </div>
                 </div>
@@ -402,7 +407,7 @@ export default function ProjectFeed({ user }) {
             }`}
           >
             <LayoutGrid size={13} />
-            <span>الكل</span>
+            <span>All</span>
             {selectedCategory !== 'all' && (
               <span className="text-[10px] bg-white/10 text-white px-1.5 py-0.5 rounded font-medium">
                 {CATEGORIES.find(c => c.id === selectedCategory)?.label}
@@ -412,15 +417,15 @@ export default function ProjectFeed({ user }) {
 
           {/* Search box */}
           <div className="flex-1 relative">
-            <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={14} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={14} />
             <input
               ref={searchRef}
               type="text"
-              dir="rtl"
-              placeholder="ابحث بالاسم، الوصف، أو القطعة (ESP32, DHT11, Relay...)"
+              dir="ltr"
+              placeholder="Search by title, description, or component (ESP32, DHT11, Relay...)"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full bg-card/5 border border-border rounded-xl py-2.5 pr-10 pl-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-card/5 border border-border rounded-xl py-2.5 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
             />
           </div>
 
@@ -452,7 +457,7 @@ export default function ProjectFeed({ user }) {
               onClick={() => { setSearchTerm(''); setSelectedCategory('all'); setSelectedTag(''); }}
               className="px-4 py-2.5 bg-card/5 border border-border rounded-xl text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
             >
-              إلغاء التصفية ×
+              Clear Filters ×
             </button>
           )}
         </div>
@@ -462,7 +467,7 @@ export default function ProjectFeed({ user }) {
         ══════════════════════════════════════════════════════════════════ */}
         {allComponentTags.length > 0 && (
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
-            <span className="text-[10px] text-muted-foreground font-mono whitespace-nowrap shrink-0">القطع:</span>
+            <span className="text-[10px] text-muted-foreground font-mono whitespace-nowrap shrink-0">Components:</span>
             <button
               onClick={() => setSelectedTag('')}
               className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer shrink-0 ${
@@ -471,7 +476,7 @@ export default function ProjectFeed({ user }) {
                   : 'bg-transparent border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
               }`}
             >
-              الكل
+              All
             </button>
             {allComponentTags.map(tag => (
               <button
@@ -502,7 +507,7 @@ export default function ProjectFeed({ user }) {
                   <span className="text-muted-foreground font-normal">·</span>
                 </span>
               )}
-              <span>{sorted.length} مشاريع منشورة</span>
+              <span>{sorted.length} Published Projects</span>
             </div>
             <span className="text-[10px] text-muted-foreground font-mono">
               {SORT_OPTIONS.find(s => s.id === sortBy)?.label}
@@ -522,9 +527,9 @@ export default function ProjectFeed({ user }) {
             <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-4">
               <Cpu className="text-zinc-700" size={26} />
             </div>
-            <h3 className="text-base font-bold text-white">لا توجد مشاريع</h3>
+            <h3 className="text-base font-bold text-white">No Projects Found</h3>
             <p className="text-xs text-muted-foreground mt-1.5 max-w-xs mx-auto">
-              {hasFilters ? 'جرب تغيير الفئة أو كلمات البحث.' : 'كن أول من ينشر مشروعاً في المجتمع!'}
+              {hasFilters ? 'Try changing the category or search terms.' : 'Be the first to publish a project in the community!'}
             </p>
             {!hasFilters && (
               <button
@@ -533,7 +538,7 @@ export default function ProjectFeed({ user }) {
                 className="mt-5 inline-flex items-center gap-2 text-xs font-black px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-primary/20 cursor-pointer"
               >
                 <Plus size={14} />
-                أنشر أول مشروع
+                Publish First Project
               </button>
             )}
           </div>

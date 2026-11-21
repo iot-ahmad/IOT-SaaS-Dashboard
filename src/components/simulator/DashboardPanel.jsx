@@ -42,7 +42,7 @@ export default function DashboardPanel({
     >
       {/* Single Unified Tab Row with Underline Navigation */}
       <div className="flex items-center justify-between px-3 border-b border-white/10 bg-zinc-900/90 text-xs shrink-0">
-        <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none" aria-label="تبويبات الداشبورد">
+        <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none" aria-label="Dashboard tabs">
           <button
             type="button"
             onClick={() => onSelectPanel('controller')}
@@ -50,7 +50,7 @@ export default function DashboardPanel({
               activePanel === 'controller' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
             }`}
           >
-            اللوحة
+            Dashboard
             {activePanel === 'controller' && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-sm" />
             )}
@@ -63,7 +63,7 @@ export default function DashboardPanel({
               activePanel === 'devices' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
             }`}
           >
-            الأجهزة
+            Devices
             {activePanel === 'devices' && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-sm" />
             )}
@@ -76,7 +76,7 @@ export default function DashboardPanel({
               activePanel === 'terminal' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
             }`}
           >
-            التيرمنال
+            Terminal
             {activePanel === 'terminal' && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-sm" />
             )}
@@ -89,7 +89,7 @@ export default function DashboardPanel({
               activePanel === 'guide' ? 'text-primary' : 'text-zinc-400 hover:text-foreground'
             }`}
           >
-            الكود والتوصيل
+            Code &amp; Wiring
             {activePanel === 'guide' && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-sm" />
             )}
@@ -103,10 +103,10 @@ export default function DashboardPanel({
               type="button"
               onClick={onOpenModal}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/90 hover:bg-zinc-700/80 border border-white/10 text-zinc-200 text-xs font-semibold cursor-pointer transition-all"
-              title="الكود ومخطط التوصيل الكامل"
+              title="Full Code & Wiring Diagram"
             >
               <CircuitBoard size={13} className="text-primary" />
-              <span className="hidden sm:inline">مخطط التوصيل</span>
+              <span className="hidden sm:inline">Wiring Diagram</span>
             </button>
           )}
         </div>
@@ -117,7 +117,7 @@ export default function DashboardPanel({
         <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/40 border-b border-white/5 text-[11px] overflow-x-auto scrollbar-none shrink-0 font-mono">
           <span className="flex items-center gap-1.5 text-zinc-200 font-bold shrink-0">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            بث الحساسات الحي:
+            Live Sensor Stream:
           </span>
           {Object.entries(deviceStates).map(([top, val]) => (
             <span key={top} className="px-2 py-0.5 rounded-md bg-zinc-800 border border-white/10 text-zinc-300 shrink-0">
@@ -138,7 +138,7 @@ export default function DashboardPanel({
             storageScopeId={`${userUID || 'guest'}_wokwi_${selectedProjectId}`}
             userUID={userUID}
             initialWidgets={isCustomProject ? [] : activeProject.widgets}
-            customTitle={isCustomProject ? 'لوحة تحكم فارغة' : `لوحة مشروع: ${activeProject.title.split('(')[0]}`}
+            customTitle={isCustomProject ? 'Blank Control Panel' : `Project Dashboard: ${activeProject.title.split('(')[0].trim()}`}
           />
         )}
 
@@ -150,10 +150,10 @@ export default function DashboardPanel({
                   <div className="flex items-center gap-2">
                     <Cpu className="text-primary" size={16} />
                     <h4 className="text-xs sm:text-sm font-extrabold text-foreground">
-                      أجهزة وحساسات مشروع: {activeProject.title.split('(')[0]}
+                      Project Sensors &amp; Actuators: {activeProject.title.split('(')[0].trim()}
                     </h4>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-white/10">
-                      {activeProject.presetDevices?.length || 0} أجهزة
+                      {activeProject.presetDevices?.length || 0} devices
                     </span>
                   </div>
                 </div>
@@ -187,13 +187,13 @@ export default function DashboardPanel({
                         </div>
 
                         <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between gap-2">
-                          <span className="text-[10px] text-zinc-400">القيمة:</span>
+                          <span className="text-[10px] text-zinc-400">Value:</span>
                           {hasVal ? (
                             <span className="font-mono font-bold text-sm text-foreground">
                               {liveVal} {dev.unit && dev.unit !== 'State' ? dev.unit : ''}
                             </span>
                           ) : (
-                            <span className="text-[10px] text-zinc-500 italic">في انتظار البيانات...</span>
+                            <span className="text-[10px] text-zinc-500 italic">Waiting for data...</span>
                           )}
                         </div>
 
@@ -204,14 +204,14 @@ export default function DashboardPanel({
                               onClick={() => publish(dev.topic, 'ON')}
                               className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-zinc-700 hover:bg-zinc-600 text-foreground border border-white/10 transition-all cursor-pointer"
                             >
-                              تشغيل ON
+                              Turn ON
                             </button>
                             <button
                               type="button"
                               onClick={() => publish(dev.topic, 'OFF')}
                               className="flex-1 py-1 rounded-lg text-[10px] font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-foreground border border-white/10 transition-all cursor-pointer"
                             >
-                              إطفاء OFF
+                              Turn OFF
                             </button>
                           </div>
                         )}
@@ -234,7 +234,7 @@ export default function DashboardPanel({
           <div className="h-full flex flex-col gap-2">
             <div className="p-3 bg-zinc-800/40 border border-white/10 rounded-xl text-xs text-zinc-400 flex items-center gap-2">
               <Terminal size={14} className="text-primary shrink-0" />
-              <span>تعرض هذه الشاشة جميع الإشارات المتبادلة بين لوحة التحكم ومحاكي Wokwi في الوقت الفعلي عبر بروتوكول MQTT.</span>
+              <span>This terminal displays all real-time MQTT messages exchanged between the dashboard and the Wokwi simulator.</span>
             </div>
             <div className="flex-1 min-h-[300px]">
               <LiveTerminal messages={messages} isConnected={mqttOnline} />
@@ -249,16 +249,16 @@ export default function DashboardPanel({
                 <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-white/10 flex items-center justify-center text-zinc-400 mx-auto">
                   <Code size={24} />
                 </div>
-                <h4 className="font-bold text-foreground text-sm">مساحة عمل محاكاة فارغة / مخصصة</h4>
+                <h4 className="font-bold text-foreground text-sm">Blank / Custom Simulation Workspace</h4>
                 <p className="text-zinc-400 text-xs max-w-md mx-auto leading-relaxed">
-                  أنت الآن تعمل على محاكي فارغ. يمكنك اختيار أي من المشاريع الجاهزة من القائمة بالأعلى لتوليد الكود ومخطط التوصيل فوراً.
+                  You are currently working on a blank simulator. Select any ready-made project from the dropdown above to generate firmware code and wiring diagrams instantly.
                 </p>
                 <button
                   type="button"
                   onClick={() => onSelectProjectId('all-in-one')}
                   className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs transition-all cursor-pointer"
                 >
-                  تجربة المحطة الشاملة الجاهزة
+                  Try Ready All-In-One Station
                 </button>
               </div>
             ) : (
@@ -273,7 +273,7 @@ export default function DashboardPanel({
                       className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <FileCode size={13} className="text-primary" />
-                      فتح النافذة التفصيلية
+                      Open Detailed View
                     </button>
                   </div>
                   <h4 className="font-extrabold text-sm text-foreground mt-1">
@@ -295,8 +295,8 @@ export default function DashboardPanel({
                       {mqttMode === 'private' ? <ShieldCheck size={15} className="shrink-0 mt-0.5" /> : <AlertTriangle size={15} className="shrink-0 mt-0.5" />}
                       <span>
                         {mqttMode === 'private'
-                          ? `اتصال مشفّر بشهادة ${mqttConfig?.caName || 'Root CA'} + مزامنة NTP + Client ID فريد مع ${mqttConfig?.provisionedBy === 'emqx_auto' ? 'حساب EMQX المعزول تلقائياً' : 'سيرفرك الخاص'}.`
-                          : `الكود يستخدم TLS موثق (${mqttConfig?.caName || 'Root CA'}) + Client ID فريد، مع إخفاء بيانات الدخول للحماية. فعّل حسابك المعزول من Profile & Settings → Security.`}
+                          ? `Encrypted connection with ${mqttConfig?.caName || 'Root CA'} certificate + NTP sync + unique Client ID via ${mqttConfig?.provisionedBy === 'emqx_auto' ? 'auto-isolated EMQX account' : 'your private broker'}.`
+                          : `Code uses verified TLS (${mqttConfig?.caName || 'Root CA'}) + unique Client ID, with credentials masked for protection. Enable your isolated account in Profile & Settings → Security.`}
                       </span>
                     </div>
                     {mqttMode === 'private' && onToggleIncludeCreds && (
@@ -305,20 +305,20 @@ export default function DashboardPanel({
                         onClick={onToggleIncludeCreds}
                         className="px-2.5 py-1 rounded-lg bg-zinc-900/70 hover:bg-zinc-900 border border-white/10 text-foreground font-semibold shrink-0 cursor-pointer"
                       >
-                        {includePrivateCreds ? 'إخفاء كلمة المرور (placeholders)' : 'تضمين بيانات MQTT الخاصة بي'}
+                        {includePrivateCreds ? 'Mask Password (Placeholders)' : 'Include My MQTT Credentials'}
                       </button>
                     )}
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-foreground">كود C++ / Arduino جاهز للنسخ:</span>
+                    <span className="font-bold text-foreground">Ready-to-Copy C++ / Arduino Code:</span>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={onCopyCode}
                         className="flex items-center gap-1 px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-foreground font-semibold text-xs cursor-pointer"
                       >
                         {copiedCode ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                        <span>{copiedCode ? 'تم النسخ' : 'نسخ الكود'}</span>
+                        <span>{copiedCode ? 'Copied' : 'Copy Code'}</span>
                       </button>
                     </div>
                   </div>

@@ -19,61 +19,61 @@ import { Button } from '@/components/ui/neon-button';
 export const PROJECT_DEVICE_PRESETS = [
   {
     projectId: 'all-in-one',
-    projectName: 'المحطة الشاملة (Mega All-In-One Station)',
-    badge: 'موصى به للاختبار الشامل',
-    description: '11 مستشعر ومشغل يجمع كل حساسات وأدوات المنصة لاختبار لوحة التحكم بالكامل.',
+    projectName: 'Mega All-In-One Station',
+    badge: 'Recommended for Full Testing',
+    description: '11 sensors and actuators combining all platform capabilities to test the control dashboard end-to-end.',
     devices: [
-      { name: 'درجة الحرارة DHT22 Temp', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', chartType: 'area' },
-      { name: 'الرطوبة النسبية DHT22 Hum', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', chartType: 'line' },
-      { name: 'مسافة السونار HC-SR04', type: 'Sensor', pin: 'GPIO 5', topic: 'sensor/distance', chartType: 'bar' },
-      { name: 'رطوبة التربة Soil Probe', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', chartType: 'area' },
-      { name: 'شدة الإضاءة LDR Sensor', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', chartType: 'line' },
-      { name: 'كاشف الحركة PIR Motion', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', chartType: 'scatter' },
-      { name: 'مصباح LED الرئيسي', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
-      { name: 'مرحّل Relay 220V', type: 'Actuator', pin: 'GPIO 25', topic: 'actuator/relay' },
-      { name: 'محرك السيرفو SG90', type: 'Motor', pin: 'GPIO 13', topic: 'actuator/servo' },
-      { name: 'مروحة التبريد PWM Fan', type: 'Actuator', pin: 'GPIO 4', topic: 'actuator/dimmer' },
-      { name: 'صفارة الإنذار Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer' },
+      { name: 'DHT22 Temperature', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', chartType: 'area' },
+      { name: 'DHT22 Relative Humidity', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', chartType: 'line' },
+      { name: 'HC-SR04 Ultrasonic Distance', type: 'Sensor', pin: 'GPIO 5', topic: 'sensor/distance', chartType: 'bar' },
+      { name: 'Soil Moisture Probe', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', chartType: 'area' },
+      { name: 'LDR Ambient Light Sensor', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', chartType: 'line' },
+      { name: 'PIR Motion Detector', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', chartType: 'scatter' },
+      { name: 'Main Status LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
+      { name: '220V Power Relay', type: 'Actuator', pin: 'GPIO 25', topic: 'actuator/relay' },
+      { name: 'SG90 Servo Motor', type: 'Motor', pin: 'GPIO 13', topic: 'actuator/servo' },
+      { name: 'PWM Cooling Fan', type: 'Actuator', pin: 'GPIO 4', topic: 'actuator/dimmer' },
+      { name: 'Alert Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer' },
     ]
   },
   {
     projectId: 'smart-farm',
-    projectName: 'المزرعة الذكية والري التلقائي (Smart Farm)',
-    badge: 'زراعة ذكية و STEM',
-    description: 'مستشعرات حرارة ورطوبة البيوت المحمية، رطوبة التربة، ومضخة وصمام الري الآلي.',
+    projectName: 'Smart Farm & Automated Irrigation',
+    badge: 'Smart Agriculture & STEM',
+    description: 'Greenhouse temperature and humidity sensors, soil moisture probe, and automated irrigation pump and valve.',
     devices: [
-      { name: 'حرارة البيوت المحمية DHT22', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', chartType: 'area' },
-      { name: 'رطوبة هواء المحمية DHT22', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', chartType: 'line' },
-      { name: 'مستشعر رطوبة التربة Soil Probe', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', chartType: 'area' },
-      { name: 'مضخة مياه الري الذاتي Pump', type: 'Actuator', pin: 'GPIO 25', topic: 'farm/pump' },
-      { name: 'صمام مياه الري الآلي Servo Valve', type: 'Motor', pin: 'GPIO 13', topic: 'farm/valve' },
-      { name: 'مصباح التحذير من جفاف الخزان', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
+      { name: 'Greenhouse Temp (DHT22)', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/temp', chartType: 'area' },
+      { name: 'Greenhouse Humidity (DHT22)', type: 'Sensor', pin: 'GPIO 15', topic: 'sensor/humidity', chartType: 'line' },
+      { name: 'Soil Moisture Probe', type: 'Sensor', pin: 'GPIO 34', topic: 'farm/moisture', chartType: 'area' },
+      { name: 'Irrigation Water Pump', type: 'Actuator', pin: 'GPIO 25', topic: 'farm/pump' },
+      { name: 'Irrigation Servo Valve', type: 'Motor', pin: 'GPIO 13', topic: 'farm/valve' },
+      { name: 'Low Tank Warning LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
     ]
   },
   {
     projectId: 'smart-home',
-    projectName: 'المنزل الذكي ونظام الحماية (Smart Home)',
-    badge: 'أمن وسلامة وأتمتة',
-    description: 'كاشف الحركة والسرقة، حساس الإضاءة، قفل الباب الإلكتروني، وصفارة الإنذار.',
+    projectName: 'Smart Home & Security System',
+    badge: 'Security, Safety & Automation',
+    description: 'Intrusion motion detector, ambient light sensor, electronic door lock, and emergency alarm siren.',
     devices: [
-      { name: 'كاشف الحركة والسرقة PIR', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', chartType: 'scatter' },
-      { name: 'مستشعر الإضاءة المحيطة LDR', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', chartType: 'line' },
-      { name: 'سيرفو قفل الباب الذكي Door Lock', type: 'Motor', pin: 'GPIO 13', topic: 'security/door' },
-      { name: 'صفارة إنذار الطوارئ Siren Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer' },
-      { name: 'مصباح إضاءة الغرفة الرئيسية', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
+      { name: 'PIR Intrusion Motion Detector', type: 'Sensor', pin: 'GPIO 19', topic: 'security/motion', chartType: 'scatter' },
+      { name: 'Ambient Light Sensor (LDR)', type: 'Sensor', pin: 'GPIO 35', topic: 'sensor/light', chartType: 'line' },
+      { name: 'Smart Door Lock Servo', type: 'Motor', pin: 'GPIO 13', topic: 'security/door' },
+      { name: 'Emergency Siren Buzzer', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer' },
+      { name: 'Main Room Light LED', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
     ]
   },
   {
     projectId: 'rc-car',
-    projectName: 'السيارة الذكية والروبوت (RC Car)',
-    badge: 'روبوتكس وتحكم D-Pad',
-    description: 'رادار كشف الحواجز سونار، محركات الدفع، منظم السرعة، المصابيح، والبوق.',
+    projectName: 'Smart Robot & RC Car',
+    badge: 'Robotics & D-Pad Control',
+    description: 'Ultrasonic obstacle radar, drive motors, PWM speed controller, headlights, and warning horn.',
     devices: [
-      { name: 'رادار كشف الحواجز Sonar HC-SR04', type: 'Sensor', pin: 'GPIO 5', topic: 'sensor/distance', chartType: 'bar' },
-      { name: 'محركات دفع السيارة D-Pad', type: 'Motor', pin: 'GPIO 4', topic: 'car/move' },
-      { name: 'منظم سرعة الحركة PWM Speed', type: 'Actuator', pin: 'GPIO 4', topic: 'car/speed' },
-      { name: 'المصابيح الأمامية Headlights', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
-      { name: 'بوق السيارة التحذيري Horn', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer' },
+      { name: 'HC-SR04 Obstacle Sonar Radar', type: 'Sensor', pin: 'GPIO 5', topic: 'sensor/distance', chartType: 'bar' },
+      { name: 'Car Drive Motors (D-Pad)', type: 'Motor', pin: 'GPIO 4', topic: 'car/move' },
+      { name: 'PWM Speed Controller', type: 'Actuator', pin: 'GPIO 4', topic: 'car/speed' },
+      { name: 'Front Headlights', type: 'Actuator', pin: 'GPIO 2', topic: 'actuator/led' },
+      { name: 'Car Warning Horn', type: 'Actuator', pin: 'GPIO 12', topic: 'sound/buzzer' },
     ]
   }
 ];
@@ -504,8 +504,8 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
               <Layers size={18} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-foreground">استيراد أجهزة مشاريع المحاكي الجاهزة</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">اختر المشروع لإضافة حساساته ومشغلاته مسبقة الربط بنقرة واحدة</p>
+              <h3 className="text-base font-bold text-foreground">Import Ready Simulator Project Devices</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Select a project to add its pre-mapped sensors and actuators with one click</p>
             </div>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors p-1">
@@ -525,7 +525,7 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
-              <span>{p.projectName.split('(')[0]}</span>
+              <span>{p.projectName.split('(')[0].trim()}</span>
               <span className="ml-1 text-[10px] opacity-75 font-mono">({p.devices.length})</span>
             </button>
           ))}
@@ -546,7 +546,7 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
               className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-all shadow-md active:scale-95 shrink-0 flex items-center gap-1.5"
             >
               <Plus size={15} />
-              استيراد هذا المشروع ({activePreset.devices.length})
+              Import This Project ({activePreset.devices.length})
             </button>
           </div>
 
@@ -564,7 +564,7 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
                     <div className="flex items-center gap-1.5">
                       <span className="font-bold text-xs text-foreground truncate">{dev.name}</span>
                       {isAdded && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-white/60">مضاف ✓</span>
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-white/60">Added ✓</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
@@ -583,8 +583,8 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
 
         {/* Footer */}
         <div className="p-4 border-t border-border bg-muted/40 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span className="text-xs text-muted-foreground text-center sm:text-right">
-            تتم إضافة الأجهزة تلقائياً بمنافذ GPIO ومواضيع MQTT المطابقة لمحاكي Wokwi.
+          <span className="text-xs text-muted-foreground text-center sm:text-left">
+            Devices are automatically configured with GPIO pins and MQTT topics matching the Wokwi simulator.
           </span>
           <div className="flex gap-2 shrink-0">
             <button
@@ -595,13 +595,13 @@ function ProjectPresetsModal({ onClose, onImport, existingTopics }) {
               className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow-md active:scale-95 flex items-center gap-1.5"
             >
               <Layers size={14} />
-              استيراد كافة المشاريع معاً
+              Import All Projects
             </button>
             <button
               onClick={onClose}
               className="px-4 py-2 rounded-xl bg-muted border border-border text-foreground font-medium text-xs hover:bg-muted/80"
             >
-              إلغاء
+              Cancel
             </button>
           </div>
         </div>
@@ -692,7 +692,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
       }));
 
     if (newItems.length === 0) {
-      alert('جميع أجهزة هذا المشروع مسجلة بالفعل في قائمتك!');
+      alert('All devices from this project are already registered in your list!');
       return;
     }
 
@@ -743,7 +743,7 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
             className="mx-0 flex items-center gap-1.5 rounded-xl text-sm px-3.5 py-2 border-primary/40 text-primary hover:bg-primary/10 font-bold shadow-sm"
           >
             <Layers size={16} className="text-primary" />
-            أجهزة المشاريع الجاهزة
+            Project Presets
           </Button>
           <Button
             type="button"
@@ -773,8 +773,8 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
               <Cpu size={20} className="text-primary" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-foreground">تجهيز أجهزة المحاكي للاختبار المباشر</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">أضف حساسات ومشغلات مشروع المحطة الشاملة (All-In-One) بنقرة واحدة لتسجيلها وتتبع قراءاتها</p>
+              <h4 className="text-sm font-bold text-foreground">Quick Setup for Live Simulator Testing</h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Import all sensors and actuators from the All-In-One Station project with one click to register and track their live telemetry</p>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
@@ -782,13 +782,13 @@ export default function DevicesView({ userUID, lastSeen, deviceStates }) {
               onClick={() => handleImportPreset(PROJECT_DEVICE_PRESETS[0].devices)}
               className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow-sm transition-all active:scale-95"
             >
-              + إضافة أجهزة المحطة الشاملة (11 جهاز)
+              + Add All-In-One Station (11 Devices)
             </button>
             <button
               onClick={() => setShowPresetsModal(true)}
               className="px-3 py-2 rounded-xl bg-muted border border-border text-foreground font-medium text-xs hover:bg-muted/80 transition-all"
             >
-              باقي المشاريع
+              More Projects
             </button>
           </div>
         </div>

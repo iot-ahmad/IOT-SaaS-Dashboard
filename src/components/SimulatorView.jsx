@@ -292,10 +292,10 @@ export default function SimulatorView({
                 </div>
                 <div>
                   <h3 className="font-bold text-sm sm:text-base text-foreground">
-                    مكتبة مشاريع المحاكي — الكود والتوصيل الإلكتروني
+                    Simulator Project Library — Code &amp; Circuit Wiring
                   </h3>
                   <p className="text-[11px] text-zinc-400">
-                    مشاريع جاهزة للأكواد والتوصيلات لنسخها فوراً إلى Wokwi
+                    Ready-to-use firmware sketches and wiring diagrams to copy directly into Wokwi
                   </p>
                 </div>
               </div>
@@ -318,7 +318,7 @@ export default function SimulatorView({
                       : 'bg-zinc-900/60 hover:bg-zinc-800 border-white/10 text-zinc-400 hover:text-foreground'
                   }`}
                 >
-                  <span>{proj.title.split('(')[0]}</span>
+                  <span>{proj.title.split('(')[0].trim()}</span>
                   {selectedProjectId === proj.id && <CheckCircle2 size={12} className="text-emerald-400" />}
                 </button>
               ))}
@@ -333,7 +333,7 @@ export default function SimulatorView({
                   }`}
                 >
                   <Code size={14} />
-                  <span>كود sketch.ino</span>
+                  <span>sketch.ino Code</span>
                 </button>
                 <button
                   onClick={() => setModalTab('wiring')}
@@ -342,7 +342,7 @@ export default function SimulatorView({
                   }`}
                 >
                   <Cpu size={14} />
-                  <span>مخطط التوصيل</span>
+                  <span>Wiring Diagram</span>
                 </button>
                 <button
                   onClick={() => setModalTab('libraries')}
@@ -351,18 +351,18 @@ export default function SimulatorView({
                   }`}
                 >
                   <Layers size={14} />
-                  <span>المكتبات (libraries.txt)</span>
+                  <span>Libraries (libraries.txt)</span>
                 </button>
               </div>
 
               {modalTab === 'code' && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-zinc-400 hidden sm:inline">الـ UID بالكود:</span>
+                  <span className="text-[11px] text-zinc-400 hidden sm:inline">UID in code:</span>
                   <button
                     onClick={() => setUseAccountUid(v => !v)}
                     className="px-2 py-1 rounded-md text-[11px] font-semibold border border-white/10 bg-zinc-800 text-foreground cursor-pointer"
                   >
-                    {useAccountUid ? `✓ حسابي (${userUID?.slice(0, 6)}...)` : 'قالب فارغ ("")'}
+                    {useAccountUid ? `✓ My Account (${userUID?.slice(0, 6)}...)` : 'Blank Template ("")'}
                   </button>
                 </div>
               )}
@@ -381,8 +381,8 @@ export default function SimulatorView({
                       {mqttMode === 'private' ? <ShieldCheck size={15} className="shrink-0 mt-0.5" /> : <AlertTriangle size={15} className="shrink-0 mt-0.5" />}
                       <span>
                         {mqttMode === 'private'
-                          ? `تحقق شهادة TLS (${mqttConfig?.caName || 'Root CA'}) + مزامنة NTP + Client ID فريد مفعّلة مع ${mqttConfig?.provisionedBy === 'emqx_auto' ? 'حساب EMQX المعزول تلقائياً' : 'سيرفرك الخاص'}. اضغط "تضمين بيانات MQTT الخاصة بي" لنسخ كود جاهز للتشغيل.`
-                          : `تحقق شهادة TLS (${mqttConfig?.caName || 'Root CA'}) + Client ID فريد مفعّلان. بيانات الدخول مخفية (placeholders) للحماية — فعّل السيرفر الخاص أو التوليد التلقائي من Profile & Settings → Security.`}
+                          ? `TLS certificate verification (${mqttConfig?.caName || 'Root CA'}) + NTP sync + unique Client ID enabled with ${mqttConfig?.provisionedBy === 'emqx_auto' ? 'auto-isolated EMQX account' : 'your private broker'}. Click "Include My MQTT Credentials" to copy ready-to-run code.`
+                          : `TLS certificate verification (${mqttConfig?.caName || 'Root CA'}) + unique Client ID enabled. Credentials are masked with placeholders for security — enable a private broker or auto-provisioning in Profile & Settings → Security.`}
                       </span>
                     </div>
                     {mqttMode === 'private' && (
@@ -391,19 +391,19 @@ export default function SimulatorView({
                         onClick={() => setIncludePrivateCreds(v => !v)}
                         className="px-2.5 py-1 rounded-lg bg-zinc-900/70 hover:bg-zinc-900 border border-white/10 text-foreground font-semibold shrink-0 cursor-pointer"
                       >
-                        {includePrivateCreds ? 'إخفاء كلمة المرور (placeholders)' : 'تضمين بيانات MQTT الخاصة بي'}
+                        {includePrivateCreds ? 'Mask Password (Placeholders)' : 'Include My MQTT Credentials'}
                       </button>
                     )}
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-foreground">كود C++ كامل للـ ESP32:</span>
+                    <span className="font-bold text-foreground">Complete ESP32 C++ Code:</span>
                     <button
                       onClick={copyCode}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-bold shadow cursor-pointer"
                     >
                       {copiedCode ? <Check size={13} /> : <Copy size={13} />}
-                      <span>{copiedCode ? 'تم النسخ!' : 'نسخ الكود'}</span>
+                      <span>{copiedCode ? 'Copied!' : 'Copy Code'}</span>
                     </button>
                   </div>
                   <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono text-[11px] overflow-x-auto border border-white/10 max-h-[440px] leading-relaxed scrollbar-thin select-all">
@@ -415,25 +415,25 @@ export default function SimulatorView({
               {modalTab === 'wiring' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between bg-zinc-800/40 border border-white/10 rounded-xl p-3">
-                    <p className="text-zinc-300 text-xs">انسخ <code>diagram.json</code> والصقه في Wokwi ليتم توصيل الأسلاك تلقائياً:</p>
+                    <p className="text-zinc-300 text-xs">Copy <code>diagram.json</code> and paste it into Wokwi to wire all components automatically:</p>
                     <button
                       onClick={copyDiagram}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-foreground border border-white/10 font-bold shadow cursor-pointer shrink-0"
                     >
                       {copiedDiagram ? <Check size={13} /> : <Copy size={13} />}
-                      <span>{copiedDiagram ? 'تم النسخ!' : 'نسخ diagram.json'}</span>
+                      <span>{copiedDiagram ? 'Copied!' : 'Copy diagram.json'}</span>
                     </button>
                   </div>
 
                   <div className="border border-white/10 rounded-xl overflow-hidden overflow-x-auto">
-                    <table className="w-full text-right text-xs">
+                    <table className="w-full text-left text-xs">
                       <thead className="bg-zinc-800 text-zinc-400 font-semibold border-b border-white/10">
                         <tr>
-                          <th className="p-2.5">القطعة</th>
-                          <th className="p-2.5">المنفذ</th>
-                          <th className="p-2.5">النوع</th>
-                          <th className="p-2.5">موضوع الـ MQTT</th>
-                          <th className="p-2.5">الوظيفة</th>
+                          <th className="p-2.5">Component</th>
+                          <th className="p-2.5">Pin</th>
+                          <th className="p-2.5">Type</th>
+                          <th className="p-2.5">MQTT Topic</th>
+                          <th className="p-2.5">Function</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5 font-mono text-[11px]">
@@ -455,13 +455,13 @@ export default function SimulatorView({
               {modalTab === 'libraries' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-foreground text-sm">المكتبات المطلوبة (libraries.txt):</h4>
+                    <h4 className="font-bold text-foreground text-sm">Required Libraries (libraries.txt):</h4>
                     <button
                       onClick={copyLibraries}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-foreground border border-white/10 font-bold shadow cursor-pointer"
                     >
                       {copiedLibraries ? <Check size={13} /> : <Copy size={13} />}
-                      <span>{copiedLibraries ? 'تم النسخ!' : 'نسخ المكتبات'}</span>
+                      <span>{copiedLibraries ? 'Copied!' : 'Copy Libraries'}</span>
                     </button>
                   </div>
                   <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono text-xs overflow-x-auto border border-white/10">
@@ -473,13 +473,13 @@ export default function SimulatorView({
 
             <div className="flex items-center justify-between px-5 py-3 border-t border-white/10 bg-zinc-800/40 shrink-0">
               <span className="text-xs text-zinc-400 font-mono">
-                المشروع: <strong className="text-foreground">{activeProject.title.split('(')[0]}</strong>
+                Project: <strong className="text-foreground">{activeProject.title.split('(')[0].trim()}</strong>
               </span>
               <button 
                 onClick={() => setShowProjectsModal(false)}
                 className="px-4 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-xs font-bold text-foreground cursor-pointer"
               >
-                إغلاق
+                Close
               </button>
             </div>
 

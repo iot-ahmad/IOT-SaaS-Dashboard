@@ -52,31 +52,30 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
   const featuresList = [
     {
-      title: 'لوحات تحكم تفاعلية',
-      desc: 'قم بتصميم وتخصيص لوحات تحكم لحظية لعرض بيانات المستشعرات والتحكم بالأجهزة بنقرة واحدة.',
+      title: 'Interactive Dashboards',
+      desc: 'Design and customize real-time dashboards to visualize sensor telemetry and control hardware with a single click.',
       icon: <LayoutDashboard size={20} />
     },
     {
-      title: 'اتصال لحظي MQTT',
-      desc: 'ربط مباشر فوري للأجهزة والعتاد مثل ESP32 باستخدام بروتوكول MQTT الآمن وبزمن استجابة فائق السرعة.',
+      title: 'Real-Time MQTT Connectivity',
+      desc: 'Instant, secure connection for ESP32 and IoT hardware over TLS-encrypted MQTT with ultra-low latency.',
       icon: <Cpu size={20} />
     },
     {
-      title: 'أتمتة ذكية وسيناريوهات',
-      desc: 'صياغة قواعد وسيناريوهات برمجية للتحكم التلقائي بأجهزتك بناءً على قراءات الحساسات المختلفة.',
+      title: 'Smart Automations & Rules',
+      desc: 'Build automated rules and scenarios to trigger your actuators automatically based on live sensor thresholds.',
       icon: <Zap size={20} />
     },
     {
-      title: 'تنبيهات فورية وذكية',
-      desc: 'نظام إشعارات وتنبيهات ذكي يرسل تحديثات حالة الأجهزة فورياً لمنع المشاكل قبل حدوثها.',
+      title: 'Instant Alerts & Diagnostics',
+      desc: 'Smart notification and physical AI diagnostic engine that monitors device health and prevents failures early.',
       icon: <BellRing size={20} />
     }
   ];
 
   return (
-    /* dir="rtl" on root — fixes ALL BiDi issues globally for this page */
     <div
-      dir="rtl"
+      dir="ltr"
       className="relative flex min-h-screen w-full flex-col bg-[#080808] text-white overflow-y-auto overflow-x-hidden scroll-smooth font-sans select-none"
     >
       {/* Dynamic Wave & Grain Background */}
@@ -85,19 +84,19 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
       {/* ── Header ── */}
       <header className="fixed top-0 left-0 right-0 z-20 w-full px-6 py-6 md:px-12 flex items-center justify-between">
         {/* Left: Brand */}
-        <div dir="ltr" className="flex items-center select-none">
+        <div className="flex items-center select-none">
           <img src="/logo_horizontal.svg" alt="IOT365" className="w-24 h-6 object-contain" />
         </div>
 
         {/* Middle: Links */}
-        <div dir="rtl" className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-white/40">
-          <a href="#features" onClick={handleNavToFeatures} className="hover:text-white transition-colors">المميزات</a>
-          <a href="#docs" className="hover:text-white transition-colors">التوثيق</a>
-          <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0 text-[11px] font-bold tracking-widest uppercase">الدعم الفني</button>
+        <div className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-white/40 uppercase">
+          <a href="#features" onClick={handleNavToFeatures} className="hover:text-white transition-colors">Features</a>
+          <a href="#features" onClick={handleNavToFeatures} className="hover:text-white transition-colors">Documentation</a>
+          <button onClick={() => setShowSupport(true)} className="hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0 text-[11px] font-bold tracking-widest uppercase">Support</button>
         </div>
 
         {/* Right: Toggle Button */}
-        <div dir="ltr">
+        <div>
           <button
             onClick={() => { setError(null); setShowLogin(!showLogin); }}
             className="border border-white/20 hover:border-white/50 px-5 py-2 rounded-sm text-[10px] font-black tracking-widest text-white hover:bg-white/10 transition-all duration-300 cursor-pointer uppercase"
@@ -125,7 +124,7 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               <div className="w-full min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20">
                 {/* Cyan Subtitle Badge */}
                 <span className="text-cyan-400 text-xs font-extrabold tracking-[0.25em] uppercase mb-4 opacity-80">
-                  منصة إنترنت الأشياء الذكية · SMART IOT PLATFORM
+                  SMART IOT CLOUD PLATFORM
                 </span>
 
                 {/* Large Outline/Solid Typography Title */}
@@ -148,14 +147,13 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
 
                 {/* Website Description */}
                 <p
-                  dir="rtl"
-                  className="bidi-auto text-white/50 text-sm sm:text-base font-light leading-relaxed max-w-xl mb-10 text-center"
+                  className="text-white/50 text-sm sm:text-base font-light leading-relaxed max-w-xl mb-10 text-center"
                 >
-                  بيئة سحابية تفاعلية لربط ومراقبة أجهزة إنترنت الأشياء لحظياً. تواصل مباشر وتحكم ذكي بالعتاد والـ{' '}
-                  <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code></bdi>
-                  {' '}عبر الـ{' '}
-                  <bdi><code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code></bdi>
-                  {' '}بكل سهولة وبدون تعقيدات.
+                  Interactive cloud platform to connect, simulate, and monitor IoT devices in real time. Direct hardware control for{' '}
+                  <code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">ESP32</code>
+                  {' '}over isolated{' '}
+                  <code className="bg-white/5 border border-white/10 text-white/80 px-1.5 py-0.5 rounded font-mono text-xs">MQTT</code>
+                  {' '}with zero infrastructure hassle.
                 </p>
 
                 {/* Action Buttons */}
@@ -164,13 +162,13 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                     onClick={() => setShowLogin(true)}
                     className="px-8 py-3.5 bg-white text-black font-extrabold rounded-full hover:bg-neutral-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.55)] active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
                   >
-                    ابدأ الآن · GET STARTED
+                    GET STARTED
                   </button>
                   <button
                     onClick={() => navigate('/hub')}
                     className="px-8 py-3.5 bg-transparent text-white border border-white/20 font-extrabold rounded-full hover:bg-white/10 hover:border-white/40 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer text-xs sm:text-sm tracking-widest uppercase"
                   >
-                    تصفح المشاريع · BROWSE PROJECTS
+                    BROWSE PROJECTS
                   </button>
                 </div>
               </div>
@@ -181,19 +179,19 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                 className="w-full max-w-5xl py-24 px-6 flex flex-col items-center justify-center text-center mt-12 scroll-mt-24"
               >
                 <span className="text-cyan-400 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-3">
-                  مواصفات ومميزات المشروع
+                  PLATFORM CAPABILITIES
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-16 tracking-tight">
-                  بيئة متكاملة لإدارة أجهزة الـ IOT
+                  Complete Ecosystem for IoT Hardware
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full text-right">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full text-left">
                   {featuresList.map((feat, idx) => (
                     <div 
                       key={idx} 
                       className="p-8 rounded-3xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-md flex flex-col justify-between"
                     >
-                      <div className="flex flex-row-reverse items-center justify-between mb-6">
+                      <div className="flex items-center justify-between mb-6">
                         <div className="w-10 h-10 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center text-cyan-400">
                           {feat.icon}
                         </div>
@@ -222,7 +220,6 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
             >
               {error && (
                 <div
-                  dir="rtl"
                   className="w-full bg-card/[0.03] border border-border text-white/50 text-xs rounded-2xl p-4 mb-4 text-center leading-relaxed"
                 >
                   {error}
@@ -233,14 +230,14 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
               <div className="w-full rounded-3xl border border-white/[0.07] bg-card/[0.02] backdrop-blur-2xl p-8 shadow-[0_20px_80px_rgba(0,0,0,0.9)] relative overflow-hidden flex flex-col items-center">
                 <div className="absolute -top-20 -right-20 w-48 h-48 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
 
-                <div dir="rtl" className="text-center mb-8">
+                <div className="text-center mb-8">
                   <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mx-auto mb-4 text-white/30">
                     <GraduationCap size={22} />
                   </div>
                   <h2 className="text-2xl font-black text-white mb-1.5 tracking-tight">
-                    تسجيل الدخول
+                    Sign In
                   </h2>
-                  <p dir="ltr" className="ltr text-[10px] font-mono tracking-[0.2em] text-white/20 uppercase">
+                  <p className="text-[10px] font-mono tracking-[0.2em] text-white/20 uppercase">
                     IOT STUDENT · SANDBOX GATEWAY
                   </p>
                 </div>
@@ -250,7 +247,6 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   type="button"
                   onClick={handleGoogleLogin}
                   disabled={loading}
-                  dir="rtl"
                   className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-semibold py-4 px-6 rounded-2xl text-sm border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-md disabled:opacity-40 cursor-pointer"
                 >
                   {loading ? (
@@ -258,17 +254,16 @@ export default function AuthPage({ loginWithGoogle, error, setError }) {
                   ) : (
                     <GoogleIcon />
                   )}
-                  <span>دخول سريع بحساب <bdi>Google</bdi></span>
+                  <span>Continue with Google</span>
                 </button>
 
                 {/* Back button */}
                 <button
                   onClick={() => { setError(null); setShowLogin(false); }}
-                  dir="rtl"
                   className="mt-6 text-[11px] text-white/20 hover:text-white/50 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <ArrowLeft size={12} className="rotate-180" />
-                  <span>العودة للرئيسية</span>
+                  <ArrowLeft size={12} />
+                  <span>Back to Home</span>
                 </button>
               </div>
             </motion.div>

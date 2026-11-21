@@ -168,7 +168,7 @@ export function MessagingProvider({ user, children }) {
       const newConvData = {
         participants: [user.uid, recipientId],
         participantsData,
-        lastMessage: 'بدء المحادثة',
+        lastMessage: 'Conversation started',
         lastMessageAt: serverTimestamp(),
         lastSenderId: user.uid,
         projectId: projectId || null,
@@ -212,7 +212,7 @@ export function MessagingProvider({ user, children }) {
 
       // Update conversation summary
       await updateDoc(doc(db, 'conversations', activeConversation.id), {
-        lastMessage: text.trim() || 'كود برمجي 💻',
+        lastMessage: text.trim() || 'Code snippet',
         lastMessageAt: serverTimestamp(),
         lastSenderId: user.uid,
         [`unreadFor.${recipientId}`]: (activeConversation.unreadFor?.[recipientId] || 0) + 1
@@ -229,10 +229,10 @@ export function MessagingProvider({ user, children }) {
       const qaData = {
         question: question.trim(),
         answer: answer.trim(),
-        authorName: user?.displayName || 'مطور في المجتمع',
+        authorName: user?.displayName || 'Community Developer',
         authorId: user?.uid,
         projectId,
-        projectTitle: projectTitle || 'مشروع IoT',
+        projectTitle: projectTitle || 'IoT Project',
         createdAt: new Date().toISOString(),
         upvotes: 1
       };
@@ -268,7 +268,7 @@ export function MessagingProvider({ user, children }) {
         reason,
         createdAt: serverTimestamp()
       });
-      alert('تم إرسال البلاغ إلى فريق الإشراف للمراجعة.');
+      alert('Report submitted to the moderation team for review.');
     } catch (err) {
       console.error('Failed to report conversation:', err);
     }

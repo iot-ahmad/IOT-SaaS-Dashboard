@@ -12,30 +12,30 @@ export function SchematicSvgViewer({ wiringImageUrl, wiringDescription, componen
   const [isZoomed, setIsZoomed] = useState(false);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-left" dir="ltr">
       {/* Wiring Image */}
       {wiringImageUrl ? (
         <div className="space-y-2">
           <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#141518] text-center p-3 group">
             <img
               src={wiringImageUrl}
-              alt="مخطط التوصيل الكهربائي"
+              alt="Electrical Wiring Schematic"
               className="w-full object-contain max-h-[460px] mx-auto rounded-xl cursor-pointer hover:scale-[1.01] transition-transform"
               onClick={() => setIsZoomed(true)}
             />
             <button
               onClick={() => setIsZoomed(true)}
-              className="absolute bottom-4 left-4 px-3 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 cursor-pointer"
+              className="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 cursor-pointer"
             >
               <Eye size={13} />
-              <span>تكبير المخطط</span>
+              <span>Zoom Schematic</span>
             </button>
           </div>
         </div>
       ) : (
         <div className="p-8 rounded-2xl border border-dashed border-white/[0.08] bg-[#16171a] text-center space-y-2">
           <Zap size={28} className="text-zinc-600 mx-auto" />
-          <p className="text-xs text-zinc-400">لم يتم إرفاق صورة لمخطط التوصيل لهذا المشروع.</p>
+          <p className="text-xs text-zinc-400">No wiring schematic image attached to this project.</p>
         </div>
       )}
 
@@ -44,7 +44,7 @@ export function SchematicSvgViewer({ wiringImageUrl, wiringDescription, componen
         <div className="space-y-2">
           <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
             <FileText size={14} className="text-zinc-400" />
-            <span>شرح وتفاصيل التوصيل الصحيح (Pinout & Wiring Guide):</span>
+            <span>Pinout & Wiring Guide:</span>
           </h4>
           <div className="text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap bg-[#1e2024] p-4 rounded-xl border border-white/[0.06] font-mono select-text">
             {wiringDescription}
@@ -61,14 +61,14 @@ export function SchematicSvgViewer({ wiringImageUrl, wiringDescription, componen
           <div className="relative max-w-5xl max-h-[90vh]">
             <img
               src={wiringImageUrl}
-              alt="مخطط التوصيل بالحجم الكامل"
+              alt="Full Size Wiring Schematic"
               className="max-w-full max-h-[85vh] object-contain rounded-2xl border border-white/10 shadow-2xl"
             />
             <button
               onClick={() => setIsZoomed(false)}
-              className="absolute top-4 left-4 px-4 py-2 rounded-xl bg-black/80 border border-white/20 text-white text-xs font-bold hover:bg-white/10"
+              className="absolute top-4 right-4 px-4 py-2 rounded-xl bg-black/80 border border-white/20 text-white text-xs font-bold hover:bg-white/10"
             >
-              إغلاق (✕)
+              Close (X)
             </button>
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function WiringBuilder({
       if (res && res.secure_url) {
         onWiringImageChange(res.secure_url);
       } else {
-        throw new Error('فشل رفع الصورة إلى السحابة');
+        throw new Error('Failed to upload image to cloud storage');
       }
     } catch (err) {
       console.error(err);
@@ -134,25 +134,25 @@ export default function WiringBuilder({
     const mcu = components.find(c => c.category === 'MCU' || c.name?.toLowerCase().includes('esp') || c.name?.toLowerCase().includes('arduino'));
     const mcuName = mcu?.name || 'ESP32 NodeMCU';
 
-    const defaultGuide = `### 🔌 جدول التوصيل الكهربائي (${mcuName}):
-1. التغذية والطاقة:
-   - ${mcuName} 3.3V / 5V  ───►  VCC لجميع الحساسات
-   - ${mcuName} GND       ───►  GND (تأريض مشترك)
+    const defaultGuide = `### Electrical Wiring Table (${mcuName}):
+1. Power & Ground Distribution:
+   - ${mcuName} 3.3V / 5V  ───►  VCC for all sensors
+   - ${mcuName} GND       ───►  Common GND bus
 
-2. خطوط الإشارة والبيانات:
-   - الحساس 1 (Data/OUT)  ───►  GPIO 21 (SDA / Signal)
-   - الحساس 2 (Data/OUT)  ───►  GPIO 22 (SCL / ADC)
-   - المشغل/الريلاي (IN)   ───►  GPIO 25 (Digital Output)
+2. Signal & Data Lines:
+   - Sensor 1 (Data/OUT)  ───►  GPIO 21 (SDA / Signal)
+   - Sensor 2 (Data/OUT)  ───►  GPIO 22 (SCL / ADC)
+   - Actuator/Relay (IN)  ───►  GPIO 25 (Digital Output)
 
-⚠️ ملاحظات هامة:
-- تأكد من استخدام مقاومة Pull-up 4.7kΩ مع حساسات I2C أو 1-Wire عند الحاجة.
-- لا تقم بتوصيل المحركات أو المضخات مباشرة بالمتحكم؛ استخدم مرحل (Relay) أو محرك درايفر (L298N) مع مصدر طاقة خارجي.`;
+Important Notes:
+- Ensure a 4.7kΩ pull-up resistor is used on I2C or 1-Wire data lines where required.
+- Never drive motors or pumps directly from MCU GPIO pins; always use an isolated relay module or motor driver (e.g., L298N) with an external power supply.`;
 
     onWiringDescriptionChange(defaultGuide);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left" dir="ltr">
       
       {/* ── 1. Upload Schematic Image ── */}
       <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-5 space-y-4">
@@ -160,10 +160,10 @@ export default function WiringBuilder({
           <div>
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Image size={16} className="text-zinc-400" />
-              <span>1. رفع صورة مخطط التوصيل (Schematic / Circuit Diagram)</span>
+              <span>1. Upload Wiring Schematic (Schematic / Circuit Diagram)</span>
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5">
-              صورة مصممة عبر برامج الدوائر (Fritzing, Wokwi, EasyEDA) أو صورة واضحة للتوصيل الحقيقي
+              Upload a circuit diagram exported from Fritzing, Wokwi, or EasyEDA, or a clear photo of your breadboard build
             </p>
           </div>
 
@@ -172,7 +172,7 @@ export default function WiringBuilder({
             onClick={() => setShowUrlInput(!showUrlInput)}
             className="text-xs text-zinc-400 hover:text-white transition-colors"
           >
-            {showUrlInput ? 'رفع ملف بدلاً من الرابط' : '+ إضافة برابط صورة مباشر'}
+            {showUrlInput ? 'Upload file instead of URL' : '+ Add via direct image URL'}
           </button>
         </div>
 
@@ -197,7 +197,7 @@ export default function WiringBuilder({
               type="submit"
               className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white text-xs font-bold"
             >
-              تطبيق الرابط
+              Apply URL
             </button>
           </form>
         )}
@@ -207,18 +207,18 @@ export default function WiringBuilder({
           <div className="relative rounded-xl overflow-hidden border border-white/[0.08] bg-[#141518] text-center p-3 space-y-3">
             <img
               src={wiringImageUrl}
-              alt="مخطط التوصيل المرفوع"
+              alt="Uploaded Wiring Schematic"
               className="max-h-80 mx-auto object-contain rounded-lg"
             />
             <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs">
-              <span className="text-zinc-400 font-mono text-[11px]">تم إرفاق صورة المخطط بنجاح ✓</span>
+              <span className="text-zinc-400 font-mono text-[11px]">Schematic image attached</span>
               <button
                 type="button"
                 onClick={() => onWiringImageChange('')}
                 className="text-rose-400 hover:text-rose-300 flex items-center gap-1 cursor-pointer font-medium"
               >
                 <Trash2 size={13} />
-                <span>حذف الصورة واستبدالها</span>
+                <span>Remove & Replace Image</span>
               </button>
             </div>
           </div>
@@ -239,10 +239,10 @@ export default function WiringBuilder({
               )}
             </div>
             <p className="text-xs font-bold text-white mb-1">
-              {uploading ? 'جاري رفع ومعالجة صورة المخطط...' : 'اضغط لاختيار صورة المخطط أو اسحبها إلى هنا'}
+              {uploading ? 'Uploading and processing schematic image...' : 'Click to select schematic image or drag and drop here'}
             </p>
             <p className="text-[11px] text-zinc-500 font-mono">
-              يدعم PNG, JPG, WebP أو لقطات شاشة من Fritzing و Wokwi
+              Supports PNG, JPG, WebP, or screenshots from Fritzing & Wokwi
             </p>
           </label>
         )}
@@ -254,10 +254,10 @@ export default function WiringBuilder({
           <div>
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <FileText size={16} className="text-zinc-400" />
-              <span>2. شرح وتفاصيل التوصيل الصحيح (Pinout & Wiring Guide)</span>
+              <span>2. Pinout & Step-by-Step Wiring Guide</span>
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5">
-              وضح أرقام الأرجل (Pins) وكيفية توصيل كل حساس أو مشغل بالمتحكم خطوة بخطوة
+              Document the exact pin numbers and how each sensor or actuator connects to the microcontroller
             </p>
           </div>
 
@@ -266,7 +266,7 @@ export default function WiringBuilder({
             onClick={handleInsertTemplate}
             className="text-xs text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] px-3 py-1.5 rounded-xl transition-all cursor-pointer"
           >
-            + إدراج قالب توصيل مقترح
+            + Insert Suggested Wiring Template
           </button>
         </div>
 
@@ -274,7 +274,7 @@ export default function WiringBuilder({
           rows={7}
           value={wiringDescription}
           onChange={(e) => onWiringDescriptionChange(e.target.value)}
-          placeholder={`اكتب هنا تفاصيل الأرجل والتوصيلات:\nمثال:\n- VCC الحساس ──► منفذ 3.3V في ESP32\n- GND الحساس ──► منفذ GND في ESP32\n- خط البيانات (Data) ──► منفذ GPIO21`}
+          placeholder={`Write pinout and wiring details here:\nExample:\n- Sensor VCC ──► ESP32 3.3V Pin\n- Sensor GND ──► ESP32 GND Pin\n- Data Line (SDA) ──► ESP32 GPIO21`}
           className="w-full bg-[#1e2024] border border-white/[0.08] rounded-xl p-3.5 text-xs text-white focus:outline-none focus:border-white/20 leading-relaxed font-mono resize-none transition-colors"
         />
       </div>

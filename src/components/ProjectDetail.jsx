@@ -11,6 +11,11 @@ import { MarkdownPreview } from './ProjectPublisher';
 import { SchematicSvgViewer } from './ui/WiringBuilder';
 import { useMessaging } from '../context/MessagingContext';
 
+const formatDifficulty = (diff) => {
+  const map = { 'مبتدئ': 'Beginner', 'متوسط': 'Intermediate', 'متقدم': 'Advanced' };
+  return map[diff] || diff || 'Beginner';
+};
+
 export default function ProjectDetail({ currentUser }) {
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -26,14 +31,14 @@ export default function ProjectDetail({ currentUser }) {
   const viewIncremented = useRef(false);
 
   const handleDelete = async () => {
-    if (!window.confirm('هل أنت متأكد من رغبتك في حذف هذا المشروع؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    if (!window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
     try {
       setLoading(true);
       await deleteDoc(doc(db, 'projects', projectId));
       navigate('/hub/explore');
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء محاولة حذف المشروع.');
+      setError('An error occurred while trying to delete the project.');
       setLoading(false);
     }
   };
@@ -55,11 +60,11 @@ export default function ProjectDetail({ currentUser }) {
             updateDoc(docRef, { 'metrics.views': increment(1) }).catch(() => {});
           }
         } else {
-          setError('المشروع غير موجود أو تم حذفه.');
+          setError('Project not found or has been deleted.');
         }
       } catch (err) {
         console.error(err);
-        setError('حدث خطأ أثناء تحميل تفاصيل المشروع.');
+        setError('An error occurred while loading project details.');
       } finally {
         setLoading(false);
       }
@@ -114,12 +119,12 @@ export default function ProjectDetail({ currentUser }) {
       return;
     }
     if (project.ownerId === currentUser.uid) {
-      alert('أنت صاحب هذا المشروع!');
+      alert('You are the owner of this project!');
       return;
     }
     startConversation({
       recipientId: project.ownerId,
-      recipientName: project.ownerName || 'مطور المشروع',
+      recipientName: project.ownerName || 'Project Developer',
       recipientAvatar: '',
       projectId: project.id,
       projectTitle: project.title
@@ -136,15 +141,15 @@ export default function ProjectDetail({ currentUser }) {
 
   if (error || !project) {
     return (
-      <div className="max-w-md mx-auto text-center py-16 bg-[#18191c] border border-white/[0.08] p-8 rounded-2xl" dir="rtl">
+      <div className="max-w-md mx-auto text-center py-16 bg-[#18191c] border border-white/[0.08] p-8 rounded-2xl" dir="ltr">
         <AlertCircle className="w-12 h-12 text-zinc-500 mx-auto mb-3" />
-        <h3 className="text-base font-bold text-white">خطأ في التحميل</h3>
-        <p className="text-xs text-zinc-400 mt-2">{error || 'المشروع غير موجود.'}</p>
+        <h3 className="text-base font-bold text-white">Failed to Load Project</h3>
+        <p className="text-xs text-zinc-400 mt-2">{error || 'Project not found.'}</p>
         <button
           onClick={() => navigate('/hub/explore')}
           className="mt-5 font-medium px-5 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white text-xs transition-all cursor-pointer"
         >
-          العودة لاستكشاف المشاريع
+          Back to Explore Projects
         </button>
       </div>
     );
@@ -155,14 +160,14 @@ export default function ProjectDetail({ currentUser }) {
   const tagComponents = project.componentsList || [];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-16 text-right" dir="rtl">
+    <div className="max-w-5xl mx-auto space-y-6 pb-16 text-left" dir="ltr">
 
       {/* ── Breadcrumb & Action Bar ─────────────────────────── */}
       <div className="flex flex-wrap justify-between items-center gap-3 border-b border-white/[0.08] pb-4">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-zinc-400">
           <button onClick={() => navigate('/hub/explore')} className="hover:text-white transition-colors">
-            المشاريع
+            Projects
           </button>
           <span>/</span>
           <span className="text-white font-medium truncate max-w-[200px]">{project.title}</span>
@@ -180,7 +185,7 @@ export default function ProjectDetail({ currentUser }) {
             }`}
           >
             <ThumbsUp size={13} className={liked ? 'fill-white' : ''} />
-            <span>{liked ? 'أعجبني' : 'إعجاب'}</span>
+            <span>{liked ? 'Liked' : 'Like'}</span>
             <span className="text-[10px] font-mono text-zinc-400">({project.metrics?.likes || 0})</span>
           </button>
 
@@ -191,7 +196,7 @@ export default function ProjectDetail({ currentUser }) {
               className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 flex items-center gap-1.5 cursor-pointer"
             >
               <MessageSquare size={13} />
-              <span>مراسلة المطور</span>
+              <span>Message Developer</span>
             </button>
           )}
 
@@ -201,7 +206,7 @@ export default function ProjectDetail({ currentUser }) {
             className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white flex items-center gap-1.5 cursor-pointer"
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
-            <span>{copied ? 'تم النسخ!' : 'نسخ التوثيق'}</span>
+            <span>{copied ? 'Copied!' : 'Copy Documentation'}</span>
           </button>
 
           {/* Delete (Owner) */}
@@ -211,7 +216,7 @@ export default function ProjectDetail({ currentUser }) {
               className="px-3 py-1.5 rounded-xl text-xs font-medium border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center gap-1.5 cursor-pointer"
             >
               <Trash2 size={13} />
-              <span>حذف</span>
+              <span>Delete</span>
             </button>
           )}
         </div>
@@ -223,11 +228,11 @@ export default function ProjectDetail({ currentUser }) {
           <div className="flex-1 space-y-2.5">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-400">
-                {project.difficulty || 'مبتدئ'}
+                {formatDifficulty(project.difficulty)}
               </span>
               <span className="text-xs text-zinc-500 flex items-center gap-1 font-mono">
                 <Calendar size={11} />
-                {new Date(project.createdAt || Date.now()).toLocaleDateString('ar-JO')}
+                {new Date(project.createdAt || Date.now()).toLocaleDateString('en-US')}
               </span>
             </div>
 
@@ -244,9 +249,9 @@ export default function ProjectDetail({ currentUser }) {
               <div>
                 <button
                   onClick={() => navigate(`/${project.ownerUsername || 'user'}`)}
-                  className="font-bold text-white hover:text-zinc-200 transition-colors text-xs block text-right"
+                  className="font-bold text-white hover:text-zinc-200 transition-colors text-xs block text-left"
                 >
-                  {project.ownerName || 'مطور'}
+                  {project.ownerName || 'Developer'}
                 </button>
                 <p className="text-[10px] text-zinc-500 font-mono">@{project.ownerUsername || 'maker'}</p>
               </div>
@@ -255,15 +260,15 @@ export default function ProjectDetail({ currentUser }) {
             <div className="grid grid-cols-3 gap-1 pt-2 border-t border-white/[0.06] text-center text-zinc-400 text-[10px] font-mono">
               <div>
                 <span className="block font-bold text-white text-xs">{project.metrics?.views || 0}</span>
-                <span>مشاهدة</span>
+                <span>Views</span>
               </div>
               <div>
                 <span className="block font-bold text-white text-xs">{project.metrics?.likes || 0}</span>
-                <span>إعجاب</span>
+                <span>Likes</span>
               </div>
               <div>
                 <span className="block font-bold text-white text-xs">{project.metrics?.clones || 0}</span>
-                <span>نسخ</span>
+                <span>Clones</span>
               </div>
             </div>
           </div>
@@ -286,7 +291,7 @@ export default function ProjectDetail({ currentUser }) {
         <div className="space-y-3">
           <h2 className="text-sm font-bold text-white flex items-center gap-2">
             <Cpu size={16} className="text-zinc-400" />
-            <span>الأجهزة والقطع المستخدمة ({structuredComponents.length})</span>
+            <span>Hardware & Components Used ({structuredComponents.length})</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -324,7 +329,7 @@ export default function ProjectDetail({ currentUser }) {
         <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
           <h2 className="text-sm font-bold text-white flex items-center gap-2">
             <Zap size={16} className="text-zinc-400" />
-            <span>مخطط التوصيل الكهربائي وشرح التوصيلات (Circuit & Pinout)</span>
+            <span>Circuit Schematic & Pinout Connections</span>
           </h2>
         </div>
 
@@ -340,14 +345,14 @@ export default function ProjectDetail({ currentUser }) {
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <h3 className="text-xs font-bold text-white flex items-center gap-2">
             <Layers size={14} className="text-zinc-400" />
-            <span>التوثيق الفني والأكواد البرمجية</span>
+            <span>Technical Documentation & Source Code</span>
           </h3>
           <button
             onClick={handleClone}
             className="text-xs text-zinc-400 hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
           >
             <Copy size={12} />
-            <span>نسخ التوثيق</span>
+            <span>Copy Documentation</span>
           </button>
         </div>
         <div className="p-6 md:p-8">
@@ -359,7 +364,7 @@ export default function ProjectDetail({ currentUser }) {
       {publicQaList.length > 0 && (
         <div className="bg-[#18191c] border border-white/[0.08] p-5 rounded-2xl space-y-3">
           <h3 className="text-xs font-bold text-white border-b border-white/[0.06] pb-2">
-            الأسئلة الشائعة حول المشروع ({publicQaList.length})
+            Frequently Asked Questions ({publicQaList.length})
           </h3>
           <div className="space-y-2">
             {publicQaList.map(qa => (

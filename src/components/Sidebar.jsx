@@ -248,10 +248,10 @@ export default function Sidebar({
             variant="ghost"
             neon={false}
             className={`${navBtnClass} text-muted-foreground hover:text-foreground ${isCollapsed ? 'justify-center px-2' : ''}`}
-            title={isCollapsed ? 'الدعم الفني' : ''}
+            title={isCollapsed ? 'Support' : ''}
           >
             <HelpCircle size={16} />
-            {!isCollapsed && <span>الدعم الفني</span>}
+            {!isCollapsed && <span>Support</span>}
           </Button>
 
           <Button

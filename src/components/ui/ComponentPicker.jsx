@@ -69,16 +69,16 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" dir="rtl">
-      <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" dir="ltr">
+      <div className="bg-card dark:bg-[#0c0e14] border border-border rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-left">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <Cpu size={18} className="text-primary" />
-              مكتبة الأجهزة والقطع الإلكترونية
+              Hardware & Electronic Component Library
             </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">اختر من القطع الجاهزة أو أضف قطعة مخصصة لمشروعك</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Select from pre-configured parts or add a custom component to your project</p>
           </div>
           <button
             type="button"
@@ -92,13 +92,13 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
         {/* Search & Category filter */}
         <div className="p-5 border-b border-border space-y-3 bg-muted/30">
           <div className="relative">
-            <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
             <input
               type="text"
-              placeholder="ابحث عن قطعة (ESP32, DHT22, Relay, شاشة, سيرفو...)"
+              placeholder="Search components (ESP32, DHT22, Relay, OLED, Servo...)"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl py-2.5 pr-10 pl-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+              className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl py-2.5 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
             />
           </div>
 
@@ -168,13 +168,13 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
 
               {filteredComponents.length === 0 && (
                 <div className="text-center py-10 space-y-3">
-                  <p className="text-xs text-muted-foreground">لم نجد قطعة مطابقة لبحثك في المكتبة.</p>
+                  <p className="text-xs text-muted-foreground">No matching components found in the library.</p>
                   <button
                     type="button"
                     onClick={() => setShowCustomForm(true)}
                     className="text-xs font-bold text-primary hover:underline"
                   >
-                    + إضافة قطعة مخصصة يدوياً الآن
+                    + Add a Custom Component Manually
                   </button>
                 </div>
               )}
@@ -182,14 +182,14 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
           ) : (
             /* Custom Part Form */
             <form onSubmit={handleCreateCustom} className="space-y-4 max-w-md mx-auto py-2">
-              <h4 className="text-sm font-bold text-foreground">إضافة قطعة مخصصة يدوياً</h4>
+              <h4 className="text-sm font-bold text-foreground">Add Custom Component Manually</h4>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-muted-foreground">اسم القطعة أو الحساس *</label>
+                <label className="block text-xs font-bold text-muted-foreground">Component or Sensor Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="مثال: BMP280 Barometric Pressure"
+                  placeholder="e.g., BMP280 Barometric Pressure Sensor"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
@@ -198,35 +198,35 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-muted-foreground">التصنيف</label>
+                  <label className="block text-xs font-bold text-muted-foreground">Category</label>
                   <select
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
                     className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
                   >
-                    <option value="MCU">وحدة تحكم (MCU)</option>
-                    <option value="SENSOR">حساس (SENSOR)</option>
-                    <option value="ACTUATOR">مشغل / محرك (ACTUATOR)</option>
-                    <option value="DISPLAY">شاشة (DISPLAY)</option>
-                    <option value="POWER">طاقة (POWER)</option>
-                    <option value="OTHER">أخرى (OTHER)</option>
+                    <option value="MCU">Microcontroller (MCU)</option>
+                    <option value="SENSOR">Sensor (SENSOR)</option>
+                    <option value="ACTUATOR">Actuator / Motor (ACTUATOR)</option>
+                    <option value="DISPLAY">Display (DISPLAY)</option>
+                    <option value="POWER">Power Supply (POWER)</option>
+                    <option value="OTHER">Other (OTHER)</option>
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-muted-foreground">صورة القطعة</label>
+                  <label className="block text-xs font-bold text-muted-foreground">Component Image</label>
                   <label className="flex items-center justify-center p-2.5 border border-dashed border-border rounded-xl text-xs text-muted-foreground hover:border-primary cursor-pointer">
-                    {customUploading ? 'جاري الرفع...' : customImageUrl ? 'تم اختيار صورة' : 'اختر صورة'}
+                    {customUploading ? 'Uploading...' : customImageUrl ? 'Image Selected' : 'Choose Image'}
                     <input type="file" accept="image/*" className="hidden" onChange={handleCustomUpload} />
                   </label>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-muted-foreground">وظيفة القطعة في المشروع</label>
+                <label className="block text-xs font-bold text-muted-foreground">Component Role in Project</label>
                 <textarea
                   rows={3}
-                  placeholder="وصف مختصر لوظيفة هذه القطعة..."
+                  placeholder="Brief description of what this component does..."
                   value={customRole}
                   onChange={(e) => setCustomRole(e.target.value)}
                   className="w-full bg-card dark:bg-[#07080c] border border-border rounded-xl p-2.5 text-xs text-foreground focus:outline-none focus:border-primary resize-none"
@@ -239,14 +239,14 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
                   style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
                   className="flex-1 font-bold py-2.5 rounded-xl text-xs hover:opacity-90 transition-opacity"
                 >
-                  إضافة القطعة للمشروع
+                  Add Component to Project
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowCustomForm(false)}
                   className="px-4 py-2.5 rounded-xl border border-border text-xs text-muted-foreground hover:text-foreground"
                 >
-                  إلغاء
+                  Cancel
                 </button>
               </div>
             </form>
@@ -261,7 +261,7 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
               onClick={() => setShowCustomForm(true)}
               className="text-xs font-bold text-primary hover:underline cursor-pointer flex items-center gap-1"
             >
-              <Plus size={14} /> لم تجد قطعتك؟ أضف قطعة مخصصة
+              <Plus size={14} /> Can't find your part? Add a custom component
             </button>
           ) : (
             <button
@@ -269,12 +269,12 @@ function ComponentDatabaseModal({ isOpen, onClose, onSelect, onAddCustom }) {
               onClick={() => setShowCustomForm(false)}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              العودة لقائمة المكتبة
+              Back to Library Catalog
             </button>
           )}
 
           <span className="text-[11px] text-muted-foreground font-mono">
-            {COMPONENT_DATABASE.length} قطع متوفرة
+            {COMPONENT_DATABASE.length} Parts Available
           </span>
         </div>
       </div>
@@ -313,14 +313,14 @@ export default function ComponentPicker({ components = [], onChange }) {
   };
 
   return (
-    <div className="space-y-5 text-right" dir="rtl">
+    <div className="space-y-5 text-left" dir="ltr">
       {/* Top Banner Info */}
       <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-3">
         <Cpu size={18} className="text-primary shrink-0 mt-0.5" />
         <div>
-          <h4 className="text-xs font-bold text-foreground">شبكة بطاقات الأجهزة والقطع التفاعلية</h4>
+          <h4 className="text-xs font-bold text-foreground">Interactive Hardware Component Grid</h4>
           <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-            أضف كل قطعة إلكترونية مستخدمة (ميكروكنترولر، حساسات، شاشات، مضخات). يمكنك التعديل المباشر على الصور وأوصاف الوظائف لتبسيط فهم الدائرة لبقية المطورين.
+            Add every electronic module used in your build (microcontrollers, sensors, displays, actuators). You can directly edit component names and functional descriptions to make your circuit easy to understand for other developers.
           </p>
         </div>
       </div>
@@ -336,8 +336,8 @@ export default function ComponentPicker({ components = [], onChange }) {
             <button
               type="button"
               onClick={() => handleRemoveComponent(comp.id)}
-              className="absolute top-3 left-3 p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
-              title="حذف القطعة"
+              className="absolute top-3 right-3 p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
+              title="Remove Component"
             >
               <Trash2 size={13} />
             </button>
@@ -363,7 +363,7 @@ export default function ComponentPicker({ components = [], onChange }) {
                     type="text"
                     value={comp.name}
                     onChange={(e) => handleUpdateComponent(comp.id, { name: e.target.value })}
-                    placeholder="اسم القطعة..."
+                    placeholder="Component name..."
                     className="w-full bg-transparent font-bold text-xs text-foreground focus:outline-none focus:border-b border-primary truncate"
                   />
                 </div>
@@ -375,7 +375,7 @@ export default function ComponentPicker({ components = [], onChange }) {
                   rows={2}
                   value={comp.function || ''}
                   onChange={(e) => handleUpdateComponent(comp.id, { function: e.target.value })}
-                  placeholder="وظيفة القطعة في المشروع..."
+                  placeholder="Component role in this project..."
                   className="w-full bg-card dark:bg-[#07090e] border border-border rounded-xl p-2.5 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary resize-none transition-colors"
                 />
               </div>
@@ -393,10 +393,10 @@ export default function ComponentPicker({ components = [], onChange }) {
             <Plus size={22} />
           </div>
           <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">
-            + إضافة جهاز أو قطعة (Add Part)
+            + Add Hardware Component
           </span>
           <span className="text-[10px] text-muted-foreground mt-1">
-            اختر من قاعدة بيانات المكونات أو أضف يدوياً
+            Pick from the component database or add manually
           </span>
         </button>
       </div>

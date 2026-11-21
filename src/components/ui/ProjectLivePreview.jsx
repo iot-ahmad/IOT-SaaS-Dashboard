@@ -8,7 +8,7 @@ import { SchematicSvgViewer } from './WiringBuilder';
 export default function ProjectLivePreview({
   title = '',
   summary = '',
-  difficulty = 'مبتدئ',
+  difficulty = 'Beginner',
   visibility = 'public',
   tags = [],
   components = [],
@@ -28,13 +28,16 @@ export default function ProjectLivePreview({
   const validComponents = components.filter(c => c && c.name && c.name.trim().length > 0);
 
   const difficultyColors = {
+    'Beginner': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    'Intermediate': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    'Advanced': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
     'مبتدئ': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     'متوسط': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
     'متقدم': 'bg-purple-500/10 text-purple-400 border-purple-500/20'
   };
 
   const previewCardContent = (
-    <div className="space-y-4 text-right" dir="rtl">
+    <div className="space-y-4 text-left" dir="ltr">
       {/* ── Community Card Mock ── */}
       <div className="hub-card group border border-primary/30 shadow-2xl shadow-primary/5 bg-[#090b10] rounded-2xl overflow-hidden transition-all">
         {/* Cover image wrap */}
@@ -47,12 +50,12 @@ export default function ProjectLivePreview({
           <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#090b10] to-transparent pointer-events-none" />
 
           {/* Difficulty badge */}
-          <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg text-[10px] font-bold">
+          <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-lg text-[10px] font-bold">
             <span className={difficultyColors[difficulty] || 'text-emerald-400'}>{difficulty}</span>
           </div>
 
           {/* Live badge */}
-          <div className="absolute top-2.5 left-2.5 bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
+          <div className="absolute top-2.5 right-2.5 bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded-md text-[9px] font-mono flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             LIVE PREVIEW
           </div>
@@ -61,11 +64,11 @@ export default function ProjectLivePreview({
         {/* Card Body */}
         <div className="p-4 space-y-2.5">
           <h3 className="text-sm font-extrabold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-1">
-            {title.trim() || 'عنوان المشروع يظهر هنا في الوقت الفعلي...'}
+            {title.trim() || 'Project title updates here in real time...'}
           </h3>
 
           <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
-            {summary.trim() || 'اكتب وصفاً موجزاً في الخطوة الأولى لمعاينة كيف سيظهر للمستخدمين في المجتمع...'}
+            {summary.trim() || 'Write a short summary in Step 1 to preview how your project card appears in the community hub...'}
           </p>
 
           {/* Component Chips */}
@@ -84,7 +87,7 @@ export default function ProjectLivePreview({
               </span>
             )}
             {validComponents.length === 0 && (
-              <span className="text-[9px] text-muted-foreground/60 italic">لم تتم إضافة قطع بعد</span>
+              <span className="text-[9px] text-muted-foreground/60 italic">No hardware parts added yet</span>
             )}
           </div>
 
@@ -92,14 +95,14 @@ export default function ProjectLivePreview({
           <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/[0.05] text-[10px] text-muted-foreground font-mono">
             <div className="flex items-center gap-1.5">
               <div className="w-5 h-5 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-[9px] text-primary font-bold">
-                {(user?.displayName || 'U').charAt(0)}
+                {(user?.displayName || 'D').charAt(0)}
               </div>
-              <span className="text-foreground text-[10px]">{user?.displayName || 'المطور'}</span>
+              <span className="text-foreground text-[10px]">{user?.displayName || 'Developer'}</span>
             </div>
 
             <div className="flex items-center gap-2.5">
               <span className="flex items-center gap-1 text-sky-400">
-                <Copy size={11} /> 0 قالب
+                <Copy size={11} /> 0 Clones
               </span>
               <span className="flex items-center gap-1 text-rose-400">
                 <ThumbsUp size={11} /> 0
@@ -117,13 +120,13 @@ export default function ProjectLivePreview({
         <div className="flex items-center justify-between font-bold text-foreground">
           <span className="flex items-center gap-1.5 text-primary">
             <Zap size={13} />
-            حالة الدائرة الكهربائية:
+            Circuit Status:
           </span>
-          <span className="font-mono text-muted-foreground">{connections.length} أسلاك</span>
+          <span className="font-mono text-muted-foreground">{connections.length} Wires</span>
         </div>
         <div className="flex items-center justify-between text-muted-foreground text-[11px]">
-          <span>إجمالي القطع المضافة:</span>
-          <span className="font-bold text-foreground">{validComponents.length} قطعة</span>
+          <span>Total Components Added:</span>
+          <span className="font-bold text-foreground">{validComponents.length} Parts</span>
         </div>
       </div>
     </div>
@@ -141,7 +144,7 @@ export default function ProjectLivePreview({
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span className="text-xs font-bold text-foreground">المعاينة الحية للمشروع</span>
+              <span className="text-xs font-bold text-foreground">Live Project Preview</span>
             </div>
 
             <div className="flex items-center gap-1 bg-muted p-0.5 rounded-lg text-[10px] font-bold">
@@ -150,14 +153,14 @@ export default function ProjectLivePreview({
                 onClick={() => setViewMode('card')}
                 className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${viewMode === 'card' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}
               >
-                البطاقة
+                Card
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode('detail')}
                 className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${viewMode === 'detail' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}
               >
-                المخطط
+                Schematic
               </button>
             </div>
           </div>
@@ -184,7 +187,7 @@ export default function ProjectLivePreview({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <Eye size={16} className="text-primary" />
-                <h4 className="text-sm font-bold text-foreground">معاينة بطاقة المشروع</h4>
+                <h4 className="text-sm font-bold text-foreground">Project Card Preview</h4>
               </div>
               <button
                 type="button"

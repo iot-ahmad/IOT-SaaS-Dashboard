@@ -100,14 +100,14 @@ function HubLayout({ children, user, logout }) {
               onClick={() => navigate('/hub')}
               className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary/15 transition-all cursor-pointer"
             >
-              استعرض المشاريع
+              Browse Projects
             </button>
             {user && (
               <button
                 onClick={() => navigate('/hub/new')}
                 className="text-xs font-semibold text-muted-foreground hover:text-primary dark:hover:text-primary px-3 py-1.5 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer"
               >
-                + نشر مشروع
+                + Publish Project
               </button>
             )}
           </nav>
@@ -117,10 +117,10 @@ function HubLayout({ children, user, logout }) {
         {location.pathname === '/hub' && (
           <div className="hidden lg:flex flex-col items-center text-center absolute left-1/2 -translate-x-1/2 select-none pointer-events-none">
             <h1 className="text-sm font-black text-foreground leading-tight">
-              منصة <span className="text-primary">IOT365</span>
+              <span className="text-primary">IOT365</span> Platform
             </h1>
             <p className="text-[10px] text-muted-foreground truncate max-w-md mt-0.5">
-              اكتشف مشاريع Arduino وESP32 — شارك، تعلّم، وابنِ.
+              Discover Arduino & ESP32 projects — share, learn, and build.
             </p>
           </div>
         )}
@@ -130,7 +130,7 @@ function HubLayout({ children, user, logout }) {
           <button
             onClick={toggleTheme}
             className="p-2 rounded-xl bg-muted border border-border text-muted-foreground dark:text-white/60 hover:text-primary transition-colors cursor-pointer"
-            title="تبديل المظهر"
+            title="Toggle theme"
           >
             {isDark ? <Sun size={15} /> : <Moon size={15} />}
           </button>
@@ -142,7 +142,7 @@ function HubLayout({ children, user, logout }) {
               <button
                 onClick={() => setIsMessagingOpen(true)}
                 className="relative p-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                title="الرسائل المباشرة"
+                title="Direct Messages"
               >
                 <MessageSquare size={15} />
                 {unreadCount > 0 && (
@@ -157,7 +157,7 @@ function HubLayout({ children, user, logout }) {
                 onClick={() => navigate('/')}
                 className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 rounded-xl border border-border hover:border-primary/40 bg-card/50 dark:bg-card/5 cursor-pointer"
               >
-                لوحة التحكم
+                Dashboard
               </button>
 
               {/* User avatar + dropdown */}
@@ -177,27 +177,27 @@ function HubLayout({ children, user, logout }) {
                 {/* Dropdown */}
                 <div className={`absolute top-full right-0 mt-2 w-44 bg-card dark:bg-[#0b0c10] border border-border rounded-2xl shadow-xl shadow-black/20 transition-all duration-200 overflow-hidden z-50 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                   <div className="px-3 py-2.5 border-b border-border">
-                    <p className="text-[11px] font-bold text-foreground truncate">{user.displayName || 'مستخدم'}</p>
+                    <p className="text-[11px] font-bold text-foreground truncate">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
                   </div>
                   <button
                     onClick={() => { navigate('/'); setIsDropdownOpen(false); }}
-                    className="w-full text-right text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
+                    className="w-full text-left text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
                   >
-                    لوحة التحكم
+                    Dashboard
                   </button>
                   <button
                     onClick={() => { navigate('/hub/new'); setIsDropdownOpen(false); }}
-                    className="w-full text-right text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
+                    className="w-full text-left text-xs text-muted-foreground dark:text-slate-300 hover:text-primary hover:bg-primary/5 px-3 py-2 transition-colors cursor-pointer"
                   >
-                    نشر مشروع جديد
+                    Publish New Project
                   </button>
                   <div className="border-t border-border">
                     <button
                       onClick={() => { logout(); setIsDropdownOpen(false); }}
-                      className="w-full text-right text-xs text-red-400 hover:text-red-500 hover:bg-red-500/5 px-3 py-2 transition-colors cursor-pointer"
+                      className="w-full text-left text-xs text-red-400 hover:text-red-500 hover:bg-red-500/5 px-3 py-2 transition-colors cursor-pointer"
                     >
-                      تسجيل الخروج
+                      Sign Out
                     </button>
                   </div>
                 </div>
@@ -209,7 +209,7 @@ function HubLayout({ children, user, logout }) {
               onClick={() => navigate('/login')}
               className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-primary/10 cursor-pointer"
             >
-              تسجيل الدخول
+              Sign In
             </button>
           )}
         </div>
@@ -224,16 +224,16 @@ function HubLayout({ children, user, logout }) {
       <footer className="relative z-10 border-t border-border py-4 px-6 md:px-12 bg-card/40 bg-background/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[10px] text-muted-foreground/60 font-mono">
-            IOT365 · مجتمع مطوري الأجهزة الذكية
+            IOT365 · Smart Hardware Developer Community
           </p>
           <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/hub')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">المشاريع</button>
+            <button onClick={() => navigate('/hub')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Projects</button>
             {user ? (
-              <button onClick={() => navigate('/hub/new')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">نشر مشروع</button>
+              <button onClick={() => navigate('/hub/new')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Publish Project</button>
             ) : (
-              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">انضم للمجتمع</button>
+              <button onClick={() => navigate('/login')} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Join Community</button>
             )}
-            <button onClick={() => setShowSupport(true)} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">الدعم الفني</button>
+            <button onClick={() => setShowSupport(true)} className="text-[10px] text-muted-foreground hover:text-primary transition-colors cursor-pointer">Support</button>
           </div>
         </div>
       </footer>

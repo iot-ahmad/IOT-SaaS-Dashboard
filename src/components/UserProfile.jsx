@@ -194,11 +194,11 @@ export default function UserProfile({ currentUser }) {
             setLoading(false);
             return;
           }
-          setError('المطور غير موجود أو لم يقم بإنشاء اسم مستخدم فريد بعد.');
+          setError('Developer not found or has not created a unique username yet.');
         }
       } catch (err) {
         console.error("Error loading developer profile:", err);
-        setError('حدث خطأ أثناء تحميل الملف الشخصي.');
+        setError('An error occurred while loading the profile.');
       } finally {
         setLoading(false);
       }
@@ -221,10 +221,10 @@ export default function UserProfile({ currentUser }) {
       const url = await uploadToCloudinary(compressedFile, null, `users/${currentUser.uid}`);
       setEditAvatarUrl(url);
       setAvatarUploading(false);
-      setModalSuccess('تم تحديث المعاينة بنجاح. يرجى الضغط على حفظ.');
+      setModalSuccess('Avatar preview updated successfully. Please click Save.');
     } catch (err) {
       console.error(err);
-      setModalError('فشل رفع الصورة الشخصية.');
+      setModalError('Failed to upload profile picture.');
       setAvatarUploading(false);
     }
   };
@@ -242,12 +242,12 @@ export default function UserProfile({ currentUser }) {
     // Reserved Route keywords check to avoid path collisions
     const reservedKeywords = ['hub', 'devices', 'settings', 'alerts', 'automations', 'developer', 'home', 'controller', 'views'];
     if (reservedKeywords.includes(formattedUsername)) {
-      setModalError('اسم المستخدم هذا محجوز للمنصة، يرجى اختيار اسم آخر.');
+      setModalError('This username is reserved by the platform. Please choose another.');
       return;
     }
 
     if (!/^[a-z0-9_-]{3,20}$/.test(formattedUsername)) {
-      setModalError('يجب أن يتكون اسم المستخدم من 3 إلى 20 حرفاً إنجليزياً أو أرقام أو شرطات فقط.');
+      setModalError('Username must be 3–20 characters using only English letters, numbers, underscores, or hyphens.');
       return;
     }
 
@@ -262,7 +262,7 @@ export default function UserProfile({ currentUser }) {
         if (!querySnapshot.empty) {
           const matchingDoc = querySnapshot.docs[0];
           if (matchingDoc.id !== currentUser.uid) {
-            setModalError('اسم المستخدم هذا مستخدم بالفعل من قبل مطور آخر.');
+            setModalError('This username is already taken by another developer.');
             return;
           }
         }
@@ -288,7 +288,7 @@ export default function UserProfile({ currentUser }) {
       // Update local state
       setProfileUser(prev => ({ ...(prev || { uid: currentUser.uid }), ...updatedFields }));
       setProfileSetupNeeded(false);
-      setModalSuccess('تم إنشاء الملف الشخصي بنجاح!');
+      setModalSuccess('Profile created successfully!');
       
       // Redirect to the new vanity URL
       setTimeout(() => {
@@ -301,11 +301,11 @@ export default function UserProfile({ currentUser }) {
       console.error("Firestore write error:", err?.code, err?.message);
       // Detect Firebase permission errors
       if (err?.code === 'permission-denied' || err?.message?.includes('Missing or insufficient permissions')) {
-        setModalError('خطأ صلاحيات Firestore — يرجى تطبيق قواعد الأمان من Firebase Console → Firestore → Rules');
+        setModalError('Firestore permission error — please apply security rules in Firebase Console → Firestore → Rules');
       } else if (err?.code === 'unavailable' || err?.code === 'network-request-failed') {
-        setModalError('لا يوجد اتصال بالإنترنت. تحقق من اتصالك وأعد المحاولة.');
+        setModalError('No internet connection. Please check your connection and try again.');
       } else {
-        setModalError(`فشل الحفظ: ${err?.code || err?.message || 'خطأ غير معروف'}`);
+        setModalError(`Failed to save: ${err?.code || err?.message || 'Unknown error'}`);
       }
     }
   };
@@ -341,21 +341,21 @@ export default function UserProfile({ currentUser }) {
         </div>
 
         <h2 className="text-2xl font-black text-foreground mb-2">
-          مرحباً، {currentUser.displayName?.split(' ')[0] || 'مطور'}
+          Welcome, {currentUser.displayName?.split(' ')[0] || 'Developer'}
         </h2>
         <p className="text-sm text-muted-foreground mb-2">
-          أنت على وشك إنشاء ملفك الشخصي في <span className="text-primary font-bold">IOT365 Hub</span>
+          You are about to set up your developer profile on <span className="text-primary font-bold">IOT365 Hub</span>
         </p>
         <p className="text-xs text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
-          اختر اسم مستخدم فريد ليصبح رابطك الشخصي على المنصة ويظهر مشاريعك للعالم.
+          Choose a unique username for your personal profile URL to showcase your IoT projects to the community.
         </p>
 
         {/* Feature highlights */}
         <div className="grid grid-cols-3 gap-3 mb-8 text-center">
           {[
-            { icon: Link2, label: 'رابط شخصي' },
-            { icon: Package, label: 'نشر مشاريع' },
-            { icon: Globe, label: 'مجتمع عالمي' },
+            { icon: Link2, label: 'Custom Profile URL' },
+            { icon: Package, label: 'Publish Projects' },
+            { icon: Globe, label: 'Global Community' },
           ].map((f) => {
             const IconComp = f.icon;
             return (
@@ -372,10 +372,10 @@ export default function UserProfile({ currentUser }) {
           className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-3 rounded-2xl transition-all shadow-lg shadow-primary/20 text-sm cursor-pointer"
         >
           <Edit3 size={14} className="inline-block mr-1.5 mb-0.5" />
-          إعداد الملف الشخصي الآن
+          Set Up Profile Now
         </button>
 
-        <p className="text-[10px] text-muted-foreground mt-4">يمكنك تعديل هذه المعلومات لاحقاً في أي وقت</p>
+        <p className="text-[10px] text-muted-foreground mt-4">You can update this information anytime later</p>
 
         {/* Render the edit modal so they can fill in their info */}
         {showEditModal && (
@@ -389,11 +389,11 @@ export default function UserProfile({ currentUser }) {
               >
                 <X size={20} />
               </button>
-              <h3 className="text-xl font-bold mb-1 text-white text-right flex items-center justify-end gap-2 border-b border-border pb-3">
-                أنشئ ملفك الشخصي
+              <h3 className="text-xl font-bold mb-1 text-white text-left flex items-center gap-2 border-b border-border pb-3">
                 <Edit3 size={18} className="text-primary" />
+                Create Your Profile
               </h3>
-              <p className="text-xs text-muted-foreground text-right mb-5">ستظهر معلوماتك على صفحتك العامة في Hub</p>
+              <p className="text-xs text-muted-foreground text-left mb-5">Your details will be displayed on your public Hub profile</p>
 
               {modalError && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl flex items-center gap-2 text-xs mb-4">
@@ -408,7 +408,7 @@ export default function UserProfile({ currentUser }) {
                 </div>
               )}
 
-              <form onSubmit={handleSaveProfile} className="space-y-4 text-right">
+              <form onSubmit={handleSaveProfile} className="space-y-4 text-left">
                 {/* Avatar */}
                 <div className="flex flex-col items-center gap-2 mb-2">
                   <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-primary/25 group">
@@ -424,40 +424,40 @@ export default function UserProfile({ currentUser }) {
                     </div>
                     <input type="file" accept="image/*" onChange={handleAvatarChange} className="absolute inset-0 opacity-0 cursor-pointer" />
                   </div>
-                  <span className="text-[10px] text-muted-foreground">{avatarUploading ? 'جاري الرفع...' : 'اضغط لرفع صورة شخصية'}</span>
+                  <span className="text-[10px] text-muted-foreground">{avatarUploading ? 'Uploading...' : 'Click to upload profile picture'}</span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-muted-foreground mb-1">اسم المستخدم الفريد *</label>
+                    <label className="block text-xs font-bold text-muted-foreground mb-1">Unique Username *</label>
                     <input required type="text" value={editUsername} onChange={e => setEditUsername(e.target.value)}
                       placeholder="e.g. smart_dev" dir="ltr"
                       className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm font-mono text-left" />
-                    <p className="text-[9px] text-muted-foreground mt-1">رابطك: hub/{editUsername || 'username'}</p>
+                    <p className="text-[9px] text-muted-foreground mt-1">Your URL: hub/{editUsername || 'username'}</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-muted-foreground mb-1">الاسم الظاهر *</label>
+                    <label className="block text-xs font-bold text-muted-foreground mb-1">Display Name *</label>
                     <input required type="text" value={editDisplayName} onChange={e => setEditDisplayName(e.target.value)}
-                      placeholder="مثال: أحمد المحمد"
+                      placeholder="e.g. Alex Morgan"
                       className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-muted-foreground mb-1">العنوان التعريفي</label>
+                  <label className="block text-xs font-bold text-muted-foreground mb-1">Headline</label>
                   <input type="text" value={editHeadline} onChange={e => setEditHeadline(e.target.value)}
-                    placeholder="مهندس عتاد وأنظمة مدمجة"
+                    placeholder="Hardware & Embedded Systems Engineer"
                     className="w-full bg-card/5 border border-border rounded-xl py-2.5 px-4 focus:outline-none focus:border-primary text-sm text-white" />
                 </div>
 
                 <div className="pt-3 flex gap-3">
                   <button type="submit" disabled={avatarUploading}
                     className="flex-1 bg-primary text-primary-foreground font-bold py-2.5 rounded-xl text-xs cursor-pointer shadow-md shadow-primary/10 disabled:opacity-50">
-                    إنشاء الملف الشخصي
+                    Create Profile
                   </button>
                   <button type="button" onClick={() => setShowEditModal(false)}
                     className="flex-1 bg-card/5 border border-border text-muted-foreground font-bold py-2.5 rounded-xl text-xs cursor-pointer">
-                    لاحقاً
+                    Later
                   </button>
                 </div>
               </form>
@@ -473,13 +473,13 @@ export default function UserProfile({ currentUser }) {
     return (
       <div className="max-w-md mx-auto text-center py-16 bg-[#18191c] border border-white/[0.08] p-8 rounded-2xl">
         <AlertCircle className="w-12 h-12 text-zinc-500 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-white">الملف الشخصي غير متاح</h3>
-        <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{error || 'لم يتم العثور على هذا المستخدم أو لم يقم بإنشاء حسابه بعد.'}</p>
+        <h3 className="text-lg font-bold text-white">Profile Unavailable</h3>
+        <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{error || 'This user was not found or has not set up their profile yet.'}</p>
         <button
           onClick={() => navigate('/hub')}
           className="mt-6 bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white font-bold px-5 py-2.5 rounded-xl transition-all cursor-pointer text-xs"
         >
-          الذهاب للمستودع العام
+          Go to Community Hub
         </button>
       </div>
     );
@@ -492,42 +492,8 @@ export default function UserProfile({ currentUser }) {
       <div className="bg-[#18191c] border border-white/[0.08] rounded-2xl p-6 md:p-8 relative overflow-hidden">
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between relative z-10">
           
-          {/* Action button: Edit Profile or Message Developer */}
-          {isOwnProfile ? (
-            <button
-              onClick={() => {
-                localStorage.setItem('active_tool_fallback', 'profile');
-                window.location.href = '/?tool=profile';
-              }}
-              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
-            >
-              <Edit3 size={13} />
-              <span>تعديل الملف الشخصي</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                if (!currentUser) {
-                  navigate('/login');
-                  return;
-                }
-                startConversation({
-                  recipientId: profileUser.uid,
-                  recipientName: profileUser.displayName || profileUser.username,
-                  recipientAvatar: profileUser.avatarUrl || profileUser.photoURL || '',
-                  projectId: null,
-                  projectTitle: null
-                });
-              }}
-              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer order-last md:order-first self-stretch md:self-auto justify-center"
-            >
-              <MessageSquare size={13} />
-              <span>مراسلة المطور</span>
-            </button>
-          )}
-
           {/* User Details info */}
-          <div className="flex flex-col md:flex-row gap-5 items-center text-center md:text-right">
+          <div className="flex flex-col md:flex-row gap-5 items-center text-center md:text-left">
             {/* Avatar image */}
             <div className="relative w-20 h-20 rounded-full overflow-hidden border border-white/20">
               {profileUser.avatarUrl || profileUser.photoURL ? (
@@ -551,7 +517,7 @@ export default function UserProfile({ currentUser }) {
               )}
 
               {/* Social Links Icons */}
-              <div className="flex gap-3 justify-center md:justify-end pt-2">
+              <div className="flex gap-3 justify-center md:justify-start pt-2">
                 {profileUser.socialLinks?.github && (
                   <a href={profileUser.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors" title="Github">
                     <GithubIcon size={16} />
@@ -572,22 +538,56 @@ export default function UserProfile({ currentUser }) {
 
           </div>
 
+          {/* Action button: Edit Profile or Message Developer */}
+          {isOwnProfile ? (
+            <button
+              onClick={() => {
+                localStorage.setItem('active_tool_fallback', 'profile');
+                window.location.href = '/?tool=profile';
+              }}
+              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer self-stretch md:self-auto justify-center"
+            >
+              <Edit3 size={13} />
+              <span>Edit Profile</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                if (!currentUser) {
+                  navigate('/login');
+                  return;
+                }
+                startConversation({
+                  recipientId: profileUser.uid,
+                  recipientName: profileUser.displayName || profileUser.username,
+                  recipientAvatar: profileUser.avatarUrl || profileUser.photoURL || '',
+                  projectId: null,
+                  projectTitle: null
+                });
+              }}
+              className="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-medium text-xs px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer self-stretch md:self-auto justify-center"
+            >
+              <MessageSquare size={13} />
+              <span>Message Developer</span>
+            </button>
+          )}
+
         </div>
 
       </div>
 
       {/* Projects Grid Heading */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-white text-right flex items-center justify-end gap-2 border-b border-white/[0.08] pb-3">
-          <span>مشاريع المطور المنشورة ({projects.length})</span>
+        <h3 className="text-sm font-bold text-white text-left flex items-center gap-2 border-b border-white/[0.08] pb-3">
           <FolderCode size={16} className="text-zinc-400" />
+          <span>Published Developer Projects ({projects.length})</span>
         </h3>
 
         {projects.length === 0 ? (
           <div className="text-center py-12 bg-[#18191c] border border-white/[0.08] rounded-2xl p-6">
             <FolderCode className="w-10 h-10 text-zinc-600 mx-auto mb-2" />
-            <h4 className="text-xs font-bold text-zinc-400">لا توجد مشاريع منشورة</h4>
-            <p className="text-[11px] text-zinc-500 mt-1">لم يقم هذا المطور بنشر أي مشاريع عامة بعد.</p>
+            <h4 className="text-xs font-bold text-zinc-400">No Published Projects</h4>
+            <p className="text-[11px] text-zinc-500 mt-1">This developer has not published any public projects yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -599,7 +599,6 @@ export default function UserProfile({ currentUser }) {
               >
                 <div>
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-[9px] text-zinc-500 font-mono">{new Date(proj.createdAt).toLocaleDateString('ar-JO')}</span>
                     {proj.images && proj.images.length > 0 ? (
                       <div className="w-9 h-9 rounded-lg overflow-hidden border border-white/[0.08] shrink-0">
                         <img src={proj.images[0]} alt={proj.title} className="w-full h-full object-cover" />
@@ -609,11 +608,12 @@ export default function UserProfile({ currentUser }) {
                         <Cpu size={16} />
                       </div>
                     )}
+                    <span className="text-[9px] text-zinc-500 font-mono">{new Date(proj.createdAt).toLocaleDateString('en-US')}</span>
                   </div>
-                  <h3 className="text-xs md:text-sm font-bold text-white group-hover:text-zinc-200 transition-colors text-right line-clamp-1">
+                  <h3 className="text-xs md:text-sm font-bold text-white group-hover:text-zinc-200 transition-colors text-left line-clamp-1">
                     {proj.title}
                   </h3>
-                  <p className="text-[11px] text-zinc-400 mt-1 text-right leading-relaxed line-clamp-2">
+                  <p className="text-[11px] text-zinc-400 mt-1 text-left leading-relaxed line-clamp-2">
                     {proj.summary}
                   </p>
                 </div>

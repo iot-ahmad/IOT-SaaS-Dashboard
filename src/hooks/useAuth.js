@@ -237,7 +237,7 @@ export function useAuth() {
       if (userCredential.user.emailVerified) {
         await signOut(auth);
         setUnverifiedLoginEmail(null);
-        setError('تم تفعيل البريد مسبقاً. يمكنك تسجيل الدخول الآن.');
+        setError('Your email is already verified. You can sign in now.');
         return;
       }
       await sendEmailVerification(userCredential.user);

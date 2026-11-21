@@ -202,7 +202,7 @@ const CATEGORIES = [
   },
   {
     id: 'robotics',
-    label: 'تحكم وروبوتكس (Robotics)',
+    label: 'Robotics & Motion Control',
     icon: Gamepad2,
     color: 'bg-muted/30 border-border',
     accent: 'text-muted-foreground',
@@ -210,75 +210,75 @@ const CATEGORIES = [
       { type: 'dpad', label: 'Direction Controller (D-Pad)', desc: 'D-Pad: FORWARD, BACK, LEFT, RIGHT, STOP on one topic', icon: Gamepad2, w: 3, h: 4 },
       { type: 'joystick', label: 'Joystick', desc: 'Analog-style stick: same movement commands on one MQTT topic', icon: Move, w: 4, h: 4 },
       { type: 'speed', label: 'Speed Slider', desc: 'Send speed value (0–255) to your speed topic', icon: Car, w: 3, h: 2 },
-      { type: 'robot_arm',   label: 'Robot Arm (3 Joints)', desc: 'التحكم بذراع روبوتية بثلاثة مفاصل سيرفو مستقلة', icon: Bot,       w: 4, h: 4 },
-      { type: 'gripper',     label: 'Gripper / Claw',       desc: 'التحكم بقابض الروبوت (فتح/غلق/قوة القبضة)', icon: Hand,      w: 3, h: 3 },
-      { type: 'omni_drive',  label: 'Omni/Mecanum Drive',   desc: 'تحكم كامل بعجلات omni: يمين/يسار/أمام/خلف/دوران', icon: Navigation, w: 4, h: 4 },
-      { type: 'robot_speed', label: 'Dual Motor Speed',     desc: 'تحكم مستقل بسرعة المحرك الأيسر والأيمن لتوجيه الروبوت', icon: Gauge,    w: 3, h: 3 },
+      { type: 'robot_arm',   label: 'Robot Arm (3 Joints)', desc: 'Control a 3-axis robotic arm with independent servo joints', icon: Bot,       w: 4, h: 4 },
+      { type: 'gripper',     label: 'Gripper / Claw',       desc: 'Control robot gripper (open, close, and grip force)', icon: Hand,      w: 3, h: 3 },
+      { type: 'omni_drive',  label: 'Omni/Mecanum Drive',   desc: 'Full omnidirectional wheel control: strafe, forward/back, and rotation', icon: Navigation, w: 4, h: 4 },
+      { type: 'robot_speed', label: 'Dual Motor Speed',     desc: 'Independent left and right motor speed control for differential steering', icon: Gauge,    w: 3, h: 3 },
     ],
   },
   {
     id: 'classroom',
-    label: 'تحكم الفصل الدراسي',
+    label: 'Classroom & Environment',
     icon: GraduationCap,
     color: 'bg-muted/30 border-border',
     accent: 'text-muted-foreground',
     items: [
-      { type: 'relay',     label: 'Relay — تشغيل/إطفاء',       desc: 'التحكم بالإضاءة، البروجكتور، المروحة عبر Relay',          icon: Power,          w: 2, h: 2 },
-      { type: 'dimmer',    label: 'Dimmer PWM — تعتيم الإضاءة', desc: 'تعتيم الإضاءة تدريجياً أثناء العروض (0-100%)',           icon: Lightbulb,      w: 3, h: 2 },
-      { type: 'rgb',       label: 'RGB Strip — شريط ملون',      desc: 'التحكم بألوان شريط RGB/RGBW للتجارب البصرية والمسابقات', icon: Palette,        w: 3, h: 3 },
-      { type: 'scene',     label: 'Scenes — أوضاع جاهزة',       desc: 'وضع امتحان / محاضرة / استراحة بضغطة واحدة',            icon: Cpu,            w: 3, h: 3 },
-      { type: 'scheduler', label: 'Scheduler — جرس الحصص',      desc: 'جدولة تشغيل/إيقاف تلقائي لجرس الحصص أو الري',         icon: Calendar,       w: 3, h: 3 },
+      { type: 'relay',     label: 'Relay — ON/OFF Switch',       desc: 'Control lighting, projectors, or fans via a relay module',          icon: Power,          w: 2, h: 2 },
+      { type: 'dimmer',    label: 'Dimmer PWM — Light Dimmer',   desc: 'Smoothly dim lighting levels from 0% to 100%',                      icon: Lightbulb,      w: 3, h: 2 },
+      { type: 'rgb',       label: 'RGB Strip — Color Controller', desc: 'Control RGB/RGBW LED strip colors and brightness',                 icon: Palette,        w: 3, h: 3 },
+      { type: 'scene',     label: 'Scenes — Preset Modes',       desc: 'Activate Exam, Lecture, or Break presets with one click',            icon: Cpu,            w: 3, h: 3 },
+      { type: 'scheduler', label: 'Scheduler — Time Schedule',   desc: 'Automate ON/OFF schedules for bells, lighting, or irrigation',      icon: Calendar,       w: 3, h: 3 },
     ],
   },
   {
     id: 'stem',
-    label: 'مختبر STEM',
+    label: 'STEM Lab',
     icon: FlaskConical,
     color: 'bg-muted/30 border-border',
     accent: 'text-muted-foreground',
     items: [
-      { type: 'servo',   label: 'Servo Motor — زاوية',       desc: 'التحكم بزاوية السيرفو (0–180°) لتجارب الروبوتيك',       icon: Wrench,          w: 3, h: 2 },
-      { type: 'dcmotor', label: 'DC Motor — سرعة واتجاه',    desc: 'التحكم بسرعة واتجاه موتور DC لتجارب الفيزياء',          icon: RotateCw,        w: 3, h: 3 },
-      { type: 'stepper', label: 'Stepper — خطوات دقيقة',     desc: 'التحكم دقيق بعدد الخطوات لمشاريع CNC والطباعة الثلاثية', icon: Gauge,           w: 3, h: 2 },
-      { type: 'pwmfan',  label: 'PWM Fan — مروحة ذكية',      desc: 'التحكم PWM بالمروحة مع ربطها بحساس حرارة',              icon: Wind,            w: 3, h: 3 },
-      { type: 'curtain', label: 'Smart Curtain — ستارة ذكية', desc: 'التحكم بنسبة فتح الستائر — مشروع تعليمي شائع',         icon: Blinds,          w: 3, h: 2 },
+      { type: 'servo',   label: 'Servo Motor — Angle',        desc: 'Control servo angle (0–180°) for robotics experiments',             icon: Wrench,          w: 3, h: 2 },
+      { type: 'dcmotor', label: 'DC Motor — Speed & Dir',     desc: 'Control DC motor speed and direction for physics labs',             icon: RotateCw,        w: 3, h: 3 },
+      { type: 'stepper', label: 'Stepper — Precision Steps',  desc: 'Precise step count and RPM control for CNC and 3D printing',        icon: Gauge,           w: 3, h: 2 },
+      { type: 'pwmfan',  label: 'PWM Fan — Smart Cooling',    desc: 'PWM fan speed control linked with live temperature reading',        icon: Wind,            w: 3, h: 3 },
+      { type: 'curtain', label: 'Smart Curtain — Motorized',  desc: 'Control motorized curtain or blind open percentage',                icon: Blinds,          w: 3, h: 2 },
     ],
   },
   {
     id: 'security',
-    label: 'الأمن والسلامة',
+    label: 'Security & Safety',
     icon: Shield,
     color: 'bg-muted/30 border-border',
     accent: 'text-muted-foreground',
     items: [
-      { type: 'doorlock', label: 'Door Lock — قفل ذكي',       desc: 'التحكم بقفل الباب الإلكتروني مع مؤقت auto-lock',  icon: Lock,   w: 2, h: 2 },
-      { type: 'buzzer',   label: 'Buzzer / Siren — صفارة',   desc: 'تنبيه سلامة فوري — زر لحظي يرسل pulse',        icon: Bell,   w: 2, h: 2 },
-      { type: 'pantilt',  label: 'Pan-Tilt Camera — كاميرا', desc: 'التحكم ثنائي المحاور بكاميرا المراقبة التعليمية', icon: Camera, w: 3, h: 3 },
+      { type: 'doorlock', label: 'Door Lock — Smart Lock',     desc: 'Control an electronic door lock with an auto-lock timer',           icon: Lock,   w: 2, h: 2 },
+      { type: 'buzzer',   label: 'Buzzer / Siren — Alarm',     desc: 'Instant safety alert — momentary button sending a beep pulse',      icon: Bell,   w: 2, h: 2 },
+      { type: 'pantilt',  label: 'Pan-Tilt Camera — 2-Axis',   desc: 'Dual-axis pan and tilt control for camera mounts',                  icon: Camera, w: 3, h: 3 },
     ],
   },
   {
     id: 'agriculture',
-    label: 'مشاريع زراعية',
+    label: 'Smart Agriculture',
     icon: Leaf,
     color: 'bg-muted/30 border-border',
     accent: 'text-muted-foreground',
     items: [
-      { type: 'pump',       label: 'Water Pump — مضخة مياه',      desc: 'تشغيل/إيقاف مضخة المياه يدوياً أو بجدول',            icon: Droplets, w: 2, h: 2 },
-      { type: 'valve',      label: 'Electric Valve — صمام',        desc: 'التحكم دقيق بصمام المياه الكهربائي',                   icon: Wrench,   w: 2, h: 2 },
-      { type: 'irrigation', label: 'Smart Irrigation — ري ذكي',   desc: 'ري تلقائي حسب رطوبة التربة — مشروع تعليمي متكامل',   icon: Sprout,   w: 4, h: 3 },
+      { type: 'pump',       label: 'Water Pump — Pump Control',   desc: 'Turn water pump ON/OFF manually or with runtime tracking',          icon: Droplets, w: 2, h: 2 },
+      { type: 'valve',      label: 'Electric Valve — Flow Valve', desc: 'Open or close an electric solenoid water valve',                    icon: Wrench,   w: 2, h: 2 },
+      { type: 'irrigation', label: 'Smart Irrigation — Auto/Man', desc: 'Automated irrigation based on soil moisture threshold',             icon: Sprout,   w: 4, h: 3 },
     ],
   },
   {
     id: 'advanced',
-    label: 'أدوات متقدمة',
+    label: 'Advanced Tools',
     icon: Monitor,
     color: 'bg-muted/30 border-border',
     accent: 'text-muted-foreground',
     items: [
-      { type: 'oled',         label: 'OLED/LCD Display — شاشة',      desc: 'إرسال نص لشاشة OLED أو LCD مباشرة',                     icon: Monitor,       w: 3, h: 2 },
-      { type: 'numericInput', label: 'Numeric Input — قيمة رقمية',   desc: 'إرسال قيمة Setpoint لحساس أو متحكم (min/max/step)',      icon: Hash,          w: 2, h: 2 },
-      { type: 'dropdown',     label: 'Dropdown — قائمة أوضاع',       desc: 'اختيار وضع التشغيل: Auto / Manual / Test',               icon: AlignJustify,  w: 3, h: 2 },
-      { type: 'momentary',    label: 'Momentary Button — زر لحظي',   desc: 'زر يرسل payload محدد لمرة واحدة فقط عند الضغط',          icon: Zap,           w: 2, h: 2 },
+      { type: 'oled',         label: 'OLED/LCD Display — Screen',    desc: 'Send text strings directly to an OLED or LCD screen',               icon: Monitor,       w: 3, h: 2 },
+      { type: 'numericInput', label: 'Numeric Input — Setpoint',     desc: 'Send a numeric setpoint value with min, max, and step',             icon: Hash,          w: 2, h: 2 },
+      { type: 'dropdown',     label: 'Dropdown — Mode Selector',     desc: 'Select operating mode such as Auto, Manual, or Test',               icon: AlignJustify,  w: 3, h: 2 },
+      { type: 'momentary',    label: 'Momentary Button — Pulse',     desc: 'Send a custom payload once whenever the button is pressed',         icon: Zap,           w: 2, h: 2 },
     ],
   },
 ];
@@ -509,7 +509,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                   </code>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed">
-                  استخدم هذا الـ Key في كود Arduino الخاص بك لربط جهازك بهذه الأداة.
+                  Use this key in your Arduino/ESP32 firmware to bind your device to this widget.
                 </p>
               </div>
 
@@ -559,21 +559,21 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
                   <label className="text-xs text-muted-foreground block mb-1">Options (comma separated)</label>
                   <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50"
                     value={form.options} onChange={e => setForm(f => ({ ...f, options: e.target.value }))} placeholder="Auto,Manual,Test,Off" />
-                  <p className="text-[10px] text-muted-foreground mt-1">أدخل الخيارات مفصولة بفاصلة</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Enter options separated by commas</p>
                 </div>
               )}
               {selectedItem.type === 'momentary' && (
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Payload عند الضغط</label>
+                  <label className="text-xs text-muted-foreground block mb-1">Payload on Press</label>
                   <input className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm font-mono focus:outline-none focus:border-primary/50"
                     value={form.payload} onChange={e => setForm(f => ({ ...f, payload: e.target.value }))} placeholder="TRIGGER" />
                 </div>
               )}
               {selectedItem.type === 'scheduler' && (
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className="text-xs text-muted-foreground block mb-1">وقت التشغيل ON</label>
+                  <div><label className="text-xs text-muted-foreground block mb-1">ON Time</label>
                     <input type="time" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50 font-mono text-foreground" value={form.onTime} onChange={e => setForm(f => ({ ...f, onTime: e.target.value }))} /></div>
-                  <div><label className="text-xs text-muted-foreground block mb-1">وقت الإيقاف OFF</label>
+                  <div><label className="text-xs text-muted-foreground block mb-1">OFF Time</label>
                     <input type="time" className="w-full bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-primary/50 font-mono text-foreground" value={form.offTime} onChange={e => setForm(f => ({ ...f, offTime: e.target.value }))} /></div>
                 </div>
               )}
@@ -586,7 +586,7 @@ function AddToolModal({ onClose, onAdd, userUID, esp32Prefix }) {
               )}
               {selectedItem.type === 'irrigation' && (
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-1">حد الري التلقائي (رطوبة %)</label>
+                  <label className="text-xs text-muted-foreground block mb-1">Auto-Irrigation Threshold (Moisture %)</label>
                   <input type="number" className="w-full bg-muted border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:border-primary/50"
                     value={form.threshold} onChange={e => setForm(f => ({ ...f, threshold: e.target.value }))} min={10} max={80} />
                 </div>
@@ -1069,7 +1069,7 @@ function RGBWidget({ widget, publish }) {
               className="w-full h-full opacity-0 cursor-pointer" />
           </div>
           <div className="flex-1">
-            <p className="text-[10px] text-muted-foreground mb-0.5">انقر لتحديد اللون</p>
+            <p className="text-[10px] text-muted-foreground mb-0.5">Click to pick color</p>
             <p className="text-xs font-mono font-bold text-foreground">{color.toUpperCase()}</p>
           </div>
         </div>
@@ -1098,9 +1098,9 @@ function RGBWidget({ widget, publish }) {
 function SceneWidget({ widget, publish }) {
   const [active, setActive] = useState(null);
   const scenes = widget.scenes || [
-    { key: 'exam',    label: 'وضع امتحان',   payload: 'EXAM' },
-    { key: 'lecture', label: 'وضع محاضرة',  payload: 'LECTURE' },
-    { key: 'break',   label: 'وضع استراحة', payload: 'BREAK' },
+    { key: 'exam',    label: 'Exam Mode',    payload: 'EXAM' },
+    { key: 'lecture', label: 'Lecture Mode', payload: 'LECTURE' },
+    { key: 'break',   label: 'Break Mode',   payload: 'BREAK' },
   ];
 
   const handleScene = (scene) => {
@@ -1134,7 +1134,7 @@ function SceneWidget({ widget, publish }) {
           </button>
         ))}
         {active && (
-          <p className="text-[10px] text-center text-muted-foreground">الوضع النشط: {scenes.find(s => s.key === active)?.label}</p>
+          <p className="text-[10px] text-center text-muted-foreground">Active Mode: {scenes.find(s => s.key === active)?.label}</p>
         )}
       </div>
     </div>
@@ -1189,7 +1189,7 @@ function SchedulerWidget({ widget, publish }) {
         <div className={`text-[10px] text-center py-1.5 rounded-lg font-bold border border-border ${
           enabled ? 'bg-[#22C55E]/15 text-[#22C55E] border-[#22C55E]/30' : 'bg-muted/40 text-muted-foreground'
         }`}>
-          {enabled ? 'الجدولة نشطة' : 'الجدولة متوقفة'}
+          {enabled ? 'Schedule Active' : 'Schedule Paused'}
         </div>
       </div>
     </div>
@@ -1325,7 +1325,7 @@ function StepperWidget({ widget, publish }) {
       </div>
       <div className="flex-1 flex flex-col justify-center gap-2.5 px-1">
         <div>
-          <label className="text-[10px] text-muted-foreground mb-1 block">عدد الخطوات</label>
+          <label className="text-[10px] text-muted-foreground mb-1 block">Steps</label>
           <div className="flex items-center gap-2">
             <button onClick={() => setSteps(v => Math.max(1, v - 10))}
               className="w-8 h-8 rounded-lg bg-muted border border-border text-foreground font-bold hover:bg-secondary transition-colors">-</button>
@@ -1337,7 +1337,7 @@ function StepperWidget({ widget, publish }) {
         </div>
         <div>
           <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground">السرعة</label>
+            <label className="text-[10px] text-muted-foreground">Speed</label>
             <span className="text-[10px] font-mono font-bold text-foreground">{speed} RPM</span>
           </div>
           <input type="range" min="1" max="200" value={speed} onChange={e => setSpeed(Number(e.target.value))}
@@ -1454,9 +1454,9 @@ function CurtainWidget({ widget, publish }) {
           className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary"
           style={{ accentColor: '#38BDF8' }} />
         <div className="flex gap-2">
-          <button onClick={() => goTo(0)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">مغلق</button>
-          <button onClick={() => goTo(50)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">نصف</button>
-          <button onClick={() => goTo(100)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">مفتوح</button>
+          <button onClick={() => goTo(0)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">Closed</button>
+          <button onClick={() => goTo(50)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">Half</button>
+          <button onClick={() => goTo(100)} className="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">Open</button>
         </div>
       </div>
     </div>
@@ -1519,9 +1519,9 @@ function DoorLockWidget({ widget, value, publish }) {
           isLocked
             ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#EF4444]'
             : 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]'
-        }`}>{isLocked ? 'مقفل' : 'مفتوح'}</span>
+        }`}>{isLocked ? 'Locked' : 'Unlocked'}</span>
         {countdown !== null && (
-          <span className="text-[10px] text-muted-foreground font-mono">Auto-lock في {countdown}s</span>
+          <span className="text-[10px] text-muted-foreground font-mono">Auto-lock in {countdown}s</span>
         )}
       </div>
     </div>
@@ -1562,7 +1562,7 @@ function BuzzerWidget({ widget, publish }) {
             <Bell size={28} className={active ? 'text-[#EF4444]' : 'text-muted-foreground/60'} />
           </button>
         </div>
-        <span className="text-[10px] text-muted-foreground">اضغط لإرسال BEEP</span>
+        <span className="text-[10px] text-muted-foreground">Press to send BEEP</span>
       </div>
     </div>
   );
@@ -1625,7 +1625,7 @@ function PanTiltWidget({ widget, publish }) {
             className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-secondary" style={{ accentColor: '#38BDF8' }} />
         </div>
         <button onClick={center} className="w-full py-1.5 rounded-lg text-[10px] font-bold bg-muted border border-border text-muted-foreground hover:text-foreground transition-all">
-          توسيط الكاميرا (90°, 90°)
+          Center Camera (90°, 90°)
         </button>
       </div>
     </div>
@@ -1676,7 +1676,7 @@ function PumpWidget({ widget, value, publish }) {
         </div>
         <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
           isOn ? 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]' : 'bg-muted text-muted-foreground border-border'
-        }`}>{isOn ? 'تشغيل' : 'إيقاف'}</span>
+        }`}>{isOn ? 'Running' : 'Stopped'}</span>
         {isOn && <span className="text-[10px] font-mono text-muted-foreground">{fmt(runtime)}</span>}
       </div>
     </div>
@@ -1716,7 +1716,7 @@ function ValveWidget({ widget, value, publish }) {
               ? 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E]'
               : 'bg-[#EF4444]/15 border-[#EF4444]/40 text-[#EF4444]'
           }`}>
-          {isOpen ? 'مفتوح — إغلاق' : 'مغلق — فتح'}
+          {isOpen ? 'Open — Close' : 'Closed — Open'}
         </button>
       </div>
     </div>
@@ -1761,7 +1761,7 @@ function IrrigationWidget({ widget, value, publish }) {
         {/* Moisture bar */}
         <div className="bg-muted border border-border rounded-xl p-2.5">
           <div className="flex justify-between mb-1.5">
-            <span className="text-[10px] text-muted-foreground">رطوبة التربة</span>
+            <span className="text-[10px] text-muted-foreground">Soil Moisture</span>
             <span className="text-[10px] font-mono font-bold" style={{ color: moistureColor }}>
               {moisture !== null ? `${moisture.toFixed(0)}%` : 'N/A'}
             </span>
@@ -1775,7 +1775,7 @@ function IrrigationWidget({ widget, value, publish }) {
           {/* Threshold marker */}
           <div className="relative mt-1">
             <div className="absolute top-0 w-0.5 h-3 bg-[#38BDF8] -translate-x-1/2" style={{ left: `${threshold}%` }} />
-            <p className="text-[9px] text-muted-foreground text-right">حد الري: {threshold}%</p>
+            <p className="text-[9px] text-muted-foreground text-right">Threshold: {threshold}%</p>
           </div>
         </div>
         {/* Mode + Threshold */}
@@ -1783,16 +1783,16 @@ function IrrigationWidget({ widget, value, publish }) {
           <button onClick={() => setMode('manual')}
             className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
               mode === 'manual' ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
-            }`}>يدوي</button>
+            }`}>Manual</button>
           <button onClick={() => setMode('auto')}
             className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
               mode === 'auto' ? 'bg-[#38BDF8]/15 border-[#38BDF8]/40 text-[#38BDF8] font-black shadow-sm' : 'bg-muted/30 border-border text-muted-foreground'
-            }`}>تلقائي</button>
+            }`}>Auto</button>
         </div>
         {mode === 'auto' && (
           <div>
             <div className="flex justify-between mb-1">
-              <label className="text-[10px] text-muted-foreground">حد التشغيل</label>
+              <label className="text-[10px] text-muted-foreground">Trigger Threshold</label>
               <span className="text-[10px] font-mono font-bold text-foreground">{threshold}%</span>
             </div>
             <input type="range" min="10" max="80" value={threshold} onChange={e => setThreshold(Number(e.target.value))}
@@ -1805,13 +1805,13 @@ function IrrigationWidget({ widget, value, publish }) {
             className={`w-full py-2 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
               pumpOn ? 'bg-[#22C55E]/15 border-[#22C55E]/40 text-[#22C55E]' : 'bg-muted text-muted-foreground hover:text-foreground border-border'
             }`}>
-            {pumpOn ? 'إيقاف الري' : 'تشغيل الري'}
+            {pumpOn ? 'Stop Irrigation' : 'Start Irrigation'}
           </button>
         )}
         {mode === 'auto' && (
           <div className={`text-[10px] text-center py-1 rounded-lg font-bold border ${
             pumpOn ? 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]' : 'bg-muted text-muted-foreground border-border'
-          }`}>{pumpOn ? 'الري يعمل تلقائياً' : 'التربة رطبة كافياً'}</div>
+          }`}>{pumpOn ? 'Auto-Irrigating' : 'Moisture Sufficient'}</div>
         )}
       </div>
     </div>
@@ -1856,13 +1856,13 @@ function OLEDWidget({ widget, publish }) {
             value={text}
             onChange={e => setText(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSend()}
-            placeholder="نص للشاشة..."
+            placeholder="Text to display..."
             maxLength={widget.maxChars || 32}
             className="flex-1 bg-muted border border-border rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-border text-foreground font-mono"
           />
           <button onClick={handleSend}
             className="px-4 rounded-xl text-xs font-bold bg-muted border border-border text-foreground hover:bg-muted/70 transition-all active:scale-95">
-            إرسال
+            Send
           </button>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -2006,7 +2006,7 @@ function MomentaryWidget({ widget, publish }) {
           <Zap size={24} className="text-current" />
         </button>
         <div className="text-center">
-          <p className="text-[10px] text-muted-foreground">ترسل: <code className="font-mono text-foreground bg-muted px-1.5 py-0.5 rounded text-[9px] border border-border">{payload}</code></p>
+          <p className="text-[10px] text-muted-foreground">Sends: <code className="font-mono text-foreground bg-muted px-1.5 py-0.5 rounded text-[9px] border border-border">{payload}</code></p>
         </div>
       </div>
     </div>
@@ -2242,9 +2242,9 @@ function RobotArmWidget({ widget, publish }) {
   };
 
   const arms = [
-    { key: 'base',     label: 'قاعدة (Base)',      range: [0, 180] },
-    { key: 'shoulder', label: 'كتف (Shoulder)',     range: [0, 180] },
-    { key: 'elbow',    label: 'مرفق (Elbow)',       range: [0, 135] },
+    { key: 'base',     label: 'Base',      range: [0, 180] },
+    { key: 'shoulder', label: 'Shoulder',  range: [0, 180] },
+    { key: 'elbow',    label: 'Elbow',     range: [0, 135] },
   ];
 
   // Simple 2D arm preview
@@ -2299,7 +2299,7 @@ function RobotArmWidget({ widget, publish }) {
         </div>
         <button onClick={center}
           className="w-full py-1.5 rounded-xl text-[10px] font-bold bg-muted border border-border text-foreground hover:bg-muted/70 transition-all active:scale-95">
-          توسيط الذراع (90°, 90°, 90°)
+          Center Arm (90°, 90°, 90°)
         </button>
       </div>
     </div>
@@ -2348,7 +2348,7 @@ function GripperWidget({ widget, publish }) {
         {/* Open % */}
         <div>
           <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground">انفتاح القابض</label>
+            <label className="text-[10px] text-muted-foreground">Gripper Opening</label>
             <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{openPct}%</span>
           </div>
           <input type="range" min="0" max="100" value={openPct} onChange={e => handleOpen(Number(e.target.value))}
@@ -2357,7 +2357,7 @@ function GripperWidget({ widget, publish }) {
         {/* Force */}
         <div>
           <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground">قوة القبضة</label>
+            <label className="text-[10px] text-muted-foreground">Grip Force</label>
             <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{force}%</span>
           </div>
           <input type="range" min="10" max="100" value={force} onChange={e => setForce(Number(e.target.value))}
@@ -2366,11 +2366,11 @@ function GripperWidget({ widget, publish }) {
         <div className="flex gap-2">
           <button onClick={() => sendGrip(true)}
             className="flex-1 py-2 rounded-xl text-xs font-bold bg-[#38BDF8]/15 border border-[#38BDF8]/40 text-[#38BDF8] hover:bg-[#38BDF8]/25 transition-all active:scale-95 shadow-sm">
-            فتح
+            Release
           </button>
           <button onClick={() => sendGrip(false)}
             className="flex-1 py-2 rounded-xl text-xs font-bold bg-[#38BDF8]/15 border border-[#38BDF8]/40 text-[#38BDF8] hover:bg-[#38BDF8]/25 transition-all active:scale-95 shadow-sm">
-            إمساك
+            Grip
           </button>
         </div>
       </div>
@@ -2520,7 +2520,7 @@ function RobotSpeedWidget({ widget, publish }) {
         {/* Left motor */}
         <div>
           <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground font-bold">◀ اليسار</label>
+            <label className="text-[10px] text-muted-foreground font-bold">◀ Left Motor</label>
             <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{left}</span>
           </div>
           <input type="range" min="-255" max="255" value={left}
@@ -2530,7 +2530,7 @@ function RobotSpeedWidget({ widget, publish }) {
         {/* Right motor */}
         <div>
           <div className="flex justify-between mb-1">
-            <label className="text-[10px] text-muted-foreground font-bold">اليمين ▶</label>
+            <label className="text-[10px] text-muted-foreground font-bold">Right Motor ▶</label>
             <span className="text-[10px] font-mono font-bold text-[#38BDF8]">{right}</span>
           </div>
           <input type="range" min="-255" max="255" value={right}
@@ -2650,7 +2650,7 @@ function WidgetCard({ widget, value, publish, onRemove, onEdit, gaugeHistory }) 
         {/* Left side: Drag Handle */}
         <div
           className="drag-handle cursor-grab active:cursor-grabbing p-1 rounded-md border border-border bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center justify-center"
-          title="اسحب من هنا لتحريك الأداة"
+          title="Drag to move widget"
         >
           <Move size={12} />
         </div>
@@ -2823,10 +2823,10 @@ export default function UniversalController({ deviceStates, publish, storageScop
               type="button"
               onClick={resetToProjectPreset}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/70 hover:bg-muted text-foreground font-bold text-xs transition-all shadow-sm active:scale-95"
-              title="استعادة أو تحميل جميع أدوات وحساسات هذا المشروع الجاهزة فوراً"
+              title="Restore or load all preset widgets and sensors for this project"
             >
               <RotateCcw size={13} />
-              <span>أدوات المشروع الجاهزة ({initialWidgets.length})</span>
+              <span>Project Preset Tools ({initialWidgets.length})</span>
             </button>
           )}
           <button
